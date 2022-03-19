@@ -767,7 +767,7 @@
         image colorspace mismatch
       </Message>
       <Message name="ImageDifferenceExceedsLimit">
-        image difference exceeds limit (%s)
+        image difference exceeds limit
       </Message>
       <Message name="ImageDoesNotContainResolution">
         image does not contain resolution

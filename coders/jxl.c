@@ -348,6 +348,41 @@ static MagickBool fill_pixels_char_linear(Image *image,
   return MagickTrue;
 }
 
+static const char *JxlTransferFunctionAsString(const JxlTransferFunction fn)
+{
+  const char *str = "Unknown";
+
+  switch (fn)
+    {
+    case JXL_TRANSFER_FUNCTION_709:
+      str = "Rec709 (SMPTE RP 431-2)";
+      break;
+    case JXL_TRANSFER_FUNCTION_UNKNOWN:
+      str = "Unknown";
+      break;
+    case JXL_TRANSFER_FUNCTION_LINEAR:
+      str = "Linear (Gamma 1.0)";
+      break;
+    case JXL_TRANSFER_FUNCTION_SRGB:
+      str = "sRGB (IEC 61966-2-1)";
+      break;
+    case JXL_TRANSFER_FUNCTION_PQ:
+      str = "PQ (SMPTE ST 428-1)";
+      break;
+    case JXL_TRANSFER_FUNCTION_DCI:
+      str = "DCI (SMPTE ST 428-1)";
+      break;
+    case JXL_TRANSFER_FUNCTION_HLG:
+      str = "HLG (Rec. ITU-R BT.2100-1)";
+      break;
+    case JXL_TRANSFER_FUNCTION_GAMMA:
+      str = "Gamma (use gamma from JxlColorEncoding)";
+      break;
+    }
+
+  return str;
+}
+
 #define JXLReadCleanup()                                \
   MagickFreeResourceLimitedMemory(out_buf);             \
   MagickFreeResourceLimitedMemory(in_buf);              \
@@ -468,11 +503,30 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
           { /* got image information */
             JxlBasicInfo
               basic_info;
+
+            unsigned long
+              max_value_given_bits;
+
             JxlEncoderInitBasicInfo(&basic_info);
 
             status=JxlDecoderGetBasicInfo(jxl,&basic_info);
             if (status != JXL_DEC_SUCCESS)
               break;
+
+            if (image->logging)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Basic Info:\n"
+                                      "    xsize=%u\n"
+                                      "    ysize=%u \n"
+                                      "    bits_per_sample=%u\n"
+                                      "    exponent_bits_per_sample=%u\n"
+                                      "    alpha_bits=%u\n"
+                                      "    num_color_channels=%u",
+                                      basic_info.xsize, basic_info.ysize,
+                                      basic_info.bits_per_sample, basic_info.exponent_bits_per_sample,
+                                      basic_info.alpha_bits, basic_info.num_color_channels);
+              }
 
             if (basic_info.have_animation == 1)
               ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
@@ -484,10 +538,13 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               image->matte=MagickTrue;
 
             image->orientation=convert_orientation(basic_info.orientation);
+            max_value_given_bits=MaxValueGivenBits(basic_info.bits_per_sample);
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "max_value_given_bits=%lu",max_value_given_bits);
 
-            if (basic_info.num_color_channels == 1 && image->depth == 8)
+            if ((basic_info.num_color_channels == 1) && (max_value_given_bits < MaxColormapSize))
               {
-                if (!AllocateImageColormap(image,1 << image->depth))
+                if (!AllocateImageColormap(image,max_value_given_bits+1))
                   ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                 grayscale=MagickTrue;
                 format.num_channels=1;
@@ -543,16 +600,30 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               }
             else if (status == JXL_DEC_SUCCESS)
               {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Color Transfer Function: %s",
+                                      JxlTransferFunctionAsString(color_encoding.transfer_function));
                 switch (color_encoding.transfer_function) {
                 case JXL_TRANSFER_FUNCTION_LINEAR:
                   isLinear=MagickTrue;
                   break;
-
                 case JXL_TRANSFER_FUNCTION_709:
+                  isLinear=MagickFalse;
+                  break;
                 case JXL_TRANSFER_FUNCTION_PQ:
+                  isLinear=MagickFalse;
+                  break;
                 case JXL_TRANSFER_FUNCTION_HLG:
+                  isLinear=MagickFalse;
+                  break;
                 case JXL_TRANSFER_FUNCTION_GAMMA:
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Gamma: %g", color_encoding.gamma);
+                  isLinear=MagickFalse;
+                  break;
                 case JXL_TRANSFER_FUNCTION_DCI:
+                  isLinear=MagickFalse;
+                  break;
                 case JXL_TRANSFER_FUNCTION_SRGB:
                   isLinear=MagickFalse;
                   break;
@@ -585,7 +656,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                     }
                   break;
                 case JXL_COLOR_SPACE_GRAY:
-                  if(!grayscale || isLinear)
+                  if(!grayscale || isLinear) /* FIXME: Can't read linear gray */
                     ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
                   break;
                 case JXL_COLOR_SPACE_XYB:
@@ -705,10 +776,10 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   MagickFreeResourceLimitedMemory(out_buf); \
 
 #define ThrowJXLWriterException(code_,reason_,image_) \
-{ \
-  JXLWriteCleanup() \
+do { \
+  JXLWriteCleanup();                          \
   ThrowWriterException(code_,reason_,image_); \
-}
+ } while(1)
 
 
 static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
@@ -857,19 +928,19 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     {
       /* TODO better error codes */
       if (jxl_status == JXL_ENC_ERROR)
-        ThrowJXLWriterException(CoderError,NoDataReturned,image)
-        else if (jxl_status == JXL_ENC_NOT_SUPPORTED)
-          ThrowJXLWriterException(CoderError,UnsupportedBitsPerSample,image)
-          else
-            ThrowJXLWriterException(CoderFatalError,Default,image)
-              }
+        ThrowJXLWriterException(CoderError,NoDataReturned,image);
+      else if (jxl_status == JXL_ENC_NOT_SUPPORTED)
+        ThrowJXLWriterException(CoderError,UnsupportedBitsPerSample,image);
+      else
+        ThrowJXLWriterException(CoderFatalError,Default,image);
+    }
 
   /* Set expected input colorspace */
   /* FIXME: For RGB we want to set JXL_COLOR_SPACE_RGB and for gray we want JXL_COLOR_SPACE_GRAY */
   basic_info.uses_original_profile = JXL_TRUE;
   JxlColorEncodingSetToSRGB(&color_encoding, pixel_format.num_channels < 3);
   if (JxlEncoderSetColorEncoding(jxl_encoder, &color_encoding) != JXL_ENC_SUCCESS)
-    ThrowJXLWriterException(CoderFatalError,Default,image)
+    ThrowJXLWriterException(CoderFatalError,Default,image);
 
   frame_settings = JxlEncoderFrameSettingsCreate(jxl_encoder, NULL);
   if (image_info->quality == 100)

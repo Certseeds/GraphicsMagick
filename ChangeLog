@@ -1,3 +1,11 @@
+2022-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jxl.c: Added some debug logging instrumentation so we can
+        see the information the JXL reader is provided by libjxl.
+
+        * configure.ac: JXL is working well enough to enable it by
+        default.
+
 2022-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jxl.c (WriteJXLImage): Call JxlEncoderCloseInput() so

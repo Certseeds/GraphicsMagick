@@ -721,10 +721,10 @@ fi
 
 # Disable JXL
 AC_ARG_WITH([jxl],
-              AS_HELP_STRING([--with-jxl],
-                             [enable JPEG-XL support]),
+              AS_HELP_STRING([--without-jxl],
+                             [disable JPEG-XL support]),
               [with_jxl=$withval],
-              [with_jxl='no'])
+              [with_jxl='yes'])
 if test "$with_jxl" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jxl=$with_jxl "
 fi

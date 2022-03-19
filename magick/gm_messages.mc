@@ -1399,7 +1399,7 @@ image colorspace mismatch
 MessageId       = +1
 SymbolicName    = ImageErrorImageDifferenceExceedsLimit
 Language        = English
-image difference exceeds limit (%s)
+image difference exceeds limit
 .
 
 MessageId       = +1

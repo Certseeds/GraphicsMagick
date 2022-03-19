@@ -1803,7 +1803,7 @@ Optional Packages:
   --without-heif          disable HEIF support
   --without-jpeg          disable JPEG support
   --without-jp2           disable JPEG v2 support
-  --with-jxl              enable JPEG-XL support
+  --without-jxl           disable JPEG-XL support
   --without-lcms2         disable lcms (v2.X) support
   --without-lzma          disable LZMA support
   --without-png           disable PNG support
@@ -19481,7 +19481,7 @@ fi
 if test "${with_jxl+set}" = set; then :
   withval=$with_jxl; with_jxl=$withval
 else
-  with_jxl='no'
+  with_jxl='yes'
 fi
 
 if test "$with_jxl" != 'yes' ; then
