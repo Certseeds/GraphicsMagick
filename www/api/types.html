@@ -189,7 +189,27 @@ table:</p>
 </div>
 <div class="section" id="classtype">
 <h1><a class="toc-backref" href="#id6">ClassType</a></h1>
-<p>ClassType enumeration specifies the image storage class.</p>
+<p>The ClassType enumeration specifies the image storage class.  A
+DirectClass representation of an image is based on an array of
+PixelPacket structures in RAM and/or in a disk file where color values
+are stored &quot;directly&quot;.  A PseudoClass representation of an image is
+based on an array of IndexPacket values (also in RAM and/or in a disk
+file ) which are the index values to the Image colormap (a small array
+of PixelPacket values) where the color values corresponding to the
+pixel at the index are stored.</p>
+<p>It is possible for an image to be represented as DirectClass and
+PseudoClass simultaneously, but only one type may be claimed as the
+current representation by the Image storage_class member.  It is
+normally assumed that when the Image is set to PseudoClass that the
+DirectClass representation is up to date but while updating the image,
+this is often not the case.  The DirectClass representation of the
+image may be updated based on the PseudoClass representation by
+calling the SyncImage() function.</p>
+<p>As a special case, CMYK is represented by the red, green, blue, and
+opacity members of PixelPacket, and CMYKA is the same except that the
+IndexPacket values represent Opacity.  CMYKA images are described as
+DirectClass even though the IndexPacket values are used (the image
+colormap is not valid).</p>
 <table border="1" class="docutils">
 <caption>ClassType</caption>
 <colgroup>
@@ -890,6 +910,11 @@ subsequent drawing commands.</td>
 </div>
 <div class="section" id="endiantype">
 <h1><a class="toc-backref" href="#id16">EndianType</a></h1>
+<p>Some formats (e.g. TIFF and DPX) allow storing data in multiple
+&quot;endian&quot; orders and EndianType allows controlling that.  With MSB
+endian and accessing memory bytes with increasing offset, the most
+significant bytes are encountered first, while with LSB endian, the
+least significant bytes are encountered first.</p>
 <pre class="literal-block">
 typedef enum
 {
@@ -926,6 +951,10 @@ typedef struct _ExceptionInfo
 </div>
 <div class="section" id="exceptiontype">
 <h1><a class="toc-backref" href="#id19">ExceptionType</a></h1>
+<p>Warnings and errors are represented by integer numbers (declared as an
+ExceptionType enumeration) with the range of warnings starting with
+WarningException, the range of errors starting with ErrorException,
+and the range of fatal errors starting with FatalErrorException.</p>
 <pre class="literal-block">
 typedef enum
 {
@@ -2308,13 +2337,15 @@ border color.</td>
 </div>
 <div class="section" id="pixelpacket">
 <h1><a class="toc-backref" href="#id39">PixelPacket</a></h1>
-<p>The PixelPacket structure is used to represent DirectClass color pixels
-in GraphicsMagick. If the image is indicated as a PseudoClass image, its
-DirectClass representation is only valid immediately after calling
-SyncImage(). If an image is set as PseudoClass and the DirectClass
-representation is modified, the image should then be set as DirectClass.
-Use QuantizeImage() to restore the PseudoClass colormap if the
-DirectClass representation is modified.</p>
+<p>The PixelPacket structure is used to represent DirectClass color
+pixels in GraphicsMagick. If the image is indicated as a PseudoClass
+image, its DirectClass representation is only assured to be valid
+immediately after calling SyncImage(), although it is usually already
+valid and the convention is to assure that the DirectClass
+representation is updated. If an image is set as PseudoClass and the
+DirectClass representation is modified, the image should then be set
+as DirectClass.  Use QuantizeImage() to restore the PseudoClass
+colormap if the DirectClass representation is modified.</p>
 <p>The members of the PixelPacket structure are shown in the following table:</p>
 <table border="1" class="docutils">
 <caption>PixelPacket Structure Members</caption>
@@ -2934,16 +2965,39 @@ typedef void *ViewInfo;
 </div>
 <div class="section" id="virtualpixelmethod">
 <h1><a class="toc-backref" href="#id58">VirtualPixelMethod</a></h1>
-<pre class="literal-block">
-typedef enum
-{
-  UndefinedVirtualPixelMethod,
-  ConstantVirtualPixelMethod,
-  EdgeVirtualPixelMethod,
-  MirrorVirtualPixelMethod,
-  TileVirtualPixelMethod
-} VirtualPixelMethod;
-</pre>
+<p>The VirtualPixelMethod enumeration describes how the pixel cache APIs
+fill requested pixel regions which are outside of the image. Returned
+pixels <em>must</em> be initialized to some value.  The edge of the image
+represents a &quot;disconnect&quot; but convolutions and other filters need
+mathematical continuity while computing their results or else the
+computed edges of the image would be distorted.</p>
+<table border="1" class="docutils">
+<caption>VirtualPixelMethod Enumeration Values</caption>
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>Enumeration</td>
+<td>Description</td>
+</tr>
+<tr><td>UndefinedVirtualPixelMethod</td>
+<td>Value was not specified</td>
+</tr>
+<tr><td>ConstantVirtualPixelMethod</td>
+<td>Use the image background color</td>
+</tr>
+<tr><td>EdgeVirtualPixelMethod</td>
+<td>Extend the edge pixel toward infinity (default)</td>
+</tr>
+<tr><td>MirrorVirtualPixelMethod</td>
+<td>Mirror the image</td>
+</tr>
+<tr><td>TileVirtualPixelMethod</td>
+<td>Tile the image</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="magickxresourceinfo">
 <h1><a class="toc-backref" href="#id59">MagickXResourceInfo</a></h1>

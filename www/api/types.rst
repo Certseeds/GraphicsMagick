@@ -91,7 +91,29 @@ table:
 ClassType
 =========
 
-ClassType enumeration specifies the image storage class.
+The ClassType enumeration specifies the image storage class.  A
+DirectClass representation of an image is based on an array of
+PixelPacket structures in RAM and/or in a disk file where color values
+are stored "directly".  A PseudoClass representation of an image is
+based on an array of IndexPacket values (also in RAM and/or in a disk
+file ) which are the index values to the Image colormap (a small array
+of PixelPacket values) where the color values corresponding to the
+pixel at the index are stored.
+
+It is possible for an image to be represented as DirectClass and
+PseudoClass simultaneously, but only one type may be claimed as the
+current representation by the Image storage_class member.  It is
+normally assumed that when the Image is set to PseudoClass that the
+DirectClass representation is up to date but while updating the image,
+this is often not the case.  The DirectClass representation of the
+image may be updated based on the PseudoClass representation by
+calling the SyncImage() function.
+
+As a special case, CMYK is represented by the red, green, blue, and
+opacity members of PixelPacket, and CMYKA is the same except that the
+IndexPacket values represent Opacity.  CMYKA images are described as
+DirectClass even though the IndexPacket values are used (the image
+colormap is not valid).
 
 .. table:: ClassType
 
@@ -535,6 +557,12 @@ primitives for a way to control the propagation of drawing options.
 EndianType
 ==========
 
+Some formats (e.g. TIFF and DPX) allow storing data in multiple
+"endian" orders and EndianType allows controlling that.  With MSB
+endian and accessing memory bytes with increasing offset, the most
+significant bytes are encountered first, while with LSB endian, the
+least significant bytes are encountered first.
+
 ::
 
   typedef enum
@@ -576,6 +604,11 @@ ExceptionInfo
 
 ExceptionType
 =============
+
+Warnings and errors are represented by integer numbers (declared as an
+ExceptionType enumeration) with the range of warnings starting with
+WarningException, the range of errors starting with ErrorException,
+and the range of fatal errors starting with FatalErrorException.
 
 ::
 
@@ -1609,13 +1642,15 @@ It is used to select the pixel-filling algorithm employed.
 PixelPacket
 ===========
 
-The PixelPacket structure is used to represent DirectClass color pixels
-in GraphicsMagick. If the image is indicated as a PseudoClass image, its
-DirectClass representation is only valid immediately after calling
-SyncImage(). If an image is set as PseudoClass and the DirectClass
-representation is modified, the image should then be set as DirectClass.
-Use QuantizeImage() to restore the PseudoClass colormap if the
-DirectClass representation is modified.
+The PixelPacket structure is used to represent DirectClass color
+pixels in GraphicsMagick. If the image is indicated as a PseudoClass
+image, its DirectClass representation is only assured to be valid
+immediately after calling SyncImage(), although it is usually already
+valid and the convention is to assure that the DirectClass
+representation is updated. If an image is set as PseudoClass and the
+DirectClass representation is modified, the image should then be set
+as DirectClass.  Use QuantizeImage() to restore the PseudoClass
+colormap if the DirectClass representation is modified.
 
 The members of the PixelPacket structure are shown in the following table:
 
@@ -2100,17 +2135,28 @@ accessed without needing to explicitly allocate pixel views.
 VirtualPixelMethod
 ==================
 
-::
+The VirtualPixelMethod enumeration describes how the pixel cache APIs
+fill requested pixel regions which are outside of the image. Returned
+pixels *must* be initialized to some value.  The edge of the image
+represents a "disconnect" but convolutions and other filters need
+mathematical continuity while computing their results or else the
+computed edges of the image would be distorted.
 
-  typedef enum
-  {
-    UndefinedVirtualPixelMethod,
-    ConstantVirtualPixelMethod,
-    EdgeVirtualPixelMethod,
-    MirrorVirtualPixelMethod,
-    TileVirtualPixelMethod
-  } VirtualPixelMethod;
+.. table:: VirtualPixelMethod Enumeration Values
 
+   +-----------------------------+---------------------------------------------------+
+   |       Enumeration           |                     Description                   |
+   +-----------------------------+---------------------------------------------------+
+   |UndefinedVirtualPixelMethod  |Value was not specified                            |
+   +-----------------------------+---------------------------------------------------+
+   |ConstantVirtualPixelMethod   |Use the image background color                     |
+   +-----------------------------+---------------------------------------------------+
+   |EdgeVirtualPixelMethod       |Extend the edge pixel toward infinity (default)    |
+   +-----------------------------+---------------------------------------------------+
+   |MirrorVirtualPixelMethod     |Mirror the image                                   |
+   +-----------------------------+---------------------------------------------------+
+   |TileVirtualPixelMethod       |Tile the image                                     |
+   +-----------------------------+---------------------------------------------------+
 
 MagickXResourceInfo
 ===================
