@@ -1597,8 +1597,8 @@ It is used to select the pixel-filling algorithm employed.
    +------------------+------------------------------------------------------------------------------+
    |ReplaceMethod     |Replace color for all image pixels matching color at point.                   |
    +------------------+------------------------------------------------------------------------------+
-   |FloodfillMethod   |Replace color for pixels surrounding point until encountering pixel that fails|
-   |                  |to match color at point.                                                      |
+   |FloodfillMethod   |Replace color for pixels surrounding point until encountering pixel that      |
+   |                  |fails to match color at point.                                                |
    +------------------+------------------------------------------------------------------------------+
    |FillToBorderMethod|Replace color for pixels surrounding point until encountering pixels matching |
    |                  |border color.                                                                 |
@@ -1915,16 +1915,54 @@ ResolutionType provides a means to adjust this.
 ResourceType
 ============
 
-::
+Resource limits constrain the system resources that a GraphicsMagick
+process may consume, or that individual decode/encode and/or image
+processing operations may consume.  If a resource is expended and
+another resource may be substituted (e.g. RAM memory vs an on-disk
+temporary file), then the alternative resource is used until it is
+also expended.  When a resource limit is exceeded and there is no more
+alternative resource available then a hard error is reported for the
+operation being performed.
 
-  typedef enum
-  {
-    UndefinedResource,
-    FileResource,
-    MemoryResource,
-    MapResource,
-    DiskResource
-  } ResourceType;
+Global limits may be applied for the Pixel Cache total disk space
+(Gigabytes), the Pixel Cache number of simultaneous open files
+(Files), the Pixel Cache total file memory-mapping (Megabytes), the
+maximum heap memory allocations (Megabytes), the maximum number of
+pixels in single image (Pixels), the maximum number of worker threads,
+the maximum pixel width of an image (Pixels), the maximum pixel height
+of an image (Pixels), and the maximum amount of uncompressed file data
+which may be read while decoding.
+
+Normally these limits should be set before using GraphicsMagick to
+perform other operations.  Environment variables are available which
+may also set these properties when GraphicsMagick is initialized.
+
+.. table:: ResourceType
+
+   +-----------------------------+-------------------------------------------------------------------+
+   |         Enumeration         |                            Description                            |
+   +-----------------------------+-------------------------------------------------------------------+
+   |UndefinedResource            |Undefined value                                                    |
+   +-----------------------------+-------------------------------------------------------------------+
+   |DiskResource                 |Pixel cache total disk space (Gigabytes)                           |
+   +-----------------------------+-------------------------------------------------------------------+
+   |FileResource                 |Pixel cache number of open files (Files)                           |
+   +-----------------------------+-------------------------------------------------------------------+
+   |MapResource                  |Pixel cache total file memory-mapping (Megabytes)                  |
+   +-----------------------------+-------------------------------------------------------------------+
+   |MemoryResource               |Maximum heap memory (e.g. malloc) allocations (Megabytes)          |
+   +-----------------------------+-------------------------------------------------------------------+
+   |PixelsResource               |Maximum number of pixels in a single image (Pixels)                |
+   +-----------------------------+-------------------------------------------------------------------+
+   |ThreadsResource              |Maximum number of worker threads                                   |
+   +-----------------------------+-------------------------------------------------------------------+
+   |WidthResource                |Maximum pixel width of an image (Pixels)                           |
+   +-----------------------------+-------------------------------------------------------------------+
+   |HeightResource               |Maximum pixel height of an image (Pixels)                          |
+   +-----------------------------+-------------------------------------------------------------------+
+   |ReadResource                 |Maximum amount of uncompressed file data which may be read while   |
+   |                             |decoding                                                           |
+   +-----------------------------+-------------------------------------------------------------------+
 
 
 SegmentInfo
