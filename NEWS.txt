@@ -34,10 +34,10 @@ Special Issues:
 
 * GraphicsMagick really does need some additional productive
   volunteers.  For several years now, the burden has entirely been on
-  me (Bob Friesenhahn).  I have been sheparding the project for 19
+  me (Bob Friesenhahn).  I have been sheparding the project for 20
   years already (and contributed to ImageMagick and GraphicsMagick
-  combined for 25 years already).  It is not reasonable to expect
-  someone with a full time job (and expecting to retire in a couple of
+  combined for 26 years already).  It is not reasonable to expect
+  someone with a full time job (and expecting to retire in a few
   years) to do all of the work.
 
 Security Fixes:
@@ -45,8 +45,7 @@ Security Fixes:
 * GraphicsMagick is participating in Google's oss-fuzz project due to
   the contributions and assistance of Alex Gaynor. Since February 4
   2018, ??? issues have been opened by oss-fuzz and ?? issues remain
-  open (most of which are in third-party software such as development
-  JasPer).  The issues list is available at
+  open.  The issues list is available at
   https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
   "graphicsmagick".  Issues are available for anyone to view and
   duplicate if they have been in "Verified" status for 30 days, or if
@@ -61,7 +60,17 @@ Bug fixes:
 
 New Features:
 
+* Added support for a 'Read' resource limit.  This allows the user to
+  specify a hard limit for how much data may be read from a file, read
+  from a pipe, or decompressed from a file (e.g gzip or bzip2) before
+  a hard error is reported.  This resource limit is a useful
+  alternative to completely disabling support for compressed files
+  using the --disable-compressed-files option and it provides more
+  protections as well.
+
 * Added support for reading HEIF/HEIC format.
+
+* Added support for reading and writing JPEG XL format.
 
 API Updates:
 
