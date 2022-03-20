@@ -1082,7 +1082,9 @@ MagickPassFail SyncImage( <a class="reference external" href="../api/types.html#
 <div class="section" id="id71">
 <h2>Description</h2>
 <p>Method SyncImage initializes the red, green, and blue intensities of each
-pixel as defined by the colormap index.</p>
+pixel as defined by the colormap index and the current image colormap.
+This is a helper function to update the DirectClass representation of
+the image pixels after the PseudoClass representation has been updated.</p>
 <p>The format of the SyncImage method is:</p>
 <pre class="literal-block">
 MagickPassFail SyncImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );
