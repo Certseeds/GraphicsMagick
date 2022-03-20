@@ -24,7 +24,7 @@ typedef enum
   DiskResource,        /* Pixel cache total disk space (Gigabytes) */
   FileResource,        /* Pixel cache number of open files (Files) */
   MapResource,         /* Pixel cache total file memory-mapping (Megabytes) */
-  MemoryResource,      /* Maximum heap memory allocations (Megabytes) */
+  MemoryResource,      /* Maximum heap memory (e.g. malloc) allocations (Megabytes) */
   PixelsResource,      /* Maximum number of pixels in single image (Pixels) */
   ThreadsResource,     /* Maximum number of worker threads */
   WidthResource,       /* Maximum pixel width of an image (Pixels) */

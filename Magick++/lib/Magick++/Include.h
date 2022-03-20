@@ -735,6 +735,7 @@ namespace Magick
   using MagickLib::ThreadsResource;
   using MagickLib::WidthResource;
   using MagickLib::HeightResource;
+  using MagickLib::ReadResource;
 
   // Virtual pixel methods
   using MagickLib::VirtualPixelMethod;
