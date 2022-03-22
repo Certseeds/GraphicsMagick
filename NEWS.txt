@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to December 12, 2021
+This file was last updated to reflect changes up to March 22, 2022
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -56,29 +56,66 @@ Security Fixes:
 
 Bug fixes:
 
-* None
+* Fixed portability issue related to 'sed' which broke
+  utilities/tests/convert.tap test script.
+
+* WPG: Fix incorrect TrX and TrY elements in CTM.
+
+* JNG: Fixes to error handling to avoid temporary file leaks and
+  avoiding returning a broken image.
+
+* JPEG: Always store embedded profiles in image, even if in 'ping' mode.
+
+* MAT: Change from using 'int' for sizes/offsets to using 'size_t' and
+  check all related calculations for overload.
+
+* PICT: Fixed a heap overflow.
+
+* MogrifyImage() and Magick::Image::trim(): Trim requires NorthWestGravity.
+
+* PerlMagick: Fix issue that image fill attribute had its opacity
+  reset to transparent so it could not be usefully set at image scope.
+
+* Documentation generator scripts in 'doc' directory now produce
+  similar results using GNU sed and Solaris/Illumos sed and don't
+  produce warnings.
 
 New Features:
 
-* Added support for a 'Read' resource limit.  This allows the user to
-  specify a hard limit for how much data may be read from a file, read
-  from a pipe, or decompressed from a file (e.g gzip or bzip2) before
-  a hard error is reported.  This resource limit is a useful
-  alternative to completely disabling support for compressed files
-  using the --disable-compressed-files option and it provides more
-  protections as well.
+* Added support for a 'Read' resource limit (e.g. '-limit read 5mb').
+  This allows the user to specify a hard limit for how much data may
+  be read from a file, read from a pipe, or decompressed from a file
+  (e.g gzip or bzip2) before a hard error is reported.  This resource
+  limit is a useful alternative to completely disabling support for
+  compressed files using the --disable-compressed-files option and it
+  provides more protections as well.
 
 * Added support for reading HEIF/HEIC format.
 
 * Added support for reading and writing JPEG XL format.
 
+* Support for JasPer 3.0.0 is completed.
+
+* PNG: Support the define png:chunk-malloc-max=limit in order to allow
+  reading PNG files which report "chunk data is too large" or to
+  reduce the default limit.
+
+* compare: Added support for the '-compress' option.
+
+* compare: Added support for the '-auto-orient' option.  This tries to
+  assure that the two images are right-side up before comparing.
+
 API Updates:
 
-* None
+* Magick++: Support the new 'ReadResource' enumeration.
 
 Feature improvements:
 
-* None
+* JPEG: Implement more efficient way to append JPEG profile chunks.
+
+* Resource Limited Memory: The resource limited memory allocator now
+  maintains useful statistics such as a tally of the total number of
+  octets moved by realloc.
 
 Windows Delegate Updates/Additions:
 
@@ -86,7 +123,9 @@ Windows Delegate Updates/Additions:
 
 Build Changes:
 
-* None
+* In maintainer mode, the configure script searches for a GnuPG 'gpg'
+  program to use for signing snapshot releases and uses this to
+  support PGP-signed development snapshots.
 
 Behavior Changes:
 

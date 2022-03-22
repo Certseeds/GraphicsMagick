@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to December 12, 2021</p>
+<p>This file was last updated to reflect changes up to March 22, 2022</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -125,27 +125,51 @@ the oss-fuzz issues list for details.</li>
 </ul>
 <p>Bug fixes:</p>
 <ul class="simple">
-<li>None</li>
+<li>Fixed portability issue related to 'sed' which broke
+utilities/tests/convert.tap test script.</li>
+<li>WPG: Fix incorrect TrX and TrY elements in CTM.</li>
+<li>JNG: Fixes to error handling to avoid temporary file leaks and
+avoiding returning a broken image.</li>
+<li>JPEG: Always store embedded profiles in image, even if in 'ping' mode.</li>
+<li>MAT: Change from using 'int' for sizes/offsets to using 'size_t' and
+check all related calculations for overload.</li>
+<li>PICT: Fixed a heap overflow.</li>
+<li>MogrifyImage() and Magick::Image::trim(): Trim requires NorthWestGravity.</li>
+<li>PerlMagick: Fix issue that image fill attribute had its opacity
+reset to transparent so it could not be usefully set at image scope.</li>
+<li>Documentation generator scripts in 'doc' directory now produce
+similar results using GNU sed and Solaris/Illumos sed and don't
+produce warnings.</li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
-<li>Added support for a 'Read' resource limit.  This allows the user to
-specify a hard limit for how much data may be read from a file, read
-from a pipe, or decompressed from a file (e.g gzip or bzip2) before
-a hard error is reported.  This resource limit is a useful
-alternative to completely disabling support for compressed files
-using the --disable-compressed-files option and it provides more
-protections as well.</li>
+<li>Added support for a 'Read' resource limit (e.g. '-limit read 5mb').
+This allows the user to specify a hard limit for how much data may
+be read from a file, read from a pipe, or decompressed from a file
+(e.g gzip or bzip2) before a hard error is reported.  This resource
+limit is a useful alternative to completely disabling support for
+compressed files using the --disable-compressed-files option and it
+provides more protections as well.</li>
 <li>Added support for reading HEIF/HEIC format.</li>
 <li>Added support for reading and writing JPEG XL format.</li>
+<li>Support for JasPer 3.0.0 is completed.</li>
+<li>PNG: Support the define png:chunk-malloc-max=limit in order to allow
+reading PNG files which report &quot;chunk data is too large&quot; or to
+reduce the default limit.</li>
+<li>compare: Added support for the '-compress' option.</li>
+<li>compare: Added support for the '-auto-orient' option.  This tries to
+assure that the two images are right-side up before comparing.</li>
 </ul>
 <p>API Updates:</p>
 <ul class="simple">
-<li>None</li>
+<li>Magick++: Support the new 'ReadResource' enumeration.</li>
 </ul>
 <p>Feature improvements:</p>
 <ul class="simple">
-<li>None</li>
+<li>JPEG: Implement more efficient way to append JPEG profile chunks.</li>
+<li>Resource Limited Memory: The resource limited memory allocator now
+maintains useful statistics such as a tally of the total number of
+octets moved by realloc.</li>
 </ul>
 <p>Windows Delegate Updates/Additions:</p>
 <ul class="simple">
@@ -153,7 +177,9 @@ protections as well.</li>
 </ul>
 <p>Build Changes:</p>
 <ul class="simple">
-<li>None</li>
+<li>In maintainer mode, the configure script searches for a GnuPG 'gpg'
+program to use for signing snapshot releases and uses this to
+support PGP-signed development snapshots.</li>
 </ul>
 <p>Behavior Changes:</p>
 <ul class="simple">
