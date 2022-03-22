@@ -34,6 +34,9 @@ Jaroslav Fojtik
                 build testing/fixes for many versions of Microsoft
                 Visual Studio.
 
+Tobias Mark
+                Authored the HEIF and JPEG XL coder modules.
+
 
 Former GraphicsMagick Contributors
 ==================================
