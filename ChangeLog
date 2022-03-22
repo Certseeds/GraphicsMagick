@@ -1,3 +1,9 @@
+2022-03-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/jxl.c (ReadJXLImage): Added patch from Tobias Mark to
+        optimize EOF detection if the input file size is known.  Avoids
+        waiting for ReadBlob() to report EOF.
+
 2022-03-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * Magick++/lib/Magick++/Include.h: Support 'ReadResource'.

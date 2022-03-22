@@ -432,6 +432,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   MagickBool
     isLinear = MagickFalse;
 
+  magick_off_t
+    blob_len = 0;
+
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
@@ -472,13 +475,17 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   if (JxlDecoderSubscribeEvents(jxl,
                                 (JxlDecoderStatus)(image_info->ping == MagickTrue
                                                    ? JXL_DEC_BASIC_INFO
-                                                   : JXL_DEC_BASIC_INFO | JXL_DEC_FULL_IMAGE | JXL_DEC_COLOR_ENCODING)
+                                                   : JXL_DEC_BASIC_INFO |
+                                                   JXL_DEC_FULL_IMAGE |
+                                                   JXL_DEC_COLOR_ENCODING)
                                 ) != JXL_DEC_SUCCESS)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
   in_buf=MagickAllocateResourceLimitedArray(unsigned char *,in_len,sizeof(*in_buf));
   if (in_buf == (unsigned char *) NULL)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
+  blob_len = GetBlobSize(image);
 
   status=JXL_DEC_NEED_MORE_INPUT;
   while (status != JXL_DEC_ERROR && status != JXL_DEC_SUCCESS)
@@ -497,6 +504,14 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             if (count == 0)
               ThrowJXLReaderException(CorruptImageError, UnexpectedEndOfFile, image);
             status = JxlDecoderSetInput(jxl,(const uint8_t *) in_buf, (size_t) count);
+            if (blob_len > 0)
+              {
+                /* If file size is known pass the info about the last block,
+                   to the decoder. Note that the call is currently optional */
+                blob_len -= count;
+                if (blob_len == 0)
+                  JxlDecoderCloseInput(jxl);
+              }
             break;
           }
         case JXL_DEC_BASIC_INFO:
