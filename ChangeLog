@@ -1,5 +1,7 @@
 2022-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * version.sh: Prepare for 1.3.38 release.
+
         * Makefile.am (release, snapshot): Generate SHA-256 checksums as a
         by-product of 'make snapshot' or 'make release'.
 

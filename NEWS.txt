@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.38 (?? ??, 2022)
+1.3.38 (March 26, 2022)
 ==========================
 
 Special Issues:
