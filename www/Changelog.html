@@ -37,11 +37,16 @@
 
 <p>2022-03-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/miff.c (ReadMIFFImage): Validate claimed bzip2-compressed
+<p>* Makefile.am (release, snapshot): Generate SHA-256 checksums as a
+by-product of 'make snapshot' or 'make release'.</p>
+<p>* www/download.rst: Add documentation regaring SHA-256 checksums.</p>
+<p>* NEWS.txt: Update the news again.</p>
+<p>* coders/miff.c (ReadMIFFImage): Validate claimed bzip2-compressed
 row length prior to reading data into fixed size buffer.
 Addresses SourceForge bug #664 &quot;[bug]Heap buffer overflow when
 parsing MIFF&quot;.  This severe bug only impacts builds with BZLIB
-support.</blockquote>
+support.</p>
+</blockquote>
 <p>2022-03-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * coders/jxl.c (ReadJXLImage): Added patch from Tobias Mark to

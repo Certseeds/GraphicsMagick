@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to March 22, 2022</p>
+<p>This file was last updated to reflect changes up to March 26, 2022</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -125,21 +125,25 @@ the oss-fuzz issues list for details.</li>
 </ul>
 <p>Bug fixes:</p>
 <ul class="simple">
-<li>Fixed portability issue related to 'sed' which broke
-utilities/tests/convert.tap test script.</li>
-<li>WPG: Fix incorrect TrX and TrY elements in CTM.</li>
-<li>JNG: Fixes to error handling to avoid temporary file leaks and
-avoiding returning a broken image.</li>
-<li>JPEG: Always store embedded profiles in image, even if in 'ping' mode.</li>
-<li>MAT: Change from using 'int' for sizes/offsets to using 'size_t' and
-check all related calculations for overload.</li>
-<li>PICT: Fixed a heap overflow.</li>
-<li>MogrifyImage() and Magick::Image::trim(): Trim requires NorthWestGravity.</li>
-<li>PerlMagick: Fix issue that image fill attribute had its opacity
-reset to transparent so it could not be usefully set at image scope.</li>
-<li>Documentation generator scripts in 'doc' directory now produce
+<li>Documentation: Generator scripts in 'doc' directory now produce
 similar results using GNU sed and Solaris/Illumos sed and don't
 produce warnings.</li>
+<li>JNG: Fixes to error handling to avoid temporary file leaks and
+avoiding returning a broken image.</li>
+<li>JPEG: Always store embedded profiles in image, even if in 'ping'
+mode.</li>
+<li>MAT: Change from using 'int' for sizes/offsets to using 'size_t' and
+check all related calculations for overload.</li>
+<li>MIFF: Fix heap buffer overflow which may be provoked in builds with
+BZLIB support.</li>
+<li>MogrifyImage() and Magick::Image::trim(): Trim requires
+NorthWestGravity.</li>
+<li>PICT: Fixed a heap overflow.</li>
+<li>PerlMagick: Fix issue that image fill attribute had its opacity
+reset to transparent so it could not be usefully set at image scope.</li>
+<li>Test Suite: Fixed portability issue related to 'sed' which broke
+utilities/tests/convert.tap test script.</li>
+<li>WPG: Fix incorrect TrX and TrY elements in CTM.</li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
@@ -152,7 +156,9 @@ compressed files using the --disable-compressed-files option and it
 provides more protections as well.</li>
 <li>Added support for reading HEIF/HEIC format.</li>
 <li>Added support for reading and writing JPEG XL format.</li>
-<li>Support for JasPer 3.0.0 is completed.</li>
+<li>Support for JasPer 3.0.0 is completed.  Upgrading to JasPer 3.0.0 is
+strongly recommended due to its many security fixes and integration
+with GraphicsMagick's resource-limited memory allocator.</li>
 <li>PNG: Support the define png:chunk-malloc-max=limit in order to allow
 reading PNG files which report &quot;chunk data is too large&quot; or to
 reduce the default limit.</li>

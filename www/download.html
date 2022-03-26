@@ -43,7 +43,7 @@
 <li><a class="reference internal" href="#download-sites" id="id1">Download Sites</a></li>
 <li><a class="reference internal" href="#verifying-the-download" id="id2">Verifying The Download</a><ul>
 <li><a class="reference internal" href="#using-a-pgp-key" id="id3">Using a PGP key</a></li>
-<li><a class="reference internal" href="#using-a-sha-1-checksum" id="id4">Using a SHA-1 checksum</a></li>
+<li><a class="reference internal" href="#using-a-sha-256-or-sha-1-checksum" id="id4">Using a SHA-256 or SHA-1 checksum</a></li>
 </ul>
 </li>
 </ul>
@@ -55,13 +55,14 @@ binaries may be downloaded from the <a class="reference external" href="http://s
 This is also where 'snapshot' distribution archives may be found.</p>
 <p>Until recently (December, 2021) GraphicsMagick provided its own ftp
 site for downloads but this has been disabled due to abusive download
-practices and because support for FTP has been removed from popular
-browsers.  This is unfortunate since the same site also provided
-PNG-related files and a libtiff mirror.  The ftp site directory tree
-continues to exist and will be maintained.  If you are an
-administrator of a high-bandwidth ftp or https mirror site and would
-like to provide a GraphicsMagick mirror, please contact <a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;graphicsmagick&#46;org">Bob
-Friesenhahn</a> and we will work something out.</p>
+practices (by using it as the primary download site) and because
+support for FTP has been removed from popular browsers.  This is
+unfortunate since the same site also provided PNG-related files and a
+libtiff mirror.  The ftp site directory tree continues to exist and
+will be maintained.  If you are an administrator of a high-bandwidth
+ftp or https mirror site and would like to provide a GraphicsMagick
+mirror, please contact <a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;graphicsmagick&#46;org">Bob Friesenhahn</a> and we will work something
+out.</p>
 </div>
 <div class="section" id="verifying-the-download">
 <h1><a class="toc-backref" href="#id2">Verifying The Download</a></h1>
@@ -110,22 +111,27 @@ gpg:                 aka &quot;Bob Friesenhahn &lt;bobjfriesenhahn&#64;gmail.com
 gpg:                 aka &quot;[jpeg image of size 4917]&quot; [ultimate]
 </pre>
 </div>
-<div class="section" id="using-a-sha-1-checksum">
-<h2><a class="toc-backref" href="#id4">Using a SHA-1 checksum</a></h2>
+<div class="section" id="using-a-sha-256-or-sha-1-checksum">
+<h2><a class="toc-backref" href="#id4">Using a SHA-256 or SHA-1 checksum</a></h2>
 <p>While verifying distribution files using GnuPG is by far the most
-secure way to validate a release file, you may find SHA-1 checksums in
-a distribution release announcement (e.g. from the
+secure way to validate a release file, you may find SHA-256 or SHA-1
+checksums in a distribution release announcement (e.g. from the
 graphicsmagick-announce list at
 <a class="reference external" href="https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/">https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/</a>
-which you <em>should</em> subscribe to).  In this case you may do:</p>
+which you <em>should</em> subscribe to).  In this case you may do this for a
+SHA-256 checksum:</p>
+<pre class="literal-block">
+sha256sum GraphicsMagick-1.3.37.tar.xz
+</pre>
+<p>and this for a SHA-1 checksum:</p>
 <pre class="literal-block">
 sha1sum GraphicsMagick-1.3.37.tar.xz
 </pre>
-<p>and then compare the generated checksum with the checksum provided in
-the release announcement.  While this is much more secure than doing
-nothing, it does not fully defend against forgery.  If someone is able
-to forge a modified release archive as well as a release announcment,
-then you could be duped!</p>
+<p>and then compare the generated checksum (hex format) with the checksum
+provided in the release announcement.  While this is much more secure
+than doing nothing, it does not fully defend against forgery.  If
+someone is able to forge a modified release archive as well as a
+release announcment, then you could be duped!</p>
 </div>
 </div>
 </div>

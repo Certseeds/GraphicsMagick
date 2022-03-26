@@ -1,5 +1,12 @@
 2022-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * Makefile.am (release, snapshot): Generate SHA-256 checksums as a
+        by-product of 'make snapshot' or 'make release'.
+
+        * www/download.rst: Add documentation regaring SHA-256 checksums.
+
+        * NEWS.txt: Update the news again.
+
         * coders/miff.c (ReadMIFFImage): Validate claimed bzip2-compressed
         row length prior to reading data into fixed size buffer.
         Addresses SourceForge bug #664 "[bug]Heap buffer overflow when

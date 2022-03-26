@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to March 22, 2022
+This file was last updated to reflect changes up to March 26, 2022
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -56,29 +56,34 @@ Security Fixes:
 
 Bug fixes:
 
-* Fixed portability issue related to 'sed' which broke
-  utilities/tests/convert.tap test script.
-
-* WPG: Fix incorrect TrX and TrY elements in CTM.
+* Documentation: Generator scripts in 'doc' directory now produce
+  similar results using GNU sed and Solaris/Illumos sed and don't
+  produce warnings.
 
 * JNG: Fixes to error handling to avoid temporary file leaks and
   avoiding returning a broken image.
 
-* JPEG: Always store embedded profiles in image, even if in 'ping' mode.
+* JPEG: Always store embedded profiles in image, even if in 'ping'
+  mode.
 
 * MAT: Change from using 'int' for sizes/offsets to using 'size_t' and
   check all related calculations for overload.
 
-* PICT: Fixed a heap overflow.
+* MIFF: Fix heap buffer overflow which may be provoked in builds with
+  BZLIB support.
 
-* MogrifyImage() and Magick::Image::trim(): Trim requires NorthWestGravity.
+* MogrifyImage() and Magick::Image::trim(): Trim requires
+  NorthWestGravity.
+
+* PICT: Fixed a heap overflow.
 
 * PerlMagick: Fix issue that image fill attribute had its opacity
   reset to transparent so it could not be usefully set at image scope.
 
-* Documentation generator scripts in 'doc' directory now produce
-  similar results using GNU sed and Solaris/Illumos sed and don't
-  produce warnings.
+* Test Suite: Fixed portability issue related to 'sed' which broke
+  utilities/tests/convert.tap test script.
+
+* WPG: Fix incorrect TrX and TrY elements in CTM.
 
 New Features:
 
@@ -94,7 +99,9 @@ New Features:
 
 * Added support for reading and writing JPEG XL format.
 
-* Support for JasPer 3.0.0 is completed.
+* Support for JasPer 3.0.0 is completed.  Upgrading to JasPer 3.0.0 is
+  strongly recommended due to its many security fixes and integration
+  with GraphicsMagick's resource-limited memory allocator.
 
 * PNG: Support the define png:chunk-malloc-max=limit in order to allow
   reading PNG files which report "chunk data is too large" or to

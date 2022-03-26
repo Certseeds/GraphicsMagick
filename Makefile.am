@@ -393,6 +393,7 @@ snapshot: distcheck
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  rm -f $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  sha256sum $${file} > $${file}.sum ; \
 	done
 	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
 	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.sig " $$f ; done` \
@@ -407,6 +408,7 @@ snapshot: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  sha256sum $${file} > $${file}.sum ; \
 	done
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z*
@@ -464,4 +466,5 @@ release: distcheck
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
 	  rm -f $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  sha256sum $${file} > $${file}.sum ; \
 	done

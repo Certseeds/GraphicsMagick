@@ -21,13 +21,14 @@ This is also where 'snapshot' distribution archives may be found.
 
 Until recently (December, 2021) GraphicsMagick provided its own ftp
 site for downloads but this has been disabled due to abusive download
-practices and because support for FTP has been removed from popular
-browsers.  This is unfortunate since the same site also provided
-PNG-related files and a libtiff mirror.  The ftp site directory tree
-continues to exist and will be maintained.  If you are an
-administrator of a high-bandwidth ftp or https mirror site and would
-like to provide a GraphicsMagick mirror, please contact `Bob
-Friesenhahn`_ and we will work something out.
+practices (by using it as the primary download site) and because
+support for FTP has been removed from popular browsers.  This is
+unfortunate since the same site also provided PNG-related files and a
+libtiff mirror.  The ftp site directory tree continues to exist and
+will be maintained.  If you are an administrator of a high-bandwidth
+ftp or https mirror site and would like to provide a GraphicsMagick
+mirror, please contact `Bob Friesenhahn`_ and we will work something
+out.
 
 Verifying The Download
 ======================
@@ -80,20 +81,25 @@ and you should see output similar to::
   gpg:                 aka "Bob Friesenhahn <bobjfriesenhahn@gmail.com>" [ultimate]
   gpg:                 aka "[jpeg image of size 4917]" [ultimate]
 
-Using a SHA-1 checksum
-----------------------
+Using a SHA-256 or SHA-1 checksum
+---------------------------------
 
 While verifying distribution files using GnuPG is by far the most
-secure way to validate a release file, you may find SHA-1 checksums in
-a distribution release announcement (e.g. from the
+secure way to validate a release file, you may find SHA-256 or SHA-1
+checksums in a distribution release announcement (e.g. from the
 graphicsmagick-announce list at
 https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/
-which you *should* subscribe to).  In this case you may do::
+which you *should* subscribe to).  In this case you may do this for a
+SHA-256 checksum::
+
+  sha256sum GraphicsMagick-1.3.37.tar.xz
+
+and this for a SHA-1 checksum::
 
   sha1sum GraphicsMagick-1.3.37.tar.xz
 
-and then compare the generated checksum with the checksum provided in
-the release announcement.  While this is much more secure than doing
-nothing, it does not fully defend against forgery.  If someone is able
-to forge a modified release archive as well as a release announcment,
-then you could be duped!
+and then compare the generated checksum (hex format) with the checksum
+provided in the release announcement.  While this is much more secure
+than doing nothing, it does not fully defend against forgery.  If
+someone is able to forge a modified release archive as well as a
+release announcment, then you could be duped!
