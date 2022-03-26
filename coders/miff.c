@@ -1844,9 +1844,20 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       else
                         {
                           length=ReadBlobMSBLong(image);
+                          if (image->logging)
+                            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                                  "length = %"MAGICK_SIZE_T_F"u",
+                                                  (MAGICK_SIZE_T) length);
+                          if ((length == 0) || (length > compressed_length))
+                            {
+                              (void) BZ2_bzDecompressEnd(&bzip_info);
+                              ThrowMIFFReaderException(CorruptImageError,UnableToUncompressImage,
+                                                       image);
+                            }
                           bzip_info.avail_in=(unsigned int) ReadBlob(image,length,bzip_info.next_in);
                           if ((size_t) bzip_info.avail_in != length)
                             {
+                              (void) BZ2_bzDecompressEnd(&bzip_info);
                               ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
                                                    image);
                             }

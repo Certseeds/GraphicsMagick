@@ -1,3 +1,11 @@
+2022-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/miff.c (ReadMIFFImage): Validate claimed bzip2-compressed
+        row length prior to reading data into fixed size buffer.
+        Addresses SourceForge bug #664 "[bug]Heap buffer overflow when
+        parsing MIFF".  This severe bug only impacts builds with BZLIB
+        support.
+
 2022-03-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/jxl.c (ReadJXLImage): Added patch from Tobias Mark to
