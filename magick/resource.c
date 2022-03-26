@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -96,15 +96,16 @@ typedef struct _ResourceInfo
 static ResourceInfo
   resource_info[] =
   {
-    { "",       "",  "",                    0, 0,  ResourceInfinity, AbsoluteLimit, 0 },
-    { "disk",   "B", "MAGICK_LIMIT_DISK",   0, 0,  ResourceInfinity, SummationLimit, 0 },
-    { "files",  "",  "MAGICK_LIMIT_FILES",  0, 32, 256,              SummationLimit, 0 },
-    { "map",    "B", "MAGICK_LIMIT_MAP",    0, 0,  ResourceInfinity, SummationLimit, 0 },
-    { "memory", "B", "MAGICK_LIMIT_MEMORY", 0, 0,  ResourceInfinity, SummationLimit, 0 },
-    { "pixels", "P", "MAGICK_LIMIT_PIXELS", 0, 1,  ResourceInfinity, AbsoluteLimit, 0  },
-    { "threads", "", "OMP_NUM_THREADS",     1, 1,  ResourceInfinity, AbsoluteLimit, 0  },
-    { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,  PIXEL_LIMIT,      AbsoluteLimit, 0  },
-    { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,  PIXEL_LIMIT,      AbsoluteLimit, 0  }
+    { "",       "",  "",                    0, 0,     ResourceInfinity, AbsoluteLimit, 0  },
+    { "disk",   "B", "MAGICK_LIMIT_DISK",   0, 0,     ResourceInfinity, SummationLimit, 0 },
+    { "files",  "",  "MAGICK_LIMIT_FILES",  0, 32,    256,              SummationLimit, 0 },
+    { "map",    "B", "MAGICK_LIMIT_MAP",    0, 0,     ResourceInfinity, SummationLimit, 0 },
+    { "memory", "B", "MAGICK_LIMIT_MEMORY", 0, 0,     ResourceInfinity, SummationLimit, 0 },
+    { "pixels", "P", "MAGICK_LIMIT_PIXELS", 0, 1,     ResourceInfinity, AbsoluteLimit, 0  },
+    { "threads", "", "OMP_NUM_THREADS",     1, 1,     ResourceInfinity, AbsoluteLimit, 0  },
+    { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,     PIXEL_LIMIT,      AbsoluteLimit, 0  },
+    { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,     PIXEL_LIMIT,      AbsoluteLimit, 0  },
+    { "read",   "B", "MAGICK_LIMIT_READ",   0, 4096,  ResourceInfinity, AbsoluteLimit, 0  }
   };
 
 /*
@@ -411,7 +412,8 @@ MagickExport void InitializeMagickResources(void)
     max_pixels=-1,
     max_threads=1,
     max_width=-1,
-    max_height=-1;
+    max_height=-1,
+    max_read=-1;
 
   size_t
     index;
@@ -610,6 +612,9 @@ MagickExport void InitializeMagickResources(void)
     if ((envp=getenv("MAGICK_LIMIT_HEIGHT")))
       max_height=MagickSizeStrToInt64(envp,1024);
 
+    if ((envp=getenv("MAGICK_LIMIT_READ")))
+      max_read=MagickSizeStrToInt64(envp,1024);
+
 #if defined(HAVE_OPENMP)
     max_threads=omp_get_num_procs();
     (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
@@ -713,6 +718,8 @@ MagickExport void InitializeMagickResources(void)
     (void) SetMagickResourceLimit(WidthResource,max_width);
   if (max_height >= 0)
     (void) SetMagickResourceLimit(HeightResource,max_height);
+  if (max_read >= 0)
+    (void) SetMagickResourceLimit(ReadResource,max_read);
 }
 
 /*

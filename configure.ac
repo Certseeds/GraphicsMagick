@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2021 GraphicsMagick Group
+# Copyright (C) 2003-2022 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -689,6 +689,16 @@ if test "$with_webp" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-webp=$with_webp "
 fi
 
+# Disable HEIF.
+AC_ARG_WITH([heif],
+        AS_HELP_STRING([--without-heif],
+                             [disable HEIF support]),
+        [with_heif=$withval],
+        [with_heif='yes'])
+if test "$with_heif" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-heif=$with_heif "
+fi
+
 # Disable JPEG.
 AC_ARG_WITH([jpeg],
               AS_HELP_STRING([--without-jpeg],
@@ -707,6 +717,16 @@ AC_ARG_WITH([jp2],
               [with_jp2='yes'])
 if test "$with_jp2" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jp2=$with_jp2 "
+fi
+
+# Disable JXL
+AC_ARG_WITH([jxl],
+              AS_HELP_STRING([--without-jxl],
+                             [disable JPEG-XL support]),
+              [with_jxl=$withval],
+              [with_jxl='yes'])
+if test "$with_jxl" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-jxl=$with_jxl "
 fi
 
 # Disable LCMS2.
@@ -2221,6 +2241,8 @@ then
     passed=0
     AC_CHECK_HEADER([jasper/jasper.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     AC_CHECK_LIB([jasper],[jas_stream_fopen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([jasper],[jas_image_strtofmt],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([jasper],[jas_image_decode],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
     AC_MSG_CHECKING([if JPEG version 2 support package is complete])
     if test $passed -gt 0
     then
@@ -2234,7 +2256,7 @@ then
         AC_DEFINE([HasJP2],[1],[Define if you have JPEG version 2 "Jasper" library])
         AC_MSG_RESULT([yes])
         have_jp2='yes'
-        AC_CHECK_FUNCS([jas_initialize jp2_decode jpc_decode pgx_decode])
+        AC_CHECK_FUNCS([jas_init_library])
     fi
     else
     AC_MSG_RESULT([no])
@@ -2500,6 +2522,50 @@ AM_CONDITIONAL([HasJBIG],[test "$have_jbig" = 'yes'])
 AC_SUBST([LIB_JBIG])
 
 #
+# Check for JXL
+#
+have_jxl='no'
+LIB_JXL=''
+if test "$with_jxl" != 'no'
+then
+    AC_MSG_CHECKING([for JXL support ])
+    AC_MSG_RESULT()
+    failed=0
+    passed=0
+    AC_LANG_PUSH([C++])
+    AC_CHECK_HEADER([jxl/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    # jxl always requires hwy/brotli no extra test needed
+    AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lhwy -lbrotlidec -lbrotlienc])
+    AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    # Testing for decoder should also cover encoder
+    AC_CHECK_LIB([brotlidec],[BrotliDecoderVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_LANG_POP
+    AC_MSG_CHECKING([if JXL package is complete])
+    if test $passed -gt 0
+    then
+    if test $failed -gt 0
+    then
+        AC_MSG_RESULT([no -- some components failed test])
+        have_jxl='no (failed tests)'
+    else
+        # JXL is a C++ Lib so requires linking with stdc++.
+        # TODO: A better solution would be to tell automake to do any linking with
+        # c++, but I can't figure out a way to get this working.
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lstdc++'
+        LIBS="$LIB_JXL $LIBS"
+        AC_DEFINE([HasJXL],[1],[Define if you have JXL library])
+        AC_MSG_RESULT([yes])
+        have_jxl='yes'
+        PERLMAINCC="$CXX"
+    fi
+    else
+        AC_MSG_RESULT([no])
+    fi
+fi
+AM_CONDITIONAL([HasJXL],[test "$have_jxl" = 'yes'])
+AC_SUBST([LIB_JXL])
+
+#
 # Check for WEBP
 #
 have_webp='no'
@@ -2534,6 +2600,40 @@ then
 fi
 AM_CONDITIONAL([HasWEBP],[test "$have_webp" = 'yes'])
 AC_SUBST([LIB_WEBP])
+
+# Check for HEIF
+#
+have_heif='no'
+LIB_HEIF=''
+if test "$with_heif" != 'no'
+then
+    AC_MSG_CHECKING([for HEIF support ])
+    AC_MSG_RESULT()
+    failed=0
+    passed=0
+    AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    # heif always requires hwy no extra test needed
+    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lde265])
+    AC_MSG_CHECKING([if HEIF package is complete])
+    if test $passed -gt 0
+    then
+    if test $failed -gt 0
+    then
+        AC_MSG_RESULT([no -- some components failed test])
+        have_heif='no (failed tests)'
+    else
+        LIB_HEIF='-lheif -lde265'
+        LIBS="$LIB_HEIF $LIBS"
+        AC_DEFINE([HasHEIF],[1],[Define if you have HEIF library])
+        AC_MSG_RESULT([yes])
+        have_heif='yes'
+    fi
+    else
+        AC_MSG_RESULT([no])
+    fi
+fi
+AM_CONDITIONAL([HasHEIF],[test "$have_heif" = 'yes'])
+AC_SUBST([LIB_HEIF])
 
 #
 # Check for XML
@@ -2679,6 +2779,8 @@ then
         AC_DEFINE([HasXML],[1],[Define if you have XML library])
         AC_MSG_RESULT([yes])
         have_xml='yes'
+        AC_CHECK_FUNCS([xmlNanoHTTPOpen \
+                        xmlNanoFTPNewCtxt])
     fi
     else
         AC_MSG_RESULT([no])
@@ -3053,10 +3155,14 @@ if test "$MAINT" == '' ; then
    # If this script is found, it is used to copy files using the script-provided
    # mechanism due to 'snapshot' target.
    AC_PATH_PROGS([GRAPHICSMAGICK_SNAPSHOT_COPY], [graphicsmagick_snapshot_copy])
+
+   # Search for a GnuPG program
+   AC_CHECK_PROGS([GPG], [gpg gpg2 gpg1], [false])
 else
    RST2HTML=''
    TXT2HTML=''
-   GRAPHICSMAGICK_SNAPSHOT_COPY=''
+   GRAPHICSMAGICK_SNAPSHOT_COPY='false'
+   GPG='false'
 fi
 
 AC_SUBST([RST2HTML])
@@ -3066,7 +3172,10 @@ AC_SUBST([TXT2HTML])
 AM_CONDITIONAL([HasTXT2HTML],[test "x${TXT2HTML}" != 'x'])
 
 AC_SUBST([GRAPHICSMAGICK_SNAPSHOT_COPY])
-AM_CONDITIONAL([HasGRAPHICSMAGICK_SNAPSHOT_COPY],[test "x${GRAPHICSMAGICK_SNAPSHOT_COPY}" != 'x'])
+AM_CONDITIONAL([HasGRAPHICSMAGICK_SNAPSHOT_COPY],[test "x${GRAPHICSMAGICK_SNAPSHOT_COPY}" != 'xfalse'])
+
+AC_SUBST([GPG])
+AM_CONDITIONAL([HasGPG],[test "x${GPG}" != 'xfalse'])
 
 #
 # Test for font directories
@@ -3565,9 +3674,17 @@ if test "$have_jbig"   = 'yes' ; then
    DELEGATES="$DELEGATES jbig"
    MAGICK_FEATURES="$MAGICK_FEATURES JBIG"
 fi
+if test "$have_jxl"   = 'yes' ; then
+   DELEGATES="$DELEGATES jxl"
+   MAGICK_FEATURES="$MAGICK_FEATURES JXL"
+fi
 if test "$have_webp"   = 'yes' ; then
    DELEGATES="$DELEGATES webp"
    MAGICK_FEATURES="$MAGICK_FEATURES WEBP"
+fi
+if test "$have_heif"   = 'yes' ; then
+   DELEGATES="$DELEGATES heif"
+   MAGICK_FEATURES="$MAGICK_FEATURES HEIF"
 fi
 if test "$have_png$have_jpeg" = 'yesyes' ; then
    DELEGATES="$DELEGATES jng"
@@ -3694,7 +3811,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_JXL $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 AC_SUBST([MAGICK_DEP_LIBS])
@@ -3821,6 +3938,7 @@ printf "Windows GDI32     --with-gdi32=$with_gdi32      \t$have_gdi32\n"
 printf "JBIG              --with-jbig=$with_jbig        \t$have_jbig\n"
 printf "JPEG v1           --with-jpeg=$with_jpeg        \t$have_jpeg\n"
 printf "JPEG-2000         --with-jp2=$with_jp2          \t$have_jp2\n"
+printf "JPEG-XL           --with-jxl=$with_jxl          \t$have_jxl\n"
 printf "LCMS v2           --with-lcms2=$with_lcms2        \t$have_lcms2\n"
 # printf "MPEG v2           --with-mpeg2=$with_mpeg2    \t$have_mpeg2\n"
 printf "LZMA              --with-lzma=$with_lzma        \t$have_lzma\n"
@@ -3838,6 +3956,7 @@ printf "Solaris umem      --with-umem=$with_umem        \t$have_umem\n"
 printf "TIFF              --with-tiff=$with_tiff        \t$have_tiff\n"
 printf "TRIO              --with-trio=$with_trio        \t$have_trio\n"
 printf "WEBP              --with-webp=$with_webp        \t$have_webp\n"
+printf "HEIF              --with-heif=$with_heif        \t$have_heif\n"
 result_windows_font_dir='none'
 if test "${windows_font_dir}x" != 'x'
 then

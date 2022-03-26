@@ -55,36 +55,38 @@ software was configured and the host system.</p>
 
 <p>To display the version information:</p>
 
-<pre>
-  GraphicsMagick 1.3.27a 2017-12-11 Q16 http://www.GraphicsMagick.org/
-  Copyright (C) 2002-2020 GraphicsMagick Group.
+<pp><pre>
+  GraphicsMagick 1.3.37 2021-12-12 Q16 http://www.GraphicsMagick.org/
+  Copyright (C) 2002-2021 GraphicsMagick Group.
   Additional copyrights and licenses apply to this software.
   See http://www.GraphicsMagick.org/www/Copyright.html for details.
 
   Feature Support:
-    Native Thread Safe       yes
-    Large Files (> 32 bit)   yes
-    Large Memory (> 32 bit)  yes
-    BZIP                     yes
-    DPS                      no
-    FlashPix                 no
-    FreeType                 yes
-    Ghostscript (Library)    no
-    JBIG                     yes
-    JPEG-2000                yes
-    JPEG                     yes
-    Little CMS               yes
-    Loadable Modules         no
-    OpenMP                   yes (201307)
-    PNG                      yes
-    TIFF                     yes
-    TRIO                     no
-    UMEM                     no
-    WebP                     yes
-    WMF                      yes
-    X11                      yes
-    XML                      yes
-    ZLIB                     yes
+    Native Thread Safe         yes
+    Large Files (> 32 bit)     yes
+    Large Memory (> 32 bit)    yes
+    BZIP                       yes
+    DPS                        no
+    FlashPix                   no
+    FreeType                   yes
+    Ghostscript (Library)      no
+    JBIG                       yes
+    JPEG-2000                  yes
+    JPEG                       yes
+    Little CMS                 yes
+    Loadable Modules           no
+    Solaris mtmalloc           no
+    Google perftools tcmalloc  no
+    OpenMP                     yes (201511 "4.5")
+    PNG                        yes
+    TIFF                       yes
+    TRIO                       no
+    Solaris umem               no
+    WebP                       yes
+    WMF                        yes
+    X11                        yes
+    XML                        yes
+    ZLIB                       yes
 
   Host type: x86_64-unknown-linux-gnu
 
@@ -100,7 +102,7 @@ software was configured and the host system.</p>
     LDFLAGS  = ...
     LIBS     = ...
 
-</pre>
+</pre></pp>
 
 </sect>
 <back>

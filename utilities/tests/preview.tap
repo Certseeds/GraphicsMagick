@@ -17,6 +17,6 @@ for preview in ${previews}
 do
     OUTFILE="Preview${preview}_out.miff"
     rm -f ${OUTFILE}
-    test_command_fn "${preview}" ${GM} convert ${CONVERT_FLAGS} ${MODEL_MIFF} -preview ${preview} "preview:${OUTFILE}"
+    test_command_fn "${preview}" ${GM} convert ${CONVERT_FLAGS} ${MODEL_MIFF} -preview ${preview}  -compress ${MIFF_COMPRESS} "preview:${OUTFILE}"
 done
 :

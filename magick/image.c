@@ -3730,14 +3730,16 @@ StripImage(Image *image)
 %                                                                             %
 %                                                                             %
 %                                                                             %
-+   S y n c I m a g e                                                         %
+%   S y n c I m a g e                                                         %
 %                                                                             %
 %                                                                             %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method SyncImage initializes the red, green, and blue intensities of each
-%  pixel as defined by the colormap index.
+%  pixel as defined by the colormap index and the current image colormap.
+%  This is a helper function to update the DirectClass representation of
+%  the image pixels after the PseudoClass representation has been updated.
 %
 %  The format of the SyncImage method is:
 %

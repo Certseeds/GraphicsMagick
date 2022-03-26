@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -214,17 +214,17 @@ ColorizeImagePixelsCB(void *mutable_data,                /* User provided mutabl
 
   for (i=0; i < npixels; i++)
     {
-      new_pixels[i].red=(Quantum)
-        ((source_pixels[i].red*(100.0-options.amount.red)+
+      new_pixels[i].red=RoundDoubleToQuantum
+        (((double) source_pixels[i].red*(100.0-options.amount.red)+
           options.color.red*options.amount.red)/100.0);
-      new_pixels[i].green=(Quantum)
-        ((source_pixels[i].green*(100.0-options.amount.green)+
+      new_pixels[i].green=RoundDoubleToQuantum
+        (((double) source_pixels[i].green*(100.0-options.amount.green)+
           options.color.green*options.amount.green)/100.0);
-      new_pixels[i].blue=(Quantum)
-        ((source_pixels[i].blue*(100.0-options.amount.blue)+
+      new_pixels[i].blue=RoundDoubleToQuantum
+        (((double) source_pixels[i].blue*(100.0-options.amount.blue)+
           options.color.blue*options.amount.blue)/100.0);
-      new_pixels[i].opacity=(Quantum)
-        ((source_pixels[i].opacity*(100.0-options.amount.opacity)+
+      new_pixels[i].opacity=RoundDoubleToQuantum
+        (((double) source_pixels[i].opacity*(100.0-options.amount.opacity)+
           options.color.opacity*options.amount.opacity)/100.0);
     }
 

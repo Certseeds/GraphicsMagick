@@ -8,11 +8,6 @@ Magick++ API for GraphicsMagick
 
 .. _GraphicsMagick : ../index.html
 .. _ChangeLog : ChangeLog.html
-.. _`Standard Template Library` : http://www.sgi.com/tech/stl/
-.. _deque : http://www.sgi.com/tech/stl/Deque.html
-.. _vector : http://www.sgi.com/tech/stl/Vector.html
-.. _list : http://www.sgi.com/tech/stl/List.html
-.. _map : http://www.sgi.com/tech/stl/Map.html
 .. _ftp : ../download.html
 .. _Mercurial: ../Hg.html
 .. _PerlMagick : ../perl.html
@@ -52,10 +47,10 @@ deleted. The image objects support value (rather than pointer) semantics
 so it is trivial to support multiple generations of an image in memory at
 one time.
 
-*Magick++* provides integrated support for the `Standard Template
-Library`_ (`STL`) which is part of the standard C++ language so that
-the powerful containers available (e.g. deque_, vector_, list_, and
-map_) can be used to write programs similar to those possible with
+*Magick++* provides integrated support for the Standard Template
+Library (STL) which is part of the standard C++ language so that
+the powerful containers available (e.g. deque, vector, list, and
+map) can be used to write programs similar to those possible with
 PERL & PerlMagick_. STL-compatible template versions of
 GraphicsMagick's list-style operations are provided so that operations
 may be performed on multiple images stored in STL containers.
@@ -222,4 +217,4 @@ regarding usage should be directed to `Bob Friesenhahn`_.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| Bob Friesenhahn 1999 - 2021
+Copyright |copy| Bob Friesenhahn 1999 - 2022

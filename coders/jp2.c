@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -92,6 +92,23 @@
 #    undef HAVE_PGX_DECODE
 #  endif
 
+#if defined(HAVE_JAS_INIT_LIBRARY)
+# define HAVE_JAS_STREAM_IO_V3
+#endif
+
+#if 0
+/* Development JasPer 3.0.0 jas_init_library() is not yet ready for our purposes */
+#if !(defined(MAGICK_ENABLE_JAS_INIT_LIBRARY) && MAGICK_ENABLE_JAS_INIT_LIBRARY)
+#undef HAVE_JAS_INIT_LIBRARY
+#endif /* if !(defined(MAGICK_ENABLE_JAS_INIT_LIBRARY) && MAGICK_ENABLE_JAS_INIT_LIBRARY) */
+#endif
+
+#if defined(HAVE_PTHREAD) || defined(MSWINDOWS) || defined(HAVE_OPENMP)
+#  define JP2_HAVE_THREADS 1
+#else
+#  define JP2_HAVE_THREADS 0
+#endif
+
 
 /*
   Forward declarations.
@@ -100,33 +117,44 @@ static unsigned int
   WriteJP2Image(const ImageInfo *,Image *);
 
 static MagickBool jasper_initialized=MagickFalse;
-static const char jasper_options[][11] =
+static const char jasper_enc_options[][11] =
   {
+    "cblkheight",
+    "cblkwidth",
+    "debug",
+    "eph",
+    "ilyrrates",
     "imgareatlx",
     "imgareatly",
+    "lazy",
+    "mode",
+    "nomct",
+    "numgbits",
+    "numrlvls",
+    "prcheight",
+    "prcwidth",
+    "prg",
+    "pterm",
+    "rate",
+    "resetprob",
+    "segsym",
+    "sop",
+    "termall",
     "tilegrdtlx",
     "tilegrdtly",
-    "tilewidth",
     "tileheight",
-    "prcwidth",
-    "prcheight",
-    "cblkwidth",
-    "cblkheight",
-    "mode",
-    "ilyrrates",
-    "prg",
-    "nomct",
-    "numrlvls",
-    "sop",
-    "eph",
-    "lazy",
-    "rate",
-    "termall",
-    "segsym",
-    "vcausal",
-    "pterm",
-    "resetprob",
-    "numgbits"
+    "tilewidth",
+    "vcausal"
+  };
+
+static const char jasper_dec_options[][12] =
+  {
+    "allow_trunc",
+    "debug",
+    "max_samples",
+    "maxlyrs",
+    "maxpkts",
+    "version"
   };
 
 
@@ -303,57 +331,66 @@ typedef struct _StreamManager
   int (*read_)(jas_stream_obj_t *obj, char *buf, unsigned cnt);
   int (*write_)(jas_stream_obj_t *obj, const char *buf, unsigned cnt);
 
+  In Jasper 3.0.0 the interface changed again:
+  ssize_t (*read_)(jas_stream_obj_t *obj, char *buf, size_t cnt);
+  ssize_t (*write_)(jas_stream_obj_t *obj, const char *buf, size_t cnt);
+
   We have yet to find a useful way to determine the version of the
   JasPer library using the C pre-processor.
  */
-#if !defined(MAGICK_JP2_OLD_STREAM_INTERFACE)
-#  define MAGICK_JP2_OLD_STREAM_INTERFACE 0
-#endif /* if !defined(MAGICK_JP2_OLD_STREAM_INTERFACE) */
 
-#if MAGICK_JP2_OLD_STREAM_INTERFACE
-static int BlobRead(jas_stream_obj_t *object,char *buffer,const int length)
+/* Read characters from a file object. */
+/* ssize_t (*read_)(jas_stream_obj_t *obj, char *buf, size_t cnt); */
+#if defined(HAVE_JAS_STREAM_IO_V3)
+static ssize_t BlobRead(jas_stream_obj_t *obj, char *buf, size_t cnt)
 #else
-static int BlobRead(jas_stream_obj_t *object,char *buffer,unsigned length)
+static int BlobRead(jas_stream_obj_t *obj, char *buf, unsigned cnt)
 #endif
 {
   size_t
     count;
 
   StreamManager
-    *source = (StreamManager *) object;
+    *source = (StreamManager *) obj;
 
-  count=ReadBlob(source->image,(size_t) length,(void *) buffer);
-  return ((int) count);
+  count=ReadBlob(source->image,(size_t) cnt,(void *) buf);
+  return (count);
 }
 
-#if MAGICK_JP2_OLD_STREAM_INTERFACE
-static int BlobWrite(jas_stream_obj_t *object,char *buffer,const int length)
+/* Write characters to a file object. */
+/* ssize_t (*write_)(jas_stream_obj_t *obj, const char *buf, size_t cnt); */
+#if defined(HAVE_JAS_STREAM_IO_V3)
+static ssize_t  BlobWrite(jas_stream_obj_t *obj, const char *buf, size_t cnt)
 #else
-static int BlobWrite(jas_stream_obj_t *object,const char *buffer,unsigned length)
+static int BlobWrite(jas_stream_obj_t *obj, const char *buf, unsigned cnt)
 #endif
 {
   size_t
     count;
 
   StreamManager
-    *source = (StreamManager *) object;
+    *source = (StreamManager *) obj;
 
-  count=WriteBlob(source->image,(size_t) length,(void *) buffer);
-  return((int) count);
+  count=WriteBlob(source->image,(size_t) cnt,(void *) buf);
+  return(count);
 }
 
-static long BlobSeek(jas_stream_obj_t *object,long offset,int origin)
+/* Set the position for a file object. */
+/* long (*seek_)(jas_stream_obj_t *obj, long offset, int origin); */
+static long BlobSeek(jas_stream_obj_t *obj,long offset,int origin)
 {
   StreamManager
-    *source = (StreamManager *) object;
+    *source = (StreamManager *) obj;
 
   return (SeekBlob(source->image,offset,origin));
 }
 
-static int BlobClose(jas_stream_obj_t *object)
+/* Close a file object. */
+/* int (*close_)(jas_stream_obj_t *obj); */
+static int BlobClose(jas_stream_obj_t *obj)
 {
   StreamManager
-    *source = (StreamManager *) object;
+    *source = (StreamManager *) obj;
 
   CloseBlob(source->image);
   jas_free(source);
@@ -377,6 +414,8 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
   stream->obj_=(jas_stream_obj_t *) jas_malloc(sizeof(StreamManager));
   if (stream->obj_ == (jas_stream_obj_t *) NULL)
     {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "jas_malloc() failed!");
       jas_free(stream);
       return((jas_stream_t *) NULL);
     }
@@ -392,65 +431,141 @@ static jas_stream_t *JP2StreamManager(jas_stream_ops_t *stream_ops, Image *image
   return(stream);
 }
 
-#define ThrowJP2ReaderException(code_,reason_,image_) \
-{ \
-  for (component=0; component < (long) number_components; component++) \
-    MagickFreeResourceLimitedMemory(channel_lut[component]); \
-  if (pixels) \
-    jas_matrix_destroy(pixels); \
-  if (jp2_stream) \
-    (void) jas_stream_close(jp2_stream); \
-  if (jp2_image) \
-    jas_image_destroy(jp2_image); \
-  ThrowReaderException(code_,reason_,image_); \
-}
+#if defined(HAVE_JAS_INIT_LIBRARY)
+#  define JAS_CLEANUP_THREAD() jas_cleanup_thread()
+#else
+#  define JAS_CLEANUP_THREAD()
+#endif
+
+#define ThrowJP2ReaderException(code_,reason_,image_)                   \
+  {                                                                     \
+    for (component=0; component < (long) number_components; component++) \
+      MagickFreeResourceLimitedMemory(channel_lut[component]);          \
+    if (pixels)                                                         \
+      jas_matrix_destroy(pixels);                                       \
+    if (jp2_stream)                                                     \
+      (void) jas_stream_close(jp2_stream);                              \
+    if (jp2_image)                                                      \
+      jas_image_destroy(jp2_image);                                     \
+    MagickFreeMemory(options);                                          \
+    JAS_CLEANUP_THREAD();                                               \
+    ThrowReaderException(code_,reason_,image_);                         \
+  }
+
+#define ThrowJP2WriterException(code_,reason_,image_)   \
+  {                                                     \
+    JAS_CLEANUP_THREAD();                               \
+    ThrowWriterException(code_,reason_,image_);         \
+  }
 
 /*
   Initialize Jasper
 */
-#if HAVE_JAS_INITIALIZE
+#if HAVE_JAS_INIT_LIBRARY
 static void *alloc_rlm(struct jas_allocator_s *allocator, size_t size)
 {
+  char *p;
   (void) allocator;
   /* JasPer expects its allocator to return non-null for zero size */
-  return _MagickAllocateResourceLimitedMemory(size == 0 ? 1 : size);
+  p=_MagickAllocateResourceLimitedMemory(size == 0 ? 1 : size);
+  /* fprintf(stderr,"alloc_rlm(%p, %zu) -> %p\n", allocator, size, p); */
+  return p;
 }
 static void free_rlm(struct jas_allocator_s *allocator, void *pointer)
 {
   (void) allocator;
+  /* fprintf(stderr,"free_rlm(%p, %p\n", allocator, pointer); */
   _MagickFreeResourceLimitedMemory(pointer);
 }
 static void *realloc_rlm(struct jas_allocator_s *allocator, void *pointer,
                          size_t new_size)
 {
+  char *p;
   (void) allocator;
-  return _MagickReallocateResourceLimitedMemory(pointer,1,new_size,0);
+  p =_MagickReallocateResourceLimitedMemory(pointer,1,new_size,0);
+  /* fprintf(stderr,"realloc_rlm(%p, %p, %zu) -> %p\n", allocator, pointer, new_size, p); */
+  return p;
 }
-#endif /* if HAVE_JAS_INITIALIZE */
-static void initialize_jasper(void)
+#endif /* if HAVE_JAS_INIT_LIBRARY */
+static MagickPassFail initialize_jasper(ExceptionInfo *exception)
 {
+  (void) exception;
   if (!jasper_initialized)
     {
-#if HAVE_JAS_INITIALIZE
+#if HAVE_JAS_INIT_LIBRARY
       {
         /* static jas_std_allocator_t allocator; */
         static jas_allocator_t allocator;
+
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Initializing JasPer...");
+        /*
+          Configure the library using the default configuration settings.
+        */
         jas_conf_clear();
-        /* Use our own resource-limited memory allocation functions */
+
+        /*
+          Provide our own resource-limited memory allocation
+          functions.
+
+          See src/libjasper/include/jasper/jas_malloc.h
+        */
+
+        /*
+          Function to clean up the allocator when no longer needed.
+          The allocator cannot be used after the clean-up operation is performed.
+          This function pointer may be null, in which case the clean-up operation
+          is treated as a no-op.
+        */
         allocator.cleanup = 0;
+
+        /*
+          Function to allocate memory.
+          This function should have behavior similar to malloc.
+        */
         allocator.alloc = alloc_rlm;
+
+        /*
+          Function to deallocate memory.
+          This function should have behavior similar to free.
+        */
         allocator.free = free_rlm;
+
+        /*
+          Function to reallocate memory.
+          This function should have behavior similar to realloc.
+        */
         allocator.realloc = realloc_rlm;
         /* jas_std_allocator_init(&allocator); */ /* Uses JasPer allocators */
         jas_conf_set_allocator(&allocator); /* Assigns jas_allocator_t to jas_conf.allocator in library */
         /* jas_conf_set_debug_level(cmdopts->debug); */
-        /* jas_conf_set_max_mem(cmdopts->max_mem); */ /* Only pertains to JasPer allocators */
 
-        if (jas_initialize() == 0)
+        /*
+          Tell JasPer how much memory it could ever be allowed to use.
+        */
+        {
+          size_t max_mem_gm = (size_t) GetMagickResourceLimit(MemoryResource);
+          size_t max_mem_jas = jas_get_total_mem_size();
+          if (max_mem_jas == 0)
+            max_mem_jas=max_mem_gm;
+          jas_conf_set_max_mem_usage(Min(max_mem_jas,max_mem_gm));
+        }
+
+        /*
+          Inform JasPer that app may be multi-threaded
+        */
+        jas_conf_set_multithread(JP2_HAVE_THREADS);
+
+        /* Perform global initialization for the JasPer library. */
+        if (jas_init_library() == 0)
           {
             jasper_initialized=MagickTrue;
+            /* jas_set_debug_level(110); */
+          }
+        else
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "jas_init_library() failed!");
           }
       }
 #else
@@ -460,9 +575,16 @@ static void initialize_jasper(void)
         if (jas_init() == 0)
           {
             jasper_initialized=MagickTrue;
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Initialized JasPer");
+          }
+        else
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "jas_init() failed!");
           }
       }
-#endif  /* HAVE_JAS_INITIALIZE */
+#endif  /* HAVE_JAS_INIT_LIBRARY */
 
       if (!jasper_initialized)
         {
@@ -470,6 +592,8 @@ static void initialize_jasper(void)
                                 "Failed to initialize JasPer!");
         }
     }
+
+  return jasper_initialized ? MagickPass : MagickFail;
 }
 
 
@@ -482,9 +606,12 @@ static void cleanup_jasper(void)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Destroying JasPer...");
-#if HAVE_JAS_INITIALIZE
+#if HAVE_JAS_INIT_LIBRARY
+      /* Perform global cleanup for the JasPer library. */
+      jas_cleanup_library();
+#else
       jas_cleanup();
-#endif /* if HAVE_JAS_INITIALIZE */
+#endif /* if HAVE_JAS_INIT_LIBRARY */
       jasper_initialized=MagickFalse;
     }
 }
@@ -534,7 +661,8 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     *channel_lut[4];
 
   char
-    options[MaxTextExtent];
+    option_keyval[MaxTextExtent],
+    *options = NULL;
 
   unsigned int
     status;
@@ -547,7 +675,23 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   /*
     Initialize Jasper
   */
-  initialize_jasper();
+  if (initialize_jasper(exception) != MagickPass)
+    {
+      return (Image *) NULL;
+    }
+
+#if HAVE_JAS_INIT_LIBRARY
+  /*
+    Perform any per-thread initialization for the JasPer library.
+  */
+  if (jas_init_thread())
+    {
+      /* Handle the initialization error. */
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "jas_init_thread() failed!");
+      return (Image *) NULL;
+    }
+#endif /* if HAVE_JAS_INIT_LIBRARY */
 
   /*
     Open image file.
@@ -557,11 +701,10 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   (void) memset(channel_lut,0,sizeof(channel_lut));
-  options[0]='\0';
   image=AllocateImage(image_info);
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
-    ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+    ThrowJP2ReaderException(FileOpenError,UnableToOpenFile,image);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Requested format is \"%s\"",
@@ -586,14 +729,13 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     /* Read header */
     if ((magick_length=ReadBlob(image,sizeof(magick),magick)) != sizeof(magick))
       {
-        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,
-                             image);
+        ThrowJP2ReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       }
 
     /* Restore seek position */
     if (SeekBlob(image,pos,SEEK_SET) != pos)
       {
-        ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+        ThrowJP2ReaderException(BlobError,UnableToSeekToOffset,image);
       }
 
     /* Inspect header to see what it might actually be */
@@ -612,7 +754,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
       {
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Not a \"%s\" file!", image_info->magick);
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        ThrowJP2ReaderException(CorruptImageError,ImproperImageHeader,image);
       }
 
     /*
@@ -622,7 +764,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
       {
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Header is not a supported type for this coder");
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        ThrowJP2ReaderException(CorruptImageError,ImproperImageHeader,image);
       }
 
     /*
@@ -632,7 +774,7 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
          (const MagickInfo *) NULL) ||
         (magick_info->decoder == (DecoderHandler) NULL))
       {
-        ThrowReaderException(DelegateError,UnableToDecodeImageFile,image);
+        ThrowJP2ReaderException(DelegateError,UnableToDecodeImageFile,image);
       }
   }
 
@@ -641,56 +783,94 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
   */
   jp2_stream=JP2StreamManager(&StreamOperators, image);
   if (jp2_stream == (jas_stream_t *) NULL)
-    ThrowReaderException(DelegateError,UnableToManageJP2Stream,image);
+    ThrowJP2ReaderException(DelegateError,UnableToManageJP2Stream,image);
 
+  /*
+    Support passing Jasper options.
+  */
   {
-    /* Pass options argument which specifies "max_samples" to cap memory usage. */
-    const magick_uint64_t memory_limit = (magick_uint64_t) GetMagickResourceLimit(MemoryResource);
-    const magick_uint64_t max_samples = memory_limit/4U * sizeof(magick_uint32_t);
+    unsigned int
+      i;
 
-    FormatString(options,"max_samples=%" MAGICK_UINT64_F "u", max_samples);
+    MagickBool
+      max_samples_specified = MagickFalse;
+
+    for (i=0; i < ArraySize(jasper_dec_options); i++)
+      {
+        const char
+          *option = jasper_dec_options[i];
+
+        const char
+          *value;
+
+        if ((value=AccessDefinition(image_info,"jp2",option)) != NULL)
+          {
+            FormatString(option_keyval,"%s=%.1024s ",option,value);
+            ConcatenateString(&options,option_keyval);
+
+            if (LocaleCompare(option,"max_samples") == 0)
+              max_samples_specified=MagickTrue;
+
+            /* Setting debug mode seems to require extra assistance */
+            if (LocaleCompare(option,"debug") == 0)
+              jas_setdbglevel(atoi(value));
+          }
+      }
+
+    /*
+      If max_samples argument was not specified, then pass options
+      argument which specifies "max_samples" to cap memory usage.
+    */
+    if (!max_samples_specified)
+      {
+        const magick_uint64_t memory_limit = (magick_uint64_t) GetMagickResourceLimit(MemoryResource);
+        const magick_uint64_t max_samples = memory_limit/4U * sizeof(magick_uint32_t);
+
+        FormatString(option_keyval,"max_samples=%" MAGICK_UINT64_F "u ", max_samples);
+        ConcatenateString(&options,option_keyval);
+      }
+
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "JP2 options = \"%s\"", options);
   }
 
-  /* JP2, JPC, PGX (J2C is an alias for JPC) */
-#if HAVE_JP2_DECODE
-  /* JPEG-2000 JP2 File Format Syntax */
-  if (jp2_hdr)
-    {
-      /* jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr); */
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Decoding JP2...");
-      jp2_image=jp2_decode(jp2_stream,options);
-    }
-#endif /* if HAVE_JP2_DECODE */
-#if HAVE_JPC_DECODE
-  /* JPEG-2000 Code Stream Syntax */
-  if (jpc_hdr)
-    {
-      /* jas_image_t *jpc_decode(jas_stream_t *in, const char *optstr); */
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Decoding JPC...");
-      jp2_image=jpc_decode(jp2_stream,options);
-    }
-#endif /* if HAVE_JPC_DECODE */
-#if HAVE_PGX_DECODE
-  /* JPEG-2000 VM Format */
-  if (pgx_hdr)
-    {
-      /* jas_image_t *pgx_decode(jas_stream_t *in, const char *optstr); */
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Decoding PGX...");
-      jp2_image=pgx_decode(jp2_stream,options);
-    }
-#endif /* if HAVE_PGX_DECODE */
-
   /*
-    Using jas_image_decode() makes us subject to Jasper's own format
-    determination, which may include file formats we don't want to
-    support via Jasper.
+    Decode
   */
-  /* jp2_image=jas_image_decode(jp2_stream,-1,options); */
+  {
+    int
+      jas_fmt = -1;
+
+    const char *
+      jas_fmt_str = NULL;
+
+    if (jp2_hdr)
+      jas_fmt_str = "jp2";
+    else if (jpc_hdr)
+      jas_fmt_str = "jpc";
+    else if (pgx_hdr)
+      jas_fmt_str = "pgx";
+
+    if (jas_fmt_str != (const char *) NULL)
+      {
+        jas_fmt = jas_image_strtofmt(jas_fmt_str);
+        if (-1 != jas_fmt)
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Decoding %s...", jas_fmt_str);
+            jp2_image=jas_image_decode(jp2_stream,jas_fmt,options);
+          }
+        else
+          {
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "JasPer does not support format %s!",
+                                  jas_fmt_str);
+          }
+      }
+  }
+
+  MagickFreeMemory(options);
+
   if (jp2_image == (jas_image_t *) NULL)
     ThrowJP2ReaderException(DelegateError,UnableToDecodeImageFile,image);
 
@@ -805,6 +985,10 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     {
       (void) jas_stream_close(jp2_stream);
       jas_image_destroy(jp2_image);
+#if HAVE_JAS_INIT_LIBRARY
+      /* Perform any per-thread clean-up for the JasPer library. */
+      JAS_CLEANUP_THREAD();
+#endif /* if HAVE_JAS_INIT_LIBRARY */
       return(image);
     }
 
@@ -962,8 +1146,13 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     MagickFreeResourceLimitedMemory(channel_lut[component]);
   jas_matrix_destroy(pixels);
   (void) jas_stream_close(jp2_stream);
+  MagickFreeMemory(options);
   jas_image_destroy(jp2_image);
   StopTimer(&image->timer);
+#if HAVE_JAS_INIT_LIBRARY
+  /* Perform any per-thread clean-up for the JasPer library. */
+  JAS_CLEANUP_THREAD();
+#endif /* if HAVE_JAS_INIT_LIBRARY */
   return(image);
 }
 #endif /* if defined(HasJP2) */
@@ -1003,7 +1192,7 @@ ModuleExport void RegisterJP2Image(void)
   (void) strlcpy(version,"JasPer ",sizeof(version));
   (void) strlcat(version,jas_getversion(),sizeof(version));
 
-#if HAVE_JPC_DECODE
+#if !defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_ENABLE_JP2_CODEC)
   entry=SetMagickInfo("J2C");
   entry->description="JPEG-2000 Code Stream Syntax";
   entry->version=version;
@@ -1016,9 +1205,9 @@ ModuleExport void RegisterJP2Image(void)
   entry->encoder=(EncoderHandler) WriteJP2Image;
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
-#endif /* if HAVE_JPC_DECODE */
+#endif /* !defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_ENABLE_JP2_CODEC) */
 
-#if HAVE_JP2_DECODE
+#if !defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_ENABLE_JP2_CODEC)
   entry=SetMagickInfo("JP2");
   entry->description="JPEG-2000 JP2 File Format Syntax";
   entry->version=version;
@@ -1031,9 +1220,9 @@ ModuleExport void RegisterJP2Image(void)
   entry->encoder=(EncoderHandler) WriteJP2Image;
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
-#endif /* HAVE_JP2_DECODE */
+#endif /* !defined(EXCLUDE_JP2_SUPPORT) || defined(JAS_ENABLE_JP2_CODEC) */
 
-#if HAVE_JPC_DECODE
+#if !defined(EXCLUDE_JPC_SUPPORT) || defined(JAS_ENABLE_JPC_CODEC)
   entry=SetMagickInfo("JPC");
   entry->description="JPEG-2000 Code Stream Syntax";
   entry->version=version;
@@ -1046,9 +1235,9 @@ ModuleExport void RegisterJP2Image(void)
   entry->encoder=(EncoderHandler) WriteJP2Image;
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
-#endif /* if HAVE_JPC_DECODE */
+#endif /* !defined(EXCLUDE_JPC_SUPPORT) || defined(JAS_ENABLE_JPC_CODEC) */
 
-#if HAVE_PGX_DECODE
+#if !defined(EXCLUDE_PGX_SUPPORT) || defined(JAS_ENABLE_PGX_CODEC)
   entry=SetMagickInfo("PGX");
   entry->description="JPEG-2000 VM Format";
   entry->version=version;
@@ -1061,7 +1250,8 @@ ModuleExport void RegisterJP2Image(void)
   entry->encoder=(EncoderHandler) WriteJP2Image;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
-#endif /* if HAVE_PGX_DECODE */
+#endif /* !defined(EXCLUDE_PGX_SUPPORT) || defined(JAS_ENABLE_PGX_CODEC) */
+
 #endif /* if defined(HasJP2) */
 }
 
@@ -1172,8 +1362,10 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   register int
     x;
 
-  unsigned int
-    rate_specified=False,
+  MagickBool
+    rate_specified=MagickFalse;
+
+  MagickPassFail
     status;
 
   int
@@ -1189,7 +1381,23 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   /*
     Initialize Jasper
   */
-  initialize_jasper();
+  if (initialize_jasper(&image->exception) != MagickPass)
+    {
+      return MagickFail;
+    }
+
+#if HAVE_JAS_INIT_LIBRARY
+  /*
+    Perform any per-thread initialization for the JasPer library.
+  */
+  if (jas_init_thread())
+    {
+      /* Handle the initialization error. */
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "jas_init_thread() failed!");
+      return MagickFail;
+    }
+#endif /* if HAVE_JAS_INIT_LIBRARY */
 
   /*
     Open image file.
@@ -1200,7 +1408,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   assert(image->signature == MagickSignature);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == False)
-    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+    ThrowJP2WriterException(FileOpenError,UnableToOpenFile,image);
 
   /*
     Ensure that image is in RGB space.
@@ -1225,11 +1433,58 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
     }
 
   /*
+    Support passing Jasper options.
+  */
+  {
+    unsigned int
+      i;
+
+    for (i=0; i < ArraySize(jasper_enc_options); i++)
+      {
+        const char
+          *option = jasper_enc_options[i];
+
+        const char
+          *value;
+
+        if ((value=AccessDefinition(image_info,"jp2",option)) != NULL)
+          {
+            if (LocaleCompare(option,"rate") == 0)
+              {
+                /*
+                  It is documented that a rate specification of 1.0 should
+                  result in lossless compression.  However, Jasper only
+                  provides lossless compression if rate was not specified
+                  at all.  Support lossless compression as documented.
+                */
+                const double rate=atof(value);
+
+                if (rate < 1.0-MagickEpsilon)
+                  {
+                    FormatString(option_keyval,"%s=%.1024s ",option,value);
+                    ConcatenateString(&options,option_keyval);
+                    rate_specified=MagickTrue;
+                  }
+              }
+            else
+              {
+                FormatString(option_keyval,"%s=%.1024s ",option,value);
+                ConcatenateString(&options,option_keyval);
+
+                /* Setting debug mode seems to require extra assistance */
+                if (LocaleCompare(option,"debug") == 0)
+                  jas_setdbglevel(atoi(value));
+              }
+          }
+      }
+  }
+
+  /*
     Obtain a JP2 stream.
   */
   jp2_stream=JP2StreamManager(&StreamOperators, image);
   if (jp2_stream == (jas_stream_t *) NULL)
-    ThrowWriterException(DelegateError,UnableToManageJP2Stream,image);
+    ThrowJP2WriterException(DelegateError,UnableToManageJP2Stream,image);
   number_components=image->matte ? 4 : 3;
   if ((image_info->type != TrueColorType) &&
       (characteristics.grayscale))
@@ -1237,7 +1492,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
 
   jp2_image=jas_image_create0();
   if (jp2_image == (jas_image_t *) NULL)
-    ThrowWriterException(DelegateError,UnableToCreateImage,image);
+    ThrowJP2WriterException(DelegateError,UnableToCreateImage,image);
 
   for (component=0; component < number_components; component++)
   {
@@ -1253,7 +1508,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
 
     if (jas_image_addcmpt(jp2_image, component,&component_info)) {
       jas_image_destroy(jp2_image);
-      ThrowWriterException(DelegateError,UnableToCreateImageComponent,image);
+      ThrowJP2WriterException(DelegateError,UnableToCreateImageComponent,image);
     }
   }
 
@@ -1272,7 +1527,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
     if (lut == (unsigned short *) NULL)
       {
         jas_image_destroy(jp2_image);
-        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+        ThrowJP2WriterException(ResourceLimitError,MemoryAllocationFailed,image);
       }
 
     max_value=MaxValueGivenBits(component_info.prec);
@@ -1333,7 +1588,7 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
     {
       MagickFreeResourceLimitedMemory(lut);
       jas_image_destroy(jp2_image);
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowJP2WriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
 
   for (y=0; y < (long) image->rows; y++)
@@ -1388,46 +1643,10 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   format=jas_image_strtofmt(magick);
 
   /*
-    Support passing Jasper options.
-  */
-  {
-    unsigned int
-      i;
-
-    for (i=0; i < ArraySize(jasper_options); i++)
-      {
-        const char
-          *value;
-
-        if ((value=AccessDefinition(image_info,"jp2",jasper_options[i])) != NULL)
-          {
-            if(LocaleCompare(jasper_options[i],"rate") == 0)
-              rate_specified=True;
-            /*
-              It is documented that a rate specification of 1.0 should
-              result in lossless compression.  However, Jasper only
-              provides lossless compression if rate was not specified
-              at all.  Support lossless compression as documented.
-            */
-            {
-              double
-                rate;
-
-              rate=atof(value);
-              if (rate < 1.0-MagickEpsilon)
-                {
-                  FormatString(option_keyval,"%s=%.1024s ",jasper_options[i],value);
-                  ConcatenateString(&options,option_keyval);
-                }
-            }
-          }
-      }
-  }
-  /*
     Provide an emulation of IJG JPEG "quality" by default if rate was
     not specified.
   */
-  if (rate_specified == False)
+  if (rate_specified == MagickFalse)
     {
       double
         rate=INFINITY;
@@ -1462,6 +1681,8 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
         "Compression rate: %g (%3.2f:1)",rate,1.0/rate);
     }
+
+
   if (options)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
        "Jasper options: \"%s\"", options);
@@ -1474,7 +1695,12 @@ WriteJP2Image(const ImageInfo *image_info,Image *image)
   jas_matrix_destroy(jp2_pixels);
   jas_image_destroy(jp2_image);
   if (status)
-    ThrowWriterException(DelegateError,UnableToEncodeImageFile,image);
+    ThrowJP2WriterException(DelegateError,UnableToEncodeImageFile,image);
+
+#if HAVE_JAS_INIT_LIBRARY
+  /* Perform any per-thread clean-up for the JasPer library. */
+  JAS_CLEANUP_THREAD();
+#endif /* if HAVE_JAS_INIT_LIBRARY */
   return(True);
 }
 #endif /* if defined(HasJP2) */

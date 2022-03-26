@@ -146,14 +146,8 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `jas_initialize' function. */
-#undef HAVE_JAS_INITIALIZE
-
-/* Define to 1 if you have the `jp2_decode' function. */
-#undef HAVE_JP2_DECODE
-
-/* Define to 1 if you have the `jpc_decode' function. */
-#undef HAVE_JPC_DECODE
+/* Define to 1 if you have the `jas_init_library' function. */
+#undef HAVE_JAS_INIT_LIBRARY
 
 /* Define if you have the <lcms2.h> header file. */
 #undef HAVE_LCMS2_H
@@ -210,9 +204,6 @@
 
 /* Define to 1 if you have the `pclose' function. */
 #undef HAVE_PCLOSE
-
-/* Define to 1 if you have the `pgx_decode' function. */
-#undef HAVE_PGX_DECODE
 
 /* Define to 1 if you have the `poll' function. */
 #undef HAVE_POLL
@@ -402,6 +393,12 @@
 /* Define to 1 if you have the <wincrypt.h> header file. */
 #undef HAVE_WINCRYPT_H
 
+/* Define to 1 if you have the `xmlNanoFTPNewCtxt' function. */
+#undef HAVE_XMLNANOFTPNEWCTXT
+
+/* Define to 1 if you have the `xmlNanoHTTPOpen' function. */
+#undef HAVE_XMLNANOHTTPOPEN
+
 /* Define to 1 if you have the `_exit' function. */
 #undef HAVE__EXIT
 
@@ -426,6 +423,9 @@
 /* Enable use of Ghostscript */
 #undef HasGS
 
+/* Define if you have HEIF library */
+#undef HasHEIF
+
 /* Define if you have JBIG library */
 #undef HasJBIG
 
@@ -434,6 +434,9 @@
 
 /* Define if you have JPEG library */
 #undef HasJPEG
+
+/* Define if you have JXL library */
+#undef HasJXL
 
 /* Define if you have LCMS (v2.0 or later) library */
 #undef HasLCMS

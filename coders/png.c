@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -794,7 +794,7 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
       if (length > 0x7fffffff)
         png_warning(png_ptr, "chunk length > 2G");
       check=ReadBlob(image,(size_t) length,(char *) data);
-      if (check != length)
+      if (check != (size_t) length)
         {
           char
             msg[MaxTextExtent];
@@ -803,8 +803,6 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
                          " found %" MAGICK_SIZE_T_F "u bytes",
                          (MAGICK_SIZE_T) length,(MAGICK_SIZE_T) check);
           png_warning(png_ptr,msg);
-          if (check < length)
-            (void) memset(data+check,0,length-check);
           png_error(png_ptr,"Read Exception");
         }
     }
@@ -1091,7 +1089,7 @@ static void PNGErrorHandler(png_struct *ping,png_const_charp message)
 #else
   png_longjmp(ping,1);
 #endif
-  SignalHandlerExit(1); /* Avoid GCC warning about non-exit function which does exit */
+  SignalHandlerExit(EXIT_FAILURE); /* Avoid GCC warning about non-exit function which does exit */
 }
 
 static void PNGWarningHandler(png_struct *ping,png_const_charp message)
@@ -1311,9 +1309,13 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
      Note that libpng has already taken care of the CRC handling.
 
      Returns one of the following:
-         return(-n);  chunk had an error
-         return(0);  did not recognize
-         return(n);  success
+         return(-n);  An error occurred; png_chunk_error will be called.
+         return(0);   The chunk was not handled, the chunk will be discarded
+                      unless png_set_keep_unknown_chunks has been used to set
+                      a 'keep' behavior for this particular chunk, in which
+                      case that will be used.  A critical chunk will cause an
+                      error at this point unless it is to be saved.
+         return(n);  The chunk was handled, libpng will ignore/discard it.
   */
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1625,6 +1627,11 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
             CopyException(exception,&image->exception);
           image->columns=0;
         }
+      if (image)
+        {
+          DestroyImage(image);
+          image=(Image *) NULL;
+        }
       return(image);
     }
 
@@ -1649,13 +1656,39 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   png_set_benign_errors(ping, 1);
 #endif
 
-  /* Just use libpng's limit (PNG_USER_CHUNK_MALLOC_MAX == 8000000) on
-     chunk size */
+  /* Default to using libpng's limit (PNG_USER_CHUNK_MALLOC_MAX ==
+     8000000) on chunk size */
 #ifdef PNG_SET_USER_LIMITS_SUPPORTED
   /* Reject images with too many rows or columns */
   png_set_user_limits(ping,
     (png_uint_32) Min(0x7fffffffL, GetMagickResourceLimit(WidthResource)),
     (png_uint_32) Min(0x7fffffffL, GetMagickResourceLimit(HeightResource)));
+  /* Allow specifying a different chunk size limit than the
+     PNG_USER_CHUNK_MALLOC_MAX baked into libpng */
+# if PNG_LIBPNG_VER >= 10401 /* png_set_chunk_malloc_max was added in 1.4.1 */
+  {
+    const char *chunk_malloc_max_str;
+    if ((chunk_malloc_max_str=AccessDefinition(image_info,"png","chunk-malloc-max")))
+      {
+        unsigned long chunk_malloc_max;
+        if (MagickAtoULChk(chunk_malloc_max_str, &chunk_malloc_max) == MagickPass)
+          {
+            png_set_chunk_malloc_max(ping, chunk_malloc_max);
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Set PNG chunk-malloc-max to %lu bytes",
+                                    chunk_malloc_max);
+          }
+        else
+          {
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Failed to parse chunk-malloc-max value \"%s\"",
+                                    chunk_malloc_max_str);
+          }
+      }
+  }
+# endif
 #endif /* PNG_SET_USER_LIMITS_SUPPORTED */
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -3057,6 +3090,7 @@ DestroyJNG(unsigned char *chunk,Image **color_image,
   }
   if (*alpha_image)
   {
+    (void) LiberateUniqueFileResource((*alpha_image)->filename);
     DestroyImageList(*alpha_image);
     *alpha_image = (Image *)NULL;
   }
@@ -3443,7 +3477,8 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 {
                   if (logging)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "Unsupported Alpha_compression_method: %u",
+                                          "Unsupported Alpha_compression_method: %u"
+                                          " (returning NULL)",
                                           jng_alpha_compression_method);
                   DestroyJNG(chunk,&color_image,&color_image_info,
                              &alpha_image,&alpha_image_info);
@@ -3459,7 +3494,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                      "    could not allocate alpha_image_info");
+                      "    could not allocate alpha_image_info (returning NULL)");
                   ThrowException(exception,ResourceLimitError,
                                  MemoryAllocationFailed,image->filename);
                   return ((Image *)NULL);
@@ -3471,7 +3506,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                      "    could not allocate alpha_image");
+                      "    could not allocate alpha_image (returning NULL)");
                   ThrowException(exception,ResourceLimitError,
                                  MemoryAllocationFailed,image->filename);
                   return ((Image *)NULL);
@@ -3479,7 +3514,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "    Creating alpha_blob.");
-              (void) AcquireUniqueFilename(alpha_image->filename);
+              (void) AcquireUniqueFilename(alpha_image->filename); /* Freed by DestroyJNG() */
               status=OpenBlob(alpha_image_info,alpha_image,WriteBinaryBlobMode,
                               exception);
               if (status == MagickFalse)
@@ -3487,7 +3522,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   DestroyJNG(chunk,&color_image,&color_image_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                      "    could not open alpha_image blob");
+                      "    could not open alpha_image blob (returning NULL)");
                   return ((Image *)NULL);
                 }
               if (jng_alpha_compression_method == 0)
@@ -3949,7 +3984,6 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                      if (!SyncImagePixels(image))
                        break;
                    }
-                 (void) LiberateUniqueFileResource(alpha_image->filename);
                  DestroyJNG(NULL,&color_image,&color_image_info,
                    &alpha_image,&alpha_image_info);
                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),

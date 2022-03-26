@@ -96,6 +96,9 @@ static const struct
   STATICM("HISTOGRAM",RegisterHISTOGRAMImage,UnregisterHISTOGRAMImage),
   STATICM("HRZ",RegisterHRZImage,UnregisterHRZImage),
   STATICM("HTML",RegisterHTMLImage,UnregisterHTMLImage),
+#if defined(HasHEIF)
+  STATICM("HEIF",RegisterHEIFImage,UnregisterHEIFImage),
+#endif
   STATICM("ICON",RegisterICONImage,UnregisterICONImage),
   STATICM("IDENTITY",RegisterIDENTITYImage,UnregisterIDENTITYImage),
   STATICM("INFO",RegisterINFOImage,UnregisterINFOImage),
@@ -110,6 +113,9 @@ static const struct
 #endif
 #if defined(HasJP2)
   STATICM("JP2",RegisterJP2Image,UnregisterJP2Image),
+#endif
+#if defined(HasJXL)
+  STATICM("JXL",RegisterJXLImage,UnregisterJXLImage),
 #endif
   STATICM("LABEL",RegisterLABELImage,UnregisterLABELImage),
   STATICM("LOCALE",RegisterLOCALEImage,UnregisterLOCALEImage),

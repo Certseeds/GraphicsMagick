@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -132,7 +132,7 @@ do { \
   MagickFreeResourceLimitedMemory(values); \
   if (number_of_profiles > 0) \
     { \
-      unsigned int _index; \
+      unsigned long _index; \
       for (_index=0; _index < number_of_profiles; _index++) \
         { \
           MagickFreeMemory(profiles[_index].name); \
@@ -179,7 +179,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
   ProfileInfo
     *profiles=0;
 
-  unsigned int
+  unsigned long
     number_of_profiles=0;
 
   char
@@ -278,7 +278,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   *new_comment;
 
                 *p='\0';
-                comment_length<<=1;
+                comment_length += MaxTextExtent;
                 new_comment=MagickReallocateResourceLimitedMemory(char *,comment,comment_length);
                 if (new_comment == (char *) NULL)
                   {
@@ -361,7 +361,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       *new_values;
 
                     *p='\0';
-                    values_length<<=1;
+                    values_length += MaxTextExtent;
                     new_values=MagickReallocateResourceLimitedMemory(char *,values,values_length);
                     if (new_values == (char *) NULL)
                       {
@@ -658,21 +658,12 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     ProfileInfo
                       *new_profiles;
 
-                    i=(long) number_of_profiles;
+                    i=number_of_profiles;
 
                     new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
-                                                                      (size_t) i+1,sizeof(ProfileInfo));
+                                                                      number_of_profiles+1,sizeof(ProfileInfo));
                     if (new_profiles == (ProfileInfo *) NULL)
-                      {
-                        for (i=0; i < number_of_profiles; i++)
-                          {
-                            MagickFreeMemory(profiles[i].name);
-                            MagickFreeResourceLimitedMemory(profiles[i].info);
-                          }
-                        MagickFreeResourceLimitedMemory(profiles);
-                        MagickFreeResourceLimitedMemory(values);
-                        ThrowMPCReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-                      }
+                      ThrowMPCReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                     profiles=new_profiles;
                     profiles[i].name=AllocateString(keyword+8);
                     profiles[i].length=MagickAtoL(values);

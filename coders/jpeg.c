@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -172,6 +172,9 @@ typedef struct _MagickClientData
   int
     max_scan_number;
 
+  ProfileInfo
+    profiles[16];
+
   unsigned char
     buffer[65537+200];
 
@@ -204,8 +207,77 @@ static MagickClientData *AllocateMagickClientData(void)
 
 static MagickClientData *FreeMagickClientData(MagickClientData *client_data)
 {
+  unsigned int
+    i;
+
+  /* Free profiles data */
+  for (i=0 ; i < ArraySize(client_data->profiles); i++)
+    {
+      MagickFreeMemory(client_data->profiles[i].name);
+      MagickFreeResourceLimitedMemory(client_data->profiles[i].info);
+    }
+
   MagickFreeMemory(client_data);
   return client_data;
+}
+
+/* Append named profile to profiles in client data. */
+static MagickPassFail
+AppendProfile(MagickClientData *client_data,
+              const char *name,
+              const unsigned char *profile_chunk,
+              const size_t chunk_length)
+{
+  unsigned int
+    i;
+
+  /*
+    If entry with matching name is found, then add/append data to
+    profile 'info' and update profile length
+  */
+  for (i=0 ; i < ArraySize(client_data->profiles); i++)
+    {
+      ProfileInfo *profile=&client_data->profiles[i];
+      if (!profile->name)
+        break;
+      if (strcmp(profile->name,name) == 0)
+        {
+          const size_t new_length = profile->length+chunk_length;
+          unsigned char *info = MagickReallocateResourceLimitedMemory(unsigned char *,
+                                                                      profile->info,new_length);
+          if (info != (unsigned char *) NULL)
+            {
+              profile->info = info;
+              (void) memcpy(profile->info+profile->length,profile_chunk,chunk_length);
+              profile->length=new_length;
+              return MagickPass;
+            }
+        }
+    }
+
+
+  /*
+    If no matching entry, then find unallocated entry, add data to
+     profile 'info' and update profile length
+  */
+  for (i=0 ; i < ArraySize(client_data->profiles); i++)
+    {
+      ProfileInfo *profile=&client_data->profiles[i];
+      if (profile->name)
+        continue;
+      profile->name=AcquireString(name);
+      profile->info=MagickAllocateResourceLimitedMemory(unsigned char*,chunk_length);
+      if (!profile->name || !profile->info)
+        {
+          MagickFreeMemory(profile->name);
+          MagickFreeResourceLimitedMemory(profile->info);
+          break;
+        }
+      (void) memcpy(profile->info,profile_chunk,chunk_length);
+      profile->length=chunk_length;
+      return MagickPass;
+    }
+  return MagickFail;
 }
 
 /*
@@ -300,7 +372,10 @@ static void JPEGDecodeMessageHandler(j_common_ptr jpeg_info,int msg_level)
         {
           ThrowException2(&image->exception,CorruptImageError,(char *) message,
                           image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Longjmp error recovery");
           longjmp(client_data->error_recovery,1);
+          SignalHandlerExit(EXIT_FAILURE);
         }
 
       if ((err->num_warnings == 0) ||
@@ -351,8 +426,9 @@ static void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
                                   p->completed_passes+1, p->total_passes))
         {
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "Quitting due to progress monitor");
+                                "Quitting (longjmp) due to progress monitor");
           longjmp(client_data->error_recovery,1);
+          SignalHandlerExit(EXIT_FAILURE);
         }
   }
 #endif /* USE_LIBJPEG_PROGRESS */
@@ -369,7 +445,10 @@ static void JPEGDecodeProgressMonitor(j_common_ptr cinfo)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"%s", message);
           ThrowException2(&image->exception,CorruptImageError,(char *) message,
                           image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Longjmp error recovery");
           longjmp(client_data->error_recovery,1);
+          SignalHandlerExit(EXIT_FAILURE);
         }
     }
 }
@@ -459,7 +538,9 @@ static void JPEGErrorHandler(j_common_ptr jpeg_info)
   else
     ThrowException2(&image->exception,CoderError,(char *) message,
                     image->filename);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Longjmp error recovery");
   longjmp(client_data->error_recovery,1);
+  SignalHandlerExit(EXIT_FAILURE);
 }
 
 #define GetProfileLength(jpeg_info, length)                             \
@@ -533,9 +614,6 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
   MagickClientData
     *client_data;
 
-  Image
-    *image;
-
   size_t
     header_length=0,
     length;
@@ -588,7 +666,6 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
     Obtain Image.
   */
   client_data=(MagickClientData *) jpeg_info->client_data;
-  image=client_data->image;
 
   /*
     Copy profile from JPEG to allocated memory.
@@ -627,7 +704,7 @@ static boolean ReadGenericProfile(j_decompress_ptr jpeg_info)
   /*
     Store profile in Image.
   */
-  (void) AppendImageProfile(image,profile_name,profile+header_length,
+  (void) AppendProfile(client_data,profile_name,profile+header_length,
                             length-header_length);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -646,9 +723,6 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
 
   MagickClientData
     *client_data;
-
-  Image
-    *image;
 
   unsigned char
     *profile;
@@ -688,7 +762,6 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
   (void) GetCharacter(jpeg_info);  /* markers */
   length-=14;
   client_data=(MagickClientData *) jpeg_info->client_data;
-  image=client_data->image;
 
   /*
     Read color profile.
@@ -707,7 +780,7 @@ static boolean ReadICCProfile(j_decompress_ptr jpeg_info)
         break;
     }
   if (i == length)
-    (void) AppendImageProfile(image,"ICM",profile,length);
+    (void) AppendProfile(client_data,"ICM",profile,length);
 
   return(True);
 }
@@ -816,7 +889,7 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
         break;
     }
   if (i == length)
-    (void) AppendImageProfile(image,"IPTC",profile,length);
+    (void) AppendProfile(client_data,"IPTC",profile,length);
 
   return(True);
 }
@@ -1177,7 +1250,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   const char
     *value;
 
-  register long
+  register unsigned long
     i;
 
   struct jpeg_error_mgr
@@ -1528,6 +1601,22 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         jpeg_destroy_decompress(&jpeg_info);
         ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       }
+
+  /*
+    Store profiles in image.
+  */
+  for (i=0 ; i < ArraySize(client_data->profiles); i++)
+    {
+      ProfileInfo *profile=&client_data->profiles[i];
+      if (!profile->name)
+        continue;
+      if (!profile->length)
+        continue;
+      if (!profile->info)
+        continue;
+      (void) SetImageProfile(image,profile->name,profile->info,profile->length);
+    }
+
   if (image_info->ping)
     {
       jpeg_destroy_decompress(&jpeg_info);

@@ -16,38 +16,10 @@ extern "C" {
 #endif
 
 /*
-  Define declarations.
-*/
-#define SignatureSize  64
-
-/*
-  Typedef declarations.
-*/
-typedef struct _SignatureInfo
-{
-  unsigned long
-    digest[8],
-    low_order,
-    high_order;
-
-  long
-    offset;
-
-  unsigned char
-    message[SignatureSize];
-} SignatureInfo;
-
-/*
   Method declarations.
 */
 extern MagickExport unsigned int
   SignatureImage(Image *);
-
-extern MagickExport void
-  FinalizeSignature(SignatureInfo *),
-  GetSignatureInfo(SignatureInfo *),
-  TransformSignature(SignatureInfo *),
-  UpdateSignature(SignatureInfo *,const unsigned char *,const size_t);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

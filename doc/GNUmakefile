@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2013 GraphicsMagick Group
+# Copyright (C) 2003-2021 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -8,7 +8,9 @@
 # Written by Bob Friesenhahn based on previous work by Glenn Randers-Pehrson
 #
 
+# This list also determines the order of the manual page
 UTILITIES = \
+	GraphicsMagick \
 	animate \
 	batch \
 	benchmark \
@@ -22,12 +24,11 @@ UTILITIES = \
 	mogrify \
 	montage \
 	time \
-	version \
-	GraphicsMagick
+	version
 
 UTILSUBDIR       = expanded/$(UTILITY)
 UTILBASE         = $(UTILITY)
-UTILSUBWILDCARD  = expanded/*
+UTILSUBWILDCARD  = $(addprefix expanded/, $(UTILITIES))
 INSTALLWWW       = ../www
 INSTALLUTILITIES = ../utilities
 GMSUBDIR=Gm
@@ -41,7 +42,7 @@ DOCSELECTSEPARATE = ./imdocselect
 DOCINCLUDE        = ./imdocinclude
 
 # You might need to change this to /usr/bin/sed
-SED = /bin/sed
+SED ?= /bin/sed
 export SED
 
 HTML_TARGETS = \
@@ -81,19 +82,16 @@ clean: targets-clean
 	if test -d expanded; then rmdir expanded; fi
 
 gm.1: targets-man $(GMSUBDIR)/man.imdoc $(DOC2MAN)
-	-rm -f $@ $@.tmp
-	$(DOC2MAN) gm $(GMSUBDIR)/man.imdoc > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOC2MAN) gm $(GMSUBDIR)/man.imdoc > $@.tmp && mv $@.tmp $@
 
 gm.html: targets-html $(GMSUBDIR)/html.imdoc $(DOC2HTML)
-	-rm -f $@ $@.tmp
-	$(DOC2HTML) gm $(GMSUBDIR)/man.imdoc > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOC2HTML) gm $(GMSUBDIR)/man.imdoc > $@.tmp && mv $@.tmp $@
 
 gm.tex: targets-tex $(GMSUBDIR)/tex.imdoc $(DOC2TEX)
-	-rm -f $@ $@.tmp
-	$(DOC2TEX) < $(GMSUBDIR)/man.imdoc > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOC2TEX) < $(GMSUBDIR)/man.imdoc > $@.tmp && mv $@.tmp $@
 
 brief_options.imdoc:	options.imdoc
 	$(DOCSELECTBRIEF) options.imdoc brief_options.imdoc
@@ -104,23 +102,20 @@ $(INSTALLWWW)/gm.html: gm.html
 $(INSTALLUTILITIES)/gm.1: gm.1
 	cp -p $< $@
 
-$(GMSUBDIR)/man.imdoc: targets-man
-	@if test ! -d $(GMSUBDIR); then mkdir -p $(GMSUBDIR); fi
-	-rm -f $@ $@.tmp
-	cat $(UTILSUBWILDCARD)/man.imdoc > $@.tmp && \
-	mv $@.tmp $@
+$(GMSUBDIR):
+	mkdir -p $(GMSUBDIR)
 
-$(GMSUBDIR)/html.imdoc: targets-html
-	@if test ! -d $(GMSUBDIR); then mkdir -p $(GMSUBDIR); fi
-	-rm -f $@ $@.tmp
-	cat $(UTILSUBWILDCARD)/html.imdoc > $@.tmp && \
-	mv $@.tmp $@
+$(GMSUBDIR)/man.imdoc: targets-man $(GMSUBDIR)
+	@-rm -f $@ $@.tmp
+	cat $(addsuffix /man.imdoc, $(UTILSUBWILDCARD)) > $@.tmp && mv $@.tmp $@
 
-$(GMSUBDIR)/tex.imdoc: targets-tex
-	@if test ! -d $(GMSUBDIR); then mkdir -p $(GMSUBDIR); fi
-	-rm -f $@ $@.tmp
-	cat $(UTILSUBWILDCARD)/tex.imdoc > $@.tmp && \
-	mv $@.tmp $@
+$(GMSUBDIR)/html.imdoc: targets-html $(GMSUBDIR)
+	@-rm -f $@ $@.tmp
+	cat $(addsuffix /html.imdoc, $(UTILSUBWILDCARD)) > $@.tmp && mv $@.tmp $@
+
+$(GMSUBDIR)/tex.imdoc: targets-tex $(GMSUBDIR)
+	@-rm -f $@ $@.tmp
+	cat $(addsuffix /tex.imdoc, $(UTILSUBWILDCARD)) > $@.tmp && mv $@.tmp $@
 
 #
 # Invoke per-utility targets
@@ -178,24 +173,20 @@ utility-install: $(UTILBASE).html # $(INSTALLUTILITIES)/$(UTILBASE).1
 
 $(UTILSUBDIR)/Expanded.imdoc: $(UTILITY).imdoc brief_options.imdoc config_files.imdoc copyright.imdoc environment.imdoc $(DOCINCLUDE)
 	@if test ! -d $(UTILSUBDIR); then mkdir -p $(UTILSUBDIR); fi
-	-rm -f $@ $@.tmp
-	$(DOCINCLUDE) $< > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOCINCLUDE) $< > $@.tmp && mv $@.tmp $@
 
 $(UTILSUBDIR)/man.imdoc: $(UTILSUBDIR)/Expanded.imdoc $(DOCSELECTCOMBINED)
-	-rm -f $@ $@.tmp
-	$(DOCSELECTCOMBINED) $(UTILITY) man $< > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOCSELECTCOMBINED) $(UTILITY) man $< > $@.tmp && mv $@.tmp $@
 
 $(UTILSUBDIR)/html.imdoc: $(UTILSUBDIR)/Expanded.imdoc $(DOCSELECTSEPARATE)
-	-rm -f $@ $@.tmp
-	$(DOCSELECTSEPARATE) $(UTILITY) html $< > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOCSELECTSEPARATE) $(UTILITY) html $< > $@.tmp && mv $@.tmp $@
 
 $(UTILSUBDIR)/tex.imdoc: $(UTILSUBDIR)/Expanded.imdoc $(DOCSELECTCOMBINED)
-	-rm -f $@ $@.tmp
-	$(DOCSELECTCOMBINED) $(UTILITY) tex $< > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOCSELECTCOMBINED) $(UTILITY) tex $< > $@.tmp && mv $@.tmp $@
 
 #$(UTILBASE).1:  $(UTILSUBDIR)/man.imdoc $(DOC2MAN)
 #	-rm -f $@ $@.tmp
@@ -203,14 +194,12 @@ $(UTILSUBDIR)/tex.imdoc: $(UTILSUBDIR)/Expanded.imdoc $(DOCSELECTCOMBINED)
 #	mv $@.tmp $@
 
 $(UTILBASE).html:  $(UTILSUBDIR)/html.imdoc $(DOC2HTML)
-	-rm -f $@ $@.tmp
-	$(DOC2HTML) $(UTILITY) $< > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOC2HTML) $(UTILITY) $< > $@.tmp && mv $@.tmp $@
 
 $(UTILBASE).tex:  $(UTILSUBDIR)/tex.imdoc $(DOC2TEX)
-	-rm -f $@ $@.tmp
-	$(DOC2TEX) < $< > $@.tmp && \
-	mv $@.tmp $@
+	@-rm -f $@ $@.tmp
+	$(DOC2TEX) < $< > $@.tmp && mv $@.tmp $@
 
 $(INSTALLWWW)/$(UTILITY).html: $(UTILBASE).html
 	cp -p $< $@

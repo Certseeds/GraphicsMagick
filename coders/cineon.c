@@ -1533,6 +1533,12 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
                     cin_file_info.file_size,
                     (unsigned int) TellBlob(image));
     }
+  if ((magick_off_t) offset != TellBlob(image))
+    {
+      (void) printf("### Offset %lu, TellBlob says %u\n",
+                    (unsigned long) offset,
+                    (unsigned int) TellBlob(image));
+    }
 
   CloseBlob(image);
   return(status);

@@ -35,15 +35,13 @@ ${SED} "
        s/.*/!DELETE!/
        n
        b skipim
- 
+
      : select
        d
        " $3 | \
               \
               \
 ${SED} "
-     : begin
-
        /<imdoc>/d
        /<\/imdoc>/d
        /!DELETE!/d

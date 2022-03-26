@@ -1399,7 +1399,7 @@ image colorspace mismatch
 MessageId       = +1
 SymbolicName    = ImageErrorImageDifferenceExceedsLimit
 Language        = English
-image difference exceeds limit (%s)
+image difference exceeds limit
 .
 
 MessageId       = +1
@@ -2510,6 +2510,12 @@ MessageId       = +1
 SymbolicName    = LimitErrorPixelCacheAllocationFailed
 Language        = English
 Pixel cache allocation failed
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorReadLimitExceeded
+Language        = English
+Read limit exceeded (see -limit Read)
 .
 
 MessageId       = +1

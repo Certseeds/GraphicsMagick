@@ -12,9 +12,9 @@ make install
 popd
 
 # build xz
-echo "=== Building xz..."
+#echo "=== Building xz..."
 pushd "$SRC/xz"
-./autogen.sh
+./autogen.sh --no-po4a
 PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --disable-xz --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc --with-pic=yes --prefix="$WORK"
 make -j$(nproc)
 make install
@@ -80,13 +80,13 @@ make install
 popd
 
 pushd "$SRC/libxml2"
-./autogen.sh --disable-shared --without-debug --without-legacy --without-python --prefix="${WORK}"
+./autogen.sh --disable-shared --without-debug --without-legacy --without-python --without-schematron --without-schemas --prefix="${WORK}"
 make -j$(nproc)
 make install
 popd
 
 pushd "$SRC/jasper"
-cmake -G "Unix Makefiles" -H. -Bstaging -DJAS_ENABLE_SHARED=false -DCMAKE_INSTALL_PREFIX=$WORK -DJAS_INCLUDE_BMP_CODEC=false -DJAS_INCLUDE_JPG_CODEC=false -DJAS_INCLUDE_MIF_CODEC=false -DJAS_INCLUDE_PNM_CODEC=false -DJAS_INCLUDE_RAS_CODEC=false -DJAS_ENABLE_OPENGL=false -DJAS_ENABLE_LIBJPEG=false -DJAS_ENABLE_OPENGL=false
+cmake -G "Unix Makefiles" -H. -Bstaging -DJAS_ENABLE_SHARED=false -DCMAKE_INSTALL_PREFIX=$WORK #-DJAS_INCLUDE_BMP_CODEC=false -DJAS_INCLUDE_JPG_CODEC=false -DJAS_INCLUDE_MIF_CODEC=false -DJAS_INCLUDE_PNM_CODEC=false -DJAS_INCLUDE_RAS_CODEC=false -DJAS_ENABLE_OPENGL=false -DJAS_ENABLE_LIBJPEG=false -DJAS_ENABLE_OPENGL=false -DJAS_ENABLE_LIBHEIF=false
 pushd staging
 make -j$(nproc)
 make install
@@ -102,7 +102,16 @@ make install
 # Order libraries in linkage dependency order so libraries on the
 # right provide symbols needed by libraries to the left, to the
 # maximum extent possible.
-MAGICK_LIBS="$WORK/lib/libxml2.a $WORK/lib/libjasper.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/liblzma.a $WORK/lib/libz.a"
+#MAGICK_LIBS="$WORK/lib/libxml2.a $WORK/lib/libjasper.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/liblzma.a $WORK/lib/libz.a"
+MAGICK_LIBS=''
+for lib in libxml2.a libjasper.a libpng.a libtiff.a liblcms2.a libwebpmux.a libwebp.a libturbojpeg.a libfreetype.a libzstd.a liblzma.a libz.a ; do
+    if [ -f "${WORK}/lib/$lib" ] ; then
+        if [ -n "${MAGICK_LIBS}" ] ; then
+             MAGICK_LIBS="${MAGICK_LIBS} "
+        fi
+        MAGICK_LIBS="${MAGICK_LIBS}${WORK}/lib/${lib}"
+    fi
+done
 
 echo "=== Building fuzzers..."
 for f in fuzzing/*_fuzzer.cc; do

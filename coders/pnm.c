@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2021 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -194,7 +194,6 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
                   *new_comment;
 
                 text_length=(size_t) (p-comment);
-                length<<=1;
                 length+=MaxTextExtent;
                 new_comment=MagickReallocateResourceLimitedMemory(char *,comment,length+sizeof(P7Comment));
                 if (new_comment == (char *) NULL)
@@ -1153,15 +1152,18 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             DestroyThreadViewDataSet(scanline_set);
             image->is_monochrome=is_monochrome;
             image->is_grayscale=is_grayscale;
+            if ((status == MagickFail) && (image->exception.severity))
+              CopyException(exception,&image->exception);
             if (EOFBlob(image))
-              ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-                             image->filename);
+              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
             break;
           }
         default:
           ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
         }
       StopTimer(&image->timer);
+      if (status ==MagickFail)
+        break;
       /*
         Proceed to next image.
       */

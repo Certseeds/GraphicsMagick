@@ -195,6 +195,16 @@ immediately.  This is a per-image limit and does not limit the total
 number of pixels due to multiple image frames/pages (e.g. multi-page
 document or an animation).</abs>
 
+<opt>MAGICK_LIMIT_READ</opt>
+
+<abs>Maximum number of uncompressed bytes which may be read while
+decoding an image.  Each read by the software from the input file is
+counted against the total, even if it has been read before.  Decoding
+fails when the limit is reached.  This limit helps defend against
+highly compressed files (e.g. via gzip), or files which use complex
+looping structures, or when data is being read from a stream
+(pipe).</abs>
+
 <opt>MAGICK_LIMIT_WIDTH</opt>
 
 <abs>Maximum pixel width of an image read, or created.</abs>

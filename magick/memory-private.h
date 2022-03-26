@@ -16,10 +16,10 @@ extern MagickExport size_t
   MagickArraySize(const size_t count,const size_t size) MAGICK_FUNC_CONST;
 
 extern MagickExport
-  void *_MagickReallocateResourceLimitedMemory(void *p,const size_t count,const size_t size,const MagickBool clear);
+  void *_MagickReallocateResourceLimitedMemory(void *p,const size_t count,const size_t size,const MagickBool clear) MAGICK_FUNC_ALLOC_SIZE_2ARG(2,3);
 
 extern MagickExport
-  void *_MagickAllocateResourceLimitedMemory(const size_t size);
+  void *_MagickAllocateResourceLimitedMemory(const size_t size) MAGICK_FUNC_MALLOC MAGICK_FUNC_ALLOC_SIZE_1ARG(1);
 
 extern MagickExport
   void _MagickFreeResourceLimitedMemory(void *p);
@@ -57,7 +57,7 @@ extern MagickExport
 
 #define MagickAllocateResourceLimitedMemory(type,size)                  \
   ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :        \
-   ((type) _MagickReallocateResourceLimitedMemory(0,1,(size_t) (size),MagickFalse)))
+   ((type) _MagickAllocateResourceLimitedMemory((size_t) (size))))
 
 #define MagickAllocateResourceLimitedClearedMemory(type,size)           \
   ((((size) != ((size_t) (size))) || (size == 0)) ? ((type) 0) :        \
@@ -127,10 +127,11 @@ extern MagickExport
 */
 typedef enum _MagickAllocateResourceLimitedMemoryAttribute
   {
-    ResourceLimitedMemoryAttributeAllocSize,
-    ResourceLimitedMemoryAttributeAllocSizeReal,
-    ResourceLimitedMemoryAttributeAllocNumReallocs,
-    ResourceLimitedMemoryAttributeAllocNumReallocsMoved
+    ResourceLimitedMemoryAttributeAllocSize,                /* Currently requested allocation size */
+    ResourceLimitedMemoryAttributeAllocSizeReal,            /* Actual underlying requested allocation size */
+    ResourceLimitedMemoryAttributeAllocNumReallocs,         /* Number of reallocations performed */
+    ResourceLimitedMemoryAttributeAllocNumReallocsMoved,    /* Number of reallocations which moved memory (pointer change) */
+    ResourceLimitedMemoryAttributeAllocReallocOctetsMoved   /* Total octets moved due to reallocations (may overflow!) */
   } MagickAllocateResourceLimitedMemoryAttribute;
 
 /*
@@ -145,6 +146,9 @@ typedef enum _MagickAllocateResourceLimitedMemoryAttribute
 #define MagickResourceLimitedMemoryGetAllocSizeReal(p) \
   _MagickResourceLimitedMemoryGetSizeAttribute(p, ResourceLimitedMemoryAttributeAllocSizeReal);
 
+/*
+  Given an exisisting allocation, request certain attributes/metrics from it.
+*/
 MagickExport size_t _MagickResourceLimitedMemoryGetSizeAttribute(const void *p,
                                                                  const MagickAllocateResourceLimitedMemoryAttribute attr);
 

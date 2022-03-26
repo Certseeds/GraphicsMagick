@@ -386,8 +386,18 @@ if HasGRAPHICSMAGICK_SNAPSHOT_COPY
 # somewhere using some mechanism only known to itself.
 #
 # The arguments to the script are the original path names of the files to distribute.
+SNAPSHOT_DIST_ARCHIVES=$(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM)
 snapshot: distcheck
-	$(GRAPHICSMAGICK_SNAPSHOT_COPY) $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+	$(MAKE) $(DIST_ARCHIVE_SRPM)
+	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
+	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
+	  rm -f $${file}.sig ; \
+	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  sha256sum $${file} > $${file}.sum ; \
+	done
+	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
+	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.sig " $$f ; done` \
+	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 
 else
 
@@ -396,9 +406,16 @@ SNAPSHOT_DIRECTORY=/ftp/pub/GraphicsMagick/snapshots
 snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
+	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
+	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  sha256sum $${file} > $${file}.sum ; \
+	done
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
-	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z
-	mv $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM) $(SNAPSHOT_DIRECTORY)/
+	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z*
+	mv $(SNAPSHOT_DIST_ARCHIVES) $(SNAPSHOT_DIRECTORY)/
+	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
+	  mv $${file}.sig $(SNAPSHOT_DIRECTORY)/ ; \
+	done
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
 	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
 
@@ -445,6 +462,9 @@ gmsymbols:
 
 # Convenient target to build release archive files and sign them.
 release: distcheck
-	for file in $(DIST_ARCHIVES) ; do \
-	  gpg2 --output $${file}.sig --detach-sig $${file} ; \
+	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
+	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
+	  rm -f $${file}.sig ; \
+	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  sha256sum $${file} > $${file}.sum ; \
 	done

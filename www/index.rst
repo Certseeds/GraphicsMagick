@@ -28,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.37 (Released December 12, 2021) `download release`__
+Current Release              1.3.38 (Released March 26, 2022) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -38,10 +38,12 @@ __ `download development snapshots`_
 __ `visit Mercurial repository`_
 
 
-Check http://www.GraphicsMagick.org/ for the latest version of this page.
+Check http://www.GraphicsMagick.org/ or
+https://graphicsmagick.sourceforge.io/index.html for the latest
+version of this page.
 
 .. _FSF : http://www.fsf.org/
-.. _`GNU GPL` :  http://www.fsf.org/licenses/licenses.html
+.. _`GNU GPL` :  https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses
 .. _ImageMagick : http://www.imagemagick.org/
 .. _Open Source Initiative : http://www.opensource.org/
 .. _`MIT License` : http://opensource.org/licenses/MIT
@@ -54,7 +56,7 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`John Allspaw's presentation` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
 .. _Mercurial : https://www.mercurial-scm.org/
 .. _`NEWS` : NEWS.html
-.. _`SLOCCount` : http://www.dwheeler.com/sloccount/
+.. _`SLOCCount` : https://dwheeler.com/sloccount/
 .. _`authors` : authors.html
 .. _`benchmarks` : benchmarks.html
 .. _`manual page` : GraphicsMagick.html
@@ -64,8 +66,8 @@ Check http://www.GraphicsMagick.org/ for the latest version of this page.
 .. _`oss-fuzz` : https://github.com/google/oss-fuzz
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
-of 267K physical lines (according to David A. Wheeler's `SLOCCount`_)
-of source code in the base package (or 1,225K including 3rd party
+of 279K physical lines (according to David A. Wheeler's `SLOCCount`_)
+of source code in the base package (or 1,275K including 3rd party
 libraries) it provides a robust and efficient collection of tools and
 libraries which support reading, writing, and manipulating an image in
 over 89 major formats including important formats like DPX, GIF, JPEG,

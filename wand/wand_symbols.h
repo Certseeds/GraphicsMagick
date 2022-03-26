@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012-2021 GraphicsMagick Group
+  Copyright (C) 2012-2022 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -75,8 +75,8 @@
 #define MagickDrawGetFillColor GmMagickDrawGetFillColor
 #define MagickDrawGetFillOpacity GmMagickDrawGetFillOpacity
 #define MagickDrawGetFillRule GmMagickDrawGetFillRule
-#define MagickDrawGetFont GmMagickDrawGetFont
 #define MagickDrawGetFontFamily GmMagickDrawGetFontFamily
+#define MagickDrawGetFont GmMagickDrawGetFont
 #define MagickDrawGetFontSize GmMagickDrawGetFontSize
 #define MagickDrawGetFontStretch GmMagickDrawGetFontStretch
 #define MagickDrawGetFontStyle GmMagickDrawGetFontStyle
@@ -143,8 +143,8 @@
 #define MagickDrawSetFillOpacity GmMagickDrawSetFillOpacity
 #define MagickDrawSetFillPatternURL GmMagickDrawSetFillPatternURL
 #define MagickDrawSetFillRule GmMagickDrawSetFillRule
-#define MagickDrawSetFont GmMagickDrawSetFont
 #define MagickDrawSetFontFamily GmMagickDrawSetFontFamily
+#define MagickDrawSetFont GmMagickDrawSetFont
 #define MagickDrawSetFontSize GmMagickDrawSetFontSize
 #define MagickDrawSetFontStretch GmMagickDrawSetFontStretch
 #define MagickDrawSetFontStyle GmMagickDrawSetFontStyle
@@ -177,16 +177,15 @@
 #define MagickFlipImage GmMagickFlipImage
 #define MagickFlopImage GmMagickFlopImage
 #define MagickFrameImage GmMagickFrameImage
-#define MagickFxImage GmMagickFxImage
 #define MagickFxImageChannel GmMagickFxImageChannel
-#define MagickGammaImage GmMagickGammaImage
+#define MagickFxImage GmMagickFxImage
 #define MagickGammaImageChannel GmMagickGammaImageChannel
+#define MagickGammaImage GmMagickGammaImage
 #define MagickGetConfigureInfo GmMagickGetConfigureInfo
 #define MagickGetCopyright GmMagickGetCopyright
 #define MagickGetException GmMagickGetException
 #define MagickGetFilename GmMagickGetFilename
 #define MagickGetHomeURL GmMagickGetHomeURL
-#define MagickGetImage GmMagickGetImage
 #define MagickGetImageAttribute GmMagickGetImageAttribute
 #define MagickGetImageBackgroundColor GmMagickGetImageBackgroundColor
 #define MagickGetImageBluePrimary GmMagickGetImageBluePrimary
@@ -209,6 +208,7 @@
 #define MagickGetImageFuzz GmMagickGetImageFuzz
 #define MagickGetImageGamma GmMagickGetImageGamma
 #define MagickGetImageGeometry GmMagickGetImageGeometry
+#define MagickGetImage GmMagickGetImage
 #define MagickGetImageGravity GmMagickGetImageGravity
 #define MagickGetImageGreenPrimary GmMagickGetImageGreenPrimary
 #define MagickGetImageHeight GmMagickGetImageHeight
@@ -216,8 +216,8 @@
 #define MagickGetImageIndex GmMagickGetImageIndex
 #define MagickGetImageInterlaceScheme GmMagickGetImageInterlaceScheme
 #define MagickGetImageIterations GmMagickGetImageIterations
-#define MagickGetImageMatte GmMagickGetImageMatte
 #define MagickGetImageMatteColor GmMagickGetImageMatteColor
+#define MagickGetImageMatte GmMagickGetImageMatte
 #define MagickGetImageOrientation GmMagickGetImageOrientation
 #define MagickGetImagePage GmMagickGetImagePage
 #define MagickGetImagePixels GmMagickGetImagePixels
@@ -252,8 +252,8 @@
 #define MagickIsOpaqueImage GmMagickIsOpaqueImage
 #define MagickIsPaletteImage GmMagickIsPaletteImage
 #define MagickLabelImage GmMagickLabelImage
-#define MagickLevelImage GmMagickLevelImage
 #define MagickLevelImageChannel GmMagickLevelImageChannel
+#define MagickLevelImage GmMagickLevelImage
 #define MagickMagnifyImage GmMagickMagnifyImage
 #define MagickMapImage GmMagickMapImage
 #define MagickMatteFloodfillImage GmMagickMatteFloodfillImage
@@ -264,8 +264,8 @@
 #define MagickMorphImages GmMagickMorphImages
 #define MagickMosaicImages GmMagickMosaicImages
 #define MagickMotionBlurImage GmMagickMotionBlurImage
-#define MagickNegateImage GmMagickNegateImage
 #define MagickNegateImageChannel GmMagickNegateImageChannel
+#define MagickNegateImage GmMagickNegateImage
 #define MagickNewDrawingWand GmMagickNewDrawingWand
 #define MagickNextImage GmMagickNextImage
 #define MagickNormalizeImage GmMagickNormalizeImage
@@ -283,9 +283,9 @@
 #define MagickQueryFormats GmMagickQueryFormats
 #define MagickRadialBlurImage GmMagickRadialBlurImage
 #define MagickRaiseImage GmMagickRaiseImage
-#define MagickReadImage GmMagickReadImage
 #define MagickReadImageBlob GmMagickReadImageBlob
 #define MagickReadImageFile GmMagickReadImageFile
+#define MagickReadImage GmMagickReadImage
 #define MagickReduceNoiseImage GmMagickReduceNoiseImage
 #define MagickRelinquishMemory GmMagickRelinquishMemory
 #define MagickRemoveImage GmMagickRemoveImage
@@ -303,7 +303,6 @@
 #define MagickSetDepth GmMagickSetDepth
 #define MagickSetFilename GmMagickSetFilename
 #define MagickSetFormat GmMagickSetFormat
-#define MagickSetImage GmMagickSetImage
 #define MagickSetImageAttribute GmMagickSetImageAttribute
 #define MagickSetImageBackgroundColor GmMagickSetImageBackgroundColor
 #define MagickSetImageBluePrimary GmMagickSetImageBluePrimary
@@ -321,13 +320,14 @@
 #define MagickSetImageFuzz GmMagickSetImageFuzz
 #define MagickSetImageGamma GmMagickSetImageGamma
 #define MagickSetImageGeometry GmMagickSetImageGeometry
+#define MagickSetImage GmMagickSetImage
 #define MagickSetImageGravity GmMagickSetImageGravity
 #define MagickSetImageGreenPrimary GmMagickSetImageGreenPrimary
 #define MagickSetImageIndex GmMagickSetImageIndex
 #define MagickSetImageInterlaceScheme GmMagickSetImageInterlaceScheme
 #define MagickSetImageIterations GmMagickSetImageIterations
-#define MagickSetImageMatte GmMagickSetImageMatte
 #define MagickSetImageMatteColor GmMagickSetImageMatteColor
+#define MagickSetImageMatte GmMagickSetImageMatte
 #define MagickSetImageOption GmMagickSetImageOption
 #define MagickSetImageOrientation GmMagickSetImageOrientation
 #define MagickSetImagePage GmMagickSetImagePage
@@ -359,8 +359,8 @@
 #define MagickStripImage GmMagickStripImage
 #define MagickSwirlImage GmMagickSwirlImage
 #define MagickTextureImage GmMagickTextureImage
-#define MagickThresholdImage GmMagickThresholdImage
 #define MagickThresholdImageChannel GmMagickThresholdImageChannel
+#define MagickThresholdImage GmMagickThresholdImage
 #define MagickTintImage GmMagickTintImage
 #define MagickTransformImage GmMagickTransformImage
 #define MagickTransparentImage GmMagickTransparentImage
@@ -368,11 +368,11 @@
 #define MagickUnsharpMaskImage GmMagickUnsharpMaskImage
 #define MagickWaveImage GmMagickWaveImage
 #define MagickWhiteThresholdImage GmMagickWhiteThresholdImage
-#define MagickWriteImage GmMagickWriteImage
 #define MagickWriteImageBlob GmMagickWriteImageBlob
 #define MagickWriteImageFile GmMagickWriteImageFile
-#define MagickWriteImages GmMagickWriteImages
+#define MagickWriteImage GmMagickWriteImage
 #define MagickWriteImagesFile GmMagickWriteImagesFile
+#define MagickWriteImages GmMagickWriteImages
 #define NewMagickWand GmNewMagickWand
 #define NewPixelWand GmNewPixelWand
 #define NewPixelWands GmNewPixelWands
@@ -400,8 +400,8 @@
 #define PixelSetBlackQuantum GmPixelSetBlackQuantum
 #define PixelSetBlue GmPixelSetBlue
 #define PixelSetBlueQuantum GmPixelSetBlueQuantum
-#define PixelSetColor GmPixelSetColor
 #define PixelSetColorCount GmPixelSetColorCount
+#define PixelSetColor GmPixelSetColor
 #define PixelSetCyan GmPixelSetCyan
 #define PixelSetCyanQuantum GmPixelSetCyanQuantum
 #define PixelSetGreen GmPixelSetGreen

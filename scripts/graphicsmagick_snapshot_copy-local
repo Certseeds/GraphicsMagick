@@ -27,22 +27,22 @@ for file in "$@" ; do
         Changelog.html)
             destf="ChangeLog.html"
             ;;
-        *.rpm)
+        *.rpm*)
             continue
             ;;
-        *.tar.bz2)
+        *.tar.bz2*)
             continue
             ;;
-        *.tar.gz)
+        *.tar.gz*)
             continue
             ;;
-        *.tar.lz)
+        *.tar.lz*)
             continue
             ;;
-        *.tar.zst)
+        *.tar.zst*)
             continue
             ;;
-        *-windows.7z)
+        *-windows.7z*)
             continue
             ;;
         *)
@@ -65,3 +65,10 @@ printf "rsync ${SNAPSHOT_DIRECTORY}/ ...\n"
 # -vrtc
 # --bwlimit is in bytes rather than bits!  Requests are rounded up to units of 1024 bytes.
 time rsync -vrtzc --delete --delete-after --bwlimit=34k --stats ${SNAPSHOT_DIRECTORY}/ bfriesen,graphicsmagick@frs.sourceforge.net:/home/pfs/project/g/gr/graphicsmagick/graphicsmagick-snapshots
+
+# Update web pages at SourceForge
+if [ -d "${SRCDIR}/www" ] ; then
+    rsync --delete-after -rlptv --exclude={'*.rst','*.am','*.fig','*.dot','*~','*.tmp'} "${SRCDIR}/www/" bfriesen@web.sourceforge.net:/home/project-web/graphicsmagick/htdocs
+else
+    printf "SRCDIR not defined!\n"
+fi

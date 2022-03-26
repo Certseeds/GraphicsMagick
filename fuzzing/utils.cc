@@ -22,6 +22,7 @@ public:
         MagickLib::SetMagickResourceLimit(MagickLib::WidthResource, 2048);
         MagickLib::SetMagickResourceLimit(MagickLib::HeightResource, 2048);
         MagickLib::SetMagickResourceLimit(MagickLib::DiskResource, 0);
+        MagickLib::SetMagickResourceLimit(MagickLib::ReadResource, 900000);
     }
 };
 

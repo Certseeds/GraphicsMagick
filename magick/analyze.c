@@ -17,6 +17,7 @@
 #include "magick/studio.h"
 #include "magick/analyze.h"
 #include "magick/color.h"
+#include "magick/log.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
 #include "magick/pixel_iterator.h"
@@ -252,6 +253,10 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
       bounds.x=0;
       bounds.y=0;
     }
+  if (image->logging)
+    (void) LogMagickEvent(TransformEvent,GetMagickModule(),
+                          "Bounding Box: %lux%lu%+ld%+ld",
+                          bounds.width, bounds.height, bounds.x, bounds.y);
 
   return(bounds);
 }

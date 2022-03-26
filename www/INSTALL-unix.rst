@@ -310,6 +310,10 @@ Optional Packages/Options
 
     disable JPEG v2 support
 
+--with-jxl
+
+    enable JPEG-XL support
+
 --without-jpeg
 
     disable JPEG support
@@ -703,6 +707,14 @@ Several configure options require special note:
   PerlMagick builds may not be fully successful (at least for
   executing the test suite) for Perl versions newer than 5.8.8.
 
+  As a convenience, the Makefile targets 'perl-build',
+  'install-exec-perl', and 'perl-check' are provided.  In order to
+  assure that library dependencies and search paths are correct, it is
+  necessary to first install GraphicsMagick via 'make install', then
+  build PerlMagick using 'make perl-build', then install PerlMagick
+  using 'sudo make install-exec-perl', and then 'make perl-check' to
+  make sure that it actually works.
+
 --with-perl-options
 
   The PerlMagick module is normally installed using the Perl
@@ -805,6 +817,24 @@ Several configure options require special note:
   the default libc memory allocator, and more performant in
   multi-threaded programs than umem, but is less memory efficient.
 
+JPEG XL
+-------
+
+JPEG XL seems to be a work in progress.  For development testing with
+it we build it as described on its git page
+(https://github.com/libjxl/libjxl), but configure and build it like::
+
+  git clone https://github.com/libjxl/libjxl.git --recursive --shallow-submodules
+  cd ./libjxl
+  mkdir build
+  cd ./build
+  export CC=clang-12 CXX=clang++-12
+  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr/local ..
+  cmake --build . -- -j$(nproc)
+  make test
+  [ check for 100% tests passed ]
+  make install
+
 Popular Distribution Packages
 -----------------------------
 
@@ -882,22 +912,22 @@ When using MSYS2, requesting to install these packages using 'pacman
 mingw-w64-x86_64-toolchain, mingw-w64-x86_64-bzip2,
 mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
 mingw-w64-x86_64-jasper, mingw-w64-x86_64-jbigkit,
-mingw-w64-x86_64-lcms2, mingw-w64-x86_64-libjpeg-turbo,
-mingw-w64-x86_64-libpng, mingw-w64-x86_64-libtiff,
-mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp,
-mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2,
-mingw-w64-x86_64-zlib
+mingw-w64-x86_64-lcms2, mingw-w64-x86_64-libheif,
+mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
+mingw-w64-x86_64-libtiff, mingw-w64-x86_64-libtool,
+mingw-w64-x86_64-libwebp, mingw-w64-x86_64-libwmf,
+mingw-w64-x86_64-libxml2, mingw-w64-x86_64-zlib
 
 and/or use the following to add support for a 32-bit build:
 
 mingw-w64-i686-toolchain, mingw-w64-i686-bzip2,
 mingw-w64-i686-freetype, mingw-w64-i686-ghostscript,
-mingw-w64-i686-jasper, mingw-w64-i686-jbigkit,
-mingw-w64-i686-lcms2, mingw-w64-i686-libjpeg-turbo,
-mingw-w64-i686-libpng, mingw-w64-i686-libtiff,
-mingw-w64-i686-libtool, mingw-w64-i686-libwebp,
-mingw-w64-i686-libwmf, mingw-w64-i686-libxml2,
-mingw-w64-i686-zlib
+mingw-w64-i686-jasper, mingw-w64-i686-libheif,
+mingw-w64-i686-jbigkit, mingw-w64-i686-lcms2,
+mingw-w64-i686-libjpeg-turbo, mingw-w64-i686-libpng,
+mingw-w64-i686-libtiff, mingw-w64-i686-libtool,
+mingw-w64-i686-libwebp, mingw-w64-i686-libwmf,
+mingw-w64-i686-libxml2, mingw-w64-i686-zlib
 
 GraphicsMagick may also be built using the free MinGW
 ("Minimalistic GNU for Windows") package, available from

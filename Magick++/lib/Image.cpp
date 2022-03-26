@@ -2042,6 +2042,9 @@ void Magick::Image::trim ( void )
 {
   // width=0, height=0 trims edges
   Geometry cropInfo(0,0);
+  // SourceForge issue #653 Trim requires NorthWestGravity
+  if (constImage()->gravity != NorthWestGravity)
+    image()->gravity=NorthWestGravity;
   crop ( cropInfo );
 }
 

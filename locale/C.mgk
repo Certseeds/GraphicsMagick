@@ -767,7 +767,7 @@
         image colorspace mismatch
       </Message>
       <Message name="ImageDifferenceExceedsLimit">
-        image difference exceeds limit (%s)
+        image difference exceeds limit
       </Message>
       <Message name="ImageDoesNotContainResolution">
         image does not contain resolution
@@ -1029,7 +1029,27 @@
         Matrix is not square (%s elements)
       </Message>
       <Message name="RegionAreaExceedsLimit">
-NonzeroWidthAndHeightRequired">
+        Region area exceeds implementation limit
+      </Message>
+      <Message name="MissingAnImageFilename">
+        Missing an image filename
+      </Message>
+      <Message name="MissingArgument">
+        Option '%s' requires an argument or argument is malformed
+      </Message>
+      <Message name="MustSpecifyAnImageName">
+        Must specify a image name
+      </Message>
+      <Message name="MustSpecifyImageSize">
+        Must specify image size
+      </Message>
+      <Message name="NoBlobDefined">
+        No Binary Large OBjects defined
+      </Message>
+      <Message name="NoImagesDefined">
+        No images defined
+      </Message>
+      <Message name="NonzeroWidthAndHeightRequired">
         Non-zero width and height required
       </Message>
       <Message name="NoProfileNameWasGiven">
@@ -1546,6 +1566,9 @@ NonzeroWidthAndHeightRequired">
         </Message>
         <Message name="UnableToThresholdImage">
           unable to threshold image
+        </Message>
+        <Message name="ReadLimitExceeded">
+          Read limit exceeded (see -limit Read)
         </Message>
       </Error>
       <FatalError>

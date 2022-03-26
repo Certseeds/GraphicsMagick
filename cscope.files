@@ -27,6 +27,7 @@ coders/fpx.c
 coders/gif.c
 coders/gradient.c
 coders/gray.c
+coders/heif.c
 coders/histogram.c
 coders/hrz.c
 coders/html.c
@@ -35,6 +36,7 @@ coders/identity.c
 coders/info.c
 coders/jbig.c
 coders/jnx.c
+coders/jpx.c
 coders/jp2.c
 coders/jpeg.c
 coders/label.c

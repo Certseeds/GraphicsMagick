@@ -27,7 +27,7 @@ Debian `GraphicsMagick packages <http://packages.debian.org/search?keywords=Grap
 
 `Black Duck | Open HUB <https://www.openhub.net/p/graphics_magick>`_ GraphicsMagick Entry.
 
-`SourceForge <http://sourceforge.net/projects/graphicsmagick/>`_ GraphicsMagick Entry.
+`SourceForge <https://sourceforge.net/projects/graphicsmagick/>`_ GraphicsMagick Entry.
 
 `GraphicsMagick questions on StackOverflow <http://stackoverflow.com/questions/tagged/graphicsmagick?>`_.
 
@@ -42,12 +42,6 @@ Search for `GraphicsMagick`__ CVEs.
 .. _CVE_GraphicsMagick : https://www.cvedetails.com/vulnerability-list/vendor_id-2802/Graphicsmagick.html
 
 __ CVE_GraphicsMagick_
-
-Seach SecurityFocus Bugtraq for `GraphicsMagick`__ vulnerabilities (select Vendor 'GraphicsMagick').
-
-__ Bugtraq_GraphicsMagick_
-
-.. _Bugtraq_GraphicsMagick : http://www.securityfocus.com/bid
 
 Debian vulnerabilities in `GraphicsMagick`__.
 
@@ -78,22 +72,22 @@ A guide to image processing algorithms, many of which are supported by GraphicsM
 Color Technology Related Topics
 ======================================
 
-Charles Poynton's `Color technology FAQs <http://www.poynton.com/Poynton-color.html>`_,
+Charles Poynton's `Color technology FAQs <http://poynton.ca/Poynton-color.html>`_,
 very useful documentation on color technologies.
 
-`International Color Consortium <http://www.color.org/>`_,
+`International Color Consortium <https://www.color.org/>`_,
 the organization responsible for color profile standards.
 
 `Argyll Color Management System <http://www.argyllcms.com/>`_,
 a free experimental color management system.
 
-`Littlecms <http://www.littlecms.com/>`_,
+`Littlecms <https://www.littlecms.com/>`_,
 a free commercial-grade colormanagement engine in 100K (and used by GraphicsMagick).
 
 `Bruce Lindbloom's Web Site <http://www.brucelindbloom.com/>`_,
 offering interesting information related to color science and working spaces.
 
-`sRGB <http://www.w3.org/Graphics/Color/sRGB.html>`_,
+`sRGB <https://www.w3.org/Graphics/Color/sRGB.html>`_,
 A standard default color space for the Internet.
 
 `High Dynamic Range Image Encodings <http://www.anyhere.com/gward/hdrenc/hdr_encodings.html>`_,
@@ -122,7 +116,7 @@ less than 14 bits per sample.
 The following documents and pages provide interesting information on
 gamma-related topics:
 
-`Charles Poynton's Gamma FAQ <http://www.poynton.com/GammaFAQ.html>`_,
+`Charles Poynton's Gamma FAQ <http://poynton.ca/GammaFAQ.html>`_,
 provides an excellent description of what gamma is, why it is good,
 and when you don't want it.
 
@@ -130,14 +124,14 @@ and when you don't want it.
 TIFF Related Topics
 ============================
 
-`LibTIFF <http://www.simplesystems.org/libtiff/>`_,
+`LibTIFF <https://libtiff.gitlab.io/libtiff/>`_,
 Libtiff library and TIFF format mailing list.
 
-AWare Systems `TIFF <http://www.awaresystems.be/imaging/tiff.html>`_ site.
+AWare Systems `TIFF <https://www.awaresystems.be/imaging/tiff.html>`_ site.
 Detailed TIFF-related information which goes beyond the TIFF specification,
 list archives for the libtiff mailing list, and information regarding the emerging Big TIFF format.
 
-`Digital Negative (DNG) <http://www.adobe.com/products/dng/index.html>`_,
+`Digital Negative (DNG) <https://helpx.adobe.com/camera-raw/digital-negative.html>`_,
 Adobe TIFF specification for digital camera raw images.
 
 `LogLuv Encoding for TIFF Images <http://www.anyhere.com/gward/pixformat/tiffluv.html>`_,
@@ -162,7 +156,7 @@ Metadata (Associated Data) Topics
 `Extensible Metadata Platform (XMP) <http://www.adobe.com/products/xmp/index.html>`_,
 Adobe's XML-based embedded metadata format.
 
-`EXIF <http://www.exif.org/>`_,
+`EXIF <https://www.exif.org/>`_,
 Format for metadata in images, particularly JPEG files from digital cameras.
 
 High Dynamic Range Topics
@@ -180,7 +174,7 @@ library and sample tools for dealing with high dynamic-range (HDR) images.
 Motion Picture Links
 =========================
 
-`Digital Cinema Initiatives <http://www.dcimovies.com/>`_,
+`Digital Cinema Initiatives <https://www.dcimovies.com/>`_,
 DCI offers the first complete specification for digital cinema delivery.
 
 `Ingex <http://ingex.sourceforge.net/index.html>`_ Tapeless video &
@@ -194,23 +188,19 @@ Video Topics
 Other Software Packages
 ========================
 
-`DMMD Visere <http://dmmd.net/main_wp/visere/>`_,
-truly outstanding image viewing/browsing software for Microsoft Windows.
-Visere is based on GraphicsMagick.
-
 `eLynx lab <http://elynxlab.free.fr/en/index.html>`_ High resolution image processing tool.
 
-The `GIMP <http://www.gimp.org/>`_, interactive image editing software (like Photoshop).
+The `GIMP <https://www.gimp.org/>`_, interactive image editing software (like Photoshop).
 
-`ImageMagick <http://www.imagemagick.org/>`_, the ancestor of GraphicsMagick.
+`ImageMagick <https://imagemagick.org/index.php>`_, the ancestor of GraphicsMagick.
 
 `VIPS <https://github.com/libvips/>`_, an image processing system also useful with
 large images, and which comes with an unusual GUI.
 
-`FreeImage <http://freeimage.sourceforge.net/index.html>`_,
+`FreeImage <https://freeimage.sourceforge.io/index.html>`_,
 a free image processing library.
 
-`ImageJ <http://rsbweb.nih.gov/ij/>`_ Image Processing and Analysis in Java.
+`ImageJ <https://imagej.nih.gov/ij/>`_ Image Processing and Analysis in Java.
 
 `Pstoedit <http://www.pstoedit.net/>`_,
 A Postscript to editable vector translation utility.
@@ -224,7 +214,7 @@ an open source ICC profiler with graphical user interface.
 `Gallery <http://gallery.menalto.com/>`_,
 a facinating web-based photo album organizer.  Works with GraphicsMagick!.
 
-`DJV Imaging <http://djv.sourceforge.net/>`_, professional movie
+`DJV Imaging <https://darbyjohnston.github.io/DJV/>`_, professional movie
 playback and image processing software for the film and computer
 animation industries.
 
@@ -235,4 +225,4 @@ utilities, and applications.
 Stock Photos
 =============
 
-`MorgueFile <http://www.morguefile.com/>`_, Free high-resolution stock photo images.
+`MorgueFile <https://morguefile.com/>`_, Free high-resolution stock photo images.

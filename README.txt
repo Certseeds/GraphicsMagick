@@ -91,7 +91,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires 'dcraw' (version 8.95 or later) from
 
-    http://www.cybercom.net/~dcoffin/dcraw/
+    https://www.dechifro.org/dcraw/
 
   to read raw images from digital cameras.  Dcraw is invoked
   automatically when used to read files using a common RAW file format
@@ -100,7 +100,7 @@ building under Microsoft Windows:
 * GraphicsMagick requires 'fig2dev' provided in the transfig package
   from
 
-    http://www.xfig.org/
+    http://mcj.sourceforge.net/
 
   to read the Fig image format. Ghostscript and Ghostscript Fonts (see
   below) are also required.
@@ -114,7 +114,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires Ghostscript software available from
 
-    https://www.ghostscript.com/download.html
+    https://ghostscript.com/releases/index.html
 
   to read the Postscript or the Portable Document Format (PDF).
 
@@ -185,7 +185,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires html2ps available from
 
-     http://user.it.uu.se/~jan/html2ps.html
+     https://sourceforge.net/projects/html2ps/
 
   to rasterize HTML files.  Ghostscript (see above) is also required.
 
@@ -223,16 +223,9 @@ building under Microsoft Windows:
   unfortunately it does not yet support both at once.
 
 * GraphicsMagick requires the JasPer Project's JasPer library from
-  https://jasper-software.github.io/jasper/ (although older versions
-  back to 1.701.0 are still available via http from the original web
-  site at http://www.ece.uvic.ca/~mdadams/jasper/) to read and write
-  the JPEG-2000 format.  Due to security concerns, using the latest
-  version of JasPer is recommended.
-
-  Please note that JasPer 1.900.1 may have a problem when used with
-  GraphicsMagick's modules build. To solve this problem, edit the file
-  src/libjasper/base/jas_init.c and comment out the line which invokes
-  atexit().
+  https://jasper-software.github.io/jasper/ to read and write the
+  JPEG-2000 format.  Due to security concerns, using the latest
+  version of JasPer (3.0.0 or later) is recommended.
 
 * On Unix-type systems, Windows/MinGW, and Windows/Cygwin,
   GraphicsMagick requires libltdl from libtool in order to support
@@ -255,7 +248,7 @@ building under Microsoft Windows:
 * GraphicsMagick requires Sam Leffler's TIFF software available via
   HTTP at
 
-     http://www.simplesystems.org/libtiff/
+     https://libtiff.gitlab.io/libtiff/
 
   to read the TIFF image format. It in turn optionally requires the
   JPEG and ZLIB libraries.  Libtiff 3.8.2 or later is recommended.
@@ -287,7 +280,7 @@ building under Microsoft Windows:
   which is included in Sun's Solaris operating system, and
   OpenSolaris/Illumos derivatives, or available from
 
-     https://labs.omniti.com/trac/portableumem
+     https://github.com/omniti-labs/portableumem
 
   to provide enhanced versions of the standard memory allocation
   facilities. Use of umem may improve performance for multi-threaded
@@ -338,10 +331,6 @@ building under Microsoft Windows:
 
      http://www.cygwin.com/
 
-  There is a nearly free X server available for Windows and Macintosh at
-
-     http://www.microimages.com/downloads/mix/
-
 * GraphicsMagick requires libxml2 available from
 
      http://xmlsoft.org/
@@ -351,7 +340,7 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires the liblzma library from XZ Utils available from
 
-     http://www.tukaani.org/xz/
+     https://www.tukaani.org/xz/
 
   to support TIFF with LZMA compression and future LZMA-compression
   features (yet to be developed).  The utilities from this package are
@@ -366,18 +355,45 @@ building under Microsoft Windows:
 
 * GraphicsMagick requires the Zstandard (Zstd) library from
 
-     https://facebook.github.io/zstd/
+    https://facebook.github.io/zstd/
 
-     or
+      or
 
-     https://github.com/facebook/zstd/releases
+    https://github.com/facebook/zstd/releases
 
   to read or write Zstd compressed TIFF images.  In the future it is
   likely that other purposes will be found for Zstd.
 
 * GraphicsMagick may require the deflate library to link with libtiff.
 
-    Libtiff may optionally depend on the libdeflate library (from
-    https://github.com/ebiggers/libdeflate).  Linking with this
-    library may be necessary for builds where libtiff depends on
-    libdeflate.
+  Libtiff may optionally depend on the libdeflate library (from
+  https://github.com/ebiggers/libdeflate).  Linking with this library
+  may be necessary for builds where libtiff depends on libdeflate.
+
+* GraphicsMagick requires the heif library from
+
+    https://github.com/strukturag/libheif
+
+    and the libde265 library from
+
+    https://github.com/strukturag/libde265
+
+  to read HEIF/h.265 files. Libheif makes use of libde265 for
+  h.265/HEVC decoding and libx265 for encoding.  GraphicsMagick does
+  not itself provide any h.265/HEVC algoriths and it does not
+  currently support encoding.
+
+  The HEVC codec is covered by a huge number of patents (the MPEG LA
+  HEVC patent list is 164 pages long!).  While GraphicsMagick is
+  unable to grant any patent usage rights to users or offer legal
+  advice, HEVC patents are normally paid for "per device" and so it is
+  possible and even likely that the user's modern "device" is already
+  covered.  For example, users of Windows 10, Apple's OS-X, or popular
+  video cards may already be entitled to use the HEVC codec since the
+  vendor has already paid for it.  Some countries do not support
+  software patents.  The user is responsible for assuring that some
+  entity has paid to allow use of any applicable HEVC patents on their
+  device, or that the patents do not apply in their country.
+
+* GraphicsMagick requires the JPEG XL library from
+  https://github.com/libjxl/libjxl to read and write JPEG XL files.

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012-2021 GraphicsMagick Group
+  Copyright (C) 2012-2022 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -19,8 +19,8 @@
 #define AccessImmutableIndexes GmAccessImmutableIndexes
 #define AccessMutableIndexes GmAccessMutableIndexes
 #define AccessMutablePixels GmAccessMutablePixels
-#define AccessThreadViewData GmAccessThreadViewData
 #define AccessThreadViewDataById GmAccessThreadViewDataById
+#define AccessThreadViewData GmAccessThreadViewData
 #define AcquireCacheView GmAcquireCacheView
 #define AcquireCacheViewIndexes GmAcquireCacheViewIndexes
 #define AcquireCacheViewPixels GmAcquireCacheViewPixels
@@ -29,8 +29,8 @@
 #define AcquireMagickResource GmAcquireMagickResource
 #define AcquireMemory GmAcquireMemory
 #define AcquireOneCacheViewPixel GmAcquireOneCacheViewPixel
-#define AcquireOnePixel GmAcquireOnePixel
 #define AcquireOnePixelByReference GmAcquireOnePixelByReference
+#define AcquireOnePixel GmAcquireOnePixel
 #define AcquireSemaphoreInfo GmAcquireSemaphoreInfo
 #define AcquireString GmAcquireString
 #define AcquireTemporaryFileDescriptor GmAcquireTemporaryFileDescriptor
@@ -39,11 +39,11 @@
 #define AdaptiveThresholdImage GmAdaptiveThresholdImage
 #define AddDefinition GmAddDefinition
 #define AddDefinitions GmAddDefinitions
-#define AddNoiseImage GmAddNoiseImage
 #define AddNoiseImageChannel GmAddNoiseImageChannel
+#define AddNoiseImage GmAddNoiseImage
 #define AffineTransformImage GmAffineTransformImage
-#define AllocateImage GmAllocateImage
 #define AllocateImageColormap GmAllocateImageColormap
+#define AllocateImage GmAllocateImage
 #define AllocateImageProfileIterator GmAllocateImageProfileIterator
 #define AllocateNextImage GmAllocateNextImage
 #define AllocateSemaphoreInfo GmAllocateSemaphoreInfo
@@ -57,8 +57,8 @@
 #define AnnotateImage GmAnnotateImage
 #define AppendImageFormat GmAppendImageFormat
 #define AppendImageProfile GmAppendImageProfile
-#define AppendImageToList GmAppendImageToList
 #define AppendImages GmAppendImages
+#define AppendImageToList GmAppendImageToList
 #define Ascii85Encode GmAscii85Encode
 #define Ascii85Flush GmAscii85Flush
 #define Ascii85Initialize GmAscii85Initialize
@@ -77,8 +77,8 @@
 #define BlobToFile GmBlobToFile
 #define BlobToImage GmBlobToImage
 #define BlobWriteByteHook GmBlobWriteByteHook
-#define BlurImage GmBlurImage
 #define BlurImageChannel GmBlurImageChannel
+#define BlurImage GmBlurImage
 #define BorderImage GmBorderImage
 #define CatchException GmCatchException
 #define CatchImageException GmCatchImageException
@@ -94,8 +94,8 @@
 #define ClipPathImage GmClipPathImage
 #define CloneBlobInfo GmCloneBlobInfo
 #define CloneDrawInfo GmCloneDrawInfo
-#define CloneImage GmCloneImage
 #define CloneImageAttributes GmCloneImageAttributes
+#define CloneImage GmCloneImage
 #define CloneImageInfo GmCloneImageInfo
 #define CloneImageList GmCloneImageList
 #define CloneMemory GmCloneMemory
@@ -106,12 +106,12 @@
 #define CloseCacheView GmCloseCacheView
 #define CoalesceImages GmCoalesceImages
 #define ColorFloodfillImage GmColorFloodfillImage
-#define ColorMatrixImage GmColorMatrixImage
 #define ColorizeImage GmColorizeImage
+#define ColorMatrixImage GmColorMatrixImage
 #define ColorspaceTypeToString GmColorspaceTypeToString
 #define CompareImageCommand GmCompareImageCommand
-#define CompositeImage GmCompositeImage
 #define CompositeImageCommand GmCompositeImageCommand
+#define CompositeImage GmCompositeImage
 #define CompositeImageRegion GmCompositeImageRegion
 #define CompositeMaskImage GmCompositeMaskImage
 #define CompositeOperatorToString GmCompositeOperatorToString
@@ -148,15 +148,15 @@
 #define DestroyDelegateInfo GmDestroyDelegateInfo
 #define DestroyDrawInfo GmDestroyDrawInfo
 #define DestroyExceptionInfo GmDestroyExceptionInfo
-#define DestroyImage GmDestroyImage
 #define DestroyImageAttributes GmDestroyImageAttributes
+#define DestroyImage GmDestroyImage
 #define DestroyImageInfo GmDestroyImageInfo
 #define DestroyImageList GmDestroyImageList
 #define DestroyImagePixels GmDestroyImagePixels
 #define DestroyLogInfo GmDestroyLogInfo
 #define DestroyMagicInfo GmDestroyMagicInfo
-#define DestroyMagick GmDestroyMagick
 #define DestroyMagickExceptionHandling GmDestroyMagickExceptionHandling
+#define DestroyMagick GmDestroyMagick
 #define DestroyMagickModules GmDestroyMagickModules
 #define DestroyMagickMonitor GmDestroyMagickMonitor
 #define DestroyMagickRandomGenerator GmDestroyMagickRandomGenerator
@@ -197,8 +197,8 @@
 #define DrawGetFillColor GmDrawGetFillColor
 #define DrawGetFillOpacity GmDrawGetFillOpacity
 #define DrawGetFillRule GmDrawGetFillRule
-#define DrawGetFont GmDrawGetFont
 #define DrawGetFontFamily GmDrawGetFontFamily
+#define DrawGetFont GmDrawGetFont
 #define DrawGetFontSize GmDrawGetFontSize
 #define DrawGetFontStretch GmDrawGetFontStretch
 #define DrawGetFontStyle GmDrawGetFontStyle
@@ -269,8 +269,8 @@
 #define DrawSetFillOpacity GmDrawSetFillOpacity
 #define DrawSetFillPatternURL GmDrawSetFillPatternURL
 #define DrawSetFillRule GmDrawSetFillRule
-#define DrawSetFont GmDrawSetFont
 #define DrawSetFontFamily GmDrawSetFontFamily
+#define DrawSetFont GmDrawSetFont
 #define DrawSetFontSize GmDrawSetFontSize
 #define DrawSetFontStretch GmDrawSetFontStretch
 #define DrawSetFontStyle GmDrawSetFontStyle
@@ -296,11 +296,11 @@
 #define DrawSkewX GmDrawSkewX
 #define DrawSkewY GmDrawSkewY
 #define DrawTranslate GmDrawTranslate
-#define EOFBlob GmEOFBlob
 #define EdgeImage GmEdgeImage
 #define EmbossImage GmEmbossImage
 #define EndianTypeToString GmEndianTypeToString
 #define EnhanceImage GmEnhanceImage
+#define EOFBlob GmEOFBlob
 #define EqualizeImage GmEqualizeImage
 #define EscapeString GmEscapeString
 #define ExecuteModuleProcess GmExecuteModuleProcess
@@ -323,8 +323,8 @@
 #define FrameImage GmFrameImage
 #define FuzzyColorMatch GmFuzzyColorMatch
 #define GammaImage GmGammaImage
-#define GaussianBlurImage GmGaussianBlurImage
 #define GaussianBlurImageChannel GmGaussianBlurImageChannel
+#define GaussianBlurImage GmGaussianBlurImage
 #define GenerateDifferentialNoise GmGenerateDifferentialNoise
 #define GenerateNoise GmGenerateNoise
 #define GetBlobFileHandle GmGetBlobFileHandle
@@ -336,8 +336,8 @@
 #define GetBlobStreamData GmGetBlobStreamData
 #define GetBlobTemporary GmGetBlobTemporary
 #define GetCacheInfo GmGetCacheInfo
-#define GetCacheView GmGetCacheView
 #define GetCacheViewArea GmGetCacheViewArea
+#define GetCacheView GmGetCacheView
 #define GetCacheViewImage GmGetCacheViewImage
 #define GetCacheViewIndexes GmGetCacheViewIndexes
 #define GetCacheViewPixels GmGetCacheViewPixels
@@ -346,8 +346,8 @@
 #define GetClientName GmGetClientName
 #define GetClientPath GmGetClientPath
 #define GetColorHistogram GmGetColorHistogram
-#define GetColorInfo GmGetColorInfo
 #define GetColorInfoArray GmGetColorInfoArray
+#define GetColorInfo GmGetColorInfo
 #define GetColorList GmGetColorList
 #define GetColorTuple GmGetColorTuple
 #define GetConfigureBlob GmGetConfigureBlob
@@ -376,12 +376,12 @@
 #define GetImageFromMagickRegistry GmGetImageFromMagickRegistry
 #define GetImageGeometry GmGetImageGeometry
 #define GetImageIndexInList GmGetImageIndexInList
-#define GetImageInfo GmGetImageInfo
 #define GetImageInfoAttribute GmGetImageInfoAttribute
+#define GetImageInfo GmGetImageInfo
 #define GetImageListLength GmGetImageListLength
 #define GetImageMagick GmGetImageMagick
-#define GetImagePixels GmGetImagePixels
 #define GetImagePixelsEx GmGetImagePixelsEx
+#define GetImagePixels GmGetImagePixels
 #define GetImageProfile GmGetImageProfile
 #define GetImageQuantizeError GmGetImageQuantizeError
 #define GetImageStatistics GmGetImageStatistics
@@ -390,14 +390,14 @@
 #define GetIndexes GmGetIndexes
 #define GetLastImageInList GmGetLastImageInList
 #define GetLocaleExceptionMessage GmGetLocaleExceptionMessage
-#define GetLocaleMessage GmGetLocaleMessage
 #define GetLocaleMessageFromID GmGetLocaleMessageFromID
+#define GetLocaleMessage GmGetLocaleMessage
 #define GetMagickCopyright GmGetMagickCopyright
 #define GetMagickDimension GmGetMagickDimension
 #define GetMagickFileFormat GmGetMagickFileFormat
 #define GetMagickGeometry GmGetMagickGeometry
-#define GetMagickInfo GmGetMagickInfo
 #define GetMagickInfoArray GmGetMagickInfoArray
+#define GetMagickInfo GmGetMagickInfo
 #define GetMagickRegistry GmGetMagickRegistry
 #define GetMagickResource GmGetMagickResource
 #define GetMagickResourceLimit GmGetMagickResourceLimit
@@ -407,9 +407,9 @@
 #define GetNextImageInList GmGetNextImageInList
 #define GetNumberColors GmGetNumberColors
 #define GetOnePixel GmGetOnePixel
-#define GetOptimalKernelWidth GmGetOptimalKernelWidth
 #define GetOptimalKernelWidth1D GmGetOptimalKernelWidth1D
 #define GetOptimalKernelWidth2D GmGetOptimalKernelWidth2D
+#define GetOptimalKernelWidth GmGetOptimalKernelWidth
 #define GetPageGeometry GmGetPageGeometry
 #define GetPathComponent GmGetPathComponent
 #define GetPixelCacheArea GmGetPixelCacheArea
@@ -424,8 +424,8 @@
 #define GetTimerInfo GmGetTimerInfo
 #define GetTimerResolution GmGetTimerResolution
 #define GetToken GmGetToken
-#define GetTypeInfo GmGetTypeInfo
 #define GetTypeInfoByFamily GmGetTypeInfoByFamily
+#define GetTypeInfo GmGetTypeInfo
 #define GetTypeList GmGetTypeList
 #define GetTypeMetrics GmGetTypeMetrics
 #define GetUserTime GmGetUserTime
@@ -433,14 +433,14 @@
 #define GradientImage GmGradientImage
 #define GravityTypeToString GmGravityTypeToString
 #define GrayscalePseudoClassImage GmGrayscalePseudoClassImage
-#define HSLTransform GmHSLTransform
-#define HWBTransform GmHWBTransform
 #define HaldClutImage GmHaldClutImage
 #define HighlightStyleToString GmHighlightStyleToString
+#define HSLTransform GmHSLTransform
 #define HuffmanDecodeImage GmHuffmanDecodeImage
 #define HuffmanEncode2Image GmHuffmanEncode2Image
 #define HuffmanEncodeImage GmHuffmanEncodeImage
 #define Hull GmHull
+#define HWBTransform GmHWBTransform
 #define IdentifyImageCommand GmIdentifyImageCommand
 #define IdentityAffine GmIdentityAffine
 #define ImageGetClipMask GmImageGetClipMask
@@ -466,9 +466,9 @@
 #define InitializeLogInfo GmInitializeLogInfo
 #define InitializeLogInfoPost GmInitializeLogInfoPost
 #define InitializeMagicInfo GmInitializeMagicInfo
-#define InitializeMagick GmInitializeMagick
-#define InitializeMagickEx GmInitializeMagickEx
 #define InitializeMagickExceptionHandling GmInitializeMagickExceptionHandling
+#define InitializeMagickEx GmInitializeMagickEx
+#define InitializeMagick GmInitializeMagick
 #define InitializeMagickModules GmInitializeMagickModules
 #define InitializeMagickMonitor GmInitializeMagickMonitor
 #define InitializeMagickRandomGenerator GmInitializeMagickRandomGenerator
@@ -486,8 +486,8 @@
 #define InterpolateViewColor GmInterpolateViewColor
 #define InvokeDelegate GmInvokeDelegate
 #define InvokePostscriptDelegate GmInvokePostscriptDelegate
-#define IsAccessible GmIsAccessible
 #define IsAccessibleAndNotEmpty GmIsAccessibleAndNotEmpty
+#define IsAccessible GmIsAccessible
 #define IsAccessibleNoLogging GmIsAccessibleNoLogging
 #define IsEventLogging GmIsEventLogging
 #define IsGeometry GmIsGeometry
@@ -501,10 +501,8 @@
 #define IsSubimage GmIsSubimage
 #define IsTaintImage GmIsTaintImage
 #define IsWriteable GmIsWriteable
-#define LZWEncode2Image GmLZWEncode2Image
-#define LZWEncodeImage GmLZWEncodeImage
-#define LevelImage GmLevelImage
 #define LevelImageChannel GmLevelImageChannel
+#define LevelImage GmLevelImage
 #define LiberateMagickResource GmLiberateMagickResource
 #define LiberateMemory GmLiberateMemory
 #define LiberateSemaphoreInfo GmLiberateSemaphoreInfo
@@ -522,8 +520,8 @@
 #define LocaleNCompare GmLocaleNCompare
 #define LocaleUpper GmLocaleUpper
 #define LockSemaphoreInfo GmLockSemaphoreInfo
-#define MSBOrderLong GmMSBOrderLong
-#define MSBOrderShort GmMSBOrderShort
+#define LZWEncode2Image GmLZWEncode2Image
+#define LZWEncodeImage GmLZWEncodeImage
 #define MagickAllocFunctions GmMagickAllocFunctions
 #define MagickArraySize GmMagickArraySize
 #define MagickAtoFChk GmMagickAtoFChk
@@ -548,8 +546,8 @@
 #define MagickFmin GmMagickFmin
 #define MagickFormatString GmMagickFormatString
 #define MagickFormatStringList GmMagickFormatStringList
-#define MagickFree GmMagickFree
 #define MagickFreeAligned GmMagickFreeAligned
+#define MagickFree GmMagickFree
 #define MagickGetBitRevTable GmMagickGetBitRevTable
 #define MagickGetFileAttributes GmMagickGetFileAttributes
 #define MagickGetFileSystemBlockSize GmMagickGetFileSystemBlockSize
@@ -558,11 +556,11 @@
 #define MagickGetToken GmMagickGetToken
 #define MagickInitializeCommandInfo GmMagickInitializeCommandInfo
 #define MagickIsTrue GmMagickIsTrue
-#define MagickMalloc GmMagickMalloc
-#define MagickMallocAligned GmMagickMallocAligned
 #define MagickMallocAlignedArray GmMagickMallocAlignedArray
+#define MagickMallocAligned GmMagickMallocAligned
 #define MagickMallocArray GmMagickMallocArray
 #define MagickMallocCleared GmMagickMallocCleared
+#define MagickMalloc GmMagickMalloc
 #define MagickMapAccessEntry GmMagickMapAccessEntry
 #define MagickMapAddEntry GmMagickMapAddEntry
 #define MagickMapAllocateIterator GmMagickMapAllocateIterator
@@ -585,13 +583,13 @@
 #define MagickMapIterateToBack GmMagickMapIterateToBack
 #define MagickMapIterateToFront GmMagickMapIterateToFront
 #define MagickMapRemoveEntry GmMagickMapRemoveEntry
-#define MagickMonitor GmMagickMonitor
 #define MagickMonitorActive GmMagickMonitorActive
 #define MagickMonitorFormatted GmMagickMonitorFormatted
+#define MagickMonitor GmMagickMonitor
 #define MagickRandNewSeed GmMagickRandNewSeed
-#define MagickRandReentrant GmMagickRandReentrant
 #define MagickRandomInteger GmMagickRandomInteger
 #define MagickRandomReal GmMagickRandomReal
+#define MagickRandReentrant GmMagickRandReentrant
 #define MagickRealloc GmMagickRealloc
 #define MagickReverseBits GmMagickReverseBits
 #define MagickSceneFileName GmMagickSceneFileName
@@ -615,15 +613,15 @@
 #define MagickSwabUInt32 GmMagickSwabUInt32
 #define MagickToMime GmMagickToMime
 #define MagickTsdGetSpecific GmMagickTsdGetSpecific
-#define MagickTsdKeyCreate GmMagickTsdKeyCreate
 #define MagickTsdKeyCreate2 GmMagickTsdKeyCreate2
+#define MagickTsdKeyCreate GmMagickTsdKeyCreate
 #define MagickTsdKeyDelete GmMagickTsdKeyDelete
 #define MagickTsdSetSpecific GmMagickTsdSetSpecific
 #define MagickWordStreamInitializeRead GmMagickWordStreamInitializeRead
 #define MagickWordStreamInitializeWrite GmMagickWordStreamInitializeWrite
 #define MagickWordStreamLSBRead GmMagickWordStreamLSBRead
-#define MagickWordStreamLSBWrite GmMagickWordStreamLSBWrite
 #define MagickWordStreamLSBWriteFlush GmMagickWordStreamLSBWriteFlush
+#define MagickWordStreamLSBWrite GmMagickWordStreamLSBWrite
 #define MagickXAnimateBackgroundImage GmMagickXAnimateBackgroundImage
 #define MagickXAnimateImages GmMagickXAnimateImages
 #define MagickXAnnotateImage GmMagickXAnnotateImage
@@ -710,14 +708,16 @@
 #define ModifyImage GmModifyImage
 #define Modulate GmModulate
 #define ModulateImage GmModulateImage
-#define MogrifyImage GmMogrifyImage
 #define MogrifyImageCommand GmMogrifyImageCommand
+#define MogrifyImage GmMogrifyImage
 #define MogrifyImages GmMogrifyImages
 #define MontageImageCommand GmMontageImageCommand
 #define MontageImages GmMontageImages
 #define MorphImages GmMorphImages
 #define MosaicImages GmMosaicImages
 #define MotionBlurImage GmMotionBlurImage
+#define MSBOrderLong GmMSBOrderLong
+#define MSBOrderShort GmMSBOrderShort
 #define MultilineCensus GmMultilineCensus
 #define NegateImage GmNegateImage
 #define NewImageList GmNewImageList
@@ -750,8 +750,8 @@
 #define PopImagePixels GmPopImagePixels
 #define PrependImageToList GmPrependImageToList
 #define ProfileImage GmProfileImage
-#define PurgeTemporaryFiles GmPurgeTemporaryFiles
 #define PurgeTemporaryFilesAsyncSafe GmPurgeTemporaryFilesAsyncSafe
+#define PurgeTemporaryFiles GmPurgeTemporaryFiles
 #define PushImagePixels GmPushImagePixels
 #define QuantizeImage GmQuantizeImage
 #define QuantizeImages GmQuantizeImages
@@ -763,12 +763,11 @@
 #define QuantumTypeToString GmQuantumTypeToString
 #define QueryColorDatabase GmQueryColorDatabase
 #define QueryColorname GmQueryColorname
-#define RGBTransformImage GmRGBTransformImage
 #define RaiseImage GmRaiseImage
 #define RandomChannelThresholdImage GmRandomChannelThresholdImage
 #define ReacquireMemory GmReacquireMemory
-#define ReadBlob GmReadBlob
 #define ReadBlobByte GmReadBlobByte
+#define ReadBlob GmReadBlob
 #define ReadBlobLSBDouble GmReadBlobLSBDouble
 #define ReadBlobLSBDoubles GmReadBlobLSBDoubles
 #define ReadBlobLSBFloat GmReadBlobLSBFloat
@@ -817,6 +816,7 @@
 #define RegisterGIFImage GmRegisterGIFImage
 #define RegisterGRADIENTImage GmRegisterGRADIENTImage
 #define RegisterGRAYImage GmRegisterGRAYImage
+#define RegisterHEIFImage GmRegisterHEIFImage
 #define RegisterHISTOGRAMImage GmRegisterHISTOGRAMImage
 #define RegisterHRZImage GmRegisterHRZImage
 #define RegisterHTMLImage GmRegisterHTMLImage
@@ -827,10 +827,12 @@
 #define RegisterJNXImage GmRegisterJNXImage
 #define RegisterJP2Image GmRegisterJP2Image
 #define RegisterJPEGImage GmRegisterJPEGImage
+#define RegisterJXLImage GmRegisterJXLImage
 #define RegisterLABELImage GmRegisterLABELImage
 #define RegisterLOCALEImage GmRegisterLOCALEImage
 #define RegisterLOGOImage GmRegisterLOGOImage
 #define RegisterMACImage GmRegisterMACImage
+#define RegisterMagickInfo GmRegisterMagickInfo
 #define RegisterMAPImage GmRegisterMAPImage
 #define RegisterMATImage GmRegisterMATImage
 #define RegisterMATTEImage GmRegisterMATTEImage
@@ -843,7 +845,6 @@
 #define RegisterMSLImage GmRegisterMSLImage
 #define RegisterMTVImage GmRegisterMTVImage
 #define RegisterMVGImage GmRegisterMVGImage
-#define RegisterMagickInfo GmRegisterMagickInfo
 #define RegisterNULLImage GmRegisterNULLImage
 #define RegisterOTBImage GmRegisterOTBImage
 #define RegisterPALMImage GmRegisterPALMImage
@@ -868,10 +869,10 @@
 #define RegisterSCTImage GmRegisterSCTImage
 #define RegisterSFWImage GmRegisterSFWImage
 #define RegisterSGIImage GmRegisterSGIImage
+#define RegisterStaticModules GmRegisterStaticModules
 #define RegisterSTEGANOImage GmRegisterSTEGANOImage
 #define RegisterSUNImage GmRegisterSUNImage
 #define RegisterSVGImage GmRegisterSVGImage
-#define RegisterStaticModules GmRegisterStaticModules
 #define RegisterTGAImage GmRegisterTGAImage
 #define RegisterTIFFImage GmRegisterTIFFImage
 #define RegisterTILEImage GmRegisterTILEImage
@@ -907,6 +908,7 @@
 #define ResizeImage GmResizeImage
 #define ResolutionTypeToString GmResolutionTypeToString
 #define ReverseImageList GmReverseImageList
+#define RGBTransformImage GmRGBTransformImage
 #define RollImage GmRollImage
 #define RotateImage GmRotateImage
 #define SampleImage GmSampleImage
@@ -924,7 +926,6 @@
 #define SetExceptionInfo GmSetExceptionInfo
 #define SetFatalErrorHandler GmSetFatalErrorHandler
 #define SetGeometry GmSetGeometry
-#define SetImage GmSetImage
 #define SetImageAttribute GmSetImageAttribute
 #define SetImageChannelDepth GmSetImageChannelDepth
 #define SetImageClipMask GmSetImageClipMask
@@ -933,10 +934,11 @@
 #define SetImageCompositeMask GmSetImageCompositeMask
 #define SetImageDepth GmSetImageDepth
 #define SetImageEx GmSetImageEx
+#define SetImage GmSetImage
 #define SetImageInfo GmSetImageInfo
 #define SetImageOpacity GmSetImageOpacity
-#define SetImagePixels GmSetImagePixels
 #define SetImagePixelsEx GmSetImagePixelsEx
+#define SetImagePixels GmSetImagePixels
 #define SetImageProfile GmSetImageProfile
 #define SetImageType GmSetImageType
 #define SetImageVirtualPixelMethod GmSetImageVirtualPixelMethod
@@ -954,8 +956,8 @@
 #define SetMonitorHandler GmSetMonitorHandler
 #define SetWarningHandler GmSetWarningHandler
 #define ShadeImage GmShadeImage
-#define SharpenImage GmSharpenImage
 #define SharpenImageChannel GmSharpenImageChannel
+#define SharpenImage GmSharpenImage
 #define ShaveImage GmShaveImage
 #define ShearImage GmShearImage
 #define SignatureImage GmSignatureImage
@@ -1000,8 +1002,8 @@
 #define SyncCacheView GmSyncCacheView
 #define SyncCacheViewPixels GmSyncCacheViewPixels
 #define SyncImage GmSyncImage
-#define SyncImagePixels GmSyncImagePixels
 #define SyncImagePixelsEx GmSyncImagePixelsEx
+#define SyncImagePixels GmSyncImagePixels
 #define SyncNextImageInList GmSyncNextImageInList
 #define SystemCommand GmSystemCommand
 #define TellBlob GmTellBlob
@@ -1017,8 +1019,8 @@
 #define TransformImage GmTransformImage
 #define TransformRGBImage GmTransformRGBImage
 #define TransformSignature GmTransformSignature
-#define TranslateText GmTranslateText
 #define TranslateTextEx GmTranslateTextEx
+#define TranslateText GmTranslateText
 #define TransparentImage GmTransparentImage
 #define UnlockSemaphoreInfo GmUnlockSemaphoreInfo
 #define UnmapBlob GmUnmapBlob
@@ -1041,6 +1043,7 @@
 #define UnregisterGIFImage GmUnregisterGIFImage
 #define UnregisterGRADIENTImage GmUnregisterGRADIENTImage
 #define UnregisterGRAYImage GmUnregisterGRAYImage
+#define UnregisterHEIFImage GmUnregisterHEIFImage
 #define UnregisterHISTOGRAMImage GmUnregisterHISTOGRAMImage
 #define UnregisterHRZImage GmUnregisterHRZImage
 #define UnregisterHTMLImage GmUnregisterHTMLImage
@@ -1051,10 +1054,12 @@
 #define UnregisterJNXImage GmUnregisterJNXImage
 #define UnregisterJP2Image GmUnregisterJP2Image
 #define UnregisterJPEGImage GmUnregisterJPEGImage
+#define UnregisterJXLImage GmUnregisterJXLImage
 #define UnregisterLABELImage GmUnregisterLABELImage
 #define UnregisterLOCALEImage GmUnregisterLOCALEImage
 #define UnregisterLOGOImage GmUnregisterLOGOImage
 #define UnregisterMACImage GmUnregisterMACImage
+#define UnregisterMagickInfo GmUnregisterMagickInfo
 #define UnregisterMAPImage GmUnregisterMAPImage
 #define UnregisterMATImage GmUnregisterMATImage
 #define UnregisterMATTEImage GmUnregisterMATTEImage
@@ -1067,7 +1072,6 @@
 #define UnregisterMSLImage GmUnregisterMSLImage
 #define UnregisterMTVImage GmUnregisterMTVImage
 #define UnregisterMVGImage GmUnregisterMVGImage
-#define UnregisterMagickInfo GmUnregisterMagickInfo
 #define UnregisterNULLImage GmUnregisterNULLImage
 #define UnregisterOTBImage GmUnregisterOTBImage
 #define UnregisterPALMImage GmUnregisterPALMImage
@@ -1092,10 +1096,10 @@
 #define UnregisterSCTImage GmUnregisterSCTImage
 #define UnregisterSFWImage GmUnregisterSFWImage
 #define UnregisterSGIImage GmUnregisterSGIImage
+#define UnregisterStaticModules GmUnregisterStaticModules
 #define UnregisterSTEGANOImage GmUnregisterSTEGANOImage
 #define UnregisterSUNImage GmUnregisterSUNImage
 #define UnregisterSVGImage GmUnregisterSVGImage
-#define UnregisterStaticModules GmUnregisterStaticModules
 #define UnregisterTGAImage GmUnregisterTGAImage
 #define UnregisterTIFFImage GmUnregisterTIFFImage
 #define UnregisterTILEImage GmUnregisterTILEImage
@@ -1120,14 +1124,14 @@
 #define UnregisterXPMImage GmUnregisterXPMImage
 #define UnregisterXWDImage GmUnregisterXWDImage
 #define UnregisterYUVImage GmUnregisterYUVImage
-#define UnsharpMaskImage GmUnsharpMaskImage
 #define UnsharpMaskImageChannel GmUnsharpMaskImageChannel
+#define UnsharpMaskImage GmUnsharpMaskImage
 #define UpdateSignature GmUpdateSignature
 #define WaveImage GmWaveImage
 #define WhiteThresholdImage GmWhiteThresholdImage
-#define WriteBlob GmWriteBlob
 #define WriteBlobByte GmWriteBlobByte
 #define WriteBlobFile GmWriteBlobFile
+#define WriteBlob GmWriteBlob
 #define WriteBlobLSBLong GmWriteBlobLSBLong
 #define WriteBlobLSBShort GmWriteBlobLSBShort
 #define WriteBlobLSBSignedLong GmWriteBlobLSBSignedLong
@@ -1136,12 +1140,12 @@
 #define WriteBlobMSBShort GmWriteBlobMSBShort
 #define WriteBlobMSBSignedLong GmWriteBlobMSBSignedLong
 #define WriteBlobMSBSignedShort GmWriteBlobMSBSignedShort
-#define WriteBlobString GmWriteBlobString
 #define WriteBlobStringEOL GmWriteBlobStringEOL
+#define WriteBlobString GmWriteBlobString
 #define WriteBlobStringWithEOL GmWriteBlobStringWithEOL
 #define WriteImage GmWriteImage
-#define WriteImages GmWriteImages
 #define WriteImagesFile GmWriteImagesFile
+#define WriteImages GmWriteImages
 #define ZoomImage GmZoomImage
 
 #endif /* defined(PREFIX_MAGICK_SYMBOLS) */

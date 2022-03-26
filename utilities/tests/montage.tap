@@ -12,7 +12,7 @@ test_command_fn 'Montage' -F TTF ${GM} montage ${MONTAGE_FLAGS} -geometry '130x1
   -bordercolor 'green' -borderwidth 1x1 -tile '7x4' -compose 'over' \
   -background '#ffffff' -font ${GENERIC_TTF} -pointsize 18 -fill '#600' \
   -stroke 'none' null: null: null: null: null: null: null: 'Tile*_out.miff' \
-  -compress rle montage_out.miff
-test_command_fn 'Prepare logo' ${GM} convert ${CONVERT_FLAGS} logo: -resize 40% logo_out.miff
-test_command_fn 'Composite logo' ${GM} composite ${COMPOSITE_FLAGS} 'tmp:logo_out.miff' -gravity north 'tmp:montage_out.miff' -depth 8 demo.miff
+  -compress ${MIFF_COMPRESS} montage_out.miff
+test_command_fn 'Prepare logo' ${GM} convert ${CONVERT_FLAGS} logo: -resize 40% -compress ${MIFF_COMPRESS} logo_out.miff
+test_command_fn 'Composite logo' ${GM} composite ${COMPOSITE_FLAGS} 'tmp:logo_out.miff' -gravity north 'tmp:montage_out.miff' -depth 8 -compress ${MIFF_COMPRESS} demo.miff
 :

@@ -56,6 +56,7 @@ RST2HTML_TARGETS = \
 	$(WWWDIR)/ChangeLog-2018.html \
 	$(WWWDIR)/ChangeLog-2019.html \
 	$(WWWDIR)/ChangeLog-2020.html \
+	$(WWWDIR)/ChangeLog-2021.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -174,6 +175,7 @@ WWW_HTML_FILES = \
 	$(WWWDIR)/ChangeLog-2018.html \
 	$(WWWDIR)/ChangeLog-2019.html \
 	$(WWWDIR)/ChangeLog-2020.html \
+	$(WWWDIR)/ChangeLog-2021.html \
 	$(WWWDIR)/Changelog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
@@ -274,6 +276,9 @@ $(top_srcdir)/%.html: $(top_srcdir)/%.rst
 CHANGELOG2RST=$(top_srcdir)/scripts/changelog2rst.sh
 
 $(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
+	$(CHANGELOG2RST) < $^ > $@
+
+$(top_srcdir)/www/ChangeLog-2021.rst: $(top_srcdir)/ChangeLog.2021
 	$(CHANGELOG2RST) < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2020.rst: $(top_srcdir)/ChangeLog.2020
