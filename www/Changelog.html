@@ -37,6 +37,16 @@
 
 <p>2022-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* www/index.rst: Update the Coverity Analysis Metrics.</p>
+<p>* magick/display.c (MagickXAnnotateEditImage): Quiet Coverity
+376901 &quot;Identical code for different branches
+(IDENTICAL_BRANCHES)&quot;.</p>
+<p>* coders/svg.c (ReadSVGImage): Default to not allowing external
+entity substitution.  Quiets Coverity 376905
+&quot;unsafe_xml_parse_config (UNSAFE_XML_PARSE_CONFIG)&quot;.</p>
+<p>* coders/msl.c (ProcessMSLScript): Default to not allowing
+external entity substitution.  Quiets Coverity 376913
+&quot;unsafe_xml_parse_config (UNSAFE_XML_PARSE_CONFIG)&quot;.</p>
 <p>* magick/error.c (ThrowLoggedException): Silence Coverity 376912
 &quot;Dereference after null check (FORWARD_NULL)&quot;.</p>
 <p>* coders/jp2.c (ReadJP2Image): Silence Coverity 264883 &quot;Division

@@ -64,6 +64,7 @@ version of this page.
 .. _`ASan` : https://github.com/google/sanitizers/wiki/AddressSanitizer
 .. _`UBSan` : https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 .. _`oss-fuzz` : https://github.com/google/oss-fuzz
+.. _`Coverity Analysis Metrics` : https://scan.coverity.com/projects/graphicsmagick
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
 of 279K physical lines (according to David A. Wheeler's `SLOCCount`_)
@@ -145,8 +146,9 @@ other popular software:
     control management tool which supports management of local
     changes.  The repository history goes back to 1998.
 
-  * GM has 0.00 (zero) defects per 1000 lines of code (293,341 total
-    lines included) according to Coverity analysis on May 25, 2015.
+  * GM has 0.00 (zero) defects per 1000 lines of code (332,286 total
+    lines included) according to `Coverity Analysis Metrics`_ on April
+    1, 2022.
 
   * GM developers contribute to other free projects for the public good.
 

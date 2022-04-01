@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -4058,7 +4058,21 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (image_info->size != (char *) NULL)
     (void) CloneString(&svg_info.size,image_info->size);
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"begin SAX");
-  (void) xmlSubstituteEntitiesDefault(1);
+  /*
+    xmlSubstituteEntitiesDefault(1) enables external ENTITY support
+    (e.g. SVGResolveEntity() which allows XML to be downloaded from an
+    external source.  This may be a security hazard if the input is
+    not trustworty or if connecting to the correct source is not
+    assured. If the XML is parsed on the backside of a firewall then
+    it may be able to access unintended resources.
+
+    See "https://www.w3.org/TR/SVG11/svgdtd.html#DTD.1.16" and
+    "https://hdivsecurity.com/owasp-xml-external-entities-xxe".
+
+    FIXME: Do we need a way for the user to enable this?  Does
+    retrieval of external entities work at all?
+  */
+  (void) xmlSubstituteEntitiesDefault(0);
 
   (void) memset(&SAXModules,0,sizeof(SAXModules));
   SAXModules.internalSubset=SVGInternalSubset;

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -4572,7 +4572,20 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
   msl_info.image[0]=msl_image;
   if (writer_image != (Image *) NULL)
     MSLPushImage(&msl_info,writer_image);
-  (void) xmlSubstituteEntitiesDefault(1);
+  /*
+    xmlSubstituteEntitiesDefault(1) enables external ENTITY support
+    (e.g. SVGResolveEntity() which allows XML to be downloaded from an
+    external source.  This may be a security hazard if the input is
+    not trustworty or if connecting to the correct source is not
+    assured. If the XML is parsed on the backside of a firewall then
+    it may be able to access unintended resources.
+
+    See "https://hdivsecurity.com/owasp-xml-external-entities-xxe".
+
+    FIXME: Do we need a way for the user to enable this?  Does
+    retrieval of external entities work at all?
+  */
+  (void) xmlSubstituteEntitiesDefault(0);
 
   (void) memset(&SAXModules,0,sizeof(SAXModules));
   SAXModules.internalSubset=MSLInternalSubset;

@@ -1,5 +1,19 @@
 2022-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * www/index.rst: Update the Coverity Analysis Metrics.
+
+        * magick/display.c (MagickXAnnotateEditImage): Quiet Coverity
+        376901 "Identical code for different branches
+        (IDENTICAL_BRANCHES)".
+
+        * coders/svg.c (ReadSVGImage): Default to not allowing external
+        entity substitution.  Quiets Coverity 376905
+        "unsafe_xml_parse_config (UNSAFE_XML_PARSE_CONFIG)".
+
+        * coders/msl.c (ProcessMSLScript): Default to not allowing
+        external entity substitution.  Quiets Coverity 376913
+        "unsafe_xml_parse_config (UNSAFE_XML_PARSE_CONFIG)".
+
         * magick/error.c (ThrowLoggedException): Silence Coverity 376912
         "Dereference after null check (FORWARD_NULL)".
 
