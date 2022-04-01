@@ -35,8 +35,26 @@
 <div class="document">
 
 
+<p>2022-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<p>* magick/error.c (ThrowLoggedException): Silence Coverity 376912
+&quot;Dereference after null check (FORWARD_NULL)&quot;.</p>
+<p>* coders/jp2.c (ReadJP2Image): Silence Coverity 264883 &quot;Division
+or modulo by float zero (DIVIDE_BY_ZERO)&quot;.
+(ReadJP2Image): Fix Coverity 376911 &quot;Improper use of negative
+value (NEGATIVE_RETURNS)&quot;.</p>
+<p>* magick/xwindow.c (MagickXMakeMagnifyImage): Fix Coverity 376906
+&quot;Division or modulo by zero (DIVIDE_BY_ZERO)&quot;.</p>
+<p>* magick/resize.c (ScaleImage): Fix Coverity 376908 &quot;Resource leak
+(RESOURCE_LEAK)&quot;.</p>
+<p>* magick/locale.c (GetLocaleMessageFromTag): Fix Coverity 376907
+&quot;Out-of-bounds read (OVERRUN)&quot;.</p>
+<p>* magick/render.c (DrawPrimitive): Fix Coverity 376904
+&quot;Out-of-bounds access (OVERRUN)&quot;.</p>
+</blockquote>
 <p>2022-03-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* version.sh: Prepare for 1.3.38 release.</p>
 <p>* Makefile.am (release, snapshot): Generate SHA-256 checksums as a
 by-product of 'make snapshot' or 'make release'.</p>
 <p>* www/download.rst: Add documentation regaring SHA-256 checksums.</p>

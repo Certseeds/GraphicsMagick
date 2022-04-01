@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -7195,6 +7195,13 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
     magnify>>=1;
   while (magnify > windows->magnify.height)
     magnify>>=1;
+  if (magnify == 0)
+    {
+      if (previous_magnify != 0)
+        magnify = previous_magnify;
+      else
+        magnify = 1;
+    }
   if (magnify != previous_magnify)
     {
       unsigned int

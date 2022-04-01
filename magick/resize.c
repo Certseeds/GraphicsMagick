@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1805,6 +1805,7 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
       MagickFreeMemory(scale_scanline);
       MagickFreeMemory(x_vector);
       MagickFreeMemory(y_vector);
+      MagickFreeMemory(y_volumes);
       DestroyImage(scale_image);
       ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
                            UnableToScaleImage);

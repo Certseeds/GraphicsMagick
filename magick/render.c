@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -5907,7 +5907,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
   dvalue=ceil(primitive_info->point.x-0.5);
   if (MAGICK_ISNAN(dvalue) || ((dvalue < DTOLONG_MIN)) || (dvalue > DTOLONG_MAX))
     {
-      char double_str[18];
+      char double_str[MaxTextExtent];
       FormatString(double_str,"%g",dvalue);
       ThrowException(&image->exception,DrawError,PrimitiveArithmeticOverflow,double_str);
       return MagickFail;
@@ -5916,7 +5916,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
   dvalue=ceil(primitive_info->point.y-0.5);
   if (MAGICK_ISNAN(dvalue) || ((dvalue < DTOLONG_MIN)) || (dvalue > DTOLONG_MAX))
     {
-      char double_str[18];
+      char double_str[MaxTextExtent];
       FormatString(double_str,"%g",dvalue);
       ThrowException(&image->exception,DrawError,PrimitiveArithmeticOverflow,double_str);
       return MagickFail;

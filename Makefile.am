@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2021 GraphicsMagick Group
+# Copyright (C) 2004-2022 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -425,12 +425,13 @@ COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL=GraphicsMagick.xz
 COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@
 COVERITY_DESCRIPTION='Ubuntu Q@QuantumDepth@'
-# New URL is https://brb.synopsys.com/?project=GraphicsMagick
+COVERITY_COV_INT='cov-int'
+# New URL is https://scan.coverity.com/projects/graphicsmagick?tab=overview
 coverity:
 	$(MAKE) clean
 	cov-build --dir cov-int $(MAKE)
 	tar caf $(COVERITY_TARBALL) cov-int
-	curl --limit-rate 50K \
+	curl --limit-rate 34K \
 	--form token=`cat $$HOME/.coverity_key_gm` \
 	--form email=$(COVERITY_EMAIL) \
 	--form file=@$(COVERITY_TARBALL) \
@@ -438,6 +439,7 @@ coverity:
 	--form description=$(COVERITY_DESCRIPTION) \
 	https://scan.coverity.com/builds?project=GraphicsMagick
 	$(RM) $(COVERITY_TARBALL)
+	$(RM) -rf $(COVERITY_COV_INT)
 
 # Rules for a profiled build (according to Paolo Bonzini <bonzini@gnu.org>)
 #.PHONY: profile

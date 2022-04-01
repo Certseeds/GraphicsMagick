@@ -1,3 +1,25 @@
+2022-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/error.c (ThrowLoggedException): Silence Coverity 376912
+        "Dereference after null check (FORWARD_NULL)".
+
+        * coders/jp2.c (ReadJP2Image): Silence Coverity 264883 "Division
+        or modulo by float zero (DIVIDE_BY_ZERO)".
+        (ReadJP2Image): Fix Coverity 376911 "Improper use of negative
+        value (NEGATIVE_RETURNS)".
+
+        * magick/xwindow.c (MagickXMakeMagnifyImage): Fix Coverity 376906
+        "Division or modulo by zero (DIVIDE_BY_ZERO)".
+
+        * magick/resize.c (ScaleImage): Fix Coverity 376908 "Resource leak
+        (RESOURCE_LEAK)".
+
+        * magick/locale.c (GetLocaleMessageFromTag): Fix Coverity 376907
+        "Out-of-bounds read (OVERRUN)".
+
+        * magick/render.c (DrawPrimitive): Fix Coverity 376904
+        "Out-of-bounds access (OVERRUN)".
+
 2022-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * version.sh: Prepare for 1.3.38 release.
