@@ -27,7 +27,7 @@ Debian `GraphicsMagick packages <http://packages.debian.org/search?keywords=Grap
 
 `Black Duck | Open HUB <https://www.openhub.net/p/graphics_magick>`_ GraphicsMagick Entry.
 
-`Repology <https://repology.org/project/graphicsmagick/versions`_ GraphicsMagick Package Versions in OS distributions.
+`Repology <https://repology.org/project/graphicsmagick/versions>`_ GraphicsMagick Package Versions in OS distributions.
 
 `SourceForge <https://sourceforge.net/projects/graphicsmagick/>`_ GraphicsMagick Entry.
 

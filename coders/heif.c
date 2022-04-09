@@ -72,12 +72,18 @@ static unsigned int IsHEIF(const unsigned char *magick,const size_t length)
   enum heif_filetype_result
     heif_filetype;
 
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Testing header for supported HEIF format");
+
   if (length < 12)
     return(False);
 
   heif_filetype = heif_check_filetype(magick, (int) length);
   if (heif_filetype == heif_filetype_yes_supported)
     return True;
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Not a supported HEIF format");
 
   return(False);
 }
@@ -539,6 +545,20 @@ ModuleExport void RegisterHEIFImage(void)
                   "heif v%u.%u.%u", heif_major,
                   heif_minor, heif_revision);
 
+  entry=SetMagickInfo("AVIF");
+#if defined(HasHEIF)
+  entry->decoder=(DecoderHandler) ReadHEIFImage;
+  entry->magick=(MagickHandler) IsHEIF;
+#endif
+  entry->description=description;
+  entry->adjoin=False;
+  entry->seekable_stream=MagickTrue;
+  if (*version != '\0')
+    entry->version=version;
+  entry->module="HEIF";
+  entry->coder_class=PrimaryCoderClass;
+  (void) RegisterMagickInfo(entry);
+
   entry=SetMagickInfo("HEIF");
 #if defined(HasHEIF)
   entry->decoder=(DecoderHandler) ReadHEIFImage;
@@ -589,6 +609,7 @@ ModuleExport void RegisterHEIFImage(void)
 */
 ModuleExport void UnregisterHEIFImage(void)
 {
+  (void) UnregisterMagickInfo("AVIF");
   (void) UnregisterMagickInfo("HEIF");
   (void) UnregisterMagickInfo("HEIC");
 }
