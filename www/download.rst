@@ -48,19 +48,27 @@ https://gnupg.org/download/.  The installed program on your system
 might be named 'gpg', 'gpg2', or 'gpg1'.
 
 The signing key used (currently DSA key id
-EBDFDB21B020EE8FD151A88DE301047DE1198975) may be downloaded from a
-public key server like::
+EBDFDB21B020EE8FD151A88DE301047DE1198975) may be downloaded in several
+different ways.
+
+The key may be downloaded directly from
+http://www.simplesystems.org/users/bfriesen/public-key.txt, or it may
+be extracted from the text of
+http://www.graphicsmagick.org/security.html.
+
+It may be also downloaded from a public key server (if you are lucky)
+like::
 
   gpg --recv-keys EBDFDB21B020EE8FD151A88DE301047DE1198975
 
-or it may be extracted from
-http://www.graphicsmagick.org/security.html.
+If extracting the key from the
+http://www.graphicsmagick.org/security.html web page, then copy the
+entire block of text including the all of the "BEGIN" and "END" lines
+to a file (e.g. `gm-sigs.asc`).
 
-If extracting the key from the web page, (rather than using a key
-server) to obtain the key, then copy the entire block of text
-including the all of the "BEGIN" and "END" lines to a file
-(e.g. `gm-sigs.asc`) and import it into your collection of keys.  For
-example::
+If you have chosen to download the public key to a file
+(e.g. `gm-sigs.asc`) you can import it into your collection of keys.
+For example::
 
   gpg --import gm-sigs.asc
 
@@ -102,4 +110,4 @@ and then compare the generated checksum (hex format) with the checksum
 provided in the release announcement.  While this is much more secure
 than doing nothing, it does not fully defend against forgery.  If
 someone is able to forge a modified release archive as well as a
-release announcment, then you could be duped!
+release announcement, then you could be duped!

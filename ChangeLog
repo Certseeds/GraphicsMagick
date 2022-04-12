@@ -1,3 +1,10 @@
+2022-04-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/blob.c (OpenBlob): Allocate setvbuf() buffer externally
+        rather than implicitly.  I am hoping that the several oss-fuzz
+        reports about using uninitalized memory from glibc's
+        _IO_file_doallocate() go away.
+
 2022-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/heif.c (RegisterHEIFImage): Support reading AVIF via

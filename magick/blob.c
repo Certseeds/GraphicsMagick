@@ -147,6 +147,9 @@ struct _BlobInfo
   long
     reference_count;    /* Number of times this blob is referenced. */
 
+  char
+    *vbuf;              /* Buffer for setvbuf() */
+
   unsigned long
     signature;          /* Numeric value used to evaluate structure integrity. */
 };
@@ -1059,6 +1062,7 @@ MagickExport MagickPassFail CloseBlob(Image *image)
                       blob->first_errno=errno;
                   }
               }
+            MagickFreeMemory(image->blob->vbuf);
             break;
           }
         case PipeStream:
@@ -2903,9 +2907,10 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
                     vbuf_size;
 
                   vbuf_size=image->blob->block_size;
-                  if (0 != vbuf_size)
+                  image->blob->vbuf=MagickAllocateClearedMemory(char *, vbuf_size);
+                  if ((0 != vbuf_size) && (image->blob->vbuf != (char *) NULL))
                     {
-                      if (setvbuf(image->blob->handle.std,NULL,_IOFBF,vbuf_size) != 0)
+                      if (setvbuf(image->blob->handle.std,image->blob->vbuf,_IOFBF,vbuf_size) != 0)
                         {
                           if (image->logging)
                             (void) LogMagickEvent(BlobEvent,GetMagickModule(),
