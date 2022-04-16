@@ -786,15 +786,15 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
     *image;
 
   image=(Image *) png_get_io_ptr(png_ptr);
-  if (length)
+  if (length > 0)
     {
       size_t
         check;
 
       if (length > 0x7fffffff)
         png_warning(png_ptr, "chunk length > 2G");
-      check=ReadBlob(image,(size_t) length,(char *) data);
-      if (check != (size_t) length)
+      check=ReadBlob(image, length,(char *) data);
+      if (check != length)
         {
           char
             msg[MaxTextExtent];
@@ -1517,7 +1517,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     ping_interlace_method,
     ping_compression_method,
     ping_filter_method,
-    ping_num_trans;
+    ping_num_trans=0;
 
   LongPixelPacket
     transparent_color;

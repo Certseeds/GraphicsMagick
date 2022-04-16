@@ -4923,6 +4923,9 @@ DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
 
 # Use a hard-coded mechanism and destination path to copy snapshot files
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@SNAPSHOT_DIRECTORY = /ftp/pub/GraphicsMagick/snapshots
+
+# FIXME: Could use info from /etc/os-release, or output from
+# lsb_release.
 COVERITY_EMAIL = bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL = GraphicsMagick.xz
 COVERITY_VERSION = snapshot-@PACKAGE_CHANGE_DATE@

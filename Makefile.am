@@ -421,6 +421,8 @@ snapshot: distcheck
 
 endif # HasGRAPHICSMAGICK_SNAPSHOT_COPY
 
+# FIXME: Could use info from /etc/os-release, or output from
+# lsb_release.
 COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
 COVERITY_TARBALL=GraphicsMagick.xz
 COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@

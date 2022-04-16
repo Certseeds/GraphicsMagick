@@ -1,3 +1,9 @@
+2022-04-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/png.c (ReadOnePNGImage): Make sure that ping_num_trans is
+        initialized.  Fixes oss-fuzz 46760 "Use-of-uninitialized-value -
+        ReadOnePNGImage".
+
 2022-04-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/blob.c (OpenBlob): Allocate setvbuf() buffer externally
