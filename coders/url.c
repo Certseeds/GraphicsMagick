@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2016 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -45,14 +45,18 @@
 #include "magick/utility.h"
 #if defined(MSWINDOWS)
 #  if defined(__MINGW32__)
-#    define _MSC_VER
+#    if !defined(_MSC_VER)
+#      define _MSC_VER 1200
+#    endif
 #  else
 #    include <win32config.h>
 #  endif
 #endif
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
-#include <libxml/nanoftp.h>
+#if defined(HAVE_XMLNANOFTPNEWCTXT) && HAVE_XMLNANOFTPNEWCTXT
+#  include <libxml/nanoftp.h>
+#endif /* defined(HAVE_XMLNANOFTPNEWCTXT) && HAVE_XMLNANOFTPNEWCTXT */
 #include <libxml/nanohttp.h>
 
 /*

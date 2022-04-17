@@ -2302,6 +2302,8 @@ AC_SUBST([LIB_JP2])
 #
 # Check for TTF
 #
+# FIXME: freetype-config appears to be defunct!
+#
 have_ttf='no'
 LIB_TTF=''
 if test "$with_ttf" != 'no'

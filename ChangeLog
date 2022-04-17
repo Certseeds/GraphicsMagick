@@ -1,3 +1,11 @@
+2022-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/{msl.c, svg.c, url.c}: When __MINGW32__ is defined, then
+        only define _MSC_VER if it is not already defined.  Also define
+        _MSC_VER with a somewhat useful value.  This change is prompted by
+        a posting by "LM" to the graphicsmagick-core list on April 17,
+        2022.
+
 2022-04-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/png.c (ReadOnePNGImage): Make sure that ping_num_trans is

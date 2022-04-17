@@ -62,7 +62,9 @@
 #include "magick/utility.h"
 #if defined(MSWINDOWS)
 #  if defined(__MINGW32__)
-#    define _MSC_VER
+#    if !defined(_MSC_VER)
+#      define _MSC_VER 1200
+#    endif
 #  else
 #    include <win32config.h>
 #  endif
