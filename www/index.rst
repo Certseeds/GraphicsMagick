@@ -112,8 +112,8 @@ other popular software:
   * GM is much smaller and lighter than ImageMagick (3-5X smaller
     installation footprint).
 
-  * GM is used to process billions of files at the world's largest photo
-    sites (e.g. `Flickr`_ and `Etsy`_).
+  * GM has been used to process billions of files at the world's
+    largest photo sites (e.g. `Flickr`_ and `Etsy`_).
 
   * GM does not conflict with other installed software.
 
@@ -146,9 +146,9 @@ other popular software:
     control management tool which supports management of local
     changes.  The repository history goes back to 1998.
 
-  * GM has 0.00 (zero) defects per 1000 lines of code (332,286 total
+  * GM has 0.00 (zero) defects per 1000 lines of code (332,315 total
     lines included) according to `Coverity Analysis Metrics`_ on April
-    1, 2022.
+    16, 2022.
 
   * GM developers contribute to other free projects for the public good.
 
