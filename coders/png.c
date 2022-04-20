@@ -5712,22 +5712,35 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           (void) SeekBlob(image,-((long) length+12),SEEK_CUR);
         }
 
-      previous=image;
+      previous=(Image *) NULL;
       mng_info->image=image;
       mng_info->mng_type=mng_type;
       mng_info->object_id=object_id;
 
       if (!memcmp(type,mng_IHDR,4))
-        image=ReadOnePNGImage(mng_info,image_info,exception);
+        {
+          Image *new_image=ReadOnePNGImage(mng_info,image_info,exception);
+          if (new_image != (Image *) NULL)
+            previous=image;
+          image=new_image;
 #if defined(JNG_SUPPORTED)
+        }
       else
-        image=ReadOneJNGImage(mng_info,image_info,exception);
+        {
+          Image *new_image=ReadOneJNGImage(mng_info,image_info,exception);
+          if (new_image != (Image *) NULL)
+              previous=image;
+          image=new_image;
+        }
 #endif
 
       if (image == (Image *) NULL)
         {
-          CloseBlob(previous);
-          DestroyImageList(previous);
+          if (previous != (Image *) NULL)
+            {
+              CloseBlob(previous);
+              DestroyImageList(previous);
+            }
           MngInfoFreeStruct(mng_info,&have_mng_structure);
           return((Image *) NULL);
         }

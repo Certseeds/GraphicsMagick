@@ -1,3 +1,8 @@
+2022-04-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/png.c (ReadMNGImage): Address oss-fuzz 46843
+        "graphicsmagick:enhance_fuzzer: Heap-use-after-free in CloseBlob".
+
 2022-04-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/{msl.c, svg.c, url.c}: When __MINGW32__ is defined, then
