@@ -846,7 +846,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
   polygon_info->number_edges=edge;
   qsort(polygon_info->edges,polygon_info->number_edges,sizeof(EdgeInfo),
     CompareEdges);
-  if (IsEventLogging())
+  if (IsEventLogged(RenderEvent))
     LogPolygonInfo(polygon_info);
   return(polygon_info);
 }
@@ -1024,7 +1024,7 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
   path_info[n].code=EndCode;
   path_info[n].point.x=0.0;
   path_info[n].point.y=0.0;
-  if (IsEventLogging())
+  if (IsEventLogged(RenderEvent))
     LogPathInfo(path_info);
   return(path_info);
 }
@@ -6224,7 +6224,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
       DrawInfo
         *clone_info;
 
-      if (IsEventLogging())
+      if (IsEventLogged(RenderEvent))
         LogPrimitiveInfo(primitive_info);
       scale=ExpandAffine(&draw_info->affine);
       if ((draw_info->dash_pattern != (double *) NULL) &&

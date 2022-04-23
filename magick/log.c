@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -467,9 +467,9 @@ InitializeLogInfoPost(void)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  IsEventLogging() returns MagickTrue if logging of events is enabled otherwise
-%  MagickFalse.  This can be used to enable logging code which is otherwise
-%  not needed.
+%  IsEventLogging() returns MagickTrue if logging of events is enabled,
+%  otherwise MagickFalse.  This can be used to enable logging code which
+%  is otherwise not needed.
 %
 %  The format of the IsEventLogging method is:
 %
@@ -480,6 +480,83 @@ InitializeLogInfoPost(void)
 MagickExport MagickBool IsEventLogging(void)
 {
   return (log_info->events != NoEventsMask);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%  I s E v e n t L o g g e d                                                  %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  IsEventLogged() returns MagickTrue if logging of events for the specified
+%  exception type is enabled, otherwise MagickFalse.  This can be used to
+%  enable logging code which is otherwise not needed.
+%
+%  The format of the IsEventLogging method is:
+%
+%      MagickBool IsEventLogged(const ExceptionType type)
+%
+%
+*/
+MagickExport MagickBool IsEventLogged(const ExceptionType type)
+{
+  unsigned int
+    i;
+
+  MagickBool
+    enabled = MagickFalse;
+
+  /* Short-circuit for when not logging at all */
+  if (log_info->events == NoEventsMask)
+    return MagickFalse;
+
+  if (log_info->events == AllEventsMask)
+    return MagickTrue;
+
+  /* first translate the base type of the event to a mask */
+  for (i=0; i < ArraySize(eventmask_map); i++)
+    {
+      /* if the range in the table is above 100 it represents raw
+         event id's. These entry types are to look for specific
+         severity codes.
+      */
+      if (eventmask_map[i].start_type > 99)
+        {
+          if (((int) type >= eventmask_map[i].start_type) &&
+              ((int) type <= eventmask_map[i].end_type))
+            {
+              if (((unsigned int) log_info->events) &
+                  ((unsigned int) eventmask_map[i].mask))
+                {
+                  enabled=MagickTrue;
+                  break;
+                }
+            }
+        }
+      else
+        {
+          /* these ranges are for id's with the severity stripped
+             off and represent a category instead.
+          */
+          if ((((int) type % 100) >= eventmask_map[i].start_type) &&
+              (((int) type % 100) <= eventmask_map[i].end_type))
+            {
+              if (((unsigned int) log_info->events) &
+                  ((unsigned int) eventmask_map[i].mask))
+                {
+                  enabled=MagickTrue;
+                  break;
+                }
+            }
+        }
+    }
+
+  return enabled;
 }
 
 /*
@@ -553,58 +630,8 @@ LogMagickEventList(const ExceptionType type,
   time_t
     seconds;
 
-  if (!IsEventLogging())
-    return(False);
-
-  if (log_info->events != AllEventsMask)
-    {
-      unsigned int
-        i;
-
-      unsigned int
-        enabled;
-
-      /* first translate the base type of the event to a mask */
-      enabled=False;
-      for (i=0; i < ArraySize(eventmask_map); i++)
-        {
-          /* if the range in the table is above 100 it represents raw
-             event id's. These entry types are to look for specific
-             severity codes.
-          */
-          if (eventmask_map[i].start_type > 99)
-            {
-              if (((int) type >= eventmask_map[i].start_type) &&
-                  ((int) type <= eventmask_map[i].end_type))
-                {
-                  if (((unsigned int) log_info->events) &
-                      ((unsigned int) eventmask_map[i].mask))
-                    {
-                      enabled=True;
-                      break;
-                    }
-                }
-            }
-          else
-            {
-              /* these ranges are for id's with the severity stripped
-                 off and represent a category instead.
-              */
-              if ((((int) type % 100) >= eventmask_map[i].start_type) &&
-                  (((int) type % 100) <= eventmask_map[i].end_type))
-                {
-                  if (((unsigned int) log_info->events) &
-                      ((unsigned int) eventmask_map[i].mask))
-                    {
-                      enabled=True;
-                      break;
-                    }
-                }
-            }
-        }
-      if (!enabled)
-        return(MagickPass);
-    }
+  if (!IsEventLogged(type))
+    return MagickFalse;
 
   event[0]='\0';
   message[0]='\0';

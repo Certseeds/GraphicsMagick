@@ -5233,7 +5233,7 @@ MagickXInitializeWindows(Display *display,
 #if defined(MSWINDOWS)
   (void) XSynchronize(display,IsWindows95());
 #endif
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) XSynchronize(display,True);
       (void) LogMagickEvent(X11Event,GetMagickModule(),"Version: %.1024s",
@@ -5300,7 +5300,7 @@ MagickXInitializeWindows(Display *display,
       (windows->icon_visual == (XVisualInfo *) NULL))
     MagickFatalError(XServerFatalError,UnableToGetVisual,
       resource_info->visual_type);
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),"Visual:");
       (void) LogMagickEvent(X11Event,GetMagickModule(),"  visual id: 0x%lx",
@@ -5783,7 +5783,7 @@ MagickXMakeImage(Display *display,
       (void) XDefineCursor(display,window->id,window->cursor);
       return(False);
     }
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),"XImage:");
       (void) LogMagickEvent(X11Event,GetMagickModule(),"  width x height: %dx%d",
@@ -5891,7 +5891,7 @@ MagickXMakeImage(Display *display,
         */
         matte_image=XCreateImage(display,window->visual,1,XYBitmap,0,
           (char *) NULL,width,height,XBitmapPad(display),0);
-        if (IsEventLogging())
+        if (IsEventLogged(X11Event))
           {
             (void) LogMagickEvent(X11Event,GetMagickModule(),"Matte Image:");
             (void) LogMagickEvent(X11Event,GetMagickModule(),
@@ -7642,7 +7642,7 @@ MagickXMakePixmap(Display *display,
   if (!window->shared_memory)
     (void) XPutImage(display,window->pixmap,window->annotate_context,
       window->ximage,0,0,0,0,width,height);
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),"Pixmap:");
       (void) LogMagickEvent(X11Event,GetMagickModule(),"  width, height: %ux%u",
@@ -7823,7 +7823,7 @@ MagickXMakeStandardColormap(Display *display,
             (void) SetImageType(image,TrueColorType);
             DestroyImage(map_image);
           }
-      if (IsEventLogging())
+      if (IsEventLogged(X11Event))
         {
           (void) LogMagickEvent(X11Event,GetMagickModule(),"Standard Colormap:");
           (void) LogMagickEvent(X11Event,GetMagickModule(),"  colormap id: 0x%lx",
@@ -8264,7 +8264,7 @@ MagickXMakeStandardColormap(Display *display,
       pixel->colors=image->colors+MaxNumberPens;
     }
   MagickFreeMemory(colors);
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),"Standard Colormap:");
       (void) LogMagickEvent(X11Event,GetMagickModule(),"  colormap id: 0x%lx",

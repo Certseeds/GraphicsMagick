@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2020 GraphicsMagick Group
+  Copyright (C) 2003 - 2022 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -97,6 +97,7 @@ typedef void
 */
 extern MagickExport MagickBool
   IsEventLogging(void) MAGICK_FUNC_PURE,
+  IsEventLogged(const ExceptionType type) MAGICK_FUNC_PURE,
   LogMagickEvent(const ExceptionType type,
     const char *module,const char *function,const unsigned long line,
     const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,5,6))),

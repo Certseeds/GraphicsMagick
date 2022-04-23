@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -807,7 +807,7 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
           locale[i]=locale[j];
           locale[j]=swap;
         }
-  if (IsEventLogging())
+  if (IsEventLogged(LocaleEvent))
     for (i=0; i < count; i++)
       (void) LogMagickEvent(LocaleEvent,GetMagickModule(),"%.1024s",locale[i]);
   if (LocaleCompare(image_info->magick,"LOCALEMC") == 0)

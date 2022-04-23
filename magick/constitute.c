@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2167,7 +2167,7 @@ WriteImage(const ImageInfo *image_info,Image *image)
   assert(image->signature == MagickSignature);
   if (LocaleNCompare(image_info->magick,"INFO",sizeof("INFO")-1))
       GetTimerInfo(&image->timer);
-  image->logging=IsEventLogging();
+  image->logging=IsEventLogged(CoderEvent);
   clone_info=CloneImageInfo(image_info);
   (void) strlcpy(clone_info->filename,image->filename,MaxTextExtent);
   (void) strlcpy(clone_info->magick,image->magick,MaxTextExtent);
@@ -2402,7 +2402,7 @@ WriteImages(const ImageInfo *image_info,Image *image,
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
-  image->logging=IsEventLogging();
+  image->logging=IsEventLogged(CoderEvent);
   clone_info=CloneImageInfo(image_info);
   if (clone_info)
     {
@@ -2490,7 +2490,7 @@ MagickExport MagickPassFail WriteImagesFile(const ImageInfo *image_info,Image *i
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
-  image->logging=IsEventLogging();
+  image->logging=IsEventLogged(CoderEvent);
   clone_info=CloneImageInfo(image_info);
   if (clone_info)
     {

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1883,7 +1883,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
-  logging=IsEventLogging();
+  logging=IsEventLogged(CoderEvent);
   image=AllocateImage(image_info);
   more_frames=MagickFalse;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
@@ -4365,7 +4365,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   image_list_length=GetImageListLength(image);
-  logging=IsEventLogging();
+  logging=IsEventLogged(CoderEvent);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);

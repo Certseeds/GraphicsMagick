@@ -589,7 +589,7 @@ FindMagickModule(const char *filename,MagickModuleType module_type,
       return MagickFail;
     }
 
-  if (IsEventLogging())
+  if (IsEventLogged(ConfigureEvent))
     {
       char
         list_seperator[2],

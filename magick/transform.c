@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -497,6 +497,9 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
   MagickPassFail
     status=MagickPass;
 
+  MagickBool
+    transform_logging;
+
   /*
     Check crop geometry.
   */
@@ -505,7 +508,8 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
   assert(geometry != (const RectangleInfo *) NULL);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  if (image->logging)
+  transform_logging=IsEventLogged(TransformEvent);
+  if (transform_logging)
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Crop Geometry: %lux%lu%+ld%+ld",
                           geometry->width, geometry->height,
@@ -551,7 +555,7 @@ MagickExport Image *CropImage(const Image *image,const RectangleInfo *geometry,
       page.y-=geometry->y;
       if (page.y < 0)
         page.y=0;
-      if (image->logging)
+      if (transform_logging)
         (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                               "Bounding Page: %lux%lu%+ld%+ld",
                               page.width, page.height, page.x, page.y);
@@ -1674,8 +1678,13 @@ MagickExport MagickPassFail TransformImage(Image **image,const char *crop_geomet
   MagickPassFail
     status = MagickPass;
 
+  MagickBool
+    transform_logging;
+
   assert(image != (Image **) NULL);
   assert((*image)->signature == MagickSignature);
+
+  transform_logging=IsEventLogged(TransformEvent);
   transform_image=(*image);
   if (crop_geometry != (const char *) NULL)
     {
@@ -1687,7 +1696,7 @@ MagickExport MagickPassFail TransformImage(Image **image,const char *crop_geomet
       */
       crop_image=(Image *) NULL;
       flags=GetImageGeometry(transform_image,crop_geometry,False,&geometry);
-      if (transform_image->logging)
+      if (transform_logging)
         (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                               "Crop Geometry: %lux%lu%+ld%+ld",
                               geometry.width, geometry.height,
@@ -1770,7 +1779,7 @@ MagickExport MagickPassFail TransformImage(Image **image,const char *crop_geomet
   SetGeometry(transform_image,&geometry);
   flags=GetMagickGeometry(image_geometry,&geometry.x,&geometry.y,
                           &geometry.width,&geometry.height);
-  if (transform_image->logging)
+  if (transform_logging)
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Transform Geometry: %lux%lu%+ld%+ld",
                           geometry.width, geometry.height,

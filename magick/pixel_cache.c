@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -177,8 +177,11 @@ typedef struct _CacheInfo
   /* The number of Image structures referencing this cache */
   long reference_count;
 
-  /* True if cache is read only */
+  /* MagickTrue if cache is read only */
   MagickBool read_only;
+
+  /* MagickTrue if logging cache events */
+  MagickBool logging;
 
    /* Lock for updating reference count */
   SemaphoreInfo *reference_semaphore;
@@ -2525,7 +2528,7 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
           if (cache_info->indexes_valid)
             cache_info->indexes=(IndexPacket *) (pixels+number_pixels);
           FormatSize(cache_info->length,format);
-          if (image->logging)
+          if (cache_info->logging)
             (void) LogMagickEvent(CacheEvent,GetMagickModule(),
                                   "open %.1024s (%.1024s) storage_class=%s,"
                                   " colorspace=%s",cache_info->filename,
@@ -2641,7 +2644,7 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
   /*   (void) signal(SIGBUS,CacheSignalHandler); */
 #endif
   FormatSize(cache_info->length,format);
-  if (image->logging)
+  if (cache_info->logging)
     (void) LogMagickEvent(CacheEvent,GetMagickModule(),
                           "open %.1024s (%.1024s[%d], %.1024s, %.1024s)"
                           " storage_class=%s, colorspace=%s",
@@ -3759,6 +3762,8 @@ GetCacheInfo(Cache *cache)
   cache_info->limit_width=Min(LONG_MAX,limit);
   limit=GetMagickResourceLimit(HeightResource);
   cache_info->limit_height=Min(LONG_MAX,limit);
+
+  cache_info->logging=IsEventLogged(CacheEvent);
 
   cache_info->signature=MagickSignature;
   *cache=cache_info;

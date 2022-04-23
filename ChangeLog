@@ -1,5 +1,9 @@
 2022-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+        * magick/log.c (IsEventLogged): New function to report if a
+        particular event will be logged.  Us this as much as possible
+        throughout the software to replace use of IsEventLogging().
+
         * coders/png.c (ReadMNGImage): Address oss-fuzz 46913
         "graphicsmagick:coder_WPG_fuzzer: Indirect-leak in
         MagickMallocCleared" which was partially pre-existing and

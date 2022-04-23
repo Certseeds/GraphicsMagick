@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1621,7 +1621,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
     debug=MagickFalse;
 
   assert((ArraySize(format_bytes)-1) == EXIF_NUM_FORMATS);
-  logging=IsEventLogging();
+  logging=IsEventLogged(TransformEvent);
   {
     const char *
       env_value;

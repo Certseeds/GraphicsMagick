@@ -203,7 +203,7 @@ AcquireMagickResource(const ResourceType type,
             break;
           }
         }
-      if (IsEventLogging())
+      if (IsEventLogged(ResourceEvent))
         {
           char
             f_limit[MaxTextExtent],
@@ -785,7 +785,7 @@ MagickExport void LiberateMagickResource(const ResourceType type,
           }
         }
 
-      if (IsEventLogging())
+      if (IsEventLogged(ResourceEvent))
         {
           char
             f_limit[MaxTextExtent],

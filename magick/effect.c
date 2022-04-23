@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -224,7 +224,7 @@ MagickExport Image *AdaptiveThresholdImage(const Image * image,
               LongPixelPacket
                 min_sum;
 
-              if (image->logging)
+              if (IsEventLogged(TransformEvent))
                 (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                                       "LAT: overflow handling activated "
                                       "(y=%lu)!",y);
