@@ -258,6 +258,10 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Copying Postscript to temporary file \"%s\" ...",
                           postscript_filename);
+  bounds.x1=0.0;
+  bounds.y1=0.0;
+  bounds.x2=0.0;
+  bounds.y2=0.0;
   for (i=0; i < filesize; i++)
   {
     if ((c=ReadBlobByte(image)) == EOF)

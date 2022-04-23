@@ -37,6 +37,10 @@
 
 <p>2022-04-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
+<p>* coders/ps.c (ReadPSImage): Assure that 'bounds' structure is
+initialized.</p>
+<p>* coders/ept.c (ReadEPTImage): Assure that 'bounds' structure is
+initialized.</p>
 <p>* magick/log.c (IsEventLogged): New function to report if a
 particular event will be logged.  Us this as much as possible
 throughout the software to replace use of IsEventLogging().</p>
