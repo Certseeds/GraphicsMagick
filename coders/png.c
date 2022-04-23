@@ -1631,6 +1631,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
         {
           DestroyImage(image);
           image=(Image *) NULL;
+          mng_info->image=(Image *) NULL;
         }
       return(image);
     }
@@ -3262,6 +3263,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                 "chunk count is zero");
           ThrowException(exception,CorruptImageError,
                          UnexpectedEndOfFile,image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
           return ((Image*)NULL);
         }
       if (logging)
@@ -3285,6 +3287,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                 (MAGICK_SIZE_T) length);
           ThrowException(exception,CorruptImageError,
                          ImproperImageHeader,image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
           return ((Image*)NULL);
         }
       if (length > (size_t) blob_size)
@@ -3300,6 +3303,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                   blob_size);
           ThrowException(exception,CorruptImageError,
                          ImproperImageHeader,image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
           return ((Image*)NULL);
         }
 
@@ -3315,6 +3319,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   "    Could not allocate chunk memory");
               ThrowException(exception,ResourceLimitError,
                              MemoryAllocationFailed,image->filename);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
               return ((Image*)NULL);
             }
           if (ReadBlob(image,length,chunk) != length)
@@ -3325,6 +3330,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   "    chunk reading was incomplete");
               ThrowException(exception,CorruptImageError,
                              InsufficientImageDataInFile,image->filename);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
               return ((Image*)NULL);
             }
           p=chunk;
@@ -3393,6 +3399,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                              ImproperImageHeader,image->filename);
               DestroyJNG(chunk,&color_image,&color_image_info,
                 &alpha_image,&alpha_image_info);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
               return ((Image *)NULL);
             }
 
@@ -3410,6 +3417,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                              InsufficientImageDataInFile,image->filename);
               DestroyJNG(chunk,&color_image,&color_image_info,
                          &alpha_image,&alpha_image_info);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
               return ((Image *)NULL);
             }
 
@@ -3440,6 +3448,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   "    could not allocate color_image_info");
               ThrowException(exception,ResourceLimitError,
                              MemoryAllocationFailed,image->filename);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
               return ((Image *)NULL);
             }
           GetImageInfo(color_image_info);
@@ -3452,6 +3461,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                   "    could not allocate color_image");
               ThrowException(exception,ResourceLimitError,
                              MemoryAllocationFailed,image->filename);
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
               return ((Image *)NULL);
             }
           if (logging)
@@ -3467,6 +3477,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                 &alpha_image,&alpha_image_info);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                   "    could not open color_image blob");
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
               return ((Image *)NULL);
             }
 
@@ -3484,6 +3495,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                              &alpha_image,&alpha_image_info);
                   ThrowException(exception,CorruptImageError,ImproperImageHeader,
                                  image->filename);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
                   return ((Image *)NULL);
                 }
 
@@ -3497,6 +3509,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                       "    could not allocate alpha_image_info (returning NULL)");
                   ThrowException(exception,ResourceLimitError,
                                  MemoryAllocationFailed,image->filename);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
                   return ((Image *)NULL);
                 }
               GetImageInfo(alpha_image_info);
@@ -3509,6 +3522,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                       "    could not allocate alpha_image (returning NULL)");
                   ThrowException(exception,ResourceLimitError,
                                  MemoryAllocationFailed,image->filename);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
                   return ((Image *)NULL);
                 }
               if (logging)
@@ -3523,6 +3537,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                     &alpha_image,&alpha_image_info);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                       "    could not open alpha_image blob (returning NULL)");
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
                   return ((Image *)NULL);
                 }
               if (jng_alpha_compression_method == 0)
@@ -3799,6 +3814,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
         }
       DestroyImageList(color_image);
       color_image=(Image *) NULL;
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
       return (Image *) NULL;
     }
 
@@ -3830,6 +3846,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           */
           DestroyJNG(/*chunk*/ NULL,&color_image,&color_image_info,
                      &alpha_image,&alpha_image_info);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
           return (Image *) NULL;
         }
 
@@ -3851,6 +3868,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           DestroyImageList(jng_image);
           ThrowException(exception,CorruptImageError,
                          ImproperImageHeader,image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
           return ((Image *)NULL);
         }
       if ((image->columns != jng_image->columns) ||
@@ -3867,6 +3885,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           DestroyImage(jng_image);
           ThrowException(exception,CorruptImageError,
                          ImproperImageHeader,image->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
           return ((Image *)NULL);
         }
       if (logging)
@@ -3893,6 +3912,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
                                   "Failed to transfer JPEG scanlines");
           DestroyJNG(NULL,&color_image,&color_image_info,
                      &alpha_image,&alpha_image_info);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadOneJNGImage()");
           return ((Image *)NULL);
         }
       if (alpha_image != (Image *)NULL && !image_info->ping)
@@ -4151,6 +4171,7 @@ static Image *ReadJNGImage(const ImageInfo *image_info,
   have_mng_structure=MagickTrue;
 
   mng_info->image=image;
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  calling ReadOneJNGImage()");
   image=ReadOneJNGImage(mng_info,image_info,exception);
   if (image == (Image *) NULL || image->columns == 0 || image->rows == 0)
     {
@@ -4187,8 +4208,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
     page_geometry[MaxTextExtent];
 
   Image
-    *image,
-    *previous;
+    *image;
 
   int
     have_mng_structure;
@@ -4284,6 +4304,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
   assert(exception->signature == MagickSignature);
   logging=LogMagickEvent(CoderEvent,GetMagickModule(),"enter ReadMNGImage()");
   image=AllocateImage(image_info);
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"ALLOCATED %p", image);
   mng_info=(MngInfo *) NULL;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFalse)
@@ -4528,7 +4549,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   */
                   AllocateNextImage(image_info,image);
                   if (image->next == (Image *) NULL)
-                    return((Image *) NULL);
+                    {
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
+                      return((Image *) NULL);
+                    }
                   image=SyncNextImageInList(image);
                   mng_info->image=image;
                 }
@@ -4969,6 +4993,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                         {
                           DestroyImageList(image);
                           MngInfoFreeStruct(mng_info,&have_mng_structure);
+                          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
                           return((Image *) NULL);
                         }
                       image=SyncNextImageInList(image);
@@ -5005,6 +5030,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                       MagickFreeMemory(chunk);
                       DestroyImageList(image);
                       MngInfoFreeStruct(mng_info,&have_mng_structure);
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
                       return((Image *) NULL);
                     }
                   if (logging)
@@ -5573,6 +5599,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                         {
                           DestroyImageList(image);
                           MngInfoFreeStruct(mng_info,&have_mng_structure);
+                          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
                           return((Image *) NULL);
                         }
                       image=SyncNextImageInList(image);
@@ -5625,6 +5652,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     {
                       DestroyImageList(image);
                       MngInfoFreeStruct(mng_info,&have_mng_structure);
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
                       return((Image *) NULL);
                     }
                   image=SyncNextImageInList(image);
@@ -5670,6 +5698,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                 {
                   DestroyImageList(image);
                   MngInfoFreeStruct(mng_info,&have_mng_structure);
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
                   return((Image *) NULL);
                 }
               image=SyncNextImageInList(image);
@@ -5712,36 +5741,35 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           (void) SeekBlob(image,-((long) length+12),SEEK_CUR);
         }
 
-      previous=(Image *) NULL;
       mng_info->image=image;
       mng_info->mng_type=mng_type;
       mng_info->object_id=object_id;
 
       if (!memcmp(type,mng_IHDR,4))
         {
-          Image *new_image=ReadOnePNGImage(mng_info,image_info,exception);
-          if (new_image != (Image *) NULL)
-            previous=image;
-          image=new_image;
-#if defined(JNG_SUPPORTED)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  calling ReadOnePNGImage()");
+          /* If NULL is returned, then mng_info->image was already freed by ReadOnePNGImage! */
+          image=ReadOnePNGImage(mng_info,image_info,exception);
         }
+#if defined(JNG_SUPPORTED)
       else
         {
-          Image *new_image=ReadOneJNGImage(mng_info,image_info,exception);
-          if (new_image != (Image *) NULL)
-              previous=image;
-          image=new_image;
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  calling ReadOneJNGImage()");
+          /* ReadOneJNGImage() does not free mng_info->image as ReadOnePNGImage() does! */
+          image=ReadOneJNGImage(mng_info,image_info,exception);
         }
 #endif
 
       if (image == (Image *) NULL)
         {
-          if (previous != (Image *) NULL)
+          if (mng_info->image != (Image *) NULL)
             {
-              CloseBlob(previous);
-              DestroyImageList(previous);
+              CloseBlob(mng_info->image);
+              DestroyImageList(mng_info->image);
+              mng_info->image=(Image *) NULL;
             }
           MngInfoFreeStruct(mng_info,&have_mng_structure);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
           return((Image *) NULL);
         }
       if (image->columns == 0 || image->rows == 0)
@@ -5749,8 +5777,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
           CloseBlob(image);
           DestroyImageList(image);
           MngInfoFreeStruct(mng_info,&have_mng_structure);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
           return((Image *) NULL);
         }
+
       mng_info->image=image;
 
       if (mng_type)
@@ -5889,6 +5919,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     {
                       DestroyImageList(image);
                       MngInfoFreeStruct(mng_info,&have_mng_structure);
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
                       return((Image *) NULL);
                     }
 
@@ -5968,7 +5999,10 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                     }
                   n=GetImagePixels(image,0,0,image->columns,1);
                   if(n == (PixelPacket *) NULL)
-                     return ((Image *) NULL);
+                    {
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
+                      return ((Image *) NULL);
+                    }
                   (void) memcpy(next,n,row_length);
                   for (y=0; y < (long) image->rows; y++)
                     {
@@ -6338,6 +6372,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "  Allocation failed, returning NULL.");
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
               return((Image *) NULL);
             }
           image=SyncNextImageInList(image);
@@ -6362,7 +6397,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
     {
       image_count++;
 #if 0
-      /* This code triggers and fails to reliease memory in oss-fuzz 8710 */
+      /* This code triggers and fails to release memory in oss-fuzz 8710 */
       if (image_count > 10*mng_info->image_found)
         {
           if (logging)
@@ -6373,6 +6408,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                  "Linked list is corrupted,"
                                  " beginning of list not found",
                                  image_info->filename);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
           return((Image *) NULL);
         }
 #endif
@@ -6409,6 +6445,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
       if (image != (Image *) NULL)
         DestroyImageList(image);
       MngInfoFreeStruct(mng_info,&have_mng_structure);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
       return((Image *) NULL);
     }
 
@@ -6472,6 +6509,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
       if (next_image == (Image *) NULL)
         {
           MngInfoFreeStruct(mng_info,&have_mng_structure);
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  return NULL from ReadMNGImage()");
           return((Image *) NULL);
         }
       image=next_image;
