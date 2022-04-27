@@ -1,3 +1,7 @@
+2021-04-27  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * jpeg/: Update aged JPG library.
+
 2022-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/ps.c (ReadPSImage): Assure that 'bounds' structure is
