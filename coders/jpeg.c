@@ -2792,33 +2792,49 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   const char
     *value;
 
-  huffman_memory=0;
-  if ((value=AccessDefinition(image_info,"jpeg","optimize-coding")))
+  huffman_memory = 0;
+
+#ifdef C_ARITH_CODING_SUPPORTED
+  /*
+    Allow the user to turn on/off arithmetic coder.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","arithmetic")))
     {
       if (LocaleCompare(value,"FALSE") == 0)
-        jpeg_info.optimize_coding=MagickFalse;
+        jpeg_info.arith_code = False;
       else
-        jpeg_info.optimize_coding=MagickTrue;
+        jpeg_info.arith_code = True;
     }
-  else
-    {
+  if(!jpeg_info.arith_code)	/* jpeg_info.optimize_coding must not be set to enable arithmetic. */
+#endif  
+  {    
+    if ((value=AccessDefinition(image_info,"jpeg","optimize-coding")))
+      {
+        if (LocaleCompare(value,"FALSE") == 0)
+          jpeg_info.optimize_coding=MagickFalse;
+        else
+          jpeg_info.optimize_coding=MagickTrue;
+      }
+    else
+      {
       /*
         Huffman optimization requires that the whole image be buffered in
         memory.  Since this is such a large consumer, obtain a memory
         resource for the memory to be consumed.  If the memory resource
         fails to be acquired, then don't enable huffman optimization.
       */
-      huffman_memory=(magick_int64_t) jpeg_info.input_components*
-        image->columns*image->rows*sizeof(JSAMPLE);
-      jpeg_info.optimize_coding=AcquireMagickResource(MemoryResource,
+        huffman_memory=(magick_int64_t) jpeg_info.input_components*
+          image->columns*image->rows*sizeof(JSAMPLE);
+        jpeg_info.optimize_coding=AcquireMagickResource(MemoryResource,
                                                       huffman_memory);
-    }
-  if (!jpeg_info.optimize_coding)
-    huffman_memory=0;
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+      }
+    if (!jpeg_info.optimize_coding)
+      huffman_memory=0;
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Huffman optimization is %s",
                           (jpeg_info.optimize_coding ? "enabled" : "disabled"));
+   }
  }
 
 #if (JPEG_LIB_VERSION >= 61) && defined(C_PROGRESSIVE_SUPPORTED)
