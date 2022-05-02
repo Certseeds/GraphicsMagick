@@ -1197,6 +1197,13 @@ setting. The default quality setting of 75 results in a rate value of
 0.06641.
 </dd>
 
+<dt>jpeg:arithmetic={true|false}</dt>
+
+<dd>Enables or disables arithmetic encoding if the JPEG library
+supports it (default disabled).  When this is enabled, optimize-coding
+is necessarily disabled.
+</dd>
+
 <dt>jpeg:block-smoothing={true|false}</dt>
 
 <dd>Enables or disables block smoothing when reading a JPEG file

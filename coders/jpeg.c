@@ -2805,9 +2805,9 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
       else
         jpeg_info.arith_code = True;
     }
-  if(!jpeg_info.arith_code)	/* jpeg_info.optimize_coding must not be set to enable arithmetic. */
-#endif  
-  {    
+  if (!jpeg_info.arith_code)     /* jpeg_info.optimize_coding must not be set to enable arithmetic. */
+#endif
+  {
     if ((value=AccessDefinition(image_info,"jpeg","optimize-coding")))
       {
         if (LocaleCompare(value,"FALSE") == 0)

@@ -1,7 +1,12 @@
+2022-05-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * doc/options.imdoc: Add documentation for -define
+        jpeg:arithmetic.
+
 2022-04-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/jpeg.c: Optionally enable arithmetic coder in JPG images.
-	gm convert -define jpeg:arithmetic=true testimg.jpg arith.jpg
+        gm convert -define jpeg:arithmetic=true testimg.jpg arith.jpg
 
 2022-04-27  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
