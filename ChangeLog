@@ -1,3 +1,10 @@
+2022-05-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/png.c (ReadOnePNGImage): Assure that entire image list is
+        freed. Addresses oss-fuzz 46997 "graphicsmagick:coder_MNG_fuzzer:
+        Indirect-leak in MagickMallocCleared".  This is a new issue due to
+        incrementally seeking the complete correct error-handling cleanup.
+
 2022-05-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * doc/options.imdoc: Add documentation for -define

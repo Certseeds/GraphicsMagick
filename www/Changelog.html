@@ -35,6 +35,12 @@
 <div class="document">
 
 
+<p>2022-05-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+* coders/png.c (ReadOnePNGImage): Assure that entire image list is
+freed. Addresses oss-fuzz 46997 &quot;graphicsmagick:coder_MNG_fuzzer:
+Indirect-leak in MagickMallocCleared&quot;.  This is a new issue due to
+incrementally seeking the complete correct error-handling cleanup.</blockquote>
 <p>2022-05-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 * doc/options.imdoc: Add documentation for -define

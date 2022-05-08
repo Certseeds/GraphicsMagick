@@ -1629,8 +1629,15 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
         }
       if (image)
         {
-          DestroyImage(image);
+          /* Image is part of mng_info->image list (see above) */
+          DestroyImageList(image);
           image=(Image *) NULL;
+          mng_info->image=(Image *) NULL;
+        }
+      /* We are not aware that the following case ever happens */
+      if (mng_info->image)
+        {
+          DestroyImageList(mng_info->image);
           mng_info->image=(Image *) NULL;
         }
       return(image);
