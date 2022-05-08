@@ -2798,7 +2798,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   /*
     Allow the user to turn on/off arithmetic coder.
   */
-  if ((value=AccessDefinition(image_info,"jpeg","arithmetic")))
+  if ((value=AccessDefinition(image_info,"jpeg","arithmetic-coding")))
     {
       if (LocaleCompare(value,"FALSE") == 0)
         jpeg_info.arith_code = False;
