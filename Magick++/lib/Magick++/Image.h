@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2020
+// Copyright Bob Friesenhahn, 1999 - 2022
 //
 // Definition of Image, the representation of a single image in Magick++
 //
@@ -905,7 +905,7 @@ namespace Magick
 
     // Colormap size (number of colormap entries)
     void            colorMapSize ( const unsigned int entries_ );
-    unsigned int    colorMapSize ( void );
+    unsigned int    colorMapSize ( void ) const;
 
     // Image Color Space
     void            colorSpace( const ColorspaceType colorSpace_ );

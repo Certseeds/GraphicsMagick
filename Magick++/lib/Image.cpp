@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999-2020
+// Copyright Bob Friesenhahn, 1999-2022
 //
 // Implementation of Image
 //
@@ -2568,7 +2568,7 @@ void Magick::Image::colorMapSize ( const unsigned int entries_ )
       imageptr->colors = entries_;
     }
 }
-unsigned int Magick::Image::colorMapSize ( void )
+unsigned int Magick::Image::colorMapSize ( void ) const
 {
   const MagickLib::Image* imageptr = constImage();
 

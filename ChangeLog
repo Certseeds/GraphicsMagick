@@ -1,3 +1,9 @@
+2022-05-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * Magick++/lib/Image.cpp: colorMapSize() method for returning the
+        number of colormap entries should be a const method.  Change is
+        due to an email from Miro Kropáček on May 29, 2022.
+
 2022-05-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * www/Magick++/Image.rst: Update getIndexes() and
