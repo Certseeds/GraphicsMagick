@@ -1,3 +1,7 @@
+2022-06-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * NEWS.txt: Update with news since last release.
+
 2022-05-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * Magick++/lib/Image.cpp: colorMapSize() method for returning the
