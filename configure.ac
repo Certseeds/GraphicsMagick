@@ -2302,7 +2302,9 @@ AC_SUBST([LIB_JP2])
 #
 # Check for TTF
 #
-# FIXME: freetype-config appears to be defunct!
+# Use pkg-config if available.  If pkg-config is not available, then
+# try legacy freetype-config script.  If neither is available, then go
+# with defaults.
 #
 have_ttf='no'
 LIB_TTF=''
