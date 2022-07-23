@@ -1,3 +1,8 @@
+2022-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * magick/magic.c: Auto-detect JXL format based on file header.
+        Much thanks to Quyen Pham Ngoc for noticing that this was missing.
+
 2022-06-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * NEWS.txt: Update with news since last release.
