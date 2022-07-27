@@ -1,3 +1,10 @@
+2022-07-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/miff.c (ImportRLEPixels): Add missing type cast for
+        consistency with other similar code.  However, I do not believe
+        this is an actual bug.  Addresses GraphicsMagick bug 670 "Missing
+        cast".
+
 2022-07-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * magick/magic.c: Auto-detect JXL format based on file header.

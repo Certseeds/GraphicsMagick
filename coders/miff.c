@@ -389,7 +389,7 @@ ImportRLEPixels(Image *image,
                       quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
                       quantum= ((unsigned int) *p++ << 8);
-                      quantum|=(*p++);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleShortToQuantum(quantum);
                       quantum =((unsigned int) *p++ << 8);
                       quantum|=((unsigned int) *p++);
