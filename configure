@@ -29493,7 +29493,7 @@ fi
 
 
 # Tests for programs only used while in maintainer mode
-if test "$MAINT" == '' ; then
+if test "$MAINT" = '' ; then
    # Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
    for ac_prog in rst2html.py rst2html
 do
