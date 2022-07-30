@@ -3148,7 +3148,7 @@ have_ralcgm='no'  ; if test "$CGMDecodeDelegate" != "$CGMDecodeDelegateDefault" 
 AM_CONDITIONAL([HasPSDelegate],[test "$have_gs" = 'yes'])
 
 # Tests for programs only used while in maintainer mode
-if test "$MAINT" == '' ; then
+if test "$MAINT" = '' ; then
    # Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
    AC_CHECK_PROGS([RST2HTML],[rst2html.py rst2html])
 

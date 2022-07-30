@@ -1,3 +1,7 @@
+2022-07-30  Sam James        <sam@gentoo.org>
+
+        * configure.ac: Fix Bashism in maintainer-mode check.
+
 2022-07-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/miff.c (ImportRLEPixels): Add missing type cast for
