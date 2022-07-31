@@ -14,7 +14,7 @@
 %                       H   H  E      I  F                                    %
 %                       H   H  EEEEE  I  F                                    %
 %                                                                             %
-%                     Read Heif/Heic Image Format.                            %
+%           Read HEIF/HEIC/AVIF image formats using libheif.                  %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 * Status: Support for reading a single image.
@@ -32,10 +32,11 @@
 #include "magick/utility.h"
 #include "magick/resource.h"
 
+#if defined(HasHEIF)
+
 /* Set to 1 to enable the currently non-functional progress monitor callbacks */
 #define HEIF_ENABLE_PROGRESS_MONITOR 0
 
-#if defined(HasHEIF)
 #include <libheif/heif.h>
 
 /*
@@ -497,7 +498,7 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   return image;
 }
 
-#endif
+#endif /* HasHEIF */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -522,6 +523,7 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
 */
 ModuleExport void RegisterHEIFImage(void)
 {
+#if defined(HasHEIF)
   static const char
     description[] = "HEIF Image Format";
 
@@ -546,10 +548,8 @@ ModuleExport void RegisterHEIFImage(void)
                   heif_minor, heif_revision);
 
   entry=SetMagickInfo("AVIF");
-#if defined(HasHEIF)
   entry->decoder=(DecoderHandler) ReadHEIFImage;
   entry->magick=(MagickHandler) IsHEIF;
-#endif
   entry->description=description;
   entry->adjoin=False;
   entry->seekable_stream=MagickTrue;
@@ -560,10 +560,8 @@ ModuleExport void RegisterHEIFImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("HEIF");
-#if defined(HasHEIF)
   entry->decoder=(DecoderHandler) ReadHEIFImage;
   entry->magick=(MagickHandler) IsHEIF;
-#endif
   entry->description=description;
   entry->adjoin=False;
   entry->seekable_stream=MagickTrue;
@@ -574,10 +572,8 @@ ModuleExport void RegisterHEIFImage(void)
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("HEIC");
-#if defined(HasHEIF)
   entry->decoder=(DecoderHandler) ReadHEIFImage;
   entry->magick=(MagickHandler) IsHEIF;
-#endif
   entry->description=description;
   entry->adjoin=False;
   entry->seekable_stream=MagickTrue;
@@ -586,6 +582,7 @@ ModuleExport void RegisterHEIFImage(void)
   entry->module="HEIF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* HasHEIF */
 }
 
 /*
@@ -609,7 +606,9 @@ ModuleExport void RegisterHEIFImage(void)
 */
 ModuleExport void UnregisterHEIFImage(void)
 {
+#if defined(HasHEIF)
   (void) UnregisterMagickInfo("AVIF");
   (void) UnregisterMagickInfo("HEIF");
   (void) UnregisterMagickInfo("HEIC");
+#endif /* HasHEIF */
 }

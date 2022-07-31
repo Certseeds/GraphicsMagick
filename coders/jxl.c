@@ -1080,7 +1080,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   return MagickPass;
 }
 
-#endif
+#endif /* HasJXL */
 
 
 /*
@@ -1106,6 +1106,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 */
 ModuleExport void RegisterJXLImage(void)
 {
+#if defined(HasJXL)
   static const char
     description[] = "JXL Image Format";
 
@@ -1130,10 +1131,8 @@ ModuleExport void RegisterJXLImage(void)
                   jxl_minor, jxl_revision);
 
   entry=SetMagickInfo("JXL");
-#if defined(HasJXL)
   entry->decoder=(DecoderHandler) ReadJXLImage;
   entry->encoder=(EncoderHandler) WriteJXLImage;
-#endif
   entry->description=description;
   entry->adjoin=False;
   entry->seekable_stream=MagickTrue;
@@ -1142,6 +1141,7 @@ ModuleExport void RegisterJXLImage(void)
   entry->module="JXL";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* HasJXL */
 }
 
 /*
@@ -1165,5 +1165,7 @@ ModuleExport void RegisterJXLImage(void)
 */
 ModuleExport void UnregisterJXLImage(void)
 {
+#if defined(HasJXL)
   (void) UnregisterMagickInfo("JXL");
+#endif /* HasJXL */
 }

@@ -1,3 +1,13 @@
+2022-07-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/heif.c: If module is compiled, but HasHEIF is not
+        defined, then RegisterHEIFImage/UnregisterHEIFImage
+        implementations are empty.
+
+        * coders/jxl.c: If module is compiled, but HasJXL is not defined,
+        then RegisterJXLImage/UnregisterJXLImage implementations are
+        empty.
+
 2022-07-30  Sam James        <sam@gentoo.org>
 
         * configure.ac: Fix Bashism in maintainer-mode check.
