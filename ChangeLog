@@ -1,3 +1,9 @@
+2022-08-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/tga.c (ReadTGAImage): Remove a defective validation of
+        comment length, which blocked reading some sample TGA files from
+        the "Encyclopedia Of Graphics File Formats" book.
+
 2022-07-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/heif.c: If module is compiled, but HasHEIF is not

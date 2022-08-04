@@ -63,7 +63,7 @@ static unsigned int
 typedef struct _TGAInfo
 {
   unsigned char
-    id_length,       /* Size of Image ID field */
+    id_length,       /* Size of Image ID field (starting after header) */
     colormap_type,   /* Color map type */
     image_type;      /* Image type code */
 
@@ -219,7 +219,6 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   const size_t headersize = 15;
   unsigned char readbuffer[15];
-  const size_t commentsize = 256;
   char commentbuffer[256];
   size_t readbufferpos = 0;
 
@@ -368,8 +367,6 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           /*
             TGA image comment.
           */
-          if (((size_t) tga_info.id_length+1) != commentsize)
-            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           if (ReadBlob(image,tga_info.id_length,commentbuffer) != tga_info.id_length)
             ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           commentbuffer[tga_info.id_length]='\0';
