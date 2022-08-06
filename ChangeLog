@@ -1,3 +1,9 @@
+2022-08-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * coders/tga.c: Enhance 'coder' level trace information.
+        Normalize on 'unsigned int' as much as possible in order to use
+        natural types and likely help with function inligning.
+
 2022-08-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * coders/tga.c (ReadTGAImage): Remove a defective validation of

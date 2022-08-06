@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -40,6 +40,7 @@
 #include "magick/attribute.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
+#include "magick/enum_strings.h"
 #include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
@@ -53,42 +54,86 @@ static unsigned int
   WriteTGAImage(const ImageInfo *,Image *);
 
 
-#define TGAColormap 1          /* Colormapped image data */
-#define TGARGB 2               /* Truecolor image data */
-#define TGAMonochrome 3        /* Monochrome image data */
-#define TGARLEColormap  9      /* Colormapped image data (encoded) */
-#define TGARLERGB  10          /* Truecolor image data (encoded) */
-#define TGARLEMonochrome  11   /* Monochrome image data (encoded) */
+#define TGAColormap 1U         /* Colormapped image data */
+#define TGARGB 2U              /* Truecolor image data */
+#define TGAMonochrome 3U       /* Monochrome image data */
+#define TGARLEColormap  9U     /* Colormapped image data (encoded) */
+#define TGARLERGB  10U         /* Truecolor image data (encoded) */
+#define TGARLEMonochrome  11U  /* Monochrome image data (encoded) */
 
 typedef struct _TGAInfo
 {
-  unsigned char
-    id_length,       /* Size of Image ID field (starting after header) */
-    colormap_type,   /* Color map type */
-    image_type;      /* Image type code */
+  unsigned int
+    id_length,       /* (U8) Size of Image ID field (starting after header) */
+    colormap_type,   /* (U8) Color map type */
+    image_type;      /* (U8) Image type code */
 
-  unsigned short
-    colormap_index,  /* Color map origin */
-    colormap_length; /* Color map length */
+  unsigned int
+    colormap_index,  /* (U16) Color map origin */
+    colormap_length; /* (U16) Color map length */
 
-  unsigned char
-    colormap_size;   /* Color map entry depth */
+  unsigned int
+    colormap_size;   /* (U8) Color map entry depth */
 
-  unsigned short
-    x_origin,        /* X origin of image */
-    y_origin,        /* Y orgin of image */
-    width,           /* Width of image */
-    height;          /* Height of image */
+  unsigned int
+    x_origin,        /* (U16) X origin of image */
+    y_origin,        /* (U16) Y orgin of image */
+    width,           /* (U16) Width of image */
+    height;          /* (U16) Height of image */
 
-  unsigned char
-    bits_per_pixel,  /* Image pixel size */
-    attributes;      /* Image descriptor byte */
+  unsigned int
+    bits_per_pixel,  /* (U8) Image pixel size */
+    attributes;      /* (U8) Image descriptor byte (see below) */
 } TGAInfo;
 
-
+/*
+  Image descriptor byte decode:
 
+  Bits 0 through 3 specify the number of attribute bits per pixel.
+
+  Bits 5 and 4 contain the image origin location.  These bits are used
+  to indicate the order in which pixel data is transferred from the
+  file to the screen.  Bit 4 is for left-to-right ordering, and bit 5
+  is for top-to-bottom ordering as shown below:
+
+    00 (0) - Bottom Left
+    10 (2) - Top Left
+    01 (1) - Bottom Right
+    11 (3) - Top Right
+
+    Screen destination  | Image Origin
+    of first pixel      | Bit 5 | Bit 4
+    --------------------+-------+------
+    Bottom left         |   0   |   0
+    Bottom right        |   0   |   1
+    Top left            |   1   |   0
+    Top right           |   1   |   1
+*/
+
+
 static void LogTGAInfo(const TGAInfo *tga_info)
 {
+  OrientationType orientation;
+  unsigned int attribute_bits;
+
+  attribute_bits = tga_info->attributes & 0xf;
+
+  switch((tga_info->attributes >> 4) & 3)
+    {
+    case 0:
+      orientation=BottomLeftOrientation;
+      break;
+    case 1:
+      orientation=BottomRightOrientation;
+      break;
+    case 2:
+      orientation=TopLeftOrientation;
+      break;
+    case 3:
+      orientation=TopRightOrientation;
+      break;
+    }
+
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Targa Header:\n"
                         "    ImageType  : %s\n"
@@ -101,7 +146,7 @@ static void LogTGAInfo(const TGAInfo *tga_info)
                         "    Width      : %u\n"
                         "    Height     : %u\n"
                         "    PixelDepth : %u\n"
-                        "    Attributes : 0x%.2x",
+                        "    Attributes : 0x%.2x (AttributeBits: %u, Orientation: %s)",
                         ((tga_info->image_type == TGAColormap) ? "Colormapped" :
                          (tga_info->image_type == TGARGB) ? "TrueColor" :
                          (tga_info->image_type == TGAMonochrome) ? "Monochrome" :
@@ -116,13 +161,13 @@ static void LogTGAInfo(const TGAInfo *tga_info)
                         tga_info->x_origin, tga_info->y_origin,
                         tga_info->width, tga_info->height,
                         (unsigned int) tga_info->bits_per_pixel,
-                        tga_info->attributes);
+                        tga_info->attributes,attribute_bits,OrientationTypeToString(orientation));
 
 }
 
-static magick_uint16_t ReadBlobLSBShortFromBuffer(unsigned char* buffer, size_t* readerpos)
+static unsigned int ReadBlobLSBShortFromBuffer(unsigned char* buffer, size_t* readerpos)
 {
-  magick_uint16_t
+  unsigned int
     value;
 
   value=buffer[(*readerpos)+1] << 8;
@@ -132,12 +177,12 @@ static magick_uint16_t ReadBlobLSBShortFromBuffer(unsigned char* buffer, size_t*
 }
 
 
-static int ReadBlobByteFromBuffer(unsigned char* buffer, size_t* readerpos)
+static unsigned int ReadBlobByteFromBuffer(unsigned char* buffer, size_t* readerpos)
 {
-  int
+  unsigned int
     value;
 
-  value=(int)(buffer[*readerpos]);
+  value=(unsigned int)(buffer[*readerpos]);
   *readerpos = *readerpos + 1;
   return(value);
 }
@@ -458,7 +503,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
       for (y=0; y < (long) image->rows; y++)
         {
           real=offset;
-          if (((unsigned char) (tga_info.attributes & 0x20) >> 5) == 0)
+          if (((tga_info.attributes & 0x20) >> 5) == 0)
             real=image->rows-real-1;
           q=SetImagePixels(image,0,(long) real,image->columns,1);
           if (q == (PixelPacket *) NULL)
