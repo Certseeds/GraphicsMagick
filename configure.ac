@@ -2585,6 +2585,7 @@ then
     AC_CHECK_HEADER([webp/encode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
     AC_CHECK_LIB([webp],[WebPDecodeRGB],[passed=`expr $passed + 1`; LIB_WEBP='-lwebp'],[failed=`expr $failed + 1`],[])
     AC_CHECK_LIB([webpmux],[WebPMuxSetImage],[LIB_WEBP="$LIB_WEBP -lwebpmux"],[],[-lwebp])
+    AC_CHECK_LIB([sharpyuv],[SharpYuvConvert],[LIB_WEBP="$LIB_WEBP -lsharpyuv"],[],[])
     AC_MSG_CHECKING([if WEBP package is complete])
     if test $passed -gt 0
     then
