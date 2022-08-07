@@ -5189,10 +5189,13 @@ void ConfigureVS7Project::write_link_tool_dependencies( string &root,
       strmode = "DB_";
       break;
     }
+/* MACHINE SHOULD NOT BE CONFIGURED AS A DEPENDENCY!
   if (build64Bit)
     m_stream << "        AdditionalDependencies=\"/MACHINE:AMD64 ";
   else
     m_stream << "        AdditionalDependencies=\"/MACHINE:X86 ";
+*/
+  m_stream << "        AdditionalDependencies=\"";
   if (onebigdllMode || (standaloneMode && (type == EXEPROJECT)))
     {
       switch (runtime)
