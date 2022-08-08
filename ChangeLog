@@ -1,3 +1,8 @@
+2022-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+        * fuzzing/oss-fuzz-build.sh (MAGICK_LIBS): Add libsharpyuv.a to
+        the list of libraries to check for.
+
 2022-08-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * configure.ac: When checking for libwmf, add a test for
