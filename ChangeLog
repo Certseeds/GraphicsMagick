@@ -1,3 +1,7 @@
+2022-08-10    Fojtik Jaroslav  <JaFojtik@yandex.com>
+        * VisualMagick/configure/stdafx.h Added define WIN32_LEAN_AND_MEAN
+	* VisualMagick/configure/configure.exe New rebuild.
+
 2022-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
         * fuzzing/oss-fuzz-build.sh (MAGICK_LIBS): Add libsharpyuv.a to
