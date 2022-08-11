@@ -38,7 +38,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to June 25, 2022</p>
+<p>This file was last updated to reflect changes up to August 11, 2022</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -130,6 +130,14 @@ the oss-fuzz issues list for details.</li>
 <li>MNG: Fix indirect leak in MagickMallocCleared().</li>
 <li>PS: Assure that 'bounds' structure is initialized.</li>
 <li>EPT: Assure that 'bounds' structure is initialized.</li>
+<li>configure.ac: Fix Bashism in maintainer-mode check.</li>
+<li>TGA: Remove a defective validation of comment length, which blocked
+reading some sample TGA files from the &quot;Encyclopedia Of Graphics
+File Formats&quot; book.</li>
+<li>WebP: Add configure.ac updates to check for libsharpyuv so that
+builds with development version work again.</li>
+<li>Visual Studio Build (VisualMagick): Fix project file generation.
+Improve portability of code for configure.exe.</li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">

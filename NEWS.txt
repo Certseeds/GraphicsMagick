@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to June 25, 2022
+This file was last updated to reflect changes up to August 11, 2022
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -64,6 +64,18 @@ Bug fixes:
 * PS: Assure that 'bounds' structure is initialized.
 
 * EPT: Assure that 'bounds' structure is initialized.
+
+* configure.ac: Fix Bashism in maintainer-mode check.
+
+* TGA: Remove a defective validation of comment length, which blocked
+  reading some sample TGA files from the "Encyclopedia Of Graphics
+  File Formats" book.
+
+* WebP: Add configure.ac updates to check for libsharpyuv so that
+  builds with development version work again.
+
+* Visual Studio Build (VisualMagick): Fix project file generation.
+  Improve portability of code for configure.exe.
 
 New Features:
 
