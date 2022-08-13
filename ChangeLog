@@ -1,3 +1,13 @@
+2022-08-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c (ReadSVGImage): Address concern from SourceForge
+	issue #669 "Segmentation fault caused by null pointer dereference
+	by checking return from xmlCreatePushParserCtxt().  Address
+	oss-fuzz 48340 "graphicsmagick:coder_SVG_fuzzer:
+	Heap-use-after-free in xmlParseInternalSubset" by disabling
+	internal subset handling until the parser context handling is
+	fixed.
+
 2022-08-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated the news.
