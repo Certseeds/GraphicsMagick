@@ -131,7 +131,7 @@ Richard Nolde
                 Contributed code for converting between native floating
                 point types, and short (16/24) bit float types.
 
-Clément Follet
+CleÌment Follet
                 Contributed Hald CLUT and ASC-CDL implementations.
 
 John Sergeant

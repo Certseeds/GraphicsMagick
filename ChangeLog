@@ -1,3 +1,8 @@
+2022-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Fix UTF-8 encoding errors in some text and source files.  A few
+	more issues remain.  Assistance is appreciated.
+
 2022-08-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/svg.c (ReadSVGImage): Address concern from SourceForge
