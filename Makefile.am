@@ -387,16 +387,18 @@ if HasGRAPHICSMAGICK_SNAPSHOT_COPY
 #
 # The arguments to the script are the original path names of the files to distribute.
 SNAPSHOT_DIST_ARCHIVES=$(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM)
+# FIXME: Can use gpg --enarmor to produce asc files from sig files
 snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-	  rm -f $${file}.sig ; \
+	  rm -f $${file}.asc $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
 	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
-	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.sig " $$f ; done` \
+	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc %s.sig " $$f $$f ; done` \
 	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 
 else
@@ -408,6 +410,7 @@ snapshot: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
@@ -415,6 +418,7 @@ snapshot: distcheck
 	mv $(SNAPSHOT_DIST_ARCHIVES) $(SNAPSHOT_DIRECTORY)/
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  mv $${file}.sig $(SNAPSHOT_DIRECTORY)/ ; \
+	  mv $${file}.asc $(SNAPSHOT_DIRECTORY)/ ; \
 	done
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
 	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
@@ -468,7 +472,8 @@ gmsymbols:
 release: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
-	  rm -f $${file}.sig ; \
+	  rm -f $${file}.asc $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done

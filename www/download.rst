@@ -7,7 +7,7 @@ GraphicsMagick Download
 =======================
 
 .. _Bob Friesenhahn : mailto:bfriesen@graphicsmagick.org
-.. _SourceForge Download : http://sourceforge.net/projects/graphicsmagick/files/
+.. _SourceForge Download : https://sourceforge.net/projects/graphicsmagick/files/
 
 .. contents::
   :local:
@@ -19,17 +19,6 @@ The source distribution of GraphicsMagick as well as pre-compiled
 binaries may be downloaded from the `SourceForge Download`_ page.
 This is also where 'snapshot' distribution archives may be found.
 
-Until recently (December, 2021) GraphicsMagick provided its own ftp
-site for downloads but this has been disabled due to abusive download
-practices (by using it as the primary download site) and because
-support for FTP has been removed from popular browsers.  This is
-unfortunate since the same site also provided PNG-related files and a
-libtiff mirror.  The ftp site directory tree continues to exist and
-will be maintained.  If you are an administrator of a high-bandwidth
-ftp or https mirror site and would like to provide a GraphicsMagick
-mirror, please contact `Bob Friesenhahn`_ and we will work something
-out.
-
 Verifying The Download
 ======================
 
@@ -39,7 +28,9 @@ Using a PGP key
 GraphicsMagick is software which runs on a computer, and if its code
 (source or binary code) was subtly modified (perhaps on the download
 server, or modified after download), it could do almost anything!  Due
-to this, it is useful to verify the download before you use it.
+to this, it is useful to verify the download before you use it.  This
+is especially important if you are preparing binaries for others to
+use.
 
 Distributed packages may be verified (both for integrity and origin)
 using GnuPG (gpg).  GnuPG is normally provided as a package for your
@@ -61,6 +52,9 @@ like::
 
   gpg --recv-keys EBDFDB21B020EE8FD151A88DE301047DE1198975
 
+however, there are known dangers to your keystore if the keys on the
+public key server have been spammed.
+
 If extracting the key from the
 http://www.graphicsmagick.org/security.html web page, then copy the
 entire block of text including the all of the "BEGIN" and "END" lines
@@ -73,8 +67,10 @@ For example::
   gpg --import gm-sigs.asc
 
 After importing the key, you can easily verify any GraphicsMagick
-distribution file with an associated ".sig" file (requires downloading
-two files) by doing this::
+distribution file with an associated ".sig" (binary OpenPGP format
+signature) or ".asc" (ASCII armored format signature) file.  The
+distribution file and a signature file must be
+downloaded. Verification is performed by doing this::
 
   gpg --verify GraphicsMagick-1.3.37.tar.xz.sig
 
@@ -102,7 +98,7 @@ SHA-256 checksum::
 
   sha256sum GraphicsMagick-1.3.37.tar.xz
 
-and this for a SHA-1 checksum::
+and this for a SHA-1 (legacy) checksum::
 
   sha1sum GraphicsMagick-1.3.37.tar.xz
 

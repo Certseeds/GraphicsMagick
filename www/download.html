@@ -51,18 +51,8 @@
 <div class="section" id="download-sites">
 <h1><a class="toc-backref" href="#id1">Download Sites</a></h1>
 <p>The source distribution of GraphicsMagick as well as pre-compiled
-binaries may be downloaded from the <a class="reference external" href="http://sourceforge.net/projects/graphicsmagick/files/">SourceForge Download</a> page.
+binaries may be downloaded from the <a class="reference external" href="https://sourceforge.net/projects/graphicsmagick/files/">SourceForge Download</a> page.
 This is also where 'snapshot' distribution archives may be found.</p>
-<p>Until recently (December, 2021) GraphicsMagick provided its own ftp
-site for downloads but this has been disabled due to abusive download
-practices (by using it as the primary download site) and because
-support for FTP has been removed from popular browsers.  This is
-unfortunate since the same site also provided PNG-related files and a
-libtiff mirror.  The ftp site directory tree continues to exist and
-will be maintained.  If you are an administrator of a high-bandwidth
-ftp or https mirror site and would like to provide a GraphicsMagick
-mirror, please contact <a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;graphicsmagick&#46;org">Bob Friesenhahn</a> and we will work something
-out.</p>
 </div>
 <div class="section" id="verifying-the-download">
 <h1><a class="toc-backref" href="#id2">Verifying The Download</a></h1>
@@ -71,7 +61,9 @@ out.</p>
 <p>GraphicsMagick is software which runs on a computer, and if its code
 (source or binary code) was subtly modified (perhaps on the download
 server, or modified after download), it could do almost anything!  Due
-to this, it is useful to verify the download before you use it.</p>
+to this, it is useful to verify the download before you use it.  This
+is especially important if you are preparing binaries for others to
+use.</p>
 <p>Distributed packages may be verified (both for integrity and origin)
 using GnuPG (gpg).  GnuPG is normally provided as a package for your
 operating system (often already installed), or may be downloaded from
@@ -89,6 +81,8 @@ like:</p>
 <pre class="literal-block">
 gpg --recv-keys EBDFDB21B020EE8FD151A88DE301047DE1198975
 </pre>
+<p>however, there are known dangers to your keystore if the keys on the
+public key server have been spammed.</p>
 <p>If extracting the key from the
 <a class="reference external" href="http://www.graphicsmagick.org/security.html">http://www.graphicsmagick.org/security.html</a> web page, then copy the
 entire block of text including the all of the &quot;BEGIN&quot; and &quot;END&quot; lines
@@ -100,8 +94,10 @@ For example:</p>
 gpg --import gm-sigs.asc
 </pre>
 <p>After importing the key, you can easily verify any GraphicsMagick
-distribution file with an associated &quot;.sig&quot; file (requires downloading
-two files) by doing this:</p>
+distribution file with an associated &quot;.sig&quot; (binary OpenPGP format
+signature) or &quot;.asc&quot; (ASCII armored format signature) file.  The
+distribution file and a signature file must be
+downloaded. Verification is performed by doing this:</p>
 <pre class="literal-block">
 gpg --verify GraphicsMagick-1.3.37.tar.xz.sig
 </pre>
@@ -129,7 +125,7 @@ SHA-256 checksum:</p>
 <pre class="literal-block">
 sha256sum GraphicsMagick-1.3.37.tar.xz
 </pre>
-<p>and this for a SHA-1 checksum:</p>
+<p>and this for a SHA-1 (legacy) checksum:</p>
 <pre class="literal-block">
 sha1sum GraphicsMagick-1.3.37.tar.xz
 </pre>

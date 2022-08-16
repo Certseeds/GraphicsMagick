@@ -1,3 +1,9 @@
+2022-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am: Some people prefer GPG signature files in ASCII
+	armored ".asc" format rather than the OpenPGP binary ".bin"
+	format, so produce both.
+
 2022-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Fix UTF-8 encoding errors in some text and source files.  A few
