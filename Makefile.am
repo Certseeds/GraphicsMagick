@@ -394,7 +394,7 @@ snapshot: distcheck
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  rm -f $${file}.asc $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
-	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
+	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
 	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
@@ -410,7 +410,7 @@ snapshot: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
-	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
+	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
@@ -474,6 +474,6 @@ release: distcheck
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
 	  rm -f $${file}.asc $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
-	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
+	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done

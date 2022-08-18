@@ -1,3 +1,9 @@
+2022-08-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am (release): Generate ASCII armored ".asc" files
+	directly since this seems to be prefered over converting from
+	".bin" files.
+
 2022-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Makefile.am: Some people prefer GPG signature files in ASCII

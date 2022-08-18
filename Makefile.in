@@ -11430,7 +11430,7 @@ dist-zstd: distdir
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  rm -f $${file}.asc $${file}.sig ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  sha256sum $${file} > $${file}.sum ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
@@ -11441,7 +11441,7 @@ dist-zstd: distdir
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  sha256sum $${file} > $${file}.sum ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
@@ -11479,7 +11479,7 @@ release: distcheck
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
 	  rm -f $${file}.asc $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
-	  $(GPG) --output $${file}.asc --enarmor $${file}.sig ; \
+	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
 
