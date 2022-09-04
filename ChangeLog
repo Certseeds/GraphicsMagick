@@ -1,3 +1,8 @@
+2022-09-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * jpeg/jconfig.h Remove BMP, GIF, PPM and TGA coders built
+        in jpeg library as far as GM has its own coders.
+
 2022-08-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Add messaging regarding building
