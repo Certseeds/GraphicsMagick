@@ -1,7 +1,9 @@
 2022-09-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-        * jpeg/jconfig.h Remove BMP, GIF, PPM and TGA coders built
-        in jpeg library as far as GM has its own coders.
+        * jpeg/* Upgraded jpeg library to Version 9e 16-Jan-2022.
+
+2022-09-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
         * VisualMagick/jpeg/LIBRARY.txt Exclude files cjpegalt.c and
         djpegalt.c; cjpeg.c and djpeg.c are already excluded.
 
