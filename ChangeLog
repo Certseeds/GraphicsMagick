@@ -1,3 +1,10 @@
+2022-09-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Magick++/lib/Image.cpp (Magick::Image::colorMapSize): Restore
+	non-const Image::colorMapSize() since it caused an ABI change.
+	Debian bug 1019158: "graphicsmagick breaks gnudatalanguage
+	autopkgtest: undefined symbol: _ZN6Magick5Image12colorMapSizeEv".
+
 2022-09-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * jpeg/* Upgraded jpeg library to Version 9e 16-Jan-2022.
