@@ -69,6 +69,9 @@
 #  define ENABLE_SVG_WRITER 0
 #endif /* if !defined(ENABLE_SVG_WRITER) */
 
+/* Enable support for XML internal subset */
+#define ENABLE_XML_INTERNAL_SUBSET 1
+
 /*
   Avoid shadowing library globals and functions.
 */

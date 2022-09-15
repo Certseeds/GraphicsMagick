@@ -1,3 +1,7 @@
+2022-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/svg.c: Re-enable support for XML internal subset.
+
 2022-09-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/lib/Image.cpp (Magick::Image::colorMapSize): Restore
