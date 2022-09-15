@@ -38,6 +38,10 @@
 <p>2022-09-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li>fuzzing/oss-fuzz-build.sh: Disable using libxml2 in oss-fuzz
+build due to it being arbitrarily broken in the oss-fuzz build for
+several weeks with no solution offered.  Nobody seems to care any
+more.</li>
 <li>coders/svg.c: Re-enable support for XML internal subset.</li>
 </ul>
 </blockquote>

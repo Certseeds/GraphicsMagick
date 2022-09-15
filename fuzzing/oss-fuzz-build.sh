@@ -79,12 +79,12 @@ make -j$(nproc)
 make install
 popd
 
-echo "=== Building libxml2..."
-pushd "$SRC/libxml2"
-./autogen.sh --disable-shared --without-debug --without-legacy --without-python --without-schematron --without-schemas --prefix="${WORK}"
-make -j$(nproc)
-make install
-popd
+#echo "=== Building libxml2..."
+#pushd "$SRC/libxml2"
+#./autogen.sh --disable-shared --without-debug --without-legacy --without-python --without-schematron --without-schemas --prefix="${WORK}"
+#make -j$(nproc)
+#make install
+#popd
 
 echo "=== Building jasper..."
 pushd "$SRC/jasper"
