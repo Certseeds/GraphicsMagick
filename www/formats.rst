@@ -35,6 +35,7 @@ GraphicsMagick Supported Formats
 .. _JBIG : http://www.jpeg.org/
 .. _JNG : http://www.libmng.com/
 .. _JPEG : http://www.jpeg.org/
+.. _JXL : https://github.com/libjxl/libjxl/
 .. _M2V : http://www.mpeg.org/
 .. _MIFF : miff.html
 .. _MNG : http://www.libmng.com/
@@ -219,8 +220,10 @@ image formats.
    | JPC          | RW   | JPEG-2000 Code Stream     | Requires jasper_ 1.600.0 or later                |
    |              |      | Syntax                    |                                                  |
    +--------------+------+---------------------------+--------------------------------------------------+
-   | JPEG_        | RW   | Joint Photographic        | Requires jpegsrc.v6b.tar.gz                      |
+   | JPEG_        | RW   | Joint Photographic        | Requires jpegsrc.v6b.tar.gz or later             |
    |              |      | Experts Group JFIF format |                                                  |
+   +--------------+------+---------------------------+--------------------------------------------------+
+   | JXL_         | RW   | JPEG XL                   | Requires JPEG XL 0.7 or later                    |
    +--------------+------+---------------------------+--------------------------------------------------+
    | MAN          | R    | Unix reference manual     | Requires that GNU groff and Ghostcript are       |
    |              |      | pages                     | installed.                                       |

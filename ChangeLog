@@ -1,5 +1,7 @@
 2022-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* www/formats.rst: Add JPEG XL to the list.
+
 	* utilities/tests/icc-transform.tap: Preserve output files from
 	icc-transform.tap until 'make clean' in order to allow inspection.
 
