@@ -1,3 +1,8 @@
+2022-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* utilities/tests/icc-transform.tap: Preserve output files from
+	icc-transform.tap until 'make clean' in order to allow inspection.
+
 2022-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Disable using libxml2 in oss-fuzz
