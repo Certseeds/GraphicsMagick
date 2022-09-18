@@ -18,6 +18,7 @@ GraphicsMagick Supported Formats
 .. _montage : montage.html
 
 .. _AVI : http://www.jmcgowan.com/avi.html
+.. _AVIF : https://aomediacodec.github.io/av1-avif/
 .. _BMP : http://www.fileformat.info/format/bmp/egff.htm
 .. _color : color.html
 .. _CALS : http://www.fileformat.info/format/cals/egff.htm
@@ -79,7 +80,7 @@ associated magick string is stored in the "magick" member of the Image
 structure, and is reported in the default output of 'gm identify'.
 
 
-GraphicsMagick supports reading over 88 major file formats (not including
+GraphicsMagick supports reading over 92 major file formats (not including
 sub-formats). The following table provides a summary of the supported
 image formats.
 
@@ -91,6 +92,9 @@ image formats.
    |              |      |                           | Format originally used on the Macintosh          |
    | ART          | RW   | PFS: 1st Publisher        | (MacPaint?) and later used for PFS: 1st          |
    |              |      |                           | Publisher clip art.                              |
+   +--------------+------+---------------------------+--------------------------------------------------+
+   | AVIF_        | R    | AVIF Image File Format    | AV1 in a _HEIF container.  AVIF is supported     |
+   |              |      |                           | via libheif if it supports AVIF decode.          |
    +--------------+------+---------------------------+--------------------------------------------------+
    | AVS          | RW   | AVS X image               |                                                  |
    +--------------+------+---------------------------+--------------------------------------------------+

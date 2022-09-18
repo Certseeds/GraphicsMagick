@@ -1,3 +1,7 @@
+2022-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/formats.rst: Add AVIF image file format to the list.
+
 2022-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/formats.rst: Add JPEG XL to the list.

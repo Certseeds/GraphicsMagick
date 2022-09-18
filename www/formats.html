@@ -43,7 +43,7 @@ identify file formats, algorithms acting as formats, built-in images, and
 embedded profile types. After a file has been read or &quot;pinged&quot;, the
 associated magick string is stored in the &quot;magick&quot; member of the Image
 structure, and is reported in the default output of 'gm identify'.</p>
-<p>GraphicsMagick supports reading over 88 major file formats (not including
+<p>GraphicsMagick supports reading over 92 major file formats (not including
 sub-formats). The following table provides a summary of the supported
 image formats.</p>
 <table border="1" class="docutils">
@@ -66,6 +66,12 @@ image formats.</p>
 <td>Format originally used on the Macintosh
 (MacPaint?) and later used for PFS: 1st
 Publisher clip art.</td>
+</tr>
+<tr><td><a class="reference external" href="https://aomediacodec.github.io/av1-avif/">AVIF</a></td>
+<td>R</td>
+<td>AVIF Image File Format</td>
+<td>AV1 in a _HEIF container.  AVIF is supported
+via libheif if it supports AVIF decode.</td>
 </tr>
 <tr><td>AVS</td>
 <td>RW</td>
