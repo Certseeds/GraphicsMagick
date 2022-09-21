@@ -98,7 +98,7 @@ extern WandExport ImageType
   MagickGetImageType(MagickWand *);
 
 extern WandExport ImageType
-  MagickGetImageSavedType(MagickWand *) MAGICK_FUNC_CONST;
+  MagickGetImageSavedType(MagickWand *) MAGICK_FUNC_PURE;
 
 extern WandExport InterlaceType
   MagickGetImageInterlaceScheme(MagickWand *);
