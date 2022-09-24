@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003-2020 GraphicsMagick Group
+  Copyright (C) 2003-2022 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -29,7 +29,7 @@ MagickExport int
   AcquireTemporaryFileDescriptor(char *filename);
 
 MagickExport FILE *
-  AcquireTemporaryFileStream(char *filename,FileIOMode mode);
+  AcquireTemporaryFileStream(char *filename,FileIOMode mode) MAGICK_FUNC_MALLOC_2ARG(fclose, 1);
 
 #if defined(MAGICK_IMPLEMENTATION)
 #  include "magick/tempfile-private.h"

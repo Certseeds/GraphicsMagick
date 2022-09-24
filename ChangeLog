@@ -1,3 +1,8 @@
+2022-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/common.h (MAGICK_FUNC_MALLOC_2ARG): Add macros to support
+	GCC malloc attributes which accept arguments.
+
 2022-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/formats.rst: Add AVIF image file format to the list.

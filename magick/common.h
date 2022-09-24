@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2009-2016 GraphicsMagick Group
+  Copyright (C) 2009-2022 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -145,9 +145,17 @@ extern "C" {
 #    if ((MAGICK_HAS_ATTRIBUTE(__malloc__)) || \
          (__GNUC__ >= 3))  /* 3.0+ */
 #      define MAGICK_FUNC_MALLOC MAGICK_ATTRIBUTE((__malloc__))
+#      if (__GNUC__ >= 11) /* Clang 15 does not support extended malloc attributes */
+/* #        warning "Using extended malloc attribute!" */
+#        define MAGICK_FUNC_MALLOC_1ARG(deallocator) MAGICK_ATTRIBUTE((__malloc__,__malloc__(deallocator)))
+#        define MAGICK_FUNC_MALLOC_2ARG(deallocator, ptrindex) MAGICK_ATTRIBUTE((__malloc__,__malloc__(deallocator,ptrindex)))
+#      else
+#        define MAGICK_FUNC_MALLOC_1ARG(deallocator) MAGICK_ATTRIBUTE((__malloc__))
+#        define MAGICK_FUNC_MALLOC_2ARG(deallocator, ptrindex) MAGICK_ATTRIBUTE((__malloc__))
+#      endif
 #    endif
 #    if ((MAGICK_HAS_ATTRIBUTE(__nonnull__)) || \
-         (((__GNUC__) > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 3))))  /* 3.3+ */
+         (((__GNUC__) >= 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 3))))  /* 3.3+ */
   /* Supports argument syntax like MAGICK_ATTRIBUTE((nonnull (1, 2))) but
      don't know how to support non-GCC fallback. */
 #      define MAGICK_FUNC_NONNULL MAGICK_ATTRIBUTE((__nonnull__))
@@ -243,6 +251,12 @@ extern "C" {
 #endif
 #if !defined(MAGICK_FUNC_MALLOC)
 #  define MAGICK_FUNC_MALLOC /*nothing*/
+#endif
+#if !defined(MAGICK_FUNC_MALLOC_1ARG)
+#  define MAGICK_FUNC_MALLOC_1ARG(deallocator) /*nothing*/
+#endif
+#if !defined(MAGICK_FUNC_MALLOC_2ARG)
+#  define MAGICK_FUNC_MALLOC_2ARG(deallocator,ptrindex) /*nothing*/
 #endif
 #if !defined (MAGICK_FUNC_NONNULL)
 #  define MAGICK_FUNC_NONNULL /*nothing*/
