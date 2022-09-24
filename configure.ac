@@ -3150,6 +3150,9 @@ AM_CONDITIONAL([HasPSDelegate],[test "$have_gs" = 'yes'])
 
 # Tests for programs only used while in maintainer mode
 if test "$MAINT" = '' ; then
+   # Search for a usable Python
+   AC_CHECK_PROGS([PYTHON],[python3 python python2])
+
    # Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
    AC_CHECK_PROGS([RST2HTML],[rst2html.py rst2html])
 

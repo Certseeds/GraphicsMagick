@@ -1,5 +1,9 @@
 2022-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: Search for a usable Python program, and then use
+	it to execute Python scripts. This avoids depending on a default
+	name.
+
 	* magick/common.h (MAGICK_FUNC_MALLOC_2ARG): Add macros to support
 	GCC malloc attributes which accept arguments.
 

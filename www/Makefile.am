@@ -253,7 +253,7 @@ NAMED_COLORS=$(top_srcdir)/scripts/named_colors.py
 RST2HTMLDECO=$(top_srcdir)/scripts/rst2htmldeco.py
 RELPATH=$(top_srcdir)/scripts/relpath.py
 OMP_DECIMAL_ALIGN=$(top_srcdir)/scripts/omp_decimal_align.py
-RST2HTML_COMMAND = $(RST2HTMLDECO) --cloak-email-addresses --link-stylesheet=docutils-articles.css
+RST2HTML_COMMAND = $(PYTHON) $(RST2HTMLDECO) --cloak-email-addresses --link-stylesheet=docutils-articles.css
 
 $(RST2HTML_TARGETS) : \
 	$(top_srcdir)/scripts/html_fragments.py \
@@ -263,12 +263,12 @@ $(RST2HTML_TARGETS) : \
 
 # Build HTML version of RST file
 $(top_srcdir)/www/%.html: $(top_srcdir)/%.txt
-	$(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
-	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
+	$(PYTHON) $(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
+	--url-prefix=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@` $< $@
 
 $(top_srcdir)/%.html: $(top_srcdir)/%.rst
-	$(RST2HTMLDECO)  --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
-	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< | $(OMP_DECIMAL_ALIGN) > $@
+	$(PYTHON) $(RST2HTMLDECO)  --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
+	--url-prefix=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@` $< | $(PYTHON) $(OMP_DECIMAL_ALIGN) > $@
 
 #
 # Build HTML version of ChangeLogs
@@ -346,6 +346,6 @@ $(top_srcdir)/www/Magick++/ChangeLog.rst: $(top_srcdir)/Magick++/ChangeLog
 
 # Build color.html
 $(WWWDIR)/color.html : $(NAMED_COLORS)
-	$(NAMED_COLORS) > $@
+	$(PYTHON) $(NAMED_COLORS) > $@
 
 endif # MAINTAINER_MODE
