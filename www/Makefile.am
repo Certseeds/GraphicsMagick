@@ -263,11 +263,11 @@ $(RST2HTML_TARGETS) : \
 
 # Build HTML version of RST file
 $(top_srcdir)/www/%.html: $(top_srcdir)/%.txt
-	$(PYTHON) $(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
+	$(PYTHON) $(RST2HTMLDECO) --link-stylesheet=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
 	--url-prefix=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@` $< $@
 
 $(top_srcdir)/%.html: $(top_srcdir)/%.rst
-	$(PYTHON) $(RST2HTMLDECO)  --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
+	$(PYTHON) $(RST2HTMLDECO)  --link-stylesheet=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
 	--url-prefix=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@` $< | $(PYTHON) $(OMP_DECIMAL_ALIGN) > $@
 
 #

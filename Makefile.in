@@ -11083,11 +11083,11 @@ uninstall-data-html:
 
 # Build HTML version of RST file
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/%.html: $(top_srcdir)/%.txt
-@MAINTAINER_MODE_TRUE@	$(PYTHON) $(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
+@MAINTAINER_MODE_TRUE@	$(PYTHON) $(RST2HTMLDECO) --link-stylesheet=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
 @MAINTAINER_MODE_TRUE@	--url-prefix=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@` $< $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/%.html: $(top_srcdir)/%.rst
-@MAINTAINER_MODE_TRUE@	$(PYTHON) $(RST2HTMLDECO)  --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
+@MAINTAINER_MODE_TRUE@	$(PYTHON) $(RST2HTMLDECO)  --link-stylesheet=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
 @MAINTAINER_MODE_TRUE@	--url-prefix=`$(PYTHON) $(RELPATH) $(top_srcdir)/www $@` $< | $(PYTHON) $(OMP_DECIMAL_ALIGN) > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
