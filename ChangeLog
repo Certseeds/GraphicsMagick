@@ -1,3 +1,8 @@
+2022-09-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* scripts, www/Makefile.am: Fixes pertaining to use of Docutils to
+	generate the HTML documentation.
+
 2022-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Search for a usable Python program, and then use
