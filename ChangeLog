@@ -1,3 +1,8 @@
+2022-09-28    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * PerlMagick/t/input_mono.tga Added monochromatic TGA sample generated
+	by Graphics Workshop.
+
 2022-09-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* scripts, www/Makefile.am: Fixes pertaining to use of Docutils to
