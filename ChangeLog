@@ -1,3 +1,7 @@
+2022-09-29    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c Monochromatic TGA could be read.
+
 2022-09-28    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * PerlMagick/t/input_mono.tga Added monochromatic TGA sample generated

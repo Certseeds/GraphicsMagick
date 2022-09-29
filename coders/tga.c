@@ -325,8 +325,8 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
         Validate depth.
       */
       if (!(((tga_info.bits_per_pixel > 1) && (tga_info.bits_per_pixel < 17)) ||
-            (tga_info.bits_per_pixel == 24 ) ||
-            (tga_info.bits_per_pixel == 32 )))
+            (tga_info.bits_per_pixel == 24 ) || (tga_info.bits_per_pixel == 32) ||
+	    (tga_info.bits_per_pixel == 1 && tga_info.image_type == TGAMonochrome) ))
         ThrowReaderException(CoderError,DataStorageTypeIsNotSupported,image);
 
       /*
@@ -509,11 +509,11 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (q == (PixelPacket *) NULL)
             break;
           indexes=AccessMutableIndexes(image);
-          for (x=0; x < (long) image->columns; x++)
+          for (x=0; x < (long)image->columns; x++)
             {
               if ((tga_info.image_type == TGARLEColormap) ||
                   (tga_info.image_type == TGARLERGB) ||
-                  (tga_info.image_type == TGARLEMonochrome))
+                  (tga_info.image_type == TGARLEMonochrome))  /* J.F. THIS WILLL NOT WORK! Some image sample should be obtained. */
                 {
                   if (runlength != 0)
                     {
@@ -536,17 +536,32 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (!skip)
                 switch (tga_info.bits_per_pixel)
                   {
+		  case 1:if((x&7) == 0)	// Read byte every 8th bit.
+                              index = ReadBlobByte(image);
+			else
+			      index <<= 1;
+			if(image->storage_class == PseudoClass)
+                        {			  
+                          pixel = image->colormap[indexes[x] = ((index & 128) ? 1 : 0)];
+                        }
+                      else
+                        {
+                          pixel.blue=pixel.green=pixel.red = (index & 128)?MaxRGB:0;
+                        }
+                      break;
+			  
                   case 8:
                   default:
                     {
                       /*
                         Gray scale.
                       */
-                      index=ReadBlobByte(image);
+                      index = ReadBlobByte(image);
                       if (image->storage_class == PseudoClass)
                         {
                           VerifyColormapIndex(image,index);
                           pixel=image->colormap[index];
+			  indexes[x] = index;
                         }
                       else
                         {
@@ -625,12 +640,16 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       break;
                     }
                   }
+	      else	/* skip==true - Duplicate index on RLE repeat. */
+	      {
+		if(image->storage_class == PseudoClass)
+		    indexes[x] = index;
+	      }
+
               if (EOFBlob(image))
                 status = MagickFail;
               if (status == MagickFail)
-                ThrowReaderException(CorruptImageError,UnableToReadImageData,image);
-              if (image->storage_class == PseudoClass)
-                indexes[x]=index;
+                ThrowReaderException(CorruptImageError,UnableToReadImageData,image);              
               *q++=pixel;
             }
           /*
