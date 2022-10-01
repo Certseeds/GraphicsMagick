@@ -1,5 +1,7 @@
 2022-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* PerlMagick/t/read.t: Added input_mono.tga to PerlMagick test suite.
+
 	* coders/tga.c: White-space normalization.  Eliminate compilation
 	warning about unused indexes variable.
 

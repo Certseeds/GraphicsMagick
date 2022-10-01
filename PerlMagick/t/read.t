@@ -1,5 +1,5 @@
 #!/usr/local/bin/perl
-# Copyright (C) 2003-2019 GraphicsMagick Group
+# Copyright (C) 2003-2022 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1991-1999 E. I. du Pont de Nemours and Company
 #
@@ -13,7 +13,7 @@
 # Whenever a new test is added/removed, be sure to update the
 # 1..n ouput.
 #
-BEGIN { $| = 1; $test=1; print "TAP version 13\n1..78\n"; }
+BEGIN { $| = 1; $test=1; print "TAP version 13\n1..79\n"; }
 END {print "not ok $test\n" unless $loaded;}
 use Graphics::Magick;
 $loaded=1;
@@ -271,9 +271,13 @@ print("Topol Type 7 ...\n");
 ++$test;
 testReadCompare('topol:topol_7.ras', 'reference/read/topol_7.miff', q//, 0, 0);
 
-print("Truevision Targa image file ...\n");
+print("Truevision Targa image file (color) ...\n");
 ++$test;
 testReadCompare('input.tga', 'reference/read/input_tga.miff', q//, 0, 0);
+
+print("Truevision Targa image file (bilevel) ...\n");
+++$test;
+testReadCompare('input_mono.tga', 'reference/read/input_mono.tga.miff', q//, 0, 0);
 
 print("PSX TIM file ...\n");
 ++$test;
