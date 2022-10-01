@@ -1,3 +1,10 @@
+2022-10-02 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * PerlMagick/t/input_8_BW_rle.tga
+	* PerlMagick/t/input_8_CC_rle.tga
+        * PerlMagick/t/input_8_BW.tga
+        Added 8 bit TGA samples.
+
 2022-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* scripts/rst2html5.py: Applied patch by Mark Mitchell which
