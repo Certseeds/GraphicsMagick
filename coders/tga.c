@@ -24,6 +24,8 @@
 %                              Software Design                                %
 %                                John Cristy                                  %
 %                                 July 1992                                   %
+%                              Jaroslav Fojtik                                %
+%                                   2022                                      %
 %                                                                             %
 %                                                                             %
 %                                                                             %
@@ -979,7 +981,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Writing Grayscale raster ...");
           tga_info.image_type=TGAMonochrome;
-          tga_info.bits_per_pixel=8;
+          tga_info.bits_per_pixel = (image->colors==2) ? 1 : 8;
           tga_info.colormap_type=0;
           tga_info.colormap_index=0;
           tga_info.colormap_length=0;
@@ -1064,57 +1066,40 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
         }
       /*
         Convert MIFF to TGA raster pixels.
-      */
-      count=(size_t) ((MagickArraySize(tga_info.bits_per_pixel,image->columns)) >> 3);
-      tga_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,count);
+      */      
+      count = (size_t)((7+MagickArraySize(tga_info.bits_per_pixel,image->columns)) >> 3);  /*7 bits padding. */
+      tga_pixels = MagickAllocateResourceLimitedMemory(unsigned char *,count);
       if (tga_pixels == (unsigned char *) NULL)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-      for (y=(long) (image->rows-1); y >= 0; y--)
+      for(y=(long)(image->rows-1); y>=0; y--)
         {
-          p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
-          if (p == (const PixelPacket *) NULL)
-            break;
-          q=tga_pixels;
-          indexes=AccessImmutableIndexes(image);
-          for (x=0; x < (long) image->columns; x++)
-            {
-              if (tga_info.image_type == TGAColormap)
-                {
-                  /* Colormapped */
-                  *q++=*indexes;
-                  indexes++;
-                }
-              else if (tga_info.image_type == TGAMonochrome)
-                {
-                  /* Grayscale */
-                  if (image->storage_class == PseudoClass)
+          p = AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
+          if(p == (const PixelPacket *) NULL)
+            break;          
+          indexes = AccessImmutableIndexes(image);
+
+	  switch(tga_info.image_type)	  
+          {
+	    case TGAMonochrome: if(ExportImagePixelArea(image,GrayQuantum,tga_info.bits_per_pixel,tga_pixels,0,0) != MagickPass)
+                                    status=MagickFail;                                
+                                break;
+            case TGAColormap:   if(ExportImagePixelArea(image,IndexQuantum,tga_info.bits_per_pixel,tga_pixels,0,0) != MagickPass)
+                                    status=MagickFail;
+                                break;
+            default:			/* TrueColor RGB (quantum type is BGR, ExportImagePixelArea is useless.)*/
+                    q = tga_pixels;
+                    for(x=0; x<(long)image->columns; x++)
                     {
-                      if (image->is_grayscale)
-                        *q++=ScaleQuantumToChar(image->colormap[*indexes].red);
-                      else
-                        *q++=PixelIntensityToQuantum(&image->colormap[*indexes]);
-                      indexes++;
-                    }
-                  else
-                    {
-                      if (image->is_grayscale)
-                        *q++=ScaleQuantumToChar(p->red);
-                      else
-                        *q++=PixelIntensityToQuantum(p);
-                    }
-                }
-              else
-                {
-                  /* TrueColor RGB */
-                  *q++=ScaleQuantumToChar(p->blue);
-                  *q++=ScaleQuantumToChar(p->green);
-                  *q++=ScaleQuantumToChar(p->red);
-                  if (image->matte)
-                    *q++=ScaleQuantumToChar(MaxRGB-p->opacity);
-                }
-              p++;
-            }
-          (void) WriteBlob(image,q-tga_pixels,(char *) tga_pixels);
+                      *q++=ScaleQuantumToChar(p->blue);
+                      *q++=ScaleQuantumToChar(p->green);
+                      *q++=ScaleQuantumToChar(p->red);
+                      if(image->matte)
+                          *q++=ScaleQuantumToChar(MaxRGB-p->opacity);
+                      p++;
+                    }          
+                    break;            
+          }
+          (void)WriteBlob(image,count,(char*)tga_pixels);
           if (image->previous == (Image *) NULL)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
