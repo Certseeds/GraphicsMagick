@@ -1,6 +1,15 @@
 2022-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* PerlMagick/t/read.t: Added input_mono.tga to PerlMagick test suite.
+	* scripts/rst2html5.py: Applied patch by Mark Mitchell which
+	replaces rst2htmldeco.py with rst2html5.py. rst2html5.py does
+	essentially the same job as rst2htmldeco.py, but in a different
+	way.  docutils_htmldeco_writer.py is no longer used or needed.
+
+	Also fixed thanks.rst file which had non-utf8 characters, as well
+	as ChangeLog.2006, ChangeLog.2008 and ChangeLog.2012.
+
+	* PerlMagick/t/read.t: Added input_mono.tga to PerlMagick test
+	suite.
 
 	* coders/tga.c: White-space normalization.  Eliminate compilation
 	warning about unused indexes variable.

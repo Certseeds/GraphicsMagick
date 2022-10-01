@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Magick::PixelPacket Structure</title>
-<link rel="stylesheet" href="../docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>Magick::PixelPacket Structure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -17,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -31,9 +35,9 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="magick-pixelpacket-structure">
 <h1 class="title">Magick::PixelPacket Structure</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
@@ -48,81 +52,81 @@ GraphicsMagick may be compiled with QuantumDepth=16 or
 QuantumDepth=32.</p>
 <p>The following table shows the relationship between QuantumDepth, the
 type of Quantum, and the overall PixelPacket size:</p>
-<table border="1" class="docutils">
+<table>
 <caption>Effect Of QuantumDepth Values</caption>
 <colgroup>
-<col width="28%" />
-<col width="35%" />
-<col width="37%" />
+<col style="width: 28%" />
+<col style="width: 35%" />
+<col style="width: 37%" />
 </colgroup>
-<thead valign="bottom">
-<tr><th class="head">QuantumDepth</th>
-<th class="head">Quantum Type</th>
-<th class="head">PixelPacket Size</th>
+<thead>
+<tr><th class="head"><p>QuantumDepth</p></th>
+<th class="head"><p>Quantum Type</p></th>
+<th class="head"><p>PixelPacket Size</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr><td>8</td>
-<td>unsigned char</td>
-<td>32 bits</td>
+<tbody>
+<tr><td><p>8</p></td>
+<td><p>unsigned char</p></td>
+<td><p>32 bits</p></td>
 </tr>
-<tr><td>16</td>
-<td>unsigned short</td>
-<td>64 bits</td>
+<tr><td><p>16</p></td>
+<td><p>unsigned short</p></td>
+<td><p>64 bits</p></td>
 </tr>
-<tr><td>32</td>
-<td>unsigned int</td>
-<td>128 bits</td>
+<tr><td><p>32</p></td>
+<td><p>unsigned int</p></td>
+<td><p>128 bits</p></td>
 </tr>
 </tbody>
 </table>
 <p>The members of the PixelPacket structure, and their interpretation,
 are shown in the following table:</p>
-<table border="1" class="docutils">
+<table>
 <caption>PixelPacket Structure Members</caption>
 <colgroup>
-<col width="10%" />
-<col width="10%" />
-<col width="19%" />
-<col width="31%" />
-<col width="28%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 19%" />
+<col style="width: 31%" />
+<col style="width: 28%" />
 </colgroup>
-<thead valign="bottom">
-<tr><th class="head">Member</th>
-<th class="head">Type</th>
-<th class="head" colspan="3">Interpretation</th>
+<thead>
+<tr><th class="head"><p>Member</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head" colspan="3"><p>Interpretation</p></th>
 </tr>
-<tr><th class="head"></th>
-<th class="head">&nbsp;</th>
-<th class="head">RGBColorspace</th>
-<th class="head">RGBColorspace + matte</th>
-<th class="head">CMYKColorspace</th>
+<tr><th class="head"><p></p></th>
+<th class="head"></th>
+<th class="head"><p>RGBColorspace</p></th>
+<th class="head"><p>RGBColorspace + matte</p></th>
+<th class="head"><p>CMYKColorspace</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr><td>red</td>
-<td>Quantum</td>
-<td>Red</td>
-<td>Red</td>
-<td>Cyan</td>
+<tbody>
+<tr><td><p>red</p></td>
+<td><p>Quantum</p></td>
+<td><p>Red</p></td>
+<td><p>Red</p></td>
+<td><p>Cyan</p></td>
 </tr>
-<tr><td>green</td>
-<td>Quantum</td>
-<td>Green</td>
-<td>Green</td>
-<td>Magenta</td>
+<tr><td><p>green</p></td>
+<td><p>Quantum</p></td>
+<td><p>Green</p></td>
+<td><p>Green</p></td>
+<td><p>Magenta</p></td>
 </tr>
-<tr><td>blue</td>
-<td>Quantum</td>
-<td>Blue</td>
-<td>Blue</td>
-<td>Yellow</td>
+<tr><td><p>blue</p></td>
+<td><p>Quantum</p></td>
+<td><p>Blue</p></td>
+<td><p>Blue</p></td>
+<td><p>Yellow</p></td>
 </tr>
-<tr><td>opacity</td>
-<td>Quantum</td>
-<td>Ignored</td>
-<td>Opacity</td>
-<td>Black</td>
+<tr><td><p>opacity</p></td>
+<td><p>Quantum</p></td>
+<td><p>Ignored</p></td>
+<td><p>Opacity</p></td>
+<td><p>Black</p></td>
 </tr>
 </tbody>
 </table>
@@ -134,9 +138,12 @@ the assocated IndexPacket.</p>
 <p>Copyright © Bob Friesenhahn 1999 - 2022</p>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

@@ -250,25 +250,24 @@ WWW_MAINTAINER_TARGETS=$(WWW_HTML_FILES) $(WWWDIR)/color.html
 if MAINTAINER_MODE
 
 NAMED_COLORS=$(top_srcdir)/scripts/named_colors.py
-RST2HTMLDECO=$(top_srcdir)/scripts/rst2htmldeco.py
+RST2HTML5=$(top_srcdir)/scripts/rst2html5.py
 RELPATH=$(top_srcdir)/scripts/relpath.py
 OMP_DECIMAL_ALIGN=$(top_srcdir)/scripts/omp_decimal_align.py
-RST2HTML_COMMAND = $(RST2HTMLDECO) --cloak-email-addresses --link-stylesheet=docutils-articles.css
 
 $(RST2HTML_TARGETS) : \
 	$(top_srcdir)/scripts/html_fragments.py \
-	$(top_srcdir)/scripts/rst2htmldeco.py \
+	$(top_srcdir)/scripts/rst2html5.py \
 	$(top_srcdir)/scripts/omp_decimal_align.py \
 	$(WWWDIR)/Makefile.am
 
 # Build HTML version of RST file
 $(top_srcdir)/www/%.html: $(top_srcdir)/%.txt
-	$(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
-	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< | grep -v '\"generator\"' > $@
+	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
+	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  > $@
 
 $(top_srcdir)/%.html: $(top_srcdir)/%.rst
-	$(RST2HTMLDECO)  --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
-	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< | grep -v '\"generator\"' | $(OMP_DECIMAL_ALIGN) > $@
+	$(RST2HTML5)  --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
+	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  | $(OMP_DECIMAL_ALIGN) > $@
 
 #
 # Build HTML version of ChangeLogs

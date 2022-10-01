@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Magick::TypeMetric</title>
-<link rel="stylesheet" href="../docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>Magick::TypeMetric</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -17,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -31,9 +35,9 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="magick-typemetric">
 <h1 class="title">Magick::TypeMetric</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
@@ -47,9 +51,7 @@ current Image font (default Ghostscript's &quot;Helvetica&quot;), pointsize
 <p>The pixel units may be converted to points (the standard
 resolution-independent measure used by the typesetting industry) via
 the following equation:</p>
-<pre class="literal-block">
-size_points = (size_pixels * 72)/resolution
-</pre>
+<pre class="literal-block">size_points = (size_pixels * 72)/resolution</pre>
 <p>where resolution is in dots-per-inch (DPI). This means that at the
 default image resolution, there is one pixel per point.</p>
 <p>Note that a font's pointsize is only a first-order approximation of
@@ -59,8 +61,7 @@ determined by the font designer.</p>
 <p>See <a class="reference external" href="http://freetype.sourceforge.net/freetype2/docs/glyphs/index.html">FreeType Glyph Conventions</a>
 for a detailed description of font metrics related issues.</p>
 <p>The following is the definition of the Magick::TypeMetric class:</p>
-<pre class="literal-block">
-class MagickDLLDecl TypeMetric
+<pre class="literal-block">class MagickDLLDecl TypeMetric
 {
   friend class Image;
 public:
@@ -86,14 +87,16 @@ public:
   // Maximum horizontal advance in pixels.
   double         maxHorizontalAdvance ( void ) const;
 
-};
-</pre>
+};</pre>
 <p>Copyright © Bob Friesenhahn 1999 - 2022</p>
 </div>
+
 
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>GraphicsMagick vs ImageMagick Benchmarks</title>
-<link rel="stylesheet" href="docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>GraphicsMagick vs ImageMagick Benchmarks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -17,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -31,17 +35,17 @@
   <li><a href="reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="graphicsmagick-vs-imagemagick-benchmarks">
 <h1 class="title">GraphicsMagick vs ImageMagick Benchmarks</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#foreword" id="id1">Foreword</a></li>
-<li><a class="reference internal" href="#strategy" id="id2">Strategy</a></li>
-<li><a class="reference internal" href="#the-benchmark" id="id3">The Benchmark</a></li>
+<li><p><a class="reference internal" href="#foreword" id="id1">Foreword</a></p></li>
+<li><p><a class="reference internal" href="#strategy" id="id2">Strategy</a></p></li>
+<li><p><a class="reference internal" href="#the-benchmark" id="id3">The Benchmark</a></p></li>
 </ul>
 </div>
 <div class="section" id="foreword">
@@ -86,9 +90,9 @@ performance that the typical user observes.</p>
 <p>This new benchmark reveals the following performance criteria:</p>
 <blockquote>
 <ul class="simple">
-<li>Basic execution overhead of the software.</li>
-<li>Image processing algorithmic efficiency.</li>
-<li>Efficacy of OpenMP enhancements.</li>
+<li><p>Basic execution overhead of the software.</p></li>
+<li><p>Image processing algorithmic efficiency.</p></li>
+<li><p>Efficacy of OpenMP enhancements.</p></li>
 </ul>
 </blockquote>
 </div>
@@ -98,8 +102,7 @@ performance that the typical user observes.</p>
 from a file named &quot;commands.txt&quot; and times how long it takes to
 execute each command 40 times using GraphicsMagick and ImageMagick.</p>
 <p>Here is the simple benchmark script:</p>
-<pre class="literal-block">
-#!/usr/bin/env bash
+<pre class="literal-block">#!/usr/bin/env bash
 #
 # Measure the performance between two 'convert' commands by
 # executing a subcommand through many iterations and seeing
@@ -165,14 +168,16 @@ do
 
   echo
   sleep 1
-done 2&gt;&amp;1
-</pre>
+done 2&gt;&amp;1</pre>
 </div>
 </div>
+
 
 <hr class="docutils">
 <div class="document">
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

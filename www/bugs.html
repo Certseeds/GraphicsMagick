@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>GraphicsMagick Bugs</title>
-<link rel="stylesheet" href="docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>GraphicsMagick Bugs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -17,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -31,9 +35,9 @@
   <li><a href="reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="graphicsmagick-bugs">
 <h1 class="title">GraphicsMagick Bugs</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
@@ -41,26 +45,29 @@
 any additional bugs to the GraphicsMagick <a class="reference external" href="https://sourceforge.net/p/graphicsmagick/_list/tickets">bug tracker</a> at SourceForge.</p>
 <blockquote>
 <ul class="simple">
-<li>BMP reader is not working for some obscure low-color packed files.</li>
-<li>DPX reader/writer does not properly handle subformats where row
+<li><p>BMP reader is not working for some obscure low-color packed files.</p></li>
+<li><p>DPX reader/writer does not properly handle subformats where row
 samples spill over the storage word boundary. This means that
 single-channel/grayscale 10-bit DPX files will only work for widths
-evenly divisible by three. (SF 1533184)</li>
-<li>The PSD reader is disabled by default because it does not work well
+evenly divisible by three. (SF 1533184)</p></li>
+<li><p>The PSD reader is disabled by default because it does not work well
 enough and several man-years worth of dedicated volunteer time is
-required to make it work properly.</li>
-<li>Scitex reader is not working for some files.</li>
-<li>SVG writer works only if you are particularly luckly and so it is
-not included in the build by default..</li>
-<li>SVG reader mishandles basic units and many other syntax elements (SF
-1231547, 1298606).</li>
+required to make it work properly.</p></li>
+<li><p>Scitex reader is not working for some files.</p></li>
+<li><p>SVG writer works only if you are particularly luckly and so it is
+not included in the build by default..</p></li>
+<li><p>SVG reader mishandles basic units and many other syntax elements (SF
+1231547, 1298606).</p></li>
 </ul>
 </blockquote>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

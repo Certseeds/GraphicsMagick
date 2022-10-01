@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>GraphicsMagick Download</title>
-<link rel="stylesheet" href="docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>GraphicsMagick Download</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -17,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -31,18 +35,19 @@
   <li><a href="reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="graphicsmagick-download">
 <h1 class="title">GraphicsMagick Download</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#download-sites" id="id1">Download Sites</a></li>
-<li><a class="reference internal" href="#verifying-the-download" id="id2">Verifying The Download</a><ul>
-<li><a class="reference internal" href="#using-a-pgp-key" id="id3">Using a PGP key</a></li>
-<li><a class="reference internal" href="#using-a-sha-256-or-sha-1-checksum" id="id4">Using a SHA-256 or SHA-1 checksum</a></li>
+<li><p><a class="reference internal" href="#download-sites" id="id1">Download Sites</a></p></li>
+<li><p><a class="reference internal" href="#verifying-the-download" id="id2">Verifying The Download</a></p>
+<ul>
+<li><p><a class="reference internal" href="#using-a-pgp-key" id="id3">Using a PGP key</a></p></li>
+<li><p><a class="reference internal" href="#using-a-sha-256-or-sha-1-checksum" id="id4">Using a SHA-256 or SHA-1 checksum</a></p></li>
 </ul>
 </li>
 </ul>
@@ -77,9 +82,7 @@ be extracted from the text of
 <a class="reference external" href="http://www.graphicsmagick.org/security.html">http://www.graphicsmagick.org/security.html</a>.</p>
 <p>It may be also downloaded from a public key server (if you are lucky)
 like:</p>
-<pre class="literal-block">
-gpg --recv-keys EBDFDB21B020EE8FD151A88DE301047DE1198975
-</pre>
+<pre class="literal-block">gpg --recv-keys EBDFDB21B020EE8FD151A88DE301047DE1198975</pre>
 <p>however, there are known dangers to your keystore if the keys on the
 public key server have been spammed.</p>
 <p>If extracting the key from the
@@ -89,28 +92,22 @@ to a file (e.g. <cite>gm-sigs.asc</cite>).</p>
 <p>If you have chosen to download the public key to a file
 (e.g. <cite>gm-sigs.asc</cite>) you can import it into your collection of keys.
 For example:</p>
-<pre class="literal-block">
-gpg --import gm-sigs.asc
-</pre>
+<pre class="literal-block">gpg --import gm-sigs.asc</pre>
 <p>After importing the key, you can easily verify any GraphicsMagick
 distribution file with an associated &quot;.sig&quot; (binary OpenPGP format
 signature) or &quot;.asc&quot; (ASCII armored format signature) file.  The
 distribution file and a signature file must be
 downloaded. Verification is performed by doing this:</p>
-<pre class="literal-block">
-gpg --verify GraphicsMagick-1.3.37.tar.xz.sig
-</pre>
+<pre class="literal-block">gpg --verify GraphicsMagick-1.3.37.tar.xz.sig</pre>
 <p>and you should see output similar to:</p>
-<pre class="literal-block">
-gpg: assuming signed data in 'GraphicsMagick-1.3.37.tar.xz'
+<pre class="literal-block">gpg: assuming signed data in 'GraphicsMagick-1.3.37.tar.xz'
 gpg: Signature made Sun Dec 12 15:30:02 2021 CST
 gpg:                using DSA key EBDFDB21B020EE8FD151A88DE301047DE1198975
 gpg: Good signature from &quot;Bob Friesenhahn &lt;bfriesen&#64;simple.dallas.tx.us&gt;&quot; [ultimate]
 gpg:                 aka &quot;Bob Friesenhahn &lt;bfriesen&#64;simplesystems.org&gt;&quot; [ultimate]
 gpg:                 aka &quot;Bob Friesenhahn &lt;bfriesen&#64;graphicsmagick.org&gt;&quot; [ultimate]
 gpg:                 aka &quot;Bob Friesenhahn &lt;bobjfriesenhahn&#64;gmail.com&gt;&quot; [ultimate]
-gpg:                 aka &quot;[jpeg image of size 4917]&quot; [ultimate]
-</pre>
+gpg:                 aka &quot;[jpeg image of size 4917]&quot; [ultimate]</pre>
 </div>
 <div class="section" id="using-a-sha-256-or-sha-1-checksum">
 <h2><a class="toc-backref" href="#id4">Using a SHA-256 or SHA-1 checksum</a></h2>
@@ -121,13 +118,9 @@ graphicsmagick-announce list at
 <a class="reference external" href="https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/">https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/</a>
 which you <em>should</em> subscribe to).  In this case you may do this for a
 SHA-256 checksum:</p>
-<pre class="literal-block">
-sha256sum GraphicsMagick-1.3.37.tar.xz
-</pre>
+<pre class="literal-block">sha256sum GraphicsMagick-1.3.37.tar.xz</pre>
 <p>and this for a SHA-1 (legacy) checksum:</p>
-<pre class="literal-block">
-sha1sum GraphicsMagick-1.3.37.tar.xz
-</pre>
+<pre class="literal-block">sha1sum GraphicsMagick-1.3.37.tar.xz</pre>
 <p>and then compare the generated checksum (hex format) with the checksum
 provided in the release announcement.  While this is much more secure
 than doing nothing, it does not fully defend against forgery.  If
@@ -137,9 +130,12 @@ release announcement, then you could be duped!</p>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>
