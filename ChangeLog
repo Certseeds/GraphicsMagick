@@ -1,3 +1,8 @@
+2022-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tga.c: White-space normalization.  Eliminate compilation
+	warning about unused indexes variable.
+
 2022-10-01    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Monochromatic TGA could be written.
@@ -8,7 +13,7 @@
 
 2022-09-28    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-        * PerlMagick/t/input_mono.tga Added monochromatic TGA sample generated
+	* PerlMagick/t/input_mono.tga Added monochromatic TGA sample generated
 	by Graphics Workshop.
 
 2022-09-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

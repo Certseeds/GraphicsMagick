@@ -328,7 +328,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       if (!(((tga_info.bits_per_pixel > 1) && (tga_info.bits_per_pixel < 17)) ||
             (tga_info.bits_per_pixel == 24 ) || (tga_info.bits_per_pixel == 32) ||
-	    (tga_info.bits_per_pixel == 1 && tga_info.image_type == TGAMonochrome) ))
+            (tga_info.bits_per_pixel == 1 && tga_info.image_type == TGAMonochrome) ))
         ThrowReaderException(CoderError,DataStorageTypeIsNotSupported,image);
 
       /*
@@ -538,20 +538,21 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
               if (!skip)
                 switch (tga_info.bits_per_pixel)
                   {
-		  case 1:if((x&7) == 0)	// Read byte every 8th bit.
-                              index = ReadBlobByte(image);
-			else
-			      index <<= 1;
-			if(image->storage_class == PseudoClass)
-                        {			  
-                          pixel = image->colormap[indexes[x] = ((index & 128) ? 1 : 0)];
-                        }
-                      else
-                        {
-                          pixel.blue=pixel.green=pixel.red = (index & 128)?MaxRGB:0;
-                        }
-                      break;
-			  
+                  case 1:
+                    if ((x&7) == 0)     // Read byte every 8th bit.
+                      index = ReadBlobByte(image);
+                    else
+                      index <<= 1;
+                    if (image->storage_class == PseudoClass)
+                      {
+                        pixel = image->colormap[indexes[x] = ((index & 128) ? 1 : 0)];
+                      }
+                    else
+                      {
+                        pixel.blue=pixel.green=pixel.red = (index & 128)?MaxRGB:0;
+                      }
+                    break;
+
                   case 8:
                   default:
                     {
@@ -563,7 +564,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         {
                           VerifyColormapIndex(image,index);
                           pixel=image->colormap[index];
-			  indexes[x] = index;
+                          indexes[x] = index;
                         }
                       else
                         {
@@ -642,16 +643,16 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       break;
                     }
                   }
-	      else	/* skip==true - Duplicate index on RLE repeat. */
-	      {
-		if(image->storage_class == PseudoClass)
-		    indexes[x] = index;
-	      }
+              else      /* skip==true - Duplicate index on RLE repeat. */
+                {
+                  if (image->storage_class == PseudoClass)
+                    indexes[x] = index;
+                }
 
               if (EOFBlob(image))
                 status = MagickFail;
               if (status == MagickFail)
-                ThrowReaderException(CorruptImageError,UnableToReadImageData,image);              
+                ThrowReaderException(CorruptImageError,UnableToReadImageData,image);
               *q++=pixel;
             }
           /*
@@ -659,12 +660,12 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
             tested here.  This test case can never be true and so it
             is commented out for the moment.
 
-          if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 4)
+            if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 4)
             offset+=4;
-          else
+            else
           */
           if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 2)
-              offset+=2;
+            offset+=2;
           else
             offset++;
           if (offset >= image->rows)
@@ -862,8 +863,8 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
   register const PixelPacket
     *p;
 
-  register const IndexPacket
-    *indexes;
+  /* register const IndexPacket
+     *indexes; */
 
   register long
     x;
@@ -1049,7 +1050,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
             Dump colormap to file (blue, green, red byte order).
           */
           targa_colormap=MagickAllocateResourceLimitedArray(unsigned char *,
-                                             tga_info.colormap_length,3);
+                                                            tga_info.colormap_length,3);
           if (targa_colormap == (unsigned char *) NULL)
             ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
@@ -1066,40 +1067,42 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
         }
       /*
         Convert MIFF to TGA raster pixels.
-      */      
+      */
       count = (size_t)((7+MagickArraySize(tga_info.bits_per_pixel,image->columns)) >> 3);  /*7 bits padding. */
       tga_pixels = MagickAllocateResourceLimitedMemory(unsigned char *,count);
       if (tga_pixels == (unsigned char *) NULL)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-      for(y=(long)(image->rows-1); y>=0; y--)
+      for (y=(long)(image->rows-1); y>=0; y--)
         {
           p = AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
-          if(p == (const PixelPacket *) NULL)
-            break;          
-          indexes = AccessImmutableIndexes(image);
+          if (p == (const PixelPacket *) NULL)
+            break;
+          /* indexes = AccessImmutableIndexes(image); */
 
-	  switch(tga_info.image_type)	  
-          {
-	    case TGAMonochrome: if(ExportImagePixelArea(image,GrayQuantum,tga_info.bits_per_pixel,tga_pixels,0,0) != MagickPass)
-                                    status=MagickFail;                                
-                                break;
-            case TGAColormap:   if(ExportImagePixelArea(image,IndexQuantum,tga_info.bits_per_pixel,tga_pixels,0,0) != MagickPass)
-                                    status=MagickFail;
-                                break;
-            default:			/* TrueColor RGB (quantum type is BGR, ExportImagePixelArea is useless.)*/
-                    q = tga_pixels;
-                    for(x=0; x<(long)image->columns; x++)
-                    {
-                      *q++=ScaleQuantumToChar(p->blue);
-                      *q++=ScaleQuantumToChar(p->green);
-                      *q++=ScaleQuantumToChar(p->red);
-                      if(image->matte)
-                          *q++=ScaleQuantumToChar(MaxRGB-p->opacity);
-                      p++;
-                    }          
-                    break;            
-          }
-          (void)WriteBlob(image,count,(char*)tga_pixels);
+          switch (tga_info.image_type)
+            {
+            case TGAMonochrome:
+              if (ExportImagePixelArea(image,GrayQuantum,tga_info.bits_per_pixel,tga_pixels,0,0) != MagickPass)
+                status=MagickFail;
+              break;
+            case TGAColormap:
+              if (ExportImagePixelArea(image,IndexQuantum,tga_info.bits_per_pixel,tga_pixels,0,0) != MagickPass)
+                status=MagickFail;
+              break;
+            default:                    /* TrueColor RGB (quantum type is BGR, ExportImagePixelArea is useless.)*/
+              q = tga_pixels;
+              for (x=0; x<(long)image->columns; x++)
+                {
+                  *q++=ScaleQuantumToChar(p->blue);
+                  *q++=ScaleQuantumToChar(p->green);
+                  *q++=ScaleQuantumToChar(p->red);
+                  if (image->matte)
+                    *q++=ScaleQuantumToChar(MaxRGB-p->opacity);
+                  p++;
+                }
+              break;
+            }
+          (void) WriteBlob(image,count,(char*)tga_pixels);
           if (image->previous == (Image *) NULL)
             if (QuantumTick(y,image->rows))
               if (!MagickMonitorFormatted(y,image->rows,&image->exception,
