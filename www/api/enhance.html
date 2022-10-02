@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>enhance</title>
-<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>enhance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-api.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,30 +35,28 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="enhance">
 <h1 class="title">enhance</h1>
-<h2 class="subtitle" id="methods-to-enhance-or-adjust-an-image">Methods to enhance or adjust an image</h2>
-
+<p class="subtitle" id="methods-to-enhance-or-adjust-an-image">Methods to enhance or adjust an image</p>
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#contrastimage" id="id15">ContrastImage</a></li>
-<li><a class="reference internal" href="#equalizeimage" id="id16">EqualizeImage</a></li>
-<li><a class="reference internal" href="#gammaimage" id="id17">GammaImage</a></li>
-<li><a class="reference internal" href="#levelimage" id="id18">LevelImage</a></li>
-<li><a class="reference internal" href="#levelimagechannel" id="id19">LevelImageChannel</a></li>
-<li><a class="reference internal" href="#modulateimage" id="id20">ModulateImage</a></li>
-<li><a class="reference internal" href="#negateimage" id="id21">NegateImage</a></li>
-<li><a class="reference internal" href="#normalizeimage" id="id22">NormalizeImage</a></li>
+<li><p><a class="reference internal" href="#contrastimage" id="id15">ContrastImage</a></p></li>
+<li><p><a class="reference internal" href="#equalizeimage" id="id16">EqualizeImage</a></p></li>
+<li><p><a class="reference internal" href="#gammaimage" id="id17">GammaImage</a></p></li>
+<li><p><a class="reference internal" href="#levelimage" id="id18">LevelImage</a></p></li>
+<li><p><a class="reference internal" href="#levelimagechannel" id="id19">LevelImageChannel</a></p></li>
+<li><p><a class="reference internal" href="#modulateimage" id="id20">ModulateImage</a></p></li>
+<li><p><a class="reference internal" href="#negateimage" id="id21">NegateImage</a></p></li>
+<li><p><a class="reference internal" href="#normalizeimage" id="id22">NormalizeImage</a></p></li>
 </ul>
 </div>
 <div class="section" id="contrastimage">
 <h1><a class="toc-backref" href="#id15">ContrastImage</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int ContrastImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int sharpen );
-</pre>
+<pre class="literal-block">unsigned int ContrastImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int sharpen );</pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
@@ -63,15 +64,15 @@ unsigned int ContrastImage( <a class="reference external" href="../api/types.htm
 darker elements of the image.  Set sharpen to a value other than 0 to
 increase the image contrast otherwise the contrast is reduced.</p>
 <p>The format of the ContrastImage method is:</p>
-<pre class="literal-block">
-unsigned int ContrastImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int sharpen );
-</pre>
+<pre class="literal-block">unsigned int ContrastImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int sharpen );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>sharpen:</dt>
-<dd>Increase or decrease image contrast.</dd>
+<dd><p>Increase or decrease image contrast.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -79,21 +80,18 @@ unsigned int ContrastImage( <a class="reference external" href="../api/types.htm
 <h1><a class="toc-backref" href="#id16">EqualizeImage</a></h1>
 <div class="section" id="id1">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int EqualizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );
-</pre>
+<pre class="literal-block">unsigned int EqualizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 </div>
 <div class="section" id="id2">
 <h2>Description</h2>
 <p>EqualizeImage() applies a histogram equalization to the image.</p>
 <p>The format of the EqualizeImage method is:</p>
-<pre class="literal-block">
-unsigned int EqualizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );
-</pre>
+<pre class="literal-block">unsigned int EqualizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -101,9 +99,7 @@ unsigned int EqualizeImage( <a class="reference external" href="../api/types.htm
 <h1><a class="toc-backref" href="#id17">GammaImage</a></h1>
 <div class="section" id="id3">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail GammaImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );
-</pre>
+<pre class="literal-block">MagickPassFail GammaImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );</pre>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
@@ -116,15 +112,15 @@ from 0.45 to 2.6.</p>
 <p>You can also reduce the influence of a particular channel with a gamma
 value of 0.</p>
 <p>The format of the GammaImage method is:</p>
-<pre class="literal-block">
-MagickPassFail GammaImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );
-</pre>
+<pre class="literal-block">MagickPassFail GammaImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>level:</dt>
-<dd>Define the level of gamma correction.</dd>
+<dd><p>Define the level of gamma correction.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -132,9 +128,7 @@ MagickPassFail GammaImage( <a class="reference external" href="../api/types.html
 <h1><a class="toc-backref" href="#id18">LevelImage</a></h1>
 <div class="section" id="id5">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int LevelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );
-</pre>
+<pre class="literal-block">unsigned int LevelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );</pre>
 </div>
 <div class="section" id="id6">
 <h2>Description</h2>
@@ -147,17 +141,17 @@ correction to apply to the image.  White point specifies the lightest color
 in the image. Colors brighter than the white point are set to the maximum
 quantum value.</p>
 <p>The format of the LevelImage method is:</p>
-<pre class="literal-block">
-unsigned int LevelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );
-</pre>
+<pre class="literal-block">unsigned int LevelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>levels:</dt>
-<dd>Specify the levels as a string of the form &quot;black/mid/white&quot;
+<dd><p>Specify the levels as a string of the form &quot;black/mid/white&quot;
 (e.g. &quot;10,1.0,65000) where black and white have the range of 0-MaxRGB,
-and mid has the range 0-10.</dd>
+and mid has the range 0-10.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -165,11 +159,9 @@ and mid has the range 0-10.</dd>
 <h1><a class="toc-backref" href="#id19">LevelImageChannel</a></h1>
 <div class="section" id="id7">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail LevelImageChannel( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
+<pre class="literal-block">MagickPassFail LevelImageChannel( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
                                   const double black_point, const double mid_point,
-                                  const double white_point );
-</pre>
+                                  const double white_point );</pre>
 </div>
 <div class="section" id="id8">
 <h2>Description</h2>
@@ -182,20 +174,21 @@ zero. Mid point specifies a gamma correction to apply to the image.
 White point specifies the lightest color in the image.  Colors brighter
 than the white point are set to the maximum quantum value.</p>
 <p>The format of the LevelImage method is:</p>
-<pre class="literal-block">
-MagickPassFail LevelImageChannel( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
+<pre class="literal-block">MagickPassFail LevelImageChannel( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
                                   const double black_point, const double mid_point,
-                                  const double white_point );
-</pre>
-<dl class="docutils">
+                                  const double white_point );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>channel:</dt>
-<dd>Identify which channel to level: Red, Cyan, Green, Magenta,
-Blue, Yellow, Opacity, or All.</dd>
+<dd><p>Identify which channel to level: Red, Cyan, Green, Magenta,
+Blue, Yellow, Opacity, or All.</p>
+</dd>
 <dt>black_point, mid_point, white_point:</dt>
-<dd>Specify the levels where the black
-and white points have the range of 0-MaxRGB, and mid has the range 0-10.</dd>
+<dd><p>Specify the levels where the black
+and white points have the range of 0-MaxRGB, and mid has the range 0-10.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -203,9 +196,7 @@ and white points have the range of 0-MaxRGB, and mid has the range 0-10.</dd>
 <h1><a class="toc-backref" href="#id20">ModulateImage</a></h1>
 <div class="section" id="id9">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int ModulateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *modulate );
-</pre>
+<pre class="literal-block">unsigned int ModulateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *modulate );</pre>
 </div>
 <div class="section" id="id10">
 <h2>Description</h2>
@@ -213,16 +204,16 @@ unsigned int ModulateImage( <a class="reference external" href="../api/types.htm
 of an image.  Modulate represents the brightness, saturation, and hue
 as one parameter (e.g. 90,150,100).</p>
 <p>The format of the ModulateImage method is:</p>
-<pre class="literal-block">
-unsigned int ModulateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *modulate );
-</pre>
+<pre class="literal-block">unsigned int ModulateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *modulate );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>modulate:</dt>
-<dd>Define the percent change in brightness, saturation, and
-hue.</dd>
+<dd><p>Define the percent change in brightness, saturation, and
+hue.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -230,9 +221,7 @@ hue.</dd>
 <h1><a class="toc-backref" href="#id21">NegateImage</a></h1>
 <div class="section" id="id11">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int NegateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int grayscale );
-</pre>
+<pre class="literal-block">unsigned int NegateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int grayscale );</pre>
 </div>
 <div class="section" id="id12">
 <h2>Description</h2>
@@ -240,13 +229,12 @@ unsigned int NegateImage( <a class="reference external" href="../api/types.html#
 Grayscale option means that only grayscale values within the image are
 negated.</p>
 <p>The format of the NegateImage method is:</p>
-<pre class="literal-block">
-unsigned int NegateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int grayscale );
-</pre>
+<pre class="literal-block">unsigned int NegateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int grayscale );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -254,30 +242,30 @@ unsigned int NegateImage( <a class="reference external" href="../api/types.html#
 <h1><a class="toc-backref" href="#id22">NormalizeImage</a></h1>
 <div class="section" id="id13">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int NormalizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );
-</pre>
+<pre class="literal-block">unsigned int NormalizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 </div>
 <div class="section" id="id14">
 <h2>Description</h2>
 <p>The NormalizeImage() method enhances the contrast of a color image by
 adjusting the pixels color to span the entire range of colors available.</p>
 <p>The format of the NormalizeImage method is:</p>
-<pre class="literal-block">
-unsigned int NormalizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );
-</pre>
+<pre class="literal-block">unsigned int NormalizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

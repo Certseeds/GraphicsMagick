@@ -90,7 +90,7 @@
 # Makefile for building Wand library
 #
 
-# Copyright (C) 2008 - 2021 GraphicsMagick Group
+# Copyright (C) 2008 - 2022 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -99,7 +99,7 @@
 # Makefile for building HTML files
 #
 
-# Copyright (C) 2008-2011 GraphicsMagick Group
+# Copyright (C) 2008-2022 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -108,7 +108,7 @@
 # Makefile for building API HTML files
 #
 
-# Copyright (C) 2009 - 2012 GraphicsMagick Group
+# Copyright (C) 2009 - 2022 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -4747,9 +4747,6 @@ WWWAPI_EXTRA_DIST = \
 WWWAPI_MAINTAINER_TARGETS = $(WWWAPI_HTML_TARGETS)
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@APIWHATIS = $(top_srcdir)/scripts/whatis.txt
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@FORMATCAPI = $(top_srcdir)/scripts/format_c_api_doc.py
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@APIRST2HTML_COMMAND = $(RST2HTMLDECO) \
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@  --link-stylesheet=../docutils-articles.css`
-
 wwwwandapidir = $(htmldir)/wand
 WWWWANDAPIDIR = $(top_srcdir)/www/wand
 WWWWANDAPI_HTML_TARGETS = \
@@ -11080,102 +11077,129 @@ uninstall-data-html:
 @MAINTAINER_MODE_TRUE@	$(top_srcdir)/scripts/omp_decimal_align.py \
 @MAINTAINER_MODE_TRUE@	$(WWWDIR)/Makefile.am
 
-# Build HTML version of RST file
+# Build HTML version of RST file (with "txt" extension)
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/%.html: $(top_srcdir)/%.txt
-@MAINTAINER_MODE_TRUE@	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
-@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  > $@
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@MAINTAINER_MODE_TRUE@	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  > $@
 
+# Build HTML version of RST file
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/%.html: $(top_srcdir)/%.rst
-@MAINTAINER_MODE_TRUE@	$(RST2HTML5)  --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
-@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  | $(OMP_DECIMAL_ALIGN) > $@
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@MAINTAINER_MODE_TRUE@	$(RST2HTML5)  --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  | $(OMP_DECIMAL_ALIGN) > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2021.rst: $(top_srcdir)/ChangeLog.2021
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2020.rst: $(top_srcdir)/ChangeLog.2020
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2019.rst: $(top_srcdir)/ChangeLog.2019
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2018.rst: $(top_srcdir)/ChangeLog.2018
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2017.rst: $(top_srcdir)/ChangeLog.2017
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2016.rst: $(top_srcdir)/ChangeLog.2016
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2015.rst: $(top_srcdir)/ChangeLog.2015
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2014.rst: $(top_srcdir)/ChangeLog.2014
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2013.rst: $(top_srcdir)/ChangeLog.2013
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2012.rst: $(top_srcdir)/ChangeLog.2012
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2011.rst: $(top_srcdir)/ChangeLog.2011
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2010.rst: $(top_srcdir)/ChangeLog.2010
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2009.rst: $(top_srcdir)/ChangeLog.2009
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2008.rst: $(top_srcdir)/ChangeLog.2008
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2007.rst: $(top_srcdir)/ChangeLog.2007
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2006.rst: $(top_srcdir)/ChangeLog.2006
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2005.rst: $(top_srcdir)/ChangeLog.2005
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2004.rst: $(top_srcdir)/ChangeLog.2004
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2003.rst: $(top_srcdir)/ChangeLog.2003
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2002.rst: $(top_srcdir)/ChangeLog.2002
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2001.rst: $(top_srcdir)/ChangeLog.2001
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Magick++/ChangeLog.rst: $(top_srcdir)/Magick++/ChangeLog
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 # Build color.html
 @MAINTAINER_MODE_TRUE@$(WWWDIR)/color.html : $(NAMED_COLORS)
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(NAMED_COLORS) > $@
 
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWAPI_HTML_TARGETS) : $(FORMATCAPI) $(RST2HTMLDECO) $(APIWHATIS) $(top_srcdir)/scripts/html_fragments.py $(top_srcdir)/www/api/Makefile.am $(top_srcdir)/www/api/api_hyperlinks.rst
+#APIRST2HTML_COMMAND = $(RST2HTML5) --stylesheet=../docutils-articles.css`
+
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWAPI_HTML_TARGETS) : $(FORMATCAPI) $(RST2HTML5) $(APIWHATIS) $(top_srcdir)/scripts/html_fragments.py $(top_srcdir)/www/api/Makefile.am $(top_srcdir)/www/api/api_hyperlinks.rst
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWAPIDIR)/%.apirst : $(top_srcdir)/magick/%.c
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(FORMATCAPI) --whatis-file $(APIWHATIS) $< $@
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWAPIDIR)/%.html : $(WWWAPIDIR)/%.apirst
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css \
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
 
 #APIWHATIS = $(top_srcdir)/scripts/whatis.txt
 #FORMATCAPI = $(top_srcdir)/scripts/format_c_api_doc.py
 
-#APIRST2HTML_COMMAND = $(RST2HTMLDECO) \
-#  --link-stylesheet=../docutils-articles.css`
+#APIRST2HTML_COMMAND = $(RST2HTMLDECO) --link-stylesheet=../docutils-articles.css`
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWWANDAPI_HTML_TARGETS) : $(FORMATCAPI) \
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTMLDECO) \
@@ -11185,12 +11209,12 @@ uninstall-data-html:
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(top_srcdir)/www/api/api_hyperlinks.rst
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWWANDAPIDIR)/%.apirst : $(top_srcdir)/wand/%.c
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(FORMATCAPI) --whatis-file $(APIWHATIS) \
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	--include-rst ../api/api_hyperlinks.rst $< $@
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(FORMATCAPI) --whatis-file $(APIWHATIS) --include-rst $(top_srcdir)/www/api/api_hyperlinks.rst $< $@
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWWANDAPIDIR)/%.html : $(WWWWANDAPIDIR)/%.apirst
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css \
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
 
 utilities/tests/montage.log : \
 	utilities/tests/effects.log

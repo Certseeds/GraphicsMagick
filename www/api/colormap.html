@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>colormap</title>
-<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>colormap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-api.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,25 +35,23 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="colormap">
 <h1 class="title">colormap</h1>
-<h2 class="subtitle" id="colormap-related-functions">Colormap related functions</h2>
-
+<p class="subtitle" id="colormap-related-functions">Colormap related functions</p>
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#allocateimagecolormap" id="id5">AllocateImageColormap</a></li>
-<li><a class="reference internal" href="#cyclecolormapimage" id="id6">CycleColormapImage</a></li>
-<li><a class="reference internal" href="#replaceimagecolormap" id="id7">ReplaceImageColormap</a></li>
+<li><p><a class="reference internal" href="#allocateimagecolormap" id="id5">AllocateImageColormap</a></p></li>
+<li><p><a class="reference internal" href="#cyclecolormapimage" id="id6">CycleColormapImage</a></p></li>
+<li><p><a class="reference internal" href="#replaceimagecolormap" id="id7">ReplaceImageColormap</a></p></li>
 </ul>
 </div>
 <div class="section" id="allocateimagecolormap">
 <h1><a class="toc-backref" href="#id5">AllocateImageColormap</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail AllocateImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long colors );
-</pre>
+<pre class="literal-block">MagickPassFail AllocateImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long colors );</pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
@@ -59,14 +60,14 @@ it to a linear gray colorspace with increasing intensity.  If the image
 already has a colormap, it is replaced.  AllocateImageColormap() returns
 MagickPass if successful, otherwise MagickFail if there is not enough memory.</p>
 <p>The format of the AllocateImageColormap method is:</p>
-<pre class="literal-block">
-MagickPassFail AllocateImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long colors );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">MagickPassFail AllocateImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long colors );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>colors:</dt>
-<dd>The number of colors in the image colormap.</dd>
+<dd><p>The number of colors in the image colormap.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -74,9 +75,7 @@ MagickPassFail AllocateImageColormap( <a class="reference external" href="../api
 <h1><a class="toc-backref" href="#id6">CycleColormapImage</a></h1>
 <div class="section" id="id1">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail CycleColormapImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const int amount );
-</pre>
+<pre class="literal-block">MagickPassFail CycleColormapImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const int amount );</pre>
 </div>
 <div class="section" id="id2">
 <h2>Description</h2>
@@ -84,15 +83,15 @@ MagickPassFail CycleColormapImage( <a class="reference external" href="../api/ty
 positions.  If you cycle the colormap a number of times you can produce
 a psychodelic effect.</p>
 <p>The format of the CycleColormapImage method is:</p>
-<pre class="literal-block">
-MagickPassFail CycleColormapImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const int amount );
-</pre>
+<pre class="literal-block">MagickPassFail CycleColormapImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const int amount );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>amount:</dt>
-<dd>Offset the colormap this much.</dd>
+<dd><p>Offset the colormap this much.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -100,10 +99,8 @@ MagickPassFail CycleColormapImage( <a class="reference external" href="../api/ty
 <h1><a class="toc-backref" href="#id7">ReplaceImageColormap</a></h1>
 <div class="section" id="id3">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail ReplaceImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *colormap,
-                                     const unsigned int colors );
-</pre>
+<pre class="literal-block">MagickPassFail ReplaceImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *colormap,
+                                     const unsigned int colors );</pre>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
@@ -119,25 +116,29 @@ updated with the cause of the failure.</p>
 <p>This function is useful in case colormap entries need to match across
 multiple images or otherwise occupy specific locations.</p>
 <p>The format of the ReplaceImageColormap method is:</p>
-<pre class="literal-block">
-MagickPassFail ReplaceImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *colormap,
-                                     const unsigned int colors );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">MagickPassFail ReplaceImageColormap( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *colormap,
+                                     const unsigned int colors );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>image in which to replace colormap.</dd>
+<dd><p>image in which to replace colormap.</p>
+</dd>
 <dt>colormap:</dt>
-<dd>new colormap.</dd>
+<dd><p>new colormap.</p>
+</dd>
 <dt>colors:</dt>
-<dd>number of colors in new colormap.</dd>
+<dd><p>number of colors in new colormap.</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

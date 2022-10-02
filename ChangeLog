@@ -1,9 +1,15 @@
+2022-10-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* scripts/rst2html5.py: Fix from Mark Mitchell to deal with RST
+	file local include statements when invoked from a different
+	directory.  Also fix requested character set encoding.
+
 2022-10-02 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-        * PerlMagick/t/input_8_BW_rle.tga
+	* PerlMagick/t/input_8_BW_rle.tga
 	* PerlMagick/t/input_8_CC_rle.tga
-        * PerlMagick/t/input_8_BW.tga
-        Added 8 bit TGA samples.
+	* PerlMagick/t/input_8_BW.tga
+	Added 8 bit TGA samples.
 
 2022-10-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

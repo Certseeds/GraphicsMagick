@@ -11,7 +11,7 @@ The header and navigation HTML blobs are kept in a separate python file,
 html_fragments.py.
 
 Usage:
-    rst2html5.py [options] [<RSTDOC> [<DESTINATION>]]
+    rst2html5.py [options] <RSTDOC> [<DESTINATION>]
 
 Options:
     -h, --help      display the usage help message
@@ -28,12 +28,18 @@ Options:
                             header and navigation menu.  Defaults to empty.
                             Example: --url-prefix=../../
 
-Reads from <RSTDOC> (default is stdin) and writes to <DESTINATION> (default is stdout)
+Arguments:
+    <RSTDOC> is the file path of the source reStructuredText document
 
-If no input <RSTDOC> is specified, input will be read from stdin and output will be
-written to stdout.
+    <DESTINATION> is the file path where the HTML output will be written.
 
-Note that images referenced from the stylesheet (such as background images)
+Reads from <RSTDOC> and writes to <DESTINATION> (default is stdout)
+
+If no <DESTINATION> is specified, output will be written to stdout.
+
+Note:
+
+Images referenced from the stylesheet (such as background images)
 may require different image-dir paths depending on whether the stylesheet is
 embedded or linked.  If linked, image URLs in the stylesheet are relative to the
 stylesheet's location.  If embedded, image URLs in the stylesheet are relative
@@ -257,7 +263,7 @@ def make_html_parts(input_string, source_path=None, destination_path=None,
     # 8-bit string, provide the correct encoding.  If it is a Unicode string,
     # use "unicode", the default.
 
-    overrides = {'input_encoding': 'unicode',
+    overrides = {'input_encoding': 'utf-8',
                  'doctitle_xform': doctitle,
                  'initial_header_level': initial_header_level,
                  'stylesheet_path' : stylesheet,
@@ -286,7 +292,16 @@ def make_html(src_fo, dest_fo, embed_stylesheet=False, stylesheet=CSS, url_prefi
     html_fragments.footer = html_fragments.make_footer()
 
     rst_string = src_fo.read()
+
+    src_filepath = src_fo.name
+    # change to document's original directory, so docutils can find any
+    # things it might include via "include::"
+    cwdsave = os.getcwd()
+    if src_filepath != '<stdin>':
+        os.chdir(os.path.dirname(os.path.abspath(src_filepath)))
     doc_parts = make_html_parts(rst_string, stylesheet=stylesheet, embed_stylesheet=embed_stylesheet)
+    os.chdir(cwdsave)
+
     webpage = assemble_html(doc_parts, stylesheet_screen=stylesheet)
     try:
         dest_fo.write(webpage)
