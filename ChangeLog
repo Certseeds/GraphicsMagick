@@ -1,3 +1,7 @@
+2022-10-03    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c TGA footer is read, currently used for logs only.
+
 2022-10-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* scripts/rst2html5.py: Fix from Mark Mitchell to deal with RST
@@ -29,11 +33,11 @@
 
 2022-10-01    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-        * coders/tga.c Monochromatic TGA could be written.
+        * coders/tga.c Monochromatic bilevel TGA could be written.
 
 2022-09-29    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-        * coders/tga.c Monochromatic TGA could be read.
+        * coders/tga.c Monochromatic bilevel TGA could be read.
 
 2022-09-28    Fojtik Jaroslav  <JaFojtik@yandex.com>
 

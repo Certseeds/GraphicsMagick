@@ -112,6 +112,17 @@ typedef struct _TGAInfo
     Top right           |   1   |   1
 */
 
+
+typedef struct _TGAFooter
+{
+    magick_uint32_t ExtensionOffset;
+    magick_uint32_t DevelopperDirOffset;
+    char Signature[17];		/* 16 official bytes + zero terminator. */
+    char Dot;
+    char Terminator;
+} TGAFooter;
+
+
 
 static void LogTGAInfo(const TGAInfo *tga_info)
 {
@@ -164,8 +175,21 @@ static void LogTGAInfo(const TGAInfo *tga_info)
                         tga_info->width, tga_info->height,
                         (unsigned int) tga_info->bits_per_pixel,
                         tga_info->attributes,attribute_bits,OrientationTypeToString(orientation));
-
 }
+
+
+static void LogTGAFooter(const TGAFooter *ptga_footer)
+{
+ (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Targa Footer:\n"
+                        "    ExtensionOffset     : %u\n"
+                        "    DevelopperDirOffset : %u\n"
+                        "    Signature           : %s\n",
+                               ptga_footer->ExtensionOffset,
+                               ptga_footer->DevelopperDirOffset,
+			       ptga_footer->Signature);
+}
+
 
 static unsigned int ReadBlobLSBShortFromBuffer(unsigned char* buffer, size_t* readerpos)
 {
@@ -218,7 +242,6 @@ static unsigned int ReadBlobByteFromBuffer(unsigned char* buffer, size_t* reader
 %
 %    o exception: return any errors or warnings in this structure.
 %
-%
 */
 static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
@@ -246,6 +269,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   TGAInfo
     tga_info;
+  TGAFooter tga_footer;
 
   unsigned char
     runlength;
@@ -290,6 +314,35 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   tga_info.id_length=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
   tga_info.colormap_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
   tga_info.image_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+
+  memset(&tga_footer, 0, sizeof(tga_footer));
+  if(BlobIsSeekable(image)
+     && image->logging)		/* TODO: Erase this line, footer is not doing anything usefull yet, logging only. */
+  {
+    status = MagickTrue;
+    SeekBlob(image,-26, SEEK_END);
+    tga_footer.ExtensionOffset = ReadBlobLSBLong(image);
+    tga_footer.DevelopperDirOffset = ReadBlobLSBLong(image);
+    if(ReadBlob(image, 16, tga_footer.Signature) != 16) status=MagickFail;
+    else
+    {
+      if((tga_footer.Dot=ReadBlobByte(image)) != '.') status=MagickFail;
+      if((tga_footer.Terminator=ReadBlobByte(image)) != 0) status=MagickFail;
+    }
+
+    if(status == MagickTrue)
+    {
+      if(image->logging) LogTGAFooter(&tga_footer);
+      if(strncmp(tga_footer.Signature,"TRUEVISION-XFILE",16)) status=MagickFail;
+    }
+
+    if(status != MagickTrue)	// Footer is invalid.
+    {
+      memset(&tga_footer, 0, sizeof(tga_footer));
+      status = MagickTrue;
+    }
+    SeekBlob(image,3,SEEK_SET);
+  }
 
   do
     {
