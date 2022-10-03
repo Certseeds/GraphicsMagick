@@ -440,7 +440,8 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
               image->colors=tga_info.colormap_length;
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Using existing colormap with %u colors.",image->colors);
-
+              if(tga_info.bits_per_pixel==1 && image->colors<=1)
+		  ThrowReaderException(CoderError,ColorTypeNotSupported,image);
             }
           else
             {
