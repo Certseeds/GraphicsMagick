@@ -1,3 +1,12 @@
+2022-10-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c Fixed oss-fuzz-52084.
+	* PerlMagick/t/input.tga renamed to PerlMagick\t\input_8_CC.tga
+	* PerlMagick/t/reference/read/input_tga_8_BW.miff New testcase.
+	* PerlMagick/t/read.t: Added input_tga_8_BW.miff to PerlMagick test
+	suite.
+
+
 2022-10-03    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c TGA footer is read, currently used for logs only.

@@ -81,7 +81,9 @@ t/input.pxr
 t/input.rle
 t/input.sct
 t/input.sgi
-t/input.tga
+t/input_8_BW.tga
+t/input_8_CC.tga
+t/input_24.tga
 t/input.tim
 t/input.viff
 t/input.wbmp

@@ -13,7 +13,7 @@
 # Whenever a new test is added/removed, be sure to update the
 # 1..n ouput.
 #
-BEGIN { $| = 1; $test=1; print "TAP version 13\n1..79\n"; }
+BEGIN { $| = 1; $test=1; print "TAP version 13\n1..81\n"; }
 END {print "not ok $test\n" unless $loaded;}
 use Graphics::Magick;
 $loaded=1;
@@ -271,9 +271,17 @@ print("Topol Type 7 ...\n");
 ++$test;
 testReadCompare('topol:topol_7.ras', 'reference/read/topol_7.miff', q//, 0, 0);
 
-print("Truevision Targa image file (color) ...\n");
+print("Truevision Targa image file (true color) ...\n");
 ++$test;
-testReadCompare('input.tga', 'reference/read/input_tga.miff', q//, 0, 0);
+testReadCompare('input_24.tga', 'reference/read/input_tga_24.miff', q//, 0, 0);
+
+print("Truevision Targa image file (palette color) ...\n");
+++$test;
+testReadCompare('input_8_CC.tga', 'reference/read/input_tga_8_CC.miff', q//, 0, 0);
+
+print("Truevision Targa image file (gray) ...\n");
+++$test;
+testReadCompare('input_8_BW.tga', 'reference/read/input_tga_8_BW.miff', q//, 0, 0);
 
 print("Truevision Targa image file (bilevel) ...\n");
 ++$test;
