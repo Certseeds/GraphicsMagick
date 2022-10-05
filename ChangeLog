@@ -1,3 +1,8 @@
+2022-10-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* scripts/changelog2rst.sh: Try to deal with the crazy mix of
+	spaces and hard tabs which are now appearing in the ChangeLog file.
+
 2022-10-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Fixed oss-fuzz-52084.
