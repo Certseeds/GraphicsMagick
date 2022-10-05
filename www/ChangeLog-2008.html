@@ -1698,12 +1698,8 @@ malloc()/strlen()/strlcpy() operations at initialization time, and
 at least 880 free() calls at destruction time.  While these
 operations did not take long, they are still an unnecessary
 overhead, which is increased in thread-safe applications.</p></li>
-<li><dl class="simple">
-<dt>magick/module.c (OpenModule): Ignore requests to open modules</dt>
-<dd><p>which have already been opened.</p>
-</dd>
-</dl>
-</li>
+<li><p>magick/module.c (OpenModule): Ignore requests to open modules
+which have already been opened.</p></li>
 <li><p>GraphicsMagick.spec.in: Add --with-included-ltdl to the default
 options since this seems safest until the libltdl validation logic
 is fully robust.  This should be made user-configurable in the

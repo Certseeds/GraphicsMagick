@@ -252,12 +252,8 @@ uses zero, or reference black, to represent an opaque pixel.</p></li>
 <li><p>magick/semaphore.c (AllocateSemaphoreInfo): Allow semaphores to
 recurse on POSIX systems which support recursive semaphores but
 also warn if the semaphore recurses.</p></li>
-<li><dl class="simple">
-<dt>magick/log.c (SetLogEventMask): Avoid deadlock if invoked before</dt>
-<dd><p>log.mgk has been loaded.</p>
-</dd>
-</dl>
-</li>
+<li><p>magick/log.c (SetLogEventMask): Avoid deadlock if invoked before
+log.mgk has been loaded.</p></li>
 <li><p>magick/attribute.c (GenerateEXIFAttribute): Fix memory leak on
 error which was reported by Michal Kowalczuk.</p></li>
 </ul>
