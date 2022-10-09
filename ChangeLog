@@ -1,3 +1,7 @@
+2022-10-09    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c Check return code of seek blob operation.
+
 2022-10-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (SeekBlob): Fix SEEK_END validation.  Addresses

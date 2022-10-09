@@ -320,7 +320,10 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
      && image->logging)		/* TODO: Erase this line, footer is not doing anything usefull yet, logging only. */
   {
     status = MagickTrue;
-    SeekBlob(image,-26, SEEK_END);
+    if(SeekBlob(image,-26, SEEK_END) < 0)
+    {
+      ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+    }
     tga_footer.ExtensionOffset = ReadBlobLSBLong(image);
     tga_footer.DevelopperDirOffset = ReadBlobLSBLong(image);
     if(ReadBlob(image, 16, tga_footer.Signature) != 16) status=MagickFail;
@@ -341,7 +344,10 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
       memset(&tga_footer, 0, sizeof(tga_footer));
       status = MagickTrue;
     }
-    SeekBlob(image,3,SEEK_SET);
+    if(SeekBlob(image,3,SEEK_SET) != 3)
+    {
+      ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+    }
   }
 
   do
