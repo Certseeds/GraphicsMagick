@@ -1,3 +1,9 @@
+2022-10-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (SeekBlob): Fix SEEK_END validation.  Addresses
+	oss-fuzz 52133 "graphicsmagick:coder_ICB_fuzzer:
+	Heap-buffer-overflow in ReadBlob".
+
 2022-10-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* scripts/changelog2rst.sh: Try to deal with the crazy mix of

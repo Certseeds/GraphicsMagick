@@ -4660,29 +4660,34 @@ MagickExport magick_off_t SeekBlob(Image *image,const magick_off_t offset,
       return(-1);
     case BlobStream:
       {
+        magick_off_t
+          new_offset;
+
         switch (whence)
           {
           case SEEK_SET:
           default:
             {
-              if (offset < 0)
+              new_offset=offset;
+              if (new_offset < 0)
                 return(-1);
-              image->blob->offset=offset;
+              image->blob->offset=new_offset;
               break;
             }
           case SEEK_CUR:
             {
-              if ((image->blob->offset+offset) < 0)
+              new_offset=image->blob->offset+offset;
+              if (new_offset < 0)
                 return(-1);
-              image->blob->offset+=offset;
+              image->blob->offset=new_offset;
               break;
             }
           case SEEK_END:
             {
-              if ((magick_off_t)
-                  (image->blob->offset+image->blob->length+offset) < 0)
+              new_offset = ((magick_off_t) image->blob->length+offset);
+              if (new_offset < 0)
                 return(-1);
-              image->blob->offset=image->blob->length+offset;
+              image->blob->offset=new_offset;
               break;
             }
           }
