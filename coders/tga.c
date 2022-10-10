@@ -117,11 +117,34 @@ typedef struct _TGAFooter
 {
     magick_uint32_t ExtensionOffset;
     magick_uint32_t DevelopperDirOffset;
-    char Signature[17];		/* 16 official bytes + zero terminator. */
+    char Signature[16+1];		/* 16 official bytes + zero terminator. */
     char Dot;
     char Terminator;
 } TGAFooter;
 
+
+typedef struct _TGADevel
+{
+    magick_uint16_t ExtensionSize;
+    char Author[41];
+    char Comments[324+1];
+    magick_uint16_t TimeStamp[6];    
+    magick_uint16_t JobTime[3];
+    char JobNameID[41+1];			/* The last byte must be a binary zero. */
+    char SoftwareID[41];
+    magick_uint16_t VersionNumber;
+    unsigned char VersionLetter;
+    unsigned char KeyColor[4];			/* A:R:G:B */
+    magick_uint16_t AspectRatio[2];
+    magick_uint16_t Gamma[2];
+    magick_uint32_t ColorCorrectionOffset;
+    magick_uint32_t PostageStampOffset;
+    magick_uint32_t ScanLineOffset;
+    unsigned char AttributesType;
+    /* Scan Line Table - Field 25 (Variable) */
+    /* Postage Stamp Image - Field 26 (Variable) */
+    /* Color Correction Table - Field 27 (2K Bytes) */
+} TGADevel;
 
 
 static void LogTGAInfo(const TGAInfo *tga_info)
@@ -191,6 +214,44 @@ static void LogTGAFooter(const TGAFooter *ptga_footer)
 }
 
 
+static void LogTGADevel(const TGADevel *ptga_devel)
+{
+ (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Targa Extension Area:\n"
+                        "    Extension Size      : %u\n"
+                        "    Author Name         : %s\n"
+                        "    Author Comments     : %s\n"
+                        "    Date/Time Stamp     : %u/%u/%u %u:%u:%u\n"
+                        "    Job Name/ID         : %s\n"
+                        "    Job Time            : %u:%u:%u\n"
+                        "    Software ID         : %s\n"
+                        "    Software Version    : %u.%u\n"
+                        "    Key Color           : A=%u R=%u G=%u B=%u\n"
+                        "    Pixel Aspect Ratio  : %u x %u\n"
+                        "    Gamma               : %u x %u\n"
+                        "    Color Correction Offset: %u\n"
+                        "    Postage Stamp Offset: %u\n"
+                        "    Scan Line Offset    : %u\n"
+                        "    Attributes Type     : %u\n",
+                               ptga_devel->ExtensionSize,
+                               ptga_devel->Author,
+			       ptga_devel->Comments,
+                               ptga_devel->TimeStamp[0], ptga_devel->TimeStamp[1], ptga_devel->TimeStamp[2],
+                               ptga_devel->TimeStamp[3], ptga_devel->TimeStamp[4], ptga_devel->TimeStamp[5],
+                               ptga_devel->JobNameID,
+                               ptga_devel->JobTime[0], ptga_devel->JobTime[1], ptga_devel->JobTime[2],
+                               ptga_devel->SoftwareID,
+                               ptga_devel->VersionNumber, (unsigned)ptga_devel->VersionLetter,
+                               ptga_devel->KeyColor[0], ptga_devel->KeyColor[1], ptga_devel->KeyColor[2], ptga_devel->KeyColor[3],
+                               ptga_devel->AspectRatio[0], ptga_devel->AspectRatio[1],
+                               ptga_devel->Gamma[0], ptga_devel->Gamma[1],
+                               ptga_devel->ColorCorrectionOffset,
+                               ptga_devel->PostageStampOffset,
+                               ptga_devel->ScanLineOffset,
+			       (unsigned)ptga_devel->AttributesType);
+}
+
+
 static unsigned int ReadBlobLSBShortFromBuffer(unsigned char* buffer, size_t* readerpos)
 {
   unsigned int
@@ -243,7 +304,7 @@ static unsigned int ReadBlobByteFromBuffer(unsigned char* buffer, size_t* reader
 %    o exception: return any errors or warnings in this structure.
 %
 */
-static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
+static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception)
 {
   Image
     *image;
@@ -270,6 +331,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   TGAInfo
     tga_info;
   TGAFooter tga_footer;
+  TGADevel tga_devel;
 
   unsigned char
     runlength;
@@ -316,6 +378,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
   tga_info.image_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
 
   memset(&tga_footer, 0, sizeof(tga_footer));
+  memset(&tga_devel, 0, sizeof(tga_devel));
   if(BlobIsSeekable(image)
      && image->logging)		/* TODO: Erase this line, footer is not doing anything usefull yet, logging only. */
   {
@@ -338,12 +401,56 @@ static Image *ReadTGAImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if(image->logging) LogTGAFooter(&tga_footer);
       if(strncmp(tga_footer.Signature,"TRUEVISION-XFILE",16)) status=MagickFail;
     }
-
     if(status != MagickTrue)	// Footer is invalid.
     {
-      memset(&tga_footer, 0, sizeof(tga_footer));
-      status = MagickTrue;
+      memset(&tga_footer, 0, sizeof(tga_footer));      
     }
+
+    if(tga_footer.ExtensionOffset > 3)
+    {
+      if(SeekBlob(image,tga_footer.ExtensionOffset,SEEK_SET) == tga_footer.ExtensionOffset)
+      {        
+        tga_devel.ExtensionSize = ReadBlobLSBShort(image);
+        if(tga_devel.ExtensionSize >= 495)
+        {
+          if(ReadBlob(image, 41, tga_devel.Author) != 41) status=MagickFail;
+	  if(tga_devel.Author[40] != 0) tga_devel.Author[40]=0;
+          if(ReadBlob(image, 324, tga_devel.Comments) != 324) status=MagickFail;
+          if(tga_devel.Comments[323] != 0) tga_devel.Comments[323]=0;
+          for(i=0; i<6; i++)
+          {
+            tga_devel.TimeStamp[i] = ReadBlobLSBShort(image);
+          }
+          if(ReadBlob(image, 41, tga_devel.JobNameID) != 41) status=MagickFail;
+	  if(tga_devel.JobNameID[40] != 0) tga_devel.JobNameID[40]=0;
+          for(i=0; i<3; i++)
+          {
+            tga_devel.JobTime[i] = ReadBlobLSBShort(image);
+          }
+          if(ReadBlob(image, 41, tga_devel.SoftwareID) != 41) status=MagickFail;
+	  if(tga_devel.SoftwareID[40] != 0) tga_devel.SoftwareID[40]=0;
+          tga_devel.VersionNumber = ReadBlobLSBShort(image);
+          tga_devel.VersionLetter = ReadBlobByte(image);
+          if(ReadBlob(image, 4, tga_devel.KeyColor) != 4) status=MagickFail;
+          for(i=0; i<2; i++)
+          {
+            tga_devel.AspectRatio[i] = ReadBlobLSBShort(image);
+          }
+          for(i=0; i<2; i++)
+          {
+            tga_devel.Gamma[i] = ReadBlobLSBShort(image);
+          }
+          tga_devel.ColorCorrectionOffset = ReadBlobLSBLong(image);
+          tga_devel.PostageStampOffset = ReadBlobLSBLong(image);
+          tga_devel.ScanLineOffset = ReadBlobLSBLong(image);
+          tga_devel.AttributesType = ReadBlobByte(image);
+
+          if(image->logging) LogTGADevel(&tga_devel);
+        }
+      }
+    }
+
+    status = MagickTrue;
     if(SeekBlob(image,3,SEEK_SET) != 3)
     {
       ThrowReaderException(BlobError,UnableToSeekToOffset,image);
