@@ -451,13 +451,13 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
           if(status == MagickTrue)	/* TGA devel is valid */
           {
             if(tga_devel.Comments[0] != 0)
-                SetImageAttribute(image, "comment", tga_devel.Comments)
+                SetImageAttribute(image, "comment", tga_devel.Comments);
             if(tga_devel.Author[0] != 0)
-                SetImageAttribute(image, "creator", tga_devel.Author)
+                SetImageAttribute(image, "creator", tga_devel.Author);
             if(tga_devel.SoftwareID[0] != 0)
-                SetImageAttribute(image, "software", tga_devel.SoftwareID)
+                SetImageAttribute(image, "software", tga_devel.SoftwareID);
             if(tga_devel.JobNameID[0] != 0)
-                SetImageAttribute(image, "TGA:file.JobName", tga_devel.JobNameID)
+                SetImageAttribute(image, "TGA:file.JobName", tga_devel.JobNameID);
           }
           else
             tga_devel.ExtensionSize = 0;	/* Imvalidate TGA developper area. */
