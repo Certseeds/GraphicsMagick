@@ -1,3 +1,8 @@
+2022-10-12    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c New attributes "comment", "creator", "software", "TGA:file.JobName" 
+        * coders/gpx.c Renamed attribute "DPX:file.creator" to "creator"
+
 2022-10-10    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c TGA developper area is read.

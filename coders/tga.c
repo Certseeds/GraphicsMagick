@@ -140,7 +140,9 @@ typedef struct _TGADevel
     magick_uint32_t ColorCorrectionOffset;
     magick_uint32_t PostageStampOffset;
     magick_uint32_t ScanLineOffset;
-    unsigned char AttributesType;
+    unsigned char AttributesType;	/* 0: no Alpha; 1 undefined useless data in the Alpha; 
+					   2: undefined data in the Alpha might be retained; 
+                                           3 useful Alpha channel; 4: pre-multiplied Alpha */
     /* Scan Line Table - Field 25 (Variable) */
     /* Postage Stamp Image - Field 26 (Variable) */
     /* Color Correction Table - Field 27 (2K Bytes) */
@@ -446,6 +448,19 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
           tga_devel.AttributesType = ReadBlobByte(image);
 
           if(image->logging) LogTGADevel(&tga_devel);
+          if(status == MagickTrue)	/* TGA devel is valid */
+          {
+            if(tga_devel.Comments[0] != 0)
+                SetImageAttribute(image, "comment", tga_devel.Comments)
+            if(tga_devel.Author[0] != 0)
+                SetImageAttribute(image, "creator", tga_devel.Author)
+            if(tga_devel.SoftwareID[0] != 0)
+                SetImageAttribute(image, "software", tga_devel.SoftwareID)
+            if(tga_devel.JobNameID[0] != 0)
+                SetImageAttribute(image, "TGA:file.JobName", tga_devel.JobNameID)
+          }
+          else
+            tga_devel.ExtensionSize = 0;	/* Imvalidate TGA developper area. */
         }
       }
     }

@@ -1690,12 +1690,12 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   StringToAttribute(image,"comment",dpx_file_info.project_name);
   StringToAttribute(image,"copyright",dpx_file_info.copyright);
   StringToAttribute(image,"document",dpx_file_info.image_filename);
+  StringToAttribute(image,"creator",dpx_file_info.creator);
   /* StringToAttribute(image,"timestamp",dpx_file_info.creation_datetime); */
 
   StringToAttribute(image,"DPX:file.version",dpx_file_info.header_format_version);
   StringToAttribute(image,"DPX:file.filename",dpx_file_info.image_filename);
   StringToAttribute(image,"DPX:file.creation.datetime",dpx_file_info.creation_datetime);
-  StringToAttribute(image,"DPX:file.creator",dpx_file_info.creator);
   StringToAttribute(image,"DPX:file.project.name",dpx_file_info.project_name);
   StringToAttribute(image,"DPX:file.copyright",dpx_file_info.copyright);
   U32ToAttribute(image,"DPX:file.encryption.key",dpx_file_info.encryption_key);
@@ -4239,7 +4239,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   GenerateDPXTimeStamp(dpx_file_info.creation_datetime,
                        sizeof(dpx_file_info.creation_datetime));
 #if 0 /* To enable use of original file creator. */
-  AttributeToString(image_info,image,"DPX:file.creator",dpx_file_info.creator);
+  AttributeToString(image_info,image,"creator",dpx_file_info.creator);
   if (dpx_file_info.creator[0] == '\0')
 #endif
     (void) strlcpy(dpx_file_info.creator,GetMagickVersion((unsigned long *) NULL),
