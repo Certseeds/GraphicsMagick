@@ -381,86 +381,84 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
 
   memset(&tga_footer, 0, sizeof(tga_footer));
   memset(&tga_devel, 0, sizeof(tga_devel));
-  if(BlobIsSeekable(image)
-     && image->logging)		/* TODO: Erase this line, footer is not doing anything usefull yet, logging only. */
+  if(BlobIsSeekable(image))
   {
-    status = MagickTrue;
-    if(SeekBlob(image,-26, SEEK_END) < 0)
+    if(SeekBlob(image,-26, SEEK_END) > 0)
     {
-      ThrowReaderException(BlobError,UnableToSeekToOffset,image);
-    }
-    tga_footer.ExtensionOffset = ReadBlobLSBLong(image);
-    tga_footer.DevelopperDirOffset = ReadBlobLSBLong(image);
-    if(ReadBlob(image, 16, tga_footer.Signature) != 16) status=MagickFail;
-    else
-    {
-      if((tga_footer.Dot=ReadBlobByte(image)) != '.') status=MagickFail;
-      if((tga_footer.Terminator=ReadBlobByte(image)) != 0) status=MagickFail;
-    }
+      status = MagickTrue;
+      tga_footer.ExtensionOffset = ReadBlobLSBLong(image);
+      tga_footer.DevelopperDirOffset = ReadBlobLSBLong(image);
+      if(ReadBlob(image, 16, tga_footer.Signature) != 16) status=MagickFail;
+      else
+      {
+        if((tga_footer.Dot=ReadBlobByte(image)) != '.') status=MagickFail;
+        if((tga_footer.Terminator=ReadBlobByte(image)) != 0) status=MagickFail;
+      }
 
-    if(status == MagickTrue)
-    {
-      if(image->logging) LogTGAFooter(&tga_footer);
-      if(strncmp(tga_footer.Signature,"TRUEVISION-XFILE",16)) status=MagickFail;
-    }
-    if(status != MagickTrue)	// Footer is invalid.
-    {
-      memset(&tga_footer, 0, sizeof(tga_footer));      
-    }
+      if(status == MagickTrue)
+      {
+        if(image->logging) LogTGAFooter(&tga_footer);
+        if(strncmp(tga_footer.Signature,"TRUEVISION-XFILE",16)) status=MagickFail;
+      }
+      if(status != MagickTrue)	/* Footer is invalid. */
+      {
+        memset(&tga_footer, 0, sizeof(tga_footer));
+      }
 
-    if(tga_footer.ExtensionOffset > 3)
-    {
-      if(SeekBlob(image,tga_footer.ExtensionOffset,SEEK_SET) == tga_footer.ExtensionOffset)
-      {        
-        tga_devel.ExtensionSize = ReadBlobLSBShort(image);
-        if(tga_devel.ExtensionSize >= 495)
+      if(tga_footer.ExtensionOffset > 3)
+      {
+        if(SeekBlob(image,tga_footer.ExtensionOffset,SEEK_SET) == tga_footer.ExtensionOffset)
         {
-          if(ReadBlob(image, 41, tga_devel.Author) != 41) status=MagickFail;
-	  if(tga_devel.Author[40] != 0) tga_devel.Author[40]=0;
-          if(ReadBlob(image, 324, tga_devel.Comments) != 324) status=MagickFail;
-          if(tga_devel.Comments[323] != 0) tga_devel.Comments[323]=0;
-          for(i=0; i<6; i++)
+          tga_devel.ExtensionSize = ReadBlobLSBShort(image);
+          if(tga_devel.ExtensionSize >= 495)
           {
-            tga_devel.TimeStamp[i] = ReadBlobLSBShort(image);
-          }
-          if(ReadBlob(image, 41, tga_devel.JobNameID) != 41) status=MagickFail;
-	  if(tga_devel.JobNameID[40] != 0) tga_devel.JobNameID[40]=0;
-          for(i=0; i<3; i++)
-          {
-            tga_devel.JobTime[i] = ReadBlobLSBShort(image);
-          }
-          if(ReadBlob(image, 41, tga_devel.SoftwareID) != 41) status=MagickFail;
-	  if(tga_devel.SoftwareID[40] != 0) tga_devel.SoftwareID[40]=0;
-          tga_devel.VersionNumber = ReadBlobLSBShort(image);
-          tga_devel.VersionLetter = ReadBlobByte(image);
-          if(ReadBlob(image, 4, tga_devel.KeyColor) != 4) status=MagickFail;
-          for(i=0; i<2; i++)
-          {
-            tga_devel.AspectRatio[i] = ReadBlobLSBShort(image);
-          }
-          for(i=0; i<2; i++)
-          {
-            tga_devel.Gamma[i] = ReadBlobLSBShort(image);
-          }
-          tga_devel.ColorCorrectionOffset = ReadBlobLSBLong(image);
-          tga_devel.PostageStampOffset = ReadBlobLSBLong(image);
-          tga_devel.ScanLineOffset = ReadBlobLSBLong(image);
-          tga_devel.AttributesType = ReadBlobByte(image);
+            if(ReadBlob(image, 41, tga_devel.Author) != 41) status=MagickFail;
+            if(tga_devel.Author[40] != 0) tga_devel.Author[40]=0;
+            if(ReadBlob(image, 324, tga_devel.Comments) != 324) status=MagickFail;
+            if(tga_devel.Comments[323] != 0) tga_devel.Comments[323]=0;
+            for(i=0; i<6; i++)
+            {
+              tga_devel.TimeStamp[i] = ReadBlobLSBShort(image);
+            }
+            if(ReadBlob(image, 41, tga_devel.JobNameID) != 41) status=MagickFail;
+            if(tga_devel.JobNameID[40] != 0) tga_devel.JobNameID[40]=0;
+            for(i=0; i<3; i++)
+            {
+              tga_devel.JobTime[i] = ReadBlobLSBShort(image);
+            }
+            if(ReadBlob(image, 41, tga_devel.SoftwareID) != 41) status=MagickFail;
+            if(tga_devel.SoftwareID[40] != 0) tga_devel.SoftwareID[40]=0;
+            tga_devel.VersionNumber = ReadBlobLSBShort(image);
+            tga_devel.VersionLetter = ReadBlobByte(image);
+            if(ReadBlob(image, 4, tga_devel.KeyColor) != 4) status=MagickFail;
+            for(i=0; i<2; i++)
+            {
+              tga_devel.AspectRatio[i] = ReadBlobLSBShort(image);
+            }
+            for(i=0; i<2; i++)
+            {
+              tga_devel.Gamma[i] = ReadBlobLSBShort(image);
+            }
+            tga_devel.ColorCorrectionOffset = ReadBlobLSBLong(image);
+            tga_devel.PostageStampOffset = ReadBlobLSBLong(image);
+            tga_devel.ScanLineOffset = ReadBlobLSBLong(image);
+            tga_devel.AttributesType = ReadBlobByte(image);
 
-          if(image->logging) LogTGADevel(&tga_devel);
-          if(status == MagickTrue)	/* TGA devel is valid */
-          {
-            if(tga_devel.Comments[0] != 0)
-                SetImageAttribute(image, "comment", tga_devel.Comments);
-            if(tga_devel.Author[0] != 0)
-                SetImageAttribute(image, "creator", tga_devel.Author);
-            if(tga_devel.SoftwareID[0] != 0)
-                SetImageAttribute(image, "software", tga_devel.SoftwareID);
-            if(tga_devel.JobNameID[0] != 0)
-                SetImageAttribute(image, "TGA:file.JobName", tga_devel.JobNameID);
+            if(image->logging) LogTGADevel(&tga_devel);
+            if(status == MagickTrue)	/* TGA devel is valid */
+            {
+              if(tga_devel.Comments[0] != 0)
+                  SetImageAttribute(image, "comment", tga_devel.Comments);
+              if(tga_devel.Author[0] != 0)
+                  SetImageAttribute(image, "creator", tga_devel.Author);
+              if(tga_devel.SoftwareID[0] != 0)
+                  SetImageAttribute(image, "software", tga_devel.SoftwareID);
+              if(tga_devel.JobNameID[0] != 0)
+                  SetImageAttribute(image, "TGA:file.JobName", tga_devel.JobNameID);
+            }
+            else
+              tga_devel.ExtensionSize = 0;	/* Invalidate TGA developper area. */
           }
-          else
-            tga_devel.ExtensionSize = 0;	/* Imvalidate TGA developper area. */
         }
       }
     }
