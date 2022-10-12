@@ -1,6 +1,6 @@
 /*
 % Copyright (C) 2003 - 2022 GraphicsMagick Group
-% Copyright (C) 2002 ImageMagick Studio
+% Copyright (C) 2002 - 2022 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
 % This program is covered by multiple licenses, which are described in
@@ -515,11 +515,19 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
       /*
         Initialize image structure.
       */
-      alpha_bits=(tga_info.attributes & 0x0FU);
-      image->matte=((alpha_bits > 0) || (tga_info.bits_per_pixel == 32));
-      image->columns=tga_info.width;
-      image->rows=tga_info.height;
-      if ((tga_info.image_type != TGAColormap) && (tga_info.image_type != TGARLEColormap))
+      alpha_bits = (tga_info.attributes & 0x0FU);
+      image->matte = ((alpha_bits > 0) || (tga_info.bits_per_pixel == 32));
+      if(image->matte)
+      {
+        if(tga_footer.ExtensionOffset>3 && tga_devel.ExtensionSize >= 495) /* Valid footer and extended area. */
+        {					/* Please note that alpha channel could contain a garbage. */
+          if(tga_devel.AttributesType<3 || tga_devel.AttributesType>4)
+              image->matte = MagickFalse;	/* The attribute instruct NOT to use alpha channel. */
+        }
+      }
+      image->columns = tga_info.width;
+      image->rows = tga_info.height;
+      if((tga_info.image_type != TGAColormap) && (tga_info.image_type != TGARLEColormap))
         {
           /*
             TrueColor Quantum Depth
