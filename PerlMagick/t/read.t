@@ -13,7 +13,7 @@
 # Whenever a new test is added/removed, be sure to update the
 # 1..n ouput.
 #
-BEGIN { $| = 1; $test=1; print "TAP version 13\n1..81\n"; }
+BEGIN { $| = 1; $test=1; print "TAP version 13\n1..84\n"; }
 END {print "not ok $test\n" unless $loaded;}
 use Graphics::Magick;
 $loaded=1;
