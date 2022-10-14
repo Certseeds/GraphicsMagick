@@ -275,6 +275,18 @@ print("Truevision Targa image file (true color) ...\n");
 ++$test;
 testReadCompare('input_24.tga', 'reference/read/input_tga_24.miff', q//, 0, 0);
 
+print("Truevision Targa image file (true color - RLE compressed) ...\n");
+++$test;
+testReadCompare('input_24rle.tga', 'reference/read/input_tga_24.miff', q//, 0, 0);
+
+print("Truevision Targa image file (true color 16) ...\n");
+++$test;
+testReadCompare('input_16.tga', 'reference/read/input_tga_16.miff', q//, 0, 0);
+
+print("Truevision Targa image file (true color 16 - RLE compressed) ...\n");
+++$test;
+testReadCompare('input_16rle.tga', 'reference/read/input_tga_16.miff', q//, 0, 0);
+
 print("Truevision Targa image file (palette color) ...\n");
 ++$test;
 testReadCompare('input_8_CC.tga', 'reference/read/input_tga_8_CC.miff', q//, 0, 0);
