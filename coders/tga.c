@@ -448,7 +448,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
             if(status == MagickTrue)	/* TGA devel is valid */
             {
               if(tga_devel.Comments[0] != 0)
-                  SetImageAttribute(image, "comment", tga_devel.Comments);
+                  SetImageAttribute(image, "TGA:file.comment", tga_devel.Comments);
               if(tga_devel.Author[0] != 0)
                   SetImageAttribute(image, "creator", tga_devel.Author);
               if(tga_devel.SoftwareID[0] != 0)

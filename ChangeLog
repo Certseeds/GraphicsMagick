@@ -1,3 +1,10 @@
+2022-10-16    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c Renamed image attribute "comment" from extended area to
+        "TGA:file.comment" to prevent mix of these 2 comments.
+        (Now TGA can produce both "comment" and "TGA:file.comment").
+
+
 2022-10-14    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * PerlMagick/t/read.t Add new tests for TGA files.
