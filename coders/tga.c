@@ -276,6 +276,49 @@ static unsigned int ReadBlobByteFromBuffer(unsigned char* buffer, size_t* reader
   return(value);
 }
 
+
+static int LoadHeaderTGA(TGAInfo *tga_info, Image *image, char *readbuffer)
+{
+static const size_t headersize = 15;
+size_t readbufferpos = 0;
+ if(ReadBlob(image,3,readbuffer) != 3) return -1;
+
+ tga_info->id_length = (unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+ tga_info->colormap_type = (unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+ tga_info->image_type = (unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+
+ readbufferpos = 0;
+ if(ReadBlob(image,headersize,readbuffer) != headersize) return -2;
+
+ tga_info->colormap_index = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
+ tga_info->colormap_length = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
+ tga_info->colormap_size = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+ tga_info->x_origin = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
+ tga_info->y_origin = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
+ tga_info->width = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
+ tga_info->height = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
+ tga_info->bits_per_pixel = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+ tga_info->attributes = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
+ assert(readbufferpos == headersize);
+return 0;
+}
+
+
+static int ValidateHeaderTGA(TGAInfo *tga_info)
+{
+  if(((tga_info->image_type != TGAColormap) &&
+           (tga_info->image_type != TGARGB) &&
+           (tga_info->image_type != TGAMonochrome) &&
+           (tga_info->image_type != TGARLEColormap) &&
+           (tga_info->image_type != TGARLERGB) &&
+           (tga_info->image_type != TGARLEMonochrome)) ||
+          (((tga_info->image_type == TGAColormap) ||
+            (tga_info->image_type == TGARLEColormap)) &&
+           (tga_info->colormap_type == 0))) return -1;
+  return 0;
+}
+
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -352,7 +395,6 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   unsigned int
     is_grayscale=MagickFalse;
 
-  const size_t headersize = 15;
   unsigned char readbuffer[15];
   char commentbuffer[256];
   size_t readbufferpos = 0;
@@ -365,25 +407,18 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  image=AllocateImage(image_info);
-  status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-  if (status == MagickFalse)
+  image = AllocateImage(image_info);
+  status = OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
+  if(status == MagickFalse)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   /*
     Read TGA header information.
   */
-  if (ReadBlob(image, 3, readbuffer) != 3)
-    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-  readbufferpos = 0;
-  tga_info.id_length=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-  tga_info.colormap_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-  tga_info.image_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-
   memset(&tga_footer, 0, sizeof(tga_footer));
   memset(&tga_devel, 0, sizeof(tga_devel));
   if(BlobIsSeekable(image))
   {
-    if(SeekBlob(image,-26, SEEK_END) > 0)
+    if(SeekBlob(image,-26, SEEK_END) >= 3+15)
     {
       status = MagickTrue;
       tga_footer.ExtensionOffset = ReadBlobLSBLong(image);
@@ -464,43 +499,28 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
     }
 
     status = MagickTrue;
-    if(SeekBlob(image,3,SEEK_SET) != 3)
+    if(SeekBlob(image,0,SEEK_SET) != 0)
     {
       ThrowReaderException(BlobError,UnableToSeekToOffset,image);
     }
   }
 
+  /*
+    Read TGA header information.
+  */
+  if(LoadHeaderTGA(&tga_info, image, commentbuffer) < 0)
+      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+
+  if(ValidateHeaderTGA(&tga_info) < 0)
+      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
   do
     {
-      if (((tga_info.image_type != TGAColormap) &&
-           (tga_info.image_type != TGARGB) &&
-           (tga_info.image_type != TGAMonochrome) &&
-           (tga_info.image_type != TGARLEColormap) &&
-           (tga_info.image_type != TGARLERGB) &&
-           (tga_info.image_type != TGARLEMonochrome)) ||
-          (((tga_info.image_type == TGAColormap) ||
-            (tga_info.image_type == TGARLEColormap)) &&
-           (tga_info.colormap_type == 0)))
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-
-      if (ReadBlob(image,headersize,readbuffer) != headersize)
-        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-      readbufferpos = 0;
-      tga_info.colormap_index=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
-      tga_info.colormap_length=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
-      tga_info.colormap_size=ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-      tga_info.x_origin=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
-      tga_info.y_origin=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
-      tga_info.width=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
-      tga_info.height=ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
-      tga_info.bits_per_pixel=ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-      tga_info.attributes=ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-      assert(readbufferpos == headersize);
-      if (EOFBlob(image))
-        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-
       if (image->logging)
         LogTGAInfo(&tga_info);
+
+      if (EOFBlob(image))
+        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
       /*
         Validate depth.
@@ -878,6 +898,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
           break;
         }
       StopTimer(&image->timer);
+
       /*
         Proceed to next image.
       */
@@ -885,21 +906,13 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
         if (image->scene >= (image_info->subimage+image_info->subrange-1))
           break;
 
-      status=MagickFalse;
-      if (ReadBlob(image, 3, readbuffer) == 3)
-        {
-          readbufferpos = 0;
-          tga_info.id_length=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-          tga_info.colormap_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-          tga_info.image_type=(unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-          status=((tga_info.image_type == TGAColormap) ||
-                  (tga_info.image_type == TGARGB) ||
-                  (tga_info.image_type == TGAMonochrome) ||
-                  (tga_info.image_type == TGARLEColormap) ||
-                  (tga_info.image_type == TGARLERGB) ||
-                  (tga_info.image_type == TGARLEMonochrome));
-        }
-      if (!EOFBlob(image) && (status == MagickTrue))
+      if(LoadHeaderTGA(&tga_info, image, commentbuffer) < 0)
+          status = MagickFalse;
+      else
+      {
+        status = (ValidateHeaderTGA(&tga_info)<0) ? MagickFalse : MagickTrue;
+      }
+      if(!EOFBlob(image) && (status == MagickTrue))
         {
           /*
             Allocate next image structure.
@@ -910,7 +923,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
               DestroyImageList(image);
               return((Image *) NULL);
             }
-          image=SyncNextImageInList(image);
+          image = SyncNextImageInList(image);
           if (!MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
                                       exception,LoadImagesText,
                                       image->filename))
