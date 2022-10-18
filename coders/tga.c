@@ -277,7 +277,7 @@ static unsigned int ReadBlobByteFromBuffer(unsigned char* buffer, size_t* reader
 }
 
 
-static int LoadHeaderTGA(TGAInfo *tga_info, Image *image, char *readbuffer)
+static int LoadHeaderTGA(TGAInfo *tga_info, Image *image, unsigned char *readbuffer)
 {
 static const size_t headersize = 15;
 size_t readbufferpos = 0;
@@ -304,7 +304,7 @@ return 0;
 }
 
 
-static int ValidateHeaderTGA(TGAInfo *tga_info)
+static int ValidateHeaderTGA(const TGAInfo *tga_info)
 {
   if(((tga_info->image_type != TGAColormap) &&
            (tga_info->image_type != TGARGB) &&
