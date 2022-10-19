@@ -1,3 +1,8 @@
+2022-10-19    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c Cleanup GCC compile warnings.
+
+
 2022-10-17    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Do not consider whole image to be invalid when a second
