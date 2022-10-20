@@ -254,54 +254,24 @@ static void LogTGADevel(const TGADevel *ptga_devel)
 }
 
 
-static unsigned int ReadBlobLSBShortFromBuffer(unsigned char* buffer, size_t* readerpos)
+static int LoadHeaderTGA(TGAInfo *tga_info, Image *image)
 {
-  unsigned int
-    value;
+ tga_info->id_length = ReadBlobByte(image);
+ tga_info->colormap_type = ReadBlobByte(image);
+ tga_info->image_type = ReadBlobByte(image);
 
-  value=buffer[(*readerpos)+1] << 8;
-  value|=buffer[*readerpos];
-  *readerpos = *readerpos+2;
-  return(value);
-}
-
-
-static unsigned int ReadBlobByteFromBuffer(unsigned char* buffer, size_t* readerpos)
-{
-  unsigned int
-    value;
-
-  value=(unsigned int)(buffer[*readerpos]);
-  *readerpos = *readerpos + 1;
-  return(value);
-}
-
-
-static int LoadHeaderTGA(TGAInfo *tga_info, Image *image, unsigned char *readbuffer)
-{
-static const size_t headersize = 15;
-size_t readbufferpos = 0;
- if(ReadBlob(image,3,readbuffer) != 3) return -1;
-
- tga_info->id_length = (unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
- tga_info->colormap_type = (unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
- tga_info->image_type = (unsigned char)ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-
- readbufferpos = 0;
- if(ReadBlob(image,headersize,readbuffer) != headersize) return -2;
-
- tga_info->colormap_index = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
- tga_info->colormap_length = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
- tga_info->colormap_size = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
- tga_info->x_origin = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
- tga_info->y_origin = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos);
- tga_info->width = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
- tga_info->height = ReadBlobLSBShortFromBuffer(readbuffer, &readbufferpos) & 0xFFFF;
- tga_info->bits_per_pixel = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
- tga_info->attributes = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
- assert(readbufferpos == headersize);
+ tga_info->colormap_index = ReadBlobLSBShort(image);
+ tga_info->colormap_length = ReadBlobLSBShort(image) & 0xFFFF;
+ tga_info->colormap_size = ReadBlobByte(image);
+ tga_info->x_origin = ReadBlobLSBShort(image);
+ tga_info->y_origin = ReadBlobLSBShort(image);
+ tga_info->width = ReadBlobLSBShort(image) & 0xFFFF;
+ tga_info->height = ReadBlobLSBShort(image) & 0xFFFF;
+ tga_info->bits_per_pixel = ReadBlobByte(image);
+ tga_info->attributes = ReadBlobByte(image);
 return 0;
 }
+
 
 
 static int ValidateHeaderTGA(const TGAInfo *tga_info)
@@ -395,10 +365,8 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   unsigned int
     is_grayscale=MagickFalse;
 
-  unsigned char readbuffer[15];
+  unsigned char readbuffer[4];
   char CommentAndBuffer[256];
-  size_t readbufferpos = 0;
-
 
   /*
     Open image file.
@@ -411,8 +379,9 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   status = OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if(status == MagickFalse)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+
   /*
-    Read TGA header information.
+    Read TGA footer - if exists.
   */
   memset(&tga_footer, 0, sizeof(tga_footer));
   memset(&tga_devel, 0, sizeof(tga_devel));
@@ -508,7 +477,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   /*
     Read TGA header information.
   */
-  if(LoadHeaderTGA(&tga_info, image, (unsigned char*)CommentAndBuffer) < 0)
+  if(LoadHeaderTGA(&tga_info, image) < 0)
       ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
   if(ValidateHeaderTGA(&tga_info) < 0)
@@ -665,17 +634,16 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                     break;
                   }
                 case 24:
-                case 32:
+                case 32:			/* TODO: J.Fojtik - is this true? 32 bits, but only 24 bits read. Possible bug! */
                   {
                     /*
                       8 bits each of blue, green and red.
                     */
-                    if (ReadBlob(image, 3, readbuffer) != 3)
+                    if(ReadBlob(image, 3, readbuffer) != 3)
                       ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-                    readbufferpos = 0;
-                    pixel.blue=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-                    pixel.green=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-                    pixel.red=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
+                    pixel.blue = ScaleCharToQuantum(readbuffer[0]);
+                    pixel.green = ScaleCharToQuantum(readbuffer[1]);
+                    pixel.red = ScaleCharToQuantum(readbuffer[2]);
                     break;
                   }
                 }
@@ -778,25 +746,15 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                       /*
                         5 bits each of red green and blue.
                       */
-                      unsigned int
-                        packet;
+                      const magick_uint16_t packet = ReadBlobLSBShort(image);
 
-                      if (ReadBlob(image, 2, readbuffer) != 2)
-                        {
-                          status=MagickFail;
-                          break;
-                        }
-                      readbufferpos = 0;
-                      packet = ReadBlobByteFromBuffer(readbuffer, &readbufferpos);
-                      packet |= (((unsigned int) ReadBlobByteFromBuffer(readbuffer, &readbufferpos)) << 8);
-
-                      pixel.red=(packet >> 10) & 0x1f;
-                      pixel.red=ScaleCharToQuantum(ScaleColor5to8(pixel.red));
-                      pixel.green=(packet >> 5) & 0x1f;
-                      pixel.green=ScaleCharToQuantum(ScaleColor5to8(pixel.green));
-                      pixel.blue=packet & 0x1f;
-                      pixel.blue=ScaleCharToQuantum(ScaleColor5to8(pixel.blue));
-                      if (image->matte)
+                      pixel.red = (packet >> 10) & 0x1f;
+                      pixel.red = ScaleCharToQuantum(ScaleColor5to8(pixel.red));
+                      pixel.green = (packet >> 5) & 0x1f;
+                      pixel.green = ScaleCharToQuantum(ScaleColor5to8(pixel.green));
+                      pixel.blue = packet & 0x1f;
+                      pixel.blue = ScaleCharToQuantum(ScaleColor5to8(pixel.blue));
+                      if(image->matte)
                         {
                           if ((packet >> 15) & 0x01)
                             pixel.opacity=OpaqueOpacity;
@@ -815,31 +773,29 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                     /*
                       8 bits each of blue green and red.
                     */
-                    if (ReadBlob(image, 3, readbuffer) != 3)
+                    if(ReadBlob(image, 3, readbuffer) != 3)
                       {
                         status=MagickFail;
                         break;
                       }
-                    readbufferpos = 0;
-                    pixel.blue=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-                    pixel.green=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-                    pixel.red=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
+                    pixel.blue = ScaleCharToQuantum(readbuffer[0]);
+                    pixel.green = ScaleCharToQuantum(readbuffer[1]);
+                    pixel.red = ScaleCharToQuantum(readbuffer[2]);
                     break;
                   case 32:
                     {
                       /*
                         8 bits each of blue green and red.
                       */
-                      if (ReadBlob(image, 4, readbuffer) != 4)
+                      if(ReadBlob(image, 4, readbuffer) != 4)
                         {
                           status=MagickFail;
                           break;
                         }
-                      readbufferpos = 0;
-                      pixel.blue=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-                      pixel.green=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-                      pixel.red=ScaleCharToQuantum(ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
-                      pixel.opacity=ScaleCharToQuantum(255-ReadBlobByteFromBuffer(readbuffer, &readbufferpos));
+                      pixel.blue = ScaleCharToQuantum(readbuffer[0]);
+                      pixel.green = ScaleCharToQuantum(readbuffer[1]);
+                      pixel.red = ScaleCharToQuantum(readbuffer[2]);
+                      pixel.opacity = ScaleCharToQuantum(255-readbuffer[3]);
                       break;
                     }
                   }
@@ -898,7 +854,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
         if (image->scene >= (image_info->subimage+image_info->subrange-1))
           break;
 
-      if(LoadHeaderTGA(&tga_info, image, (unsigned char*)CommentAndBuffer) < 0)
+      if(LoadHeaderTGA(&tga_info, image) < 0)
           status = MagickFalse;
       else
       {
