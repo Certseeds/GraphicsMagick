@@ -1,3 +1,9 @@
+2022-10-20    Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c Remove "optimisation" that has negligible or negative
+        effect to overall performance.
+
+
 2022-10-19    Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Cleanup GCC compile warnings.
