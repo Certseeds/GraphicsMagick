@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to August 11, 2022
+This file was last updated to reflect changes up to October 23, 2022
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -69,13 +69,22 @@ Bug fixes:
 
 * TGA: Remove a defective validation of comment length, which blocked
   reading some sample TGA files from the "Encyclopedia Of Graphics
-  File Formats" book.
+  File Formats" book.  Monochromatic bilevel TGA can now be read and
+  written.  TGA "Footers" are now read and used when logging as well
+  as converted to Image attributes.
 
 * WebP: Add configure.ac updates to check for libsharpyuv so that
   builds with development version work again.
 
 * Visual Studio Build (VisualMagick): Fix project file generation.
   Improve portability of code for configure.exe.
+
+* Fixed mixed encoding (non-UTF-8) errors in text and source files.
+
+* Restore non-const Image::colorMapSize() since it caused an ABI
+  change.  The compiler should choose the appropriate version.
+
+* Blob API: Fixed SEEK_END validation.  SEEK_END was not used before, but now it is.
 
 New Features:
 
@@ -89,17 +98,20 @@ New Features:
 
 * JPEG: Optionally enable arithmetic coder in JPG images using '-define jpeg:arithmetic-coding=true'.
 
+* Produce ASCII armored ".asc" format GPG signature files.
+
 API Updates:
 
 * Magick++ Image::colorMapSize() is now a 'const' method.
 
 Feature improvements:
 
-* None
+* HTML documentation generation based on Docutils is significantly
+  updated and improved.
 
 Windows Delegate Updates/Additions:
 
-* Update bundled libjpeg to version 9d.
+* Update bundled libjpeg to version 9e.
 
 Build Changes:
 

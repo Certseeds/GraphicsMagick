@@ -41,7 +41,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to August 11, 2022</p>
+<p>This file was last updated to reflect changes up to October 23, 2022</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -136,11 +136,17 @@ the oss-fuzz issues list for details.</p></li>
 <li><p>configure.ac: Fix Bashism in maintainer-mode check.</p></li>
 <li><p>TGA: Remove a defective validation of comment length, which blocked
 reading some sample TGA files from the &quot;Encyclopedia Of Graphics
-File Formats&quot; book.</p></li>
+File Formats&quot; book.  Monochromatic bilevel TGA can now be read and
+written.  TGA &quot;Footers&quot; are now read and used when logging as well
+as converted to Image attributes.</p></li>
 <li><p>WebP: Add configure.ac updates to check for libsharpyuv so that
 builds with development version work again.</p></li>
 <li><p>Visual Studio Build (VisualMagick): Fix project file generation.
 Improve portability of code for configure.exe.</p></li>
+<li><p>Fixed mixed encoding (non-UTF-8) errors in text and source files.</p></li>
+<li><p>Restore non-const Image::colorMapSize() since it caused an ABI
+change.  The compiler should choose the appropriate version.</p></li>
+<li><p>Blob API: Fixed SEEK_END validation.  SEEK_END was not used before, but now it is.</p></li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
@@ -151,6 +157,7 @@ to replace use of IsEventLogging().  This avoids a possible
 performance hit if any logging is enabled at all and logging
 statements are executed which are filtered and produce no output.</p></li>
 <li><p>JPEG: Optionally enable arithmetic coder in JPG images using '-define jpeg:arithmetic-coding=true'.</p></li>
+<li><p>Produce ASCII armored &quot;.asc&quot; format GPG signature files.</p></li>
 </ul>
 <p>API Updates:</p>
 <ul class="simple">
@@ -158,11 +165,12 @@ statements are executed which are filtered and produce no output.</p></li>
 </ul>
 <p>Feature improvements:</p>
 <ul class="simple">
-<li><p>None</p></li>
+<li><p>HTML documentation generation based on Docutils is significantly
+updated and improved.</p></li>
 </ul>
 <p>Windows Delegate Updates/Additions:</p>
 <ul class="simple">
-<li><p>Update bundled libjpeg to version 9d.</p></li>
+<li><p>Update bundled libjpeg to version 9e.</p></li>
 </ul>
 <p>Build Changes:</p>
 <ul class="simple">

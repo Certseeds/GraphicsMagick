@@ -1,52 +1,50 @@
-2022-10-20    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updated the news.
+
+2022-10-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Remove "optimisation" that has negligible or negative
         effect to overall performance.
 
-
-2022-10-19    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Cleanup GCC compile warnings.
 
-
-2022-10-17    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Do not consider whole image to be invalid when a second
         chunk header contains invalid data.
 
-2022-10-16    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Renamed image attribute "comment" from extended area to
         "TGA:file.comment" to prevent mix of these 2 comments.
         (Now TGA can produce both "comment" and "TGA:file.comment").
 
-
-2022-10-14    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-14  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * PerlMagick/t/read.t Add new tests for TGA files.
-
 
 2022-10-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/dpx.c: Revert undocumented change to 'DPX:file.creator'
 	attribute.
 
-2022-10-13    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Block alpha channel depending on value "AttributesType".
 
+2022-10-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-2022-10-12    Fojtik Jaroslav  <JaFojtik@yandex.com>
-
-        * coders/tga.c New attributes "comment", "creator", "software", "TGA:file.JobName" 
+        * coders/tga.c New attributes "comment", "creator", "software", "TGA:file.JobName"
         * coders/gpx.c Renamed attribute "DPX:file.creator" to "creator"
 
-2022-10-10    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-10  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c TGA developper area is read.
 
-
-2022-10-09    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Check return code of seek blob operation.
 
@@ -61,7 +59,7 @@
 	* scripts/changelog2rst.sh: Try to deal with the crazy mix of
 	spaces and hard tabs which are now appearing in the ChangeLog file.
 
-2022-10-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Fixed oss-fuzz-52084.
 	* PerlMagick/t/input.tga renamed to PerlMagick\t\input_8_CC.tga
@@ -69,8 +67,7 @@
 	* PerlMagick/t/read.t: Added input_tga_8_BW.miff to PerlMagick test
 	suite.
 
-
-2022-10-03    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c TGA footer is read, currently used for logs only.
 
@@ -103,15 +100,15 @@
 	* coders/tga.c: White-space normalization.  Eliminate compilation
 	warning about unused indexes variable.
 
-2022-10-01    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-10-01  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Monochromatic bilevel TGA could be written.
 
-2022-09-29    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-09-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/tga.c Monochromatic bilevel TGA could be read.
 
-2022-09-28    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-09-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* PerlMagick/t/input_mono.tga Added monochromatic TGA sample generated
 	by Graphics Workshop.
@@ -157,11 +154,11 @@
 	Debian bug 1019158: "graphicsmagick breaks gnudatalanguage
 	autopkgtest: undefined symbol: _ZN6Magick5Image12colorMapSizeEv".
 
-2022-09-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-09-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * jpeg/* Upgraded jpeg library to Version 9e 16-Jan-2022.
 
-2022-09-04    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-09-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * VisualMagick/jpeg/LIBRARY.txt Exclude files cjpegalt.c and
         djpegalt.c; cjpeg.c and djpeg.c are already excluded.
@@ -202,7 +199,7 @@
 
 	* NEWS.txt: Updated the news.
 
-2022-08-10    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-08-10  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * VisualMagick/configure/stdafx.h Added define WIN32_LEAN_AND_MEAN
         * VisualMagick/configure/configure.exe New rebuild.
@@ -217,7 +214,7 @@
         * configure.ac: When checking for libwmf, add a test for
         libsharpyuv.  Not yet tested but maybe it will work.
 
-2022-08-07    Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-08-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * VisualMagick\configure\configure.cpp: The /MACHINE:x86
         should never be placed to DLL dependency list.
