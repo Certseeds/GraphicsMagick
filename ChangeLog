@@ -1,3 +1,8 @@
+2022-10-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xpm.c (ReadXPMImage): Eliminate unnecessary strlen() upon
+	memory reallocation for better performance.
+
 2022-10-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* PerlMagick/t/input_bilevel.xpm

@@ -320,8 +320,11 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               MagickFreeResourceLimitedMemory(xpm_buffer);
               break;
             }
-          xpm_buffer=new_xpm_buffer;
-          p=xpm_buffer+strlen(xpm_buffer);
+          if (xpm_buffer != new_xpm_buffer)
+            {
+              p=(p-xpm_buffer)+new_xpm_buffer;
+              xpm_buffer=new_xpm_buffer;
+            }
         }
     }
   if (xpm_buffer == (char *) NULL)
