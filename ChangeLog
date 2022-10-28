@@ -1,3 +1,11 @@
+2022-10-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* PerlMagick/t/input_bilevel.xpm
+	* PerlMagick/t/reference/read/input_xpm_bilevel.miff New testcase
+        with bilevel monochrome image.
+	* PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
+	suite.
+
 2022-10-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* PerlMagick/t/input_pal16.xpm

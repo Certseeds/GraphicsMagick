@@ -13,7 +13,7 @@
 # Whenever a new test is added/removed, be sure to update the
 # 1..n ouput.
 #
-BEGIN { $| = 1; $test=1; print "TAP version 13\n1..85\n"; }
+BEGIN { $| = 1; $test=1; print "TAP version 13\n1..86\n"; }
 END {print "not ok $test\n" unless $loaded;}
 use Graphics::Magick;
 $loaded=1;
@@ -334,6 +334,10 @@ testReadCompare('input.xbm', 'reference/read/input_xbm.miff', q//, 0, 0);
 print("XC: Constant image of X server color ...\n");
 ++$test;
 testReadCompare('xc:black', 'reference/read/input_xc_black.miff', q/size=>"70x46",, depth=>8/, 0, 0);
+
+print("X Windows system pixmap file (bilevel) ...\n");
+++$test;
+testReadCompare('input_bilevel.xpm', 'reference/read/input_xpm_bilevel.miff', q//, 0, 0);
 
 print("X Windows system pixmap file (color) ...\n");
 ++$test;
