@@ -502,7 +502,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         for (x=0; x < (long) image->columns; x++)
         {
           /* (void) strncpy(key,p,width); */
-          for (k=0; k < (long) width; k++)
+          for(k=0; k < (long) width; k++)
             {
               key[k]=p[k];
               if (p[k] == '\0')
@@ -511,13 +511,18 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
                 }
             }
-          if (MagickFail == status)
-            break;
-          key[k]='\0';
-          if (strcmp(key,keys[j]) != 0)
-            for (j=0; j < Max(image->colors-1,1); j++)
-              if (strcmp(key,keys[j]) == 0)
+          if(MagickFail == status)
+              break;
+          if(memcmp(key,keys[j],width) != 0)
+          {
+            j = Max(image->colors,1);
+            while(j-- > 0)	/* When j underflows, the VerifyColormapIndex stops reading. */
+            {
+              if(memcmp(key,keys[j],width) == 0)
                 break;
+            }
+          }
+
           VerifyColormapIndex(image,j);
           if (image->storage_class == PseudoClass)
             indexes[x]=(IndexPacket) j;
