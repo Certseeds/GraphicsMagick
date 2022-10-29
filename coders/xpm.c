@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -437,11 +437,11 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "    %lu: %s", i-1, textlist[i-1]);
     if (strlen(p) < width)
       break;
-    keys[j]=MagickAllocateResourceLimitedMemory(char *,(size_t) width+1);
+    keys[j]=MagickAllocateResourceLimitedMemory(char *,(size_t)width);
     if (keys[j] == (char *) NULL)
       ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    keys[j][width]='\0';
-    (void) strncpy(keys[j],p,width);
+
+    (void) memcpy(keys[j],p,width);
     /*
       Parse color.
     */
