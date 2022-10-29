@@ -1,4 +1,10 @@
+2022-10-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xpm.c (ReadXPMImage): Improve read performance by using
+	integer keys.  Trace the colormap.
+
 2022-10-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* coders/xpm.c (ReadXPMImage): Replace strcmp with faster memcmp.
         It improves 21% performance on my test image.
 
