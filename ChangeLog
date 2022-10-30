@@ -1,3 +1,8 @@
+2022-10-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (ReadBlobString): Use fgets() in order to get much
+	better performance.
+
 2022-10-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xpm.c (ReadXPMImage): Improve read performance by using

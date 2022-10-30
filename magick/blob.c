@@ -4517,28 +4517,120 @@ MagickExport size_t ReadBlobMSBShorts(Image *image, size_t octets,
 */
 MagickExport char *ReadBlobString(Image *image,char *string)
 {
+  BlobInfo
+    * restrict blob;
+
+  size_t
+    i = 0;
+
   int
     c;
 
-  register unsigned int
-    i;
-
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-  for (i=0; i < (MaxTextExtent-1); i++)
-  {
-    c=ReadBlobByte(image);
-    if (c == EOF)
+  assert(string != (char *) NULL);
+
+  blob=image->blob;
+
+  string[0] = '\0';
+
+  /*
+    Check if we will encounter read limit (assume that we will read
+    MaxTextExtent-1 characters)
+  */
+  if ((blob->read_total + MaxTextExtent-1) > blob->read_limit)
+    {
+      blob->read_total = blob->read_limit;
+      if (MagickFalse == blob->eof)
+        {
+          blob->eof=MagickTrue;
+          if (blob->read_limit <= blob->read_total)
+            {
+              ThrowException(&image->exception,ResourceLimitError,ReadLimitExceeded,
+                             image->filename);
+            }
+        }
+      return((char *) NULL);
+    }
+
+  switch (blob->type)
+    {
+    case UndefinedStream:
+      break;
+    case FileStream:
+    case StandardStream:
+    case PipeStream:
       {
-        if (i == 0)
-          return((char *) NULL);
+        if (fgets(string,MaxTextExtent,blob->handle.std) != NULL)
+          {
+            i = strlen(string);
+            blob->read_total += i;
+          }
+        else
+          {
+            if (!(blob->status) && ferror(blob->handle.std))
+              {
+                blob->status=1;
+                if (errno != 0)
+                  blob->first_errno=errno;
+              }
+            return((char *) NULL);
+          }
         break;
       }
-    string[i]=c;
-    if ((string[i] == '\n') || (string[i] == '\r'))
-      break;
-  }
-  string[i]='\0';
+    case ZipStream:
+      {
+#if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
+        if (gzgets(blob->handle.gz, string, MaxTextExtent) != NULL)
+          {
+            i = strlen(string);
+            blob->read_total += i;
+          }
+        else
+          {
+            int
+              gzerror_errnum=Z_OK;
+
+            (void) gzerror(blob->handle.gz,&gzerror_errnum);
+            if (gzerror_errnum != Z_OK)
+              {
+                blob->status=1;
+                if ((gzerror_errnum == Z_ERRNO) && (errno != 0))
+                  blob->first_errno=errno;
+              }
+            if (!blob->eof)
+              blob->eof = gzeof(blob->handle.gz);
+          }
+        break;
+#endif
+      }
+    default :
+      {
+        for (i=0; i < MaxTextExtent; i++)
+          {
+            c=ReadBlobByte(image);
+            if (c == EOF)
+              {
+                if (i == 0)
+                  return((char *) NULL);
+                break;
+              }
+            string[i]=c;
+            if (string[i] == '\n')
+              break;
+          }
+        i++;
+        string[i]='\0';
+      }
+    }
+
+  /* Strip trailing NL and CR */
+  while ((i > 0) && ((string[i-1] == '\r') || (string[i-1] == '\n')))
+    {
+      --i;
+      string[i] = 0;
+    }
+
   return(string);
 }
 
