@@ -351,9 +351,11 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
     }
   if ((count != 4) || (width == 0) || (width > 3) ||
       (image->columns == 0) || (image->rows == 0) ||
-      (image->colors == 0) || (image->colors > MaxColormapSize))
+      (image->colors == 0))
     ThrowXPMReaderException(CorruptImageError,ImproperImageHeader,image);
-  image->depth=16;
+  if(image->colors > MaxColormapSize)
+    ThrowXPMReaderException(CoderError,ColormapTooLarge,image);
+  image->depth=16;	/* TODO: Depth 16 is nonsense in many cases, please fix. */
 
   /*
     Remove unquoted characters.

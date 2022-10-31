@@ -1,3 +1,8 @@
+2022-10-31  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/xpm.c (ReadXPMImage): Output intelligent messag when colormap 
+        exceeds limit.
+
 2022-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (ReadBlobString): Fix oss-fuzz issue 52917
