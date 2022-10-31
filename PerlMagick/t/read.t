@@ -13,7 +13,7 @@
 # Whenever a new test is added/removed, be sure to update the
 # 1..n ouput.
 #
-BEGIN { $| = 1; $test=1; print "TAP version 13\n1..86\n"; }
+BEGIN { $| = 1; $test=1; print "TAP version 13\n1..87\n"; }
 END {print "not ok $test\n" unless $loaded;}
 use Graphics::Magick;
 $loaded=1;
@@ -310,6 +310,10 @@ testReadCompare('input.viff', 'reference/read/input_viff.miff', q//, 0, 0);
 print("WBMP (Wireless Bitmap (level 0) image) ...\n");
 ++$test;
 testReadCompare('input.wbmp', 'reference/read/input_wbmp.miff', q//, 0, 0);
+
+print("WPG (Word Perfect Graphics image, bilevel WPG level 1) ...\n");
+++$test;
+testReadCompare('input1_1.wpg', 'reference/read/input1_1_wpg.miff', q//, 0, 0);
 
 print("WPG (Word Perfect Graphics image, 4 bit depth WPG level 1) ...\n");
 ++$test;

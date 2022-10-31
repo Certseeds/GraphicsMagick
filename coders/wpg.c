@@ -1303,7 +1303,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               image->columns=BitmapHeader1.Width;
               image->rows=BitmapHeader1.Heigth;
               bpp=BitmapHeader1.Depth;
-
+				// Whole palette is useless for bilevel image.
+              if(bpp==1) image->storage_class=DirectClass;
               goto UnpackRaster;
 
             case 0x0E:  /*Color palette */
@@ -1365,7 +1366,7 @@ UnpackRaster:
               if(bpp>24)
                 {ThrowReaderException(CoderError,ColorTypeNotSupported,image)}
 
-              if ((image->storage_class != PseudoClass) && (bpp != 24))
+              if ((image->storage_class != PseudoClass) && (bpp != 24) && bpp!=1)
                 {
                   image->colors=1 << bpp;
                   if (!AllocateImageColormap(image,image->colors))

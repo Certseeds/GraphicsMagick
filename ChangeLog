@@ -1,3 +1,12 @@
+2022-11-01  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/wpg.c Bilevel image must be allways monochrome.
+        Discard palette if exists.
+	* PerlMagick/t/input1_1.wpg
+	* PerlMagick/t/reference/read/input1_1.wpg.miff New testcase
+        with bilevel monochrome image.
+	* PerlMagick/t/read.t: Added input1_1.wpg to PerlMagick test suite.
+
 2022-10-31  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/xpm.c (ReadXPMImage): Output intelligent messag when colormap 
