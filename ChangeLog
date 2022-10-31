@@ -1,3 +1,10 @@
+2022-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (ReadBlobString): Fix oss-fuzz issue 52917
+	"graphicsmagick:coder_TXT_fuzzer: Stack-buffer-overflow in
+	ReadBlobString", which occurs due to a bug added in yesterday's
+	ReadBlobString() changes.
+
 2022-10-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (ReadBlobString): Use fgets() in order to get much
