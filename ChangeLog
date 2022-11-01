@@ -1,5 +1,10 @@
 2022-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/image.c (SetImageInfo): Avoid creating temporary files
+	when reading files with .bz2, .gz, .svgz, and .Z extensions if the
+	format is non-ambiguous based on the file extension, and the
+	reader does not require seeking.
+
 	* magick/magick.c (MagickToMime): Add MIME mappings for apng,
 	avif, bmp, ico, and webp.
 

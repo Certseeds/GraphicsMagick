@@ -3134,14 +3134,21 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
   */
   if (*magic == '\0')
     {
+      MagickBool
+        compressed_extension = MagickFalse;
+
       /* Restore p to end of modified filename */
       p=image_info->filename+Max((long) strlen(image_info->filename)-1,0);
 
       while ((*p != '.') && (p > (image_info->filename+1)))
         p--;
+
       if ((LocaleCompare(p,".gz") == 0) ||
           (LocaleCompare(p,".Z") == 0) ||
           (LocaleCompare(p,".bz2") == 0))
+        compressed_extension = MagickTrue;
+
+      if (compressed_extension)
         do
           {
             p--;
@@ -3197,7 +3204,22 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
           magick_info=GetMagickInfo(magic,exception);
           if (magick_info != (const MagickInfo *) NULL)
             {
-              if (magick_info->extension_treatment == IgnoreExtensionTreatment)
+              /*
+                For compressed files with expected extensions
+                (e.g. name.ext.gz) we have already deduced the
+                expected format based on the base file extension, and
+                if the extension is considered to be a good hint, and
+                if seekable_stream is false for that format, use
+                "affirm" in order to avoid using a temporary file.
+              */
+              if (LocaleCompare(magick_info->name,"SVGZ") == 0)
+                compressed_extension = MagickTrue;
+
+              if ((magick_info->extension_treatment == HintExtensionTreatment) &&
+                  (magick_info->seekable_stream == MagickFalse) &&
+                  (compressed_extension))
+                image_info->affirm=MagickTrue;
+              else if (magick_info->extension_treatment == IgnoreExtensionTreatment)
                 exclude=MagickTrue;
               else if (magick_info->extension_treatment == ObeyExtensionTreatment)
                 image_info->affirm=MagickTrue;
@@ -3226,6 +3248,9 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
           DestroyImage(image);
           return(MagickFail);
         }
+      /*
+        FIXME: Avoid creating temporary files unless absolutely necessary!
+      */
       if (!BlobIsSeekable(image))
         {
           /*
