@@ -1,3 +1,8 @@
+2022-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/magick.c (MagickToMime): Add MIME mappings for apng,
+	avif, bmp, ico, and webp.
+
 2022-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/xpm.c (ReadXPMImage): coders/xpm.c (ReadXPMImage): Use

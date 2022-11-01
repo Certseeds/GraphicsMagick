@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1581,6 +1581,9 @@ MagickToMime(const char *magick)
   MediaTypes[] =
     {
       { "avi",   "video/avi" },
+      { "apng",  "image/apng" },
+      { "avif",  "image/avif" },
+      { "bmp",   "image/bmp" },
       { "cgm",   "image/cgm;Version=4;ProfileId=WebCGM" }, /* W3 WebCGM */
       { "dcm",   "application/dicom" }, /* Incomplete.  See RFC 3240 */
       { "epdf",  "application/pdf" },
@@ -1595,6 +1598,7 @@ MagickToMime(const char *magick)
       { "g3",    "image/g3fax" },
       { "gif",   "image/gif" },
       { "gif87", "image/gif" },
+      { "ico",   "image/x-icon" },
       { "jpeg",  "image/jpeg" },
       { "jpg",   "image/jpeg" },
       { "mng",   "video/x-mng" },
@@ -1607,7 +1611,8 @@ MagickToMime(const char *magick)
       { "svg",   "image/svg+xml" },
       { "tif",   "image/tiff" },
       { "tiff",  "image/tiff" },
-      { "wbmp",  "image/vnd.wap.wbmp" }
+      { "wbmp",  "image/vnd.wap.wbmp" },
+      { "webp",  "image/image/webp" }
     };
 
   for (i=0; i < ArraySize(MediaTypes); i++)
