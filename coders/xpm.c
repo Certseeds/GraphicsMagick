@@ -57,7 +57,30 @@ static unsigned int
   WritePICONImage(const ImageInfo *,Image *),
   WriteXPMImage(const ImageInfo *,Image *);
 
-typedef magick_uint32_t xpmkey_t;
+typedef magick_uint32_t xpmkeyval_t;
+
+typedef struct xpmkey
+{
+  magick_uint32_t index;        /* Colormap index */
+  xpmkeyval_t keyval;           /* Encoded XPM key value */
+} xpmkey_t;
+
+
+static int XPMKeyCompare(const void *l, const void *r)
+{
+  const xpmkey_t * restrict lp = l;
+  const xpmkey_t * restrict rp = r;
+  int sense;
+
+  if (lp->keyval > rp->keyval)
+    sense = 1;
+  else if (lp->keyval < rp->keyval)
+    sense = -1;
+  else
+    sense = 0;
+
+  return sense;
+}
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -233,7 +256,7 @@ do { \
 static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   xpmkey_t
-    *keys = (unsigned int *) NULL;
+    *keys = (xpmkey_t *) NULL;
 
   char
     target[MaxTextExtent],
@@ -242,9 +265,6 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   Image
     *image;
-
-  xpmkey_t
-    key;
 
   int
     count;
@@ -353,7 +373,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (image->columns == 0) || (image->rows == 0) ||
       (image->colors == 0))
     ThrowXPMReaderException(CorruptImageError,ImproperImageHeader,image);
-  if(image->colors > MaxColormapSize)
+  if (image->colors > MaxColormapSize)
     ThrowXPMReaderException(CoderError,ColormapTooLarge,image);
   image->depth=16;	/* TODO: Depth 16 is nonsense in many cases, please fix. */
 
@@ -421,7 +441,10 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   if (keys == (xpmkey_t *) NULL)
     ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   for (i=0; i < image->colors; i++)
-    keys[i]=0;
+    {
+      keys[i].index=0;
+      keys[i].keyval=0;
+    }
   if (!AllocateImageColormap(image,image->colors))
     ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -444,11 +467,12 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (strlen(p) < width)
         break;
 
-      keys[j]=0;
+      keys[j].index = j;
+      keys[j].keyval = 0;
       for (k=0; k < width; k++)
-        keys[j] |= ((xpmkey_t) p[k]) << (k * 8);
+        keys[j].keyval |= ((xpmkeyval_t) p[k]) << (k * 8);
 
-      /* printf("Key[%u] =\"%s\" (0x%04X)\n", j, p, (unsigned int) keys[j]); */
+      /* printf("Key[%03u] =\"%s\" (0x%04X)\n", keys[j].index, p, (unsigned int) keys[j].keyval); */
       /*
         Parse color.
       */
@@ -521,10 +545,27 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   image->depth=GetImageDepth(image,&image->exception);
   image->depth=NormalizeDepthToOctet(image->depth);
 
-  j=0;
-  key=0;
   if (!image_info->ping)
     {
+      xpmkey_t
+        key = { 0, 0 },
+        *keyp;
+
+      xpmkeyval_t
+        keyval;
+
+      j = 0;
+
+      /*
+        Sort keys by kval
+      */
+      qsort((void *) keys,image->colors, sizeof(keys[0]), XPMKeyCompare);
+
+#if 0
+      for (j=0; j < image->colors; j++)
+        printf("Key[%03u] = (0x%04X)\n", keys[j].index, (unsigned int) keys[j].keyval);
+#endif
+
       /*
         Read image pixels.
       */
@@ -544,7 +585,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           indexes=AccessMutableIndexes(image);
           for (x=0; x < (long) image->columns; x++)
             {
-              key=0;
+              keyval=0;
               for (k=0; k < width; k++)
                 {
                   if (p[k] == '\0')
@@ -552,23 +593,40 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       status=MagickFail;
                       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                             "Unexpected end of row %ld! (k=%u)", y, k);
+                      ThrowXPMReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                              image);
                       break;
                     }
-                  key |= ((unsigned int) p[k]) << (k * 8);
+                  keyval |= ((xpmkeyval_t) p[k]) << (k * 8);
                 }
               if (MagickFail == status)
                 break;
-              /* printf("Key[%ld,%ld] = 0x%04X\n", x, y, (unsigned int) key); */
-              if (key != keys[j])
-                for (j=0; j < Max(image->colors-1,1); j++)
-                  if (key == keys[j])
-                    break;
-              VerifyColormapIndex(image,j);
+              if (keyval != key.keyval)
+                {
+                  key.keyval = keyval;
+                  keyp=(void *) bsearch((const void *) &key,(void *) keys,image->colors,
+                                        sizeof(keys[0]),XPMKeyCompare);
+                  if (keyp != (void *) NULL)
+                    {
+                      key.index = keyp->index;
+                    }
+                  else
+                    {
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Failed to find key! (0x%04X)",
+                                            key.keyval);
+                      ThrowXPMReaderException(CorruptImageError,CorruptImage,
+                                              image);
+                      break;
+                    }
+                }
+
+              VerifyColormapIndex(image,key.index);
               if (image->storage_class == PseudoClass)
-                indexes[x]=(IndexPacket) j;
-              *r=image->colormap[j];
+                indexes[x]=(IndexPacket) key.index;
+              *r=image->colormap[key.index];
               r->opacity=(Quantum)
-                (j == none ? TransparentOpacity : OpaqueOpacity);
+                (key.index == none ? TransparentOpacity : OpaqueOpacity);
               r++;
               p+=width;
             }

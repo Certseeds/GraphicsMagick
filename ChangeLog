@@ -1,7 +1,12 @@
+2022-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xpm.c (ReadXPMImage): Use qsort+bsearch to improve
+	performance of color-lookups.
+
 2022-10-31  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/xpm.c (ReadXPMImage): Output intelligent messag when colormap 
-        exceeds limit.
+	* coders/xpm.c (ReadXPMImage): Output intelligent message when
+	colormap exceeds limit.
 
 2022-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
