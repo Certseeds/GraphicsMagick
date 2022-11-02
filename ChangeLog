@@ -1,3 +1,11 @@
+2022-10-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* PerlMagick/t/input_3chars.xpm New testcase
+        with 3 bytes encoding per one pixel.
+	* PerlMagick/t/reference/read/input_3chars_xpm.miff
+	* PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
+	suite.
+
 2022-11-03 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/xpm.c Allow to read pallete that contains more colors
