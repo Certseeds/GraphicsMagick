@@ -50,6 +50,8 @@
 #include "magick/utility.h"
 
 
+#define MAX_XPM_SUPPORTED_COLORS	Max(0x20000,MaxColormapSize)
+
 /*
   Forward declarations.
 */
@@ -373,9 +375,9 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       (image->columns == 0) || (image->rows == 0) ||
       (image->colors == 0))
     ThrowXPMReaderException(CorruptImageError,ImproperImageHeader,image);
-  if (image->colors > MaxColormapSize)
+  if(image->colors > MAX_XPM_SUPPORTED_COLORS)
     ThrowXPMReaderException(CoderError,ColormapTooLarge,image);
-  image->depth=16;	/* TODO: Depth 16 is nonsense in many cases, please fix. */
+  image->depth=16;
 
   /*
     Remove unquoted characters.
@@ -445,8 +447,19 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       keys[i].index=0;
       keys[i].keyval=0;
     }
-  if (!AllocateImageColormap(image,image->colors))
-    ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  if(image->colors <= MaxColormapSize)
+  {
+    if (!AllocateImageColormap(image,image->colors))
+      ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  }
+  else		/* Allocate temporary palette. */
+  {
+    if(image->colormap != (PixelPacket *)NULL)
+        MagickFreeMemory(image->colormap);
+    image->colormap=MagickAllocateMemory(PixelPacket *,MagickArraySize((size_t) image->colors,sizeof(PixelPacket)));
+    if(image->colormap==NULL)
+      ThrowXPMReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+  }
 
   /*
     Read image colormap.
@@ -644,6 +657,12 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
   MagickFreeResourceLimitedMemory(keys);
   MagickFreeResourceLimitedMemory(textlist);
   MagickFreeResourceLimitedMemory(xpm_buffer);
+  if (image->colors > MaxColormapSize)
+  {					/* Release temporary palette. */
+    MagickFreeMemory(image->colormap);
+    image->colors = 0;
+    image->storage_class = DirectClass;
+  }
   CloseBlob(image);
   StopTimer(&image->timer);
   return(image);

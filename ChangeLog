@@ -1,3 +1,8 @@
+2022-11-03 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/xpm.c Allow to read pallete that contains more colors
+        than MaxColormapSize.
+
 2022-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/image.c (SetImageInfo): Avoid creating temporary files
