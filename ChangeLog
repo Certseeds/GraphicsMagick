@@ -1,3 +1,7 @@
+2022-11-04 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/tga.c Remove junk \n from log after printing footer contents.
+
 2022-11-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* PerlMagick/t/input_3chars.xpm New testcase

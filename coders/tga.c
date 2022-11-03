@@ -209,7 +209,7 @@ static void LogTGAFooter(const TGAFooter *ptga_footer)
                         "Targa Footer:\n"
                         "    ExtensionOffset     : %u\n"
                         "    DevelopperDirOffset : %u\n"
-                        "    Signature           : %s\n",
+                        "    Signature           : %s",
                                ptga_footer->ExtensionOffset,
                                ptga_footer->DevelopperDirOffset,
 			       ptga_footer->Signature);
@@ -234,10 +234,10 @@ static void LogTGADevel(const TGADevel *ptga_devel)
                         "    Color Correction Offset: %u\n"
                         "    Postage Stamp Offset: %u\n"
                         "    Scan Line Offset    : %u\n"
-                        "    Attributes Type     : %u\n",
+                        "    Attributes Type     : %u",
                                ptga_devel->ExtensionSize,
                                ptga_devel->Author,
-			       ptga_devel->Comments,
+                               ptga_devel->Comments,
                                ptga_devel->TimeStamp[0], ptga_devel->TimeStamp[1], ptga_devel->TimeStamp[2],
                                ptga_devel->TimeStamp[3], ptga_devel->TimeStamp[4], ptga_devel->TimeStamp[5],
                                ptga_devel->JobNameID,
