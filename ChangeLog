@@ -1,4 +1,4 @@
-2022-10-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-11-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* PerlMagick/t/input_3chars.xpm New testcase
         with 3 bytes encoding per one pixel.
