@@ -4606,30 +4606,33 @@ MagickExport char *ReadBlobString(Image *image,char *string)
       }
     default :
       {
-        for (i=0; i < (MaxTextExtent-2); i++)
+        i=0;
+        do
           {
             c=ReadBlobByte(image);
             if (c == EOF)
               {
-                if (i == 0)
-                  return((char *) NULL);
+                if (!blob->eof)
+                  blob->eof = MagickTrue;
                 break;
               }
-            string[i]=c;
-            if (string[i] == '\n')
+            string[i] = c;
+            i++;
+            if (c == '\n')
               break;
-          }
-        i++;
-        string[i]='\0';
+          } while (i < MaxTextExtent-2);
+        string[i] = '\0';
       }
     }
 
   /* Strip trailing NL and CR */
-  while ((i > 0) && ((string[i-1] == '\r') || (string[i-1] == '\n')))
+  while ((i > 0) && ((string[i-1] == '\r') || (string[i-1] == '\n'))) /* oss-fuzz 53001 */
     {
       --i;
       string[i] = 0;
     }
+  if ((i == 0) && (blob->eof))
+    return((char *) NULL);
 
   return(string);
 }
