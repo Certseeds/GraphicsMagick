@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -21,7 +21,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                              June 2000 - 2021                               %
+%                              June 2000 - 2022                               %
 %                         Rework for GraphicsMagick                           %
 %                              Bob Friesenhahn                                %
 %                               Feb-May 2003                                  %
@@ -1388,7 +1388,7 @@ UnpackRaster:
               else
                 {
                   if (bpp < 24)
-                    if ( (image->colors < (1UL<<bpp)) && (bpp != 24) )
+                    if ( (image->colors != (1UL<<bpp)) && (bpp != 24) )
                       if (!ReallocColormap(image,1U<<bpp))
                         goto NoMemory;
                 }
@@ -1590,7 +1590,7 @@ UnpackRaster:
               else
                 {
                   if(bpp < 24)
-                    if( image->colors<(1UL<<bpp) && bpp!=24 )
+                    if(image->colors!=(1UL<<bpp) && bpp!=24)
                       if (!ReallocColormap(image,1U<<bpp))
                         goto NoMemory;
                 }
