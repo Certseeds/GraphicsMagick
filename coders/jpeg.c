@@ -211,13 +211,16 @@ static MagickClientData *FreeMagickClientData(MagickClientData *client_data)
     i;
 
   /* Free profiles data */
-  for (i=0 ; i < ArraySize(client_data->profiles); i++)
+  if (client_data != (MagickClientData *) NULL)
     {
-      MagickFreeMemory(client_data->profiles[i].name);
-      MagickFreeResourceLimitedMemory(client_data->profiles[i].info);
-    }
+      for (i=0 ; i < ArraySize(client_data->profiles); i++)
+        {
+          MagickFreeMemory(client_data->profiles[i].name);
+          MagickFreeResourceLimitedMemory(client_data->profiles[i].info);
+        }
 
-  MagickFreeMemory(client_data);
+      MagickFreeMemory(client_data);
+    }
   return client_data;
 }
 
