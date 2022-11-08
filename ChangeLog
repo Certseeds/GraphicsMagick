@@ -1,3 +1,9 @@
+2022-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/export.c (ExportViewPixelArea): Fix Coverity issue
+	"Control flow issues (DEADCODE)" for the case where QuantumDepth =
+	32.
+
 2022-11-05 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/wpg.c Shrink amount of colors when palette is bigger than
