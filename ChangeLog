@@ -26,7 +26,7 @@
 	dereferences (FORWARD_NULL)".
 
 	* coders/jpeg.c (FreeMagickClientData): Fix Coverity issue 381870
-	"Null pointer dereferences".
+	and 381860 "Null pointer dereferences".
 
 	* magick/export.c (ExportViewPixelArea): Fix Coverity issue 381871
 	"Control flow issues (DEADCODE)" for the case where QuantumDepth =
