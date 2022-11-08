@@ -1,5 +1,9 @@
 2022-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/blob.c (DetachBlob): Do not dereference blob_info->data
+	if it is null.  Addresses Coverity issue 381869 "Null pointer
+	dereferences (FORWARD_NULL)".
+
 	* coders/jpeg.c (FreeMagickClientData): Fix Coverity issue 381870
 	"Null pointer dereferences".
 
