@@ -643,8 +643,6 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               r++;
               p+=width;
             }
-          if (MagickFail == status)
-            break;
           if (!SyncImagePixelsEx(image,exception))
             break;
         }
