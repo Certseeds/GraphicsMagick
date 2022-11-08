@@ -1,5 +1,8 @@
 2022-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/xpm.c (ReadXPMImage): More work on Coverity issue 381862
+	"(DEADCODE)".
+
 	* magick/operator.c (QuantumLogCB): Fix Coverity issue 381861
 	"Control flow issues (DEADCODE)".
 
