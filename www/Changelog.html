@@ -41,11 +41,14 @@
 <blockquote>
 <ul class="simple">
 <li><p>magick/operator.c (QuantumDepthCB): Fix Coverity issue 381867
-&quot;Control flow issues (DEADCODE)&quot;.</p></li>
+&quot;Control flow issues (DEADCODE)&quot;.
+(QuantumPowCB): Fix Coverity issue 381865 &quot;Control flow issues
+(DEADCODE)&quot;.</p></li>
 <li><p>magick/import.c (ImportViewPixelArea): Fix Coverity issue 381868
 &quot;Control flow issues (DEADCODE)&quot;.</p></li>
 <li><p>magick/blob.c (DetachBlob): Do not dereference blob_info-&gt;data
 if it is null.  Addresses Coverity issue 381869 &quot;Null pointer
+dereferences (FORWARD_NULL)&quot;and issue 381866 &quot;Null pointer
 dereferences (FORWARD_NULL)&quot;.</p></li>
 <li><p>coders/jpeg.c (FreeMagickClientData): Fix Coverity issue 381870
 &quot;Null pointer dereferences&quot;.</p></li>

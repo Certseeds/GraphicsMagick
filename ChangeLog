@@ -2,12 +2,15 @@
 
 	* magick/operator.c (QuantumDepthCB): Fix Coverity issue 381867
 	"Control flow issues (DEADCODE)".
+	(QuantumPowCB): Fix Coverity issue 381865 "Control flow issues
+	(DEADCODE)".
 
 	* magick/import.c (ImportViewPixelArea): Fix Coverity issue 381868
 	"Control flow issues (DEADCODE)".
 
 	* magick/blob.c (DetachBlob): Do not dereference blob_info->data
 	if it is null.  Addresses Coverity issue 381869 "Null pointer
+	dereferences (FORWARD_NULL)"and issue 381866 "Null pointer
 	dereferences (FORWARD_NULL)".
 
 	* coders/jpeg.c (FreeMagickClientData): Fix Coverity issue 381870

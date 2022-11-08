@@ -1586,11 +1586,13 @@ QuantumPowCB(void *mutable_data,
                                            immutable_context->double_value));
         }
     }
-#else
-  ARG_NOT_USED(*mutable_context);
-#endif
+
   if (MagickFail == status)
     return status;
+#else
+  ARG_NOT_USED(*mutable_context);
+  ARG_NOT_USED(status);
+#endif
 
   switch (immutable_context->channel)
     {
