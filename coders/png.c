@@ -2158,9 +2158,10 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 #endif
 
   if (png_get_valid(ping, ping_info, PNG_INFO_tRNS) &&
-      (ping_trans_color != (png_color_16p) NULL))
+      (ping_trans_color != (png_color_16p) NULL) &&
+      (unsigned int) ping_file_depth <= MaxColormapSize)
     {
-      int
+      unsigned int
         bit_mask;
 
       if (logging != MagickFalse)
@@ -2242,9 +2243,10 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
   image->compression=ZipCompression;
   image->columns=ping_width;
   image->rows=ping_height;
-  if ((ping_colortype == PNG_COLOR_TYPE_PALETTE) ||
-      (ping_colortype == PNG_COLOR_TYPE_GRAY_ALPHA) ||
-      (ping_colortype == PNG_COLOR_TYPE_GRAY))
+  if (((unsigned int) ping_file_depth <= MaxColormapSize) &&
+      ((ping_colortype == PNG_COLOR_TYPE_PALETTE) ||
+       (ping_colortype == PNG_COLOR_TYPE_GRAY_ALPHA) ||
+       (ping_colortype == PNG_COLOR_TYPE_GRAY)))
     {
       image->storage_class=PseudoClass;
       image->colors=1U << ping_file_depth;

@@ -1,5 +1,8 @@
 2022-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadOnePNGImage): Fix Coverity issue 381864
+	"BAD_SHIFT".
+
 	* magick/operator.c (QuantumDepthCB): Fix Coverity issue 381867
 	"Control flow issues (DEADCODE)".
 	(QuantumPowCB): Fix Coverity issue 381865 "Control flow issues
