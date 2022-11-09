@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2018 - 2020 GraphicsMagick Group
+  Copyright (C) 2018 - 2022 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -7,6 +7,19 @@
 
   GraphicsMagick Image Private declarations.
 */
+
+/*
+  Maximum unsigned RGB value which fits in the specified bits
+
+  If bits <= 0, then zero is returned.  If bits exceeds bits in unsigned long,
+  then max value of unsigned long is returned.
+
+  Emulates ((1U << bits)-1) but without the overflow problems.
+*/
+#define MaxValueGivenBits(bits) ((unsigned long) \
+                                 (((int) bits <= 0) ? 0 :               \
+                                   ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1)) + \
+                                    ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1))-1))))
 
 /*
   ImageExtra allows for expansion of Image without increasing its

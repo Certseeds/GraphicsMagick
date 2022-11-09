@@ -2159,7 +2159,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 
   if (png_get_valid(ping, ping_info, PNG_INFO_tRNS) &&
       (ping_trans_color != (png_color_16p) NULL) &&
-      (unsigned int) ping_file_depth <= MaxColormapSize)
+      (((unsigned int) ping_file_depth) <= MaxColormapSize))
     {
       unsigned int
         bit_mask;
@@ -2168,7 +2168,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
           "    Reading PNG tRNS chunk.");
 
-      bit_mask = (1U << ping_file_depth) - 1;
+      bit_mask = MaxValueGivenBits(ping_file_depth);
 
       /*
         Image has a transparent background.
@@ -2190,13 +2190,13 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 #endif
             transparent_color.opacity=(unsigned long) (
                 ping_trans_color->gray *
-                (65535L/((1UL << ping_file_depth)-1)));
+                (65535L/MaxValueGivenBits(ping_file_depth)));
 
 #if (QuantumDepth == 8)
           else
             transparent_color.opacity=(unsigned long) (
-                (ping_trans_color->gray * 65535L)/
-                ((1UL << ping_file_depth)-1));
+                (ping_trans_color->gray * 65535UL)/
+                MaxValueGivenBits(ping_file_depth));
 #endif
           if (logging != MagickFalse)
             {
@@ -2302,7 +2302,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
           unsigned long
             scale;
 
-          scale=(MaxRGB/((1U << ping_file_depth)-1));
+          scale=(MaxRGB/MaxValueGivenBits(ping_file_depth));
           if (scale < 1)
             scale=1;
           for (i=0; i < (long) image->colors; i++)

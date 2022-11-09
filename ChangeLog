@@ -1,5 +1,9 @@
 2022-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (ReadOnePNGImage): More work on Coverity issue 381864.
+
+	* magick/image-private.h (MaxValueGivenBits): Move to private header.
+
 	* coders/xpm.c (ReadXPMImage): More work on Coverity issue 381862
 	"(DEADCODE)".
 

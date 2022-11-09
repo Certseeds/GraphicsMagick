@@ -31,17 +31,6 @@ extern "C" {
 #  define QuantumDepth  16
 #endif
 
-/*
-  Maximum unsigned RGB value which fits in the specified bits
-
-  If bits <= 0, then zero is returned.  If bits exceeds bits in unsigned long,
-  then max value of unsigned long is returned.
-*/
-#define MaxValueGivenBits(bits) ((unsigned long) \
-                                 (((int) bits <= 0) ? 0 :               \
-                                   ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1)) + \
-                                    ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1))-1))))
-
 #if (QuantumDepth == 8)
 #  define MaxColormapSize  256U
 #  define MaxMap  255U
