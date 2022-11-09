@@ -1,3 +1,8 @@
+2022-11-09 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * coders/fits.c Store multiple scenes into one file.
+
+
 2022-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOnePNGImage): More work on Coverity issue 381864.
