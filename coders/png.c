@@ -1506,6 +1506,9 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     ping_rowbytes,
     row_offset;
 
+  unsigned int
+    ping_file_depth;
+
   int
     logging,
     num_text,
@@ -1513,7 +1516,6 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     pass,
     ping_bit_depth,
     ping_colortype,
-    ping_file_depth,
     ping_interlace_method,
     ping_compression_method,
     ping_filter_method,
@@ -1803,8 +1805,6 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     image->depth=8;
 #endif
 
-  ping_file_depth = ping_bit_depth;
-
   /* Save bit-depth and color-type in case we later want to write a PNG00 */
   {
       char
@@ -1849,12 +1849,23 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     png_error(ping, "Number of pixels exceeds resource limit");
   }
 
+  if (ping_bit_depth != 1 &&
+      ping_bit_depth != 2 &&
+      ping_bit_depth != 4 &&
+      ping_bit_depth != 8 &&
+      ping_bit_depth != 16)
+    {
+      png_error(ping, "Bit depth is not valid");
+    }
+
   if (ping_bit_depth < 8)
     {
        png_set_packing(ping);
        ping_bit_depth=8;
        image->depth=8;
     }
+
+  ping_file_depth = (unsigned int) ping_bit_depth;
 
 #if defined(PNG_READ_iCCP_SUPPORTED)
     if (png_get_valid(ping, ping_info, PNG_INFO_iCCP))

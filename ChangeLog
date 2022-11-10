@@ -1,7 +1,11 @@
+2022-11-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadOnePNGImage): Change ping_file_depth to
+	unsigned and add verifications for ping_bit_depth.
+
 2022-11-09 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         * coders/fits.c Store multiple scenes into one file.
-
 
 2022-11-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -48,7 +52,6 @@
 
         * coders/wpg.c Shrink amount of colors when palette is bigger than
         raster could store.
-
 
 2022-11-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
