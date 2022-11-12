@@ -1,5 +1,21 @@
 2022-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/msl.c (ProcessMSLScript): Handle parser creation failure.
+
+	* coders/meta.c (GetIPTCStream): Assure that offset is initialized.
+
+	* magick/floats.c (_Gm_convert_fp32_to_fp16): Fix Clang Analyzer
+	complaints.
+
+	* magick/xwindow.c (MagickXGetWindowColor): Assure that crop_info
+	is initialized.
+
+	* Makefile.am (scan-build): Added a scan-build target to help run
+	Clang Analyzer.
+
+	* coders/locale.c (WriteLOCALEImage): Fix Clang Analyzer
+	complaints.
+
 	* ALL: Replace strcpy() with strlcpy(), replace strcat() with
 	strlcat(), replace sprintf() with snprintf().  Prefer using
 	bounded string functions.

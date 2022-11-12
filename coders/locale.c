@@ -822,7 +822,7 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
           text[MaxTextExtent],
           path[MaxTextExtent];
 
-        int
+        unsigned int
           index;
 
         register char
@@ -834,6 +834,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < 4) && (p > path); p--)
             {
               if (*p == '/')
@@ -873,8 +875,10 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
         text[MaxTextExtent],
         path[MaxTextExtent];
 
+      unsigned int
+        index;
+
       int
-        index,
         severityindex;
 
       size_t
@@ -902,7 +906,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -942,7 +947,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -994,7 +1000,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -1040,7 +1047,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -1075,7 +1083,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -1112,7 +1121,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')

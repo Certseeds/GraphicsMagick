@@ -4629,7 +4629,9 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
                                           msl_image->filename);
   if (msl_info.parser == (xmlParserCtxtPtr) NULL)
     {
-      /* FIXME: Handle failure! */
+      ThrowException3(exception,ResourceLimitError,
+                      MemoryAllocationFailed,UnableToInterpretMSLImage);
+      goto parser_alloc_failure;
     }
   while (ReadBlobString(msl_image,message) != (char *) NULL)
     {
@@ -4708,6 +4710,8 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
           msl_info.n--;
         }
     }
+
+ parser_alloc_failure:
 
   /*
     FIXME: May also need to handle group destruction similar to in

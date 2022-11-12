@@ -8,6 +8,8 @@
 #
 #
 
+.PHONY: www srpm rpm profile scan-build
+
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
 # nostdinc
@@ -201,7 +203,6 @@ MAINTAINER_TARGETS = \
 	$(WWWWANDAPI_MAINTAINER_TARGETS)
 
 # Target to build just the web pages.
-.PHONY: www
 www : $(WWW_MAINTAINER_TARGETS) $(WWWAPI_MAINTAINER_TARGETS) $(WWWWANDAPI_MAINTAINER_TARGETS)
 
 endif
@@ -330,7 +331,6 @@ endif # HAS_P7ZIP
 if HAS_RPM
 
 DIST_ARCHIVE_SRPM=$(distdir)-1.src.rpm
-.PHONY: srpm
 $(DIST_ARCHIVE_SRPM) srpm: $(distdir).tar.bz2
 	rm -f $(DIST_ARCHIVE_SRPM)
 	$(RPM) --define="_sourcedir `pwd`" --define="_srcrpmdir `pwd`" --nodeps -bs GraphicsMagick.spec
@@ -348,7 +348,6 @@ DIST_ARCHIVE_RPM= \
 	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
 	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-perl-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm
 
-.PHONY: rpm
 rpm:
 	rm -rf $(RPMDIR)
 	$(MKDIR_P) $(RPMDIR)
@@ -448,7 +447,6 @@ coverity:
 	$(RM) -rf $(COVERITY_COV_INT)
 
 # Rules for a profiled build (according to Paolo Bonzini <bonzini@gnu.org>)
-#.PHONY: profile
 #profile:
 #	$(MAKE) clean
 #	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-generate"
@@ -477,3 +475,21 @@ release: distcheck
 	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
+
+# Run Clang analyzer on the project.
+# In order for this to work, you must have first installed the 'clang'
+# and 'clang-tools' packages on your system.
+# The project should have been configured to use clang.
+#	-enable-checker security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+scan-build:
+	scan-build-12 -k --html-title='GraphicsMagick' \
+	-maxloop 100 \
+	-disable-checker deadcode.DeadStores \
+	-enable-checker security.insecureAPI.bcmp \
+	-enable-checker security.insecureAPI.bcopy \
+	-enable-checker security.insecureAPI.bzero \
+	-enable-checker security.insecureAPI.strcpy \
+	-enable-checker valist.CopyToSelf \
+	-enable-checker valist.Uninitialized \
+	-enable-checker valist.Unterminated \
+	--use-cc $(CC) $(MAKE)

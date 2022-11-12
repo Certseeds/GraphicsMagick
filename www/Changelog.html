@@ -40,6 +40,16 @@
 <p>2022-11-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/msl.c (ProcessMSLScript): Handle parser creation failure.</p></li>
+<li><p>coders/meta.c (GetIPTCStream): Assure that offset is initialized.</p></li>
+<li><p>magick/floats.c (_Gm_convert_fp32_to_fp16): Fix Clang Analyzer
+complaints.</p></li>
+<li><p>magick/xwindow.c (MagickXGetWindowColor): Assure that crop_info
+is initialized.</p></li>
+<li><p>Makefile.am (scan-build): Added a scan-build target to help run
+Clang Analyzer.</p></li>
+<li><p>coders/locale.c (WriteLOCALEImage): Fix Clang Analyzer
+complaints.</p></li>
 <li><p>ALL: Replace strcpy() with strlcpy(), replace strcat() with
 strlcat(), replace sprintf() with snprintf().  Prefer using
 bounded string functions.</p></li>

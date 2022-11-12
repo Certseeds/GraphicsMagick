@@ -225,8 +225,8 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
@@ -4931,7 +4931,6 @@ COVERITY_DESCRIPTION = 'Ubuntu Q@QuantumDepth@'
 COVERITY_COV_INT = 'cov-int'
 
 # Rules for a profiled build (according to Paolo Bonzini <bonzini@gnu.org>)
-#.PHONY: profile
 #profile:
 #	$(MAKE) clean
 #	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-generate"
@@ -11047,6 +11046,8 @@ uninstall-man: uninstall-man1 uninstall-man4 uninstall-man5
 
 .PRECIOUS: Makefile
 
+
+.PHONY: www srpm rpm profile scan-build
 magick-install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(magickincdir)
 	$(INSTALL_HEADER) magick/magick_config_api.h $(DESTDIR)$(magickincdir)/magick_config.h
@@ -11325,7 +11326,6 @@ $(top_srcdir)/$(PERLMAGICK)/Magick.pm : $(PERLMAGICK)/Magick.pm
 @WITH_PERL_FALSE@distclean-perl:
 
 # Target to build just the web pages.
-@MAINTAINER_MODE_TRUE@.PHONY: www
 @MAINTAINER_MODE_TRUE@www : $(WWW_MAINTAINER_TARGETS) $(WWWAPI_MAINTAINER_TARGETS) $(WWWWANDAPI_MAINTAINER_TARGETS)
 
 all-local: $(MAGICKPP_LOCAL_TARGETS) \
@@ -11422,7 +11422,6 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 @HAS_P7ZIP_TRUE@	$(P7ZIP) a -t7z -mx=9 $(DIST_WINDOWS_SRC_7ZIP) $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
 @HAS_P7ZIP_TRUE@	chmod 644 $(DIST_WINDOWS_SRC_7ZIP)
 	rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
-@HAS_RPM_TRUE@.PHONY: srpm
 @HAS_RPM_TRUE@$(DIST_ARCHIVE_SRPM) srpm: $(distdir).tar.bz2
 @HAS_RPM_TRUE@	rm -f $(DIST_ARCHIVE_SRPM)
 @HAS_RPM_TRUE@	$(RPM) --define="_sourcedir `pwd`" --define="_srcrpmdir `pwd`" --nodeps -bs GraphicsMagick.spec
@@ -11430,7 +11429,6 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 @HAS_RPM_TRUE@	@echo $(DIST_ARCHIVE_SRPM) is ready for distribution.
 @HAS_RPM_TRUE@	@echo ==============================================================
 
-@HAS_RPM_TRUE@.PHONY: rpm
 @HAS_RPM_TRUE@rpm:
 @HAS_RPM_TRUE@	rm -rf $(RPMDIR)
 @HAS_RPM_TRUE@	$(MKDIR_P) $(RPMDIR)
@@ -11507,6 +11505,24 @@ release: distcheck
 	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
+
+# Run Clang analyzer on the project.
+# In order for this to work, you must have first installed the 'clang'
+# and 'clang-tools' packages on your system.
+# The project should have been configured to use clang.
+#	-enable-checker security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+scan-build:
+	scan-build-12 -k --html-title='GraphicsMagick' \
+	-maxloop 100 \
+	-disable-checker deadcode.DeadStores \
+	-enable-checker security.insecureAPI.bcmp \
+	-enable-checker security.insecureAPI.bcopy \
+	-enable-checker security.insecureAPI.bzero \
+	-enable-checker security.insecureAPI.strcpy \
+	-enable-checker valist.CopyToSelf \
+	-enable-checker valist.Uninitialized \
+	-enable-checker valist.Unterminated \
+	--use-cc $(CC) $(MAKE)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

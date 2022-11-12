@@ -310,7 +310,7 @@ int _Gm_convert_fp32_to_fp16 (const float *fp32, fp_16bits *fp16, const int mode
                           bit = mant & (1 << i);
                           if (bit == 0)
                             {
-                              new_mant = (mant | ((unsigned short)1 << i)) & (0xFFFF << i);
+                              new_mant = (mant | ((unsigned short)1 << i)) & (0xFFFFU << i);
                               mp  = (unsigned char *)&new_mant;
                               break;
                             }
@@ -326,7 +326,7 @@ int _Gm_convert_fp32_to_fp16 (const float *fp32, fp_16bits *fp16, const int mode
                               bit = mant & (1 << i);
                               if (bit == 0)
                                 {
-                                  new_mant = (mant | ((unsigned short)1 << i)) & (0xFFFF << i);
+                                  new_mant = (mant | ((unsigned short)1 << i)) & (0xFFFFU << i);
                                   mp  = (unsigned char *)&new_mant;
                                   break;
                                 }
@@ -812,7 +812,7 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
                                * clearing bits to the right
                                */
                               new_mant = (mant | ((unsigned int)1 << i)) &
-                                (0xFFFF << i);
+                                (0xFFFFU << i);
                               mp  = (unsigned char *)&new_mant;
                               break;
                             }
@@ -829,7 +829,7 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
                               if (bit == 0)
                                 {
                                   new_mant = (mant | ((unsigned int)1 << i)) &
-                                    (0xFFFF << i);
+                                    (0xFFFFU << i);
                                   mp  = (unsigned char *)&new_mant;
                                   break;
                                 }

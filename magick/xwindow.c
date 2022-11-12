@@ -3910,7 +3910,7 @@ MagickXGetWindowColor(Display *display,MagickXWindows *windows,char *name)
     pixel;
 
   RectangleInfo
-    crop_info;
+    crop_info = { 0, 0, 0, 0 };
 
   unsigned int
     status;
