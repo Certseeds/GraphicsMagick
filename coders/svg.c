@@ -2016,10 +2016,9 @@ SVGStartElement(void *context,const xmlChar *name,
                       /* reallocate the needed memory once */
                       size_t NewSize = strlen(value) + 6;   /* 6 == url()<null> */
                       MagickReallocMemory(char *,svg_info->url,NewSize);
-                      memcpy(svg_info->url,"url(",4);
-                      strcpy(svg_info->url+4,value);
-                      svg_info->url[NewSize-2] = ')';
-                      svg_info->url[NewSize-1] = '\0';
+                      strlcpy(svg_info->url,"url(",NewSize);
+                      strlcat(svg_info->url,value,NewSize);
+                      strlcat(svg_info->url,")",NewSize);
                     }
                   else
                     (void) CloneString(&svg_info->url,value);
@@ -2581,10 +2580,9 @@ SVGStartElement(void *context,const xmlChar *name,
                       /* reallocate the needed memory once */
                       size_t NewSize = strlen(value) + 6;   /* 6 == url()<null> */
                       MagickReallocMemory(char *,svg_info->url,NewSize);
-                      memcpy(svg_info->url,"url(",4);
-                      strcpy(svg_info->url+4,value);
-                      svg_info->url[NewSize-2] = ')';
-                      svg_info->url[NewSize-1] = '\0';
+                      strlcpy(svg_info->url,"url(",NewSize);
+                      strlcat(svg_info->url,value,NewSize);
+                      strlcat(svg_info->url,")",NewSize);
                     }
                   else
                     (void) CloneString(&svg_info->url,value);
@@ -5406,7 +5404,7 @@ WriteSVGImage(const ImageInfo *image_info,Image *image)
                 status=False;
                 break;
               }
-            (void) strcpy(message,"  <polyline points=\"");
+            (void) strlcpy(message,"  <polyline points=\"",sizeof(message));
             (void) WriteBlobString(image,message);
             length=strlen(message);
             for ( ; j < i; j++)
@@ -5435,7 +5433,7 @@ WriteSVGImage(const ImageInfo *image_info,Image *image)
             primitive_info[i].coordinates=0;
             primitive_info[j].coordinates++;
             i++;
-            (void) strcpy(message,"  <polygon points=\"");
+            (void) strlcpy(message,"  <polygon points=\"",sizeof(message));
             (void) WriteBlobString(image,message);
             length=strlen(message);
             for ( ; j < i; j++)

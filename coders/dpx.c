@@ -531,7 +531,7 @@ STATIC unsigned int IsDPX(const unsigned char *magick,const size_t length)
 \
   if (!IS_UNDEFINED_U32(member)) \
     { \
-      SMPTEBitsToString(member,buffer_); \
+      SMPTEBitsToString(member,buffer_,sizeof(buffer_)); \
       (void) SetImageAttribute(image,name,buffer_); \
       LogSetImageAttribute(name,buffer_); \
     } \
@@ -622,7 +622,7 @@ STATIC void SwabDPXTVInfo(DPXTVInfo *tv_info)
   MagickSwabFloat(&tv_info->white_level.f);
   MagickSwabFloat(&tv_info->integration_time.f);
 }
-STATIC void SMPTEBitsToString(const U32 value, char *str)
+STATIC void SMPTEBitsToString(const U32 value, char *str, size_t str_length)
 {
   unsigned int
     pos,
@@ -630,11 +630,11 @@ STATIC void SMPTEBitsToString(const U32 value, char *str)
 
   for (pos=8; pos != 0; pos--, shift -= 4)
     {
-      (void) sprintf(str,"%01u",(unsigned int) ((value >> shift) & 0x0fU));
+      (void) snprintf(str,3,"%01u",(unsigned int) ((value >> shift) & 0x0fU));
       str += 1;
       if ((pos > 2) && (pos % 2))
         {
-          (void) strcat(str,":");
+          (void) strlcat(str,":",str_length);
           str++;
         }
     }

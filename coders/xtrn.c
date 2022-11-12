@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -207,7 +207,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
               if(SUCCEEDED(hr))
                 {
                   if (filename[0] != '\0')
-                    (void) strcpy(clone_info->filename, filename);
+                    (void) strlcpy(clone_info->filename, filename, sizeof(clone_info->filename));
                   else
                     clone_info->filename[0] = '\0';
                   *clone_info->magick = '\0';
@@ -466,14 +466,14 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
           blob_length=(size_t *) param2;
 
           scene = 0;
-          (void) strcpy(clone_info->filename, filename);
+          (void) strlcpy(clone_info->filename, filename, sizeof(clone_info->filename));
           for (p=image; p != (Image *) NULL; p=p->next)
             {
-              (void) strcpy(p->filename, filename);
+              (void) strlcpy(p->filename, filename, sizeof(p->filename));
               p->scene=scene++;
             }
           SetImageInfo(clone_info,SETMAGICK_WRITE,&image->exception);
-          (void) strcpy(image->magick,clone_info->magick);
+          (void) strlcpy(image->magick,clone_info->magick,sizeof(image->magick));
           GetExceptionInfo(&exception);
           if (*blob_length == 0)
             *blob_length=8192;
@@ -509,14 +509,14 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
 
           scene = 0;
           blob_length = 0;
-          (void) strcpy(clone_info->filename, filename);
+          (void) strlcpy(clone_info->filename, filename, sizeof(clone_info->filename));
           for (p=image; p != (Image *) NULL; p=p->next)
             {
-              (void) strcpy(p->filename, filename);
+              (void) strlcpy(p->filename, filename, sizeof(p->filename));
               p->scene=scene++;
             }
           SetImageInfo(clone_info,SETMAGICK_WRITE,&image->exception);
-          (void) strcpy(image->magick,clone_info->magick);
+          (void) strlcpy(image->magick,clone_info->magick,sizeof(image->magick));
           GetExceptionInfo(&exception);
           blob_data=(char *) ImageToBlob(clone_info,image,&blob_length,&exception);
           if (blob_data == NULL)

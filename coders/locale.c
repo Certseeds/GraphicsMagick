@@ -217,7 +217,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
     if (LocaleCompare(keyword,"</locale>") == 0)
       {
         ChopLocaleComponents(locale,1);
-        (void) strcat(locale,"/");
+        (void) strlcat(locale,"/",sizeof(locale));
         continue;
       }
     if (LocaleCompare(keyword,"<localemap>") == 0)
@@ -257,7 +257,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
     if (LocaleCompare(keyword,"</message>") == 0)
       {
         ChopLocaleComponents(locale,2);
-        (void) strcat(locale,"/");
+        (void) strlcat(locale,"/",sizeof(locale));
         continue;
       }
     if (*keyword == '<')
@@ -270,7 +270,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         if (*(keyword+1) == '/')
           {
             ChopLocaleComponents(locale,1);
-            (void) strcat(locale,"/");
+            (void) strlcat(locale,"/",sizeof(locale));
             continue;
           }
         token[strlen(token)-1]='\0';

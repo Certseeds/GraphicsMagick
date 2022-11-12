@@ -3278,12 +3278,12 @@ static unsigned int MagickXColorEditImage(Display *display,
                 (*image)->fuzz=StringToDouble(FuzzMenu[entry],MaxRGB);
                 break;
               }
-            (void) strcpy(fuzz,"20%");
+            (void) strlcpy(fuzz,"20%",sizeof(fuzz));
             (void) MagickXDialogWidget(display,windows,"Ok",
               "Enter fuzz factor (0.0 - 99.9%):",fuzz);
             if (*fuzz == '\0')
               break;
-            (void) strcat(fuzz,"%");
+            (void) strlcat(fuzz,"%",sizeof(fuzz));
             (*image)->fuzz=StringToDouble(fuzz,MaxRGB);
             break;
           }
@@ -7092,7 +7092,7 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       if (*geometry == '\0')
         break;
       if (!status)
-        (void) strcat(geometry,"!");
+        (void) strlcat(geometry,"!",sizeof(geometry));
       (void) GetMagickGeometry(geometry,&x,&y,&width,&height);
       windows->image.window_changes.width=(unsigned int) width;
       windows->image.window_changes.height=(unsigned int) height;
@@ -7818,7 +7818,7 @@ static Image *MagickXMagickCommand(Display *display,MagickXResourceInfo *resourc
       /*
         Query user for threshold value.
       */
-      (void) sprintf(factor,"%lu",(unsigned long)(MaxRGB+1)/2);
+      (void) snprintf(factor,sizeof(factor),"%lu",(unsigned long)(MaxRGB+1)/2);
       (void) MagickXDialogWidget(display,windows,"Threshold",
         "Enter threshold value:",factor);
       if (*factor == '\0')
@@ -9232,12 +9232,12 @@ static unsigned int MagickXMatteEditImage(Display *display,
                 (*image)->fuzz=StringToDouble(FuzzMenu[entry],MaxRGB);
                 break;
               }
-            (void) strcpy(fuzz,"20%");
+            (void) strlcpy(fuzz,"20%",sizeof(fuzz));
             (void) MagickXDialogWidget(display,windows,"Ok",
               "Enter fuzz factor (0.0 - 99.9%):",fuzz);
             if (*fuzz == '\0')
               break;
-            (void) strcat(fuzz,"%");
+            (void) strlcat(fuzz,"%",sizeof(fuzz));
             (*image)->fuzz=StringToDouble(fuzz,MaxRGB);
             break;
           }
@@ -9662,7 +9662,7 @@ static Image *MagickXOpenImage(Display *display,MagickXResourceInfo *resource_in
       /*
         User may want to delay the X server screen grab.
       */
-      (void) strcpy(seconds,"0");
+      (void) strlcpy(seconds,"0",sizeof(seconds));
       (void) MagickXDialogWidget(display,windows,"Grab","Enter any delay in seconds:",
         seconds);
       if (*seconds == '\0')
@@ -9687,7 +9687,7 @@ static Image *MagickXOpenImage(Display *display,MagickXResourceInfo *resource_in
       /*
         Request image size from the user.
       */
-      (void) strcpy(geometry,"512x512");
+      (void) strlcpy(geometry,"512x512",sizeof(geometry));
       if (image_info->size != (char *) NULL)
         (void) strlcpy(geometry,image_info->size,MaxTextExtent);
       (void) MagickXDialogWidget(display,windows,"Load","Enter the image geometry:",
@@ -12490,9 +12490,10 @@ static Image *MagickXTileImage(Display *display,MagickXResourceInfo *resource_in
         Load tile image.
       */
       MagickXCheckRefreshWindows(display,windows);
-      (void) strcpy(resource_info->image_info->magick,"MIFF");
+      (void) strlcpy(resource_info->image_info->magick,"MIFF",
+                     sizeof(resource_info->image_info->magick));
       (void) strlcpy(resource_info->image_info->filename,filename,
-                     MaxTextExtent);
+                     sizeof(resource_info->image_info->filename));
       tile_image=ReadImage(resource_info->image_info,&image->exception);
       if (image->exception.severity != UndefinedException)
         MagickError2(image->exception.severity,image->exception.reason,
@@ -13171,7 +13172,7 @@ MagickExport unsigned int MagickXDisplayBackgroundImage(Display *display,
   */
   window_attributes.width=XDisplayWidth(display,XDefaultScreen(display));
   window_attributes.height=XDisplayHeight(display,XDefaultScreen(display));
-  (void) strcpy(visual_type,"default");
+  (void) strlcpy(visual_type,"default",sizeof(visual_type));
   status=XGetWindowAttributes(display,window_info.id,&window_attributes);
   if (status != False)
     FormatString(visual_type,"0x%lx",

@@ -2138,7 +2138,7 @@ static void WriteICCProfile(j_compress_ptr jpeg_info,
     profile=MagickAllocateResourceLimitedMemory(unsigned char *,length+14);
     if (profile == (unsigned char *) NULL)
       break;
-    (void) strcpy((char *) profile,"ICC_PROFILE");
+    (void) strlcpy((char *) profile,"ICC_PROFILE",sizeof(profile));
     profile[12]=(unsigned char) ((i/65519)+1);
     profile[13]=(unsigned char) ((profile_length/65519)+1);
     for (j=0; j < (long) length; j++)

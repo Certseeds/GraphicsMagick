@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -309,7 +309,7 @@ static MagickPassFail WriteFAXImage(const ImageInfo *image_info,Image *image)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   image_list_length=GetImageListLength(image);
   clone_info=CloneImageInfo(image_info);
-  (void) strcpy(clone_info->magick,"FAX");
+  (void) strlcpy(clone_info->magick,"FAX",sizeof(clone_info->magick));
   scene=0;
   do
   {

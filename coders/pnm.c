@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1663,7 +1663,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
 
             value=(depth <=8 ? 255U : depth <= 16 ? 65535U : 4294967295U);
 
-            j += sprintf(&buffer[j],"%u\n",value);
+            j += snprintf(&buffer[j],(sizeof(buffer)-j),"%u\n",value);
             for (y=0; y < image->rows; y++)
               {
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
@@ -1688,12 +1688,12 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                     else if (depth <= 16)
                       {
                         value=ScaleQuantumToShort(index);
-                        j += sprintf(&buffer[j]," %u",value);
+                        j += snprintf(&buffer[j],(sizeof(buffer)-j)," %u",value);
                       }
                     else
                       {
                         value=ScaleQuantumToLong(index);
-                        j += sprintf(&buffer[j]," %u",value);
+                        j += snprintf(&buffer[j],(sizeof(buffer)-j)," %u",value);
                       }
 
                     i++;
@@ -1753,7 +1753,7 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
 
             value=(depth <=8 ? 255U : (depth <= 16 ? 65535U : 4294967295U));
 
-            j += sprintf(&buffer[j],"%u\n",value);
+            j += snprintf(&buffer[j],(sizeof(buffer)-j),"%u\n",value);
             for (y=0; y < image->rows; y++)
               {
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
@@ -1779,14 +1779,14 @@ static unsigned int WritePNMImage(const ImageInfo *image_info,Image *image)
                       }
                     else if (depth <= 16)
                       {
-                        j += sprintf(&buffer[j],"%u %u %u ",
+                        j += snprintf(&buffer[j],(sizeof(buffer)-j),"%u %u %u ",
                                      ScaleQuantumToShort(p->red),
                                      ScaleQuantumToShort(p->green),
                                      ScaleQuantumToShort(p->blue));
                       }
                     else
                       {
-                        j += sprintf(&buffer[j],"%u %u %u ",
+                        j += snprintf(&buffer[j],(sizeof(buffer)-j),"%u %u %u ",
                                      (unsigned int) ScaleQuantumToLong(p->red),
                                      (unsigned int) ScaleQuantumToLong(p->green),
                                      (unsigned int) ScaleQuantumToLong(p->blue));

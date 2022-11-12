@@ -2279,7 +2279,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
         }
       DestroyBlob(jpeg_image);
       jpeg_image->blob=CloneBlobInfo((BlobInfo *) NULL);
-      (void) strcpy(jpeg_image->magick,"JPEG");
+      (void) strlcpy(jpeg_image->magick,"JPEG",sizeof(jpeg_image->magick));
       blob=(unsigned char *) ImageToBlob(image_info,jpeg_image,&length,
         &image->exception);
       DestroyImage(jpeg_image);

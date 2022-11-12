@@ -402,8 +402,8 @@ static Image *ReadEPTImage(const ImageInfo *image_info,
     {
       do
         {
-          (void) strcpy(image->magick,"PS");
-          (void) strlcpy(image->filename,filename,MaxTextExtent);
+          (void) strlcpy(image->magick,"PS",sizeof(image->magick));
+          (void) strlcpy(image->filename,filename,sizeof(image->filename));
           next_image=SyncNextImageInList(image);
           if (next_image != (Image *) NULL)
             image=next_image;
@@ -575,16 +575,16 @@ static unsigned int WriteEPTImage(const ImageInfo *image_info,Image *image)
         ThrowWriterTemporaryFileException(ps_filename);
 
       /* Select desired EPS level */
-      (void) strcpy(subformat,"eps");
+      (void) strlcpy(subformat,"eps",sizeof(subformat));
       if (LocaleCompare(image_info->magick,"EPT2") == 0)
-        (void) strcpy(subformat,"eps2");
+        (void) strlcpy(subformat,"eps2",sizeof(subformat));
       else if (LocaleCompare(image_info->magick,"EPT3") == 0)
-        (void) strcpy(subformat,"eps3");
+        (void) strlcpy(subformat,"eps3",sizeof(subformat));
 
       /* JPEG compression requires at least EPS2 */
       if ((image->compression == JPEGCompression) &&
           (LocaleCompare(subformat,"EPS") == 0))
-        (void) strcpy(subformat,"eps2");
+        (void) strlcpy(subformat,"eps2",sizeof(subformat));
 
       FormatString(image->filename,"%s:%.1024s",subformat,ps_filename);
       if (logging)

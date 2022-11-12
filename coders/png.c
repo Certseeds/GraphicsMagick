@@ -799,7 +799,7 @@ static void png_get_data(png_structp png_ptr,png_bytep data,png_size_t length)
           char
             msg[MaxTextExtent];
 
-          (void) sprintf(msg,"Expected %" MAGICK_SIZE_T_F "u bytes;"
+          (void) snprintf(msg,sizeof(msg),"Expected %" MAGICK_SIZE_T_F "u bytes;"
                          " found %" MAGICK_SIZE_T_F "u bytes",
                          (MAGICK_SIZE_T) length,(MAGICK_SIZE_T) check);
           png_warning(png_ptr,msg);
@@ -3272,7 +3272,7 @@ static Image *ReadOneJNGImage(MngInfo *mng_info,
           break;
 
       type[0]='\0';
-      (void) strcat(type,"errr");
+      (void) strlcat(type,"errr",sizeof(type));
       length=(size_t) ReadBlobMSBLong(image);
       count=(unsigned int) ReadBlob(image,4,type);
       if (count != 4)
@@ -4407,7 +4407,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             Read a new chunk.
           */
           type[0]='\0';
-          (void) strcat(type,"errr");
+          (void) strlcat(type,"errr",sizeof(type));
           length=(size_t) ReadBlobMSBLong(image);
           count=ReadBlob(image,4,type);
           if (count != 4)
@@ -7002,16 +7002,16 @@ png_write_raw_profile(const ImageInfo *image_info,png_struct *ping,
    text[0].key=(png_charp) png_malloc(ping, (png_size_t) 80);
 #endif
   text[0].key[0]='\0';
-  (void) strcat(text[0].key, "Raw profile type ");
+  (void) strlcat(text[0].key, "Raw profile type ", 80);
   (void) strncat(text[0].key, (const char *) profile_type, 61);
   sp=profile_data;
   dp=text[0].text;
   *dp++='\n';
-  (void) strcpy(dp,(const char *) profile_description);
-  dp+=description_length;
+  (void) strlcpy(dp,(const char *) profile_description,(allocated_length-(dp-text[0].text)));
+  dp+=strlen(dp);
   *dp++='\n';
-  (void) sprintf(dp,"%8lu ",(unsigned long)length);
-  dp+=8;
+  (void) snprintf(dp,(allocated_length-(dp-text[0].text)),"%8lu ",(unsigned long)length);
+  dp+=strlen(dp);
   for (i=0; i < (long) length; i++)
     {
       if (i%36 == 0)
@@ -7130,7 +7130,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
    */
   gm_vers=MagickLibVersionText;
 #ifdef HasLCMS
-  (void) sprintf(lcms_vers,"%.4d",LCMS_VERSION);
+  (void) snprintf(lcms_vers,sizeof(lcms_vers),"%.4d",LCMS_VERSION);
 #endif
   libpng_runv=png_get_libpng_ver(NULL);
   libpng_vers=PNG_LIBPNG_VER_STRING;

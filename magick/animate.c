@@ -647,7 +647,7 @@ MagickExport void MagickXAnimateBackgroundImage(Display *display,
   */
   window_attributes.width=XDisplayWidth(display,XDefaultScreen(display));
   window_attributes.height=XDisplayHeight(display,XDefaultScreen(display));
-  (void) strcpy(visual_type,"default");
+  (void) strlcpy(visual_type,"default",sizeof(visual_type));
   status=XGetWindowAttributes(display,window_info.id,&window_attributes);
   if (status != False)
     FormatString(visual_type,"0x%lx",

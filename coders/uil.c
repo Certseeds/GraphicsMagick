@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -276,7 +276,7 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
       &image->exception);
     if (transparent)
       if (i == (long) (colors-1))
-        (void) strcpy(name,"None");
+        (void) strlcpy(name,"None",sizeof(name));
     /*
       Write UIL color.
     */

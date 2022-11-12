@@ -353,7 +353,7 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
   /*
     Initialize Image structure.
   */
-  (void) strcpy(allocate_image->magick,"MIFF");
+  (void) strlcpy(allocate_image->magick,"MIFF",sizeof(allocate_image->magick));
   allocate_image->storage_class=DirectClass;
   allocate_image->depth=QuantumDepth;
   allocate_image->interlace=NoInterlace;
@@ -3101,10 +3101,10 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
             Backward compatability and interoperability namimg
           */
           if (LocaleCompare(format,"GRADATION") == 0)
-            (void) strcpy(format,"GRADIENT");
+            (void) strlcpy(format,"GRADIENT",sizeof(format));
 
           if (LocaleCompare(format,"MAGICK") == 0)
-            (void) strcpy(format,"IMAGE");
+            (void) strlcpy(format,"IMAGE",sizeof(format));
 
           LocaleUpper(format);
           /*
@@ -3118,7 +3118,7 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
               char base_filename[MaxTextExtent];
               p++;
               (void) strlcpy(base_filename,p,MaxTextExtent);
-              (void) strcpy(image_info->filename,base_filename);
+              (void) strlcpy(image_info->filename,base_filename,MaxTextExtent);
               (void) strlcpy(magic,format,MaxTextExtent);
               (void) strlcpy(image_info->magick,magic,MaxTextExtent);
               if (LocaleCompare(magic,"TMP") != 0)
@@ -3270,7 +3270,7 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
               return(MagickFail);
             }
           CloseBlob(image);
-          (void) strcpy(image->filename,filename);
+          (void) strlcpy(image->filename,filename,MaxTextExtent);
           status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
           if (status == MagickFail)
             {
@@ -3278,7 +3278,7 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
               DestroyImage(image);
               return(MagickFail);
             }
-          (void) strcpy(image_info->filename,filename);
+          (void) strlcpy(image_info->filename,filename,MaxTextExtent);
           image_info->temporary=MagickTrue;
         }
       magick[0]='\0';

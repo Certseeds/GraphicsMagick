@@ -490,7 +490,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Parse color.
       */
-      (void) strcpy(target,"gray");
+      (void) strlcpy(target,"gray",sizeof(target));
       q=ParseColor(p+width);
       if (q != (char *) NULL)
         {
@@ -507,7 +507,7 @@ static Image *ReadXPMImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->storage_class=DirectClass;
           image->matte=True;
           none=j;
-          (void) strcpy(target,"black");
+          (void) strlcpy(target,"black",sizeof(target));
         }
       if (!QueryColorDatabase(target,&image->colormap[j],exception))
         {
@@ -987,7 +987,7 @@ static unsigned int WritePICONImage(const ImageInfo *image_info,Image *image)
     if (transparent)
       {
         if (i == (long) (colors-1))
-          (void) strcpy(name,"grey75");
+          (void) strlcpy(name,"grey75",sizeof(name));
       }
     /*
       Write XPM color.
@@ -1221,7 +1221,7 @@ static unsigned int WriteXPMImage(const ImageInfo *image_info,Image *image)
     if (transparent)
       {
         if (i == (long) (colors-1))
-          (void) strcpy(name,"None");
+          (void) strlcpy(name,"None",sizeof(name));
       }
     /*
       Write XPM color.

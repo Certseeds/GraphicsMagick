@@ -975,7 +975,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   clone_info->blob=(void *) NULL;
   /* clone_info->length=0; */
   (void) strlcpy(clone_info->magick, format, sizeof(clone_info->magick));
-  (void) strcpy(clone_info->filename, "");
+  (void) strlcpy(clone_info->filename, "", sizeof(clone_info->filename));
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Reading embedded \"%s\" content from blob...", clone_info->magick);
   image2 = BlobToImage(clone_info, ps_data, PS_Size, &image->exception );

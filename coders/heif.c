@@ -543,7 +543,7 @@ ModuleExport void RegisterHEIFImage(void)
   heif_minor=(encoder_version >> 8) & 0xff;
   heif_revision=encoder_version & 0xff;
   *version='\0';
-  (void) sprintf(version,
+  (void) snprintf(version, sizeof(version),
                   "heif v%u.%u.%u", heif_major,
                   heif_minor, heif_revision);
 

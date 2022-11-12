@@ -2134,7 +2134,7 @@ MagickExport void *GetConfigureBlob(const char *filename,char *path,
           if (logging)
             (void) LogMagickEvent(ConfigureEvent,GetMagickModule(),
               "Found: %.1024s",test_path);
-          (void) strcpy(path,test_path);
+          (void) strlcpy(path,test_path,MaxTextExtent);
           (void) MagickFseek(file,0L,SEEK_END);
           *length=MagickFtell(file); /* FIXME: ftell returns long, but size_t may be unsigned */
           if (*length > 0)
@@ -2820,7 +2820,7 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
           */
           if (!image_info->adjoin)
             FormMultiPartFilename(image,image_info);
-          (void) strcpy(filename,image->filename);
+          (void) strlcpy(filename,image->filename,sizeof(filename));
         }
 #if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
       if (((strlen(filename) > 2) &&

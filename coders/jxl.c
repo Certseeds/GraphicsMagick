@@ -1126,7 +1126,7 @@ ModuleExport void RegisterJXLImage(void)
   jxl_minor=(encoder_version >> 8) & 0xff;
   jxl_revision=encoder_version & 0xff;
   *version='\0';
-  (void) sprintf(version,
+  (void) snprintf(version,sizeof(version),
                   "jxl v%u.%u.%u", jxl_major,
                   jxl_minor, jxl_revision);
 

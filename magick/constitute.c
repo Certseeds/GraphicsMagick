@@ -1444,17 +1444,17 @@ static void RemoveTemporaryInputFile(ImageInfo *image_info)
       (LocaleCompare(image_info->filename+filename_length-4,".mpc") == 0))
     {
       char remove_name[MaxTextExtent];
-      (void) strcpy(remove_name,image_info->filename);
+      (void) strlcpy(remove_name,image_info->filename,sizeof(remove_name));
       remove_name[filename_length-4]=0;
-      (void) strcat(remove_name,".cache");
+      (void) strlcat(remove_name,".cache",sizeof(remove_name));
       (void) printf("removing %s\n", remove_name);
       (void) remove(remove_name);
     }
   else if (LocaleCompare(image_info->magick,"mpc") == 0)
     {
       char remove_name[MaxTextExtent];
-      (void) strcpy(remove_name,image_info->filename);
-      (void) strcat(remove_name,".cache");
+      (void) strlcpy(remove_name,image_info->filename,sizeof(remove_name));
+      (void) strlcat(remove_name,".cache",sizeof(remove_name));
       (void) printf("removing %s\n", remove_name);
       (void) remove(remove_name);
     }

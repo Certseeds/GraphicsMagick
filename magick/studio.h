@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2020 GraphicsMagick Group
+  Copyright (C) 2003 - 2022 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -553,6 +553,17 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 
 #define DefaultCompressionQuality 75U
 
+#if 0 /* Enable deprecation warnings */
+extern char *strcpy (char *restrict dest, const char *restrict src)
+  MAGICK_FUNC_DEPRECATED;
+
+extern char *strcat (char *restrict dest, const char *restrict src)
+  MAGICK_FUNC_DEPRECATED;
+
+extern int sprintf (char *restrict s,
+                    const char *restrict format, ...)
+  MAGICK_FUNC_DEPRECATED;
+#endif
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

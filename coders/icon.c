@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -304,9 +304,9 @@ static Image *ReadIconImage(const ImageInfo *image_info,
       }
     format[0]='\0';
     if (memcmp(data,"\050\000\000\000",4) == 0)
-      (void) strcpy(format,"ICODIB");
+      (void) strlcpy(format,"ICODIB",sizeof(format));
     else if (memcmp(data,"\211PNG\r\n\032\n",8) == 0)
-      (void) strcpy(format,"PNG");
+      (void) strlcpy(format,"PNG",sizeof(format));
     if (format[0] == '\0')
       {
         MagickFreeResourceLimitedMemory(data);

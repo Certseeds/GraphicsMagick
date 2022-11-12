@@ -1,3 +1,9 @@
+2022-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* ALL: Replace strcpy() with strlcpy(), replace strcat() with
+	strlcat(), replace sprintf() with snprintf().  Prefer using
+	bounded string functions.
+
 2022-11-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (ReadOnePNGImage): Change ping_file_depth to

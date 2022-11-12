@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -392,7 +392,7 @@ static long parse8BIM(Image *ifile, Image *ofile)
                 name = MagickAllocateResourceLimitedMemory(char *,strlen(newstr)+1);
                 if (name == (char *) NULL)
                   goto parse8BIM_failure;
-                (void) strcpy(name,newstr);
+                (void) strlcpy(name,newstr,sizeof(name));
                 break;
             }
             state++;
@@ -692,7 +692,7 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                 name = MagickAllocateResourceLimitedMemory(char *,strlen(newstr)+1);
                 if (name == (char *) NULL)
                   goto parse8BIMW_failure;
-                (void) strcpy(name,newstr);
+                (void) strlcpy(name,newstr,sizeof(name));
                 break;
             }
             state++;
