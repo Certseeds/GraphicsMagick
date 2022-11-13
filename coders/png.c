@@ -1805,6 +1805,8 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     image->depth=8;
 #endif
 
+  ping_file_depth = (unsigned int) ping_bit_depth;
+
   /* Save bit-depth and color-type in case we later want to write a PNG00 */
   {
       char
@@ -1864,8 +1866,6 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
        ping_bit_depth=8;
        image->depth=8;
     }
-
-  ping_file_depth = (unsigned int) ping_bit_depth;
 
 #if defined(PNG_READ_iCCP_SUPPORTED)
     if (png_get_valid(ping, ping_info, PNG_INFO_iCCP))
