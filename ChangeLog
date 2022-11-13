@@ -1,5 +1,8 @@
 2022-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/nt_base.h (snprintf): For MSVC older than 2015, fall back
+	to using sprintf for the moment.
+
 	* coders/msl.c (ProcessMSLScript): Handle parser creation failure.
 
 	* coders/meta.c (GetIPTCStream): Assure that offset is initialized.

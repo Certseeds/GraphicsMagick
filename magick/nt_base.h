@@ -193,6 +193,7 @@ extern "C" {
     1900 Visual C++ 2015
     1910 Visual C++ 2017
     1920 Visual C++ 2019
+    1930 Visual C++ 2022
 
   Should look at __CLR_VER ("Defines the version of the common language
   runtime used when the application was compiled.") as well.
@@ -210,6 +211,19 @@ extern "C" {
 #if ((defined(_VISUALC_) && (_MSC_VER >= 1310)) ||              \
      (defined(__MINGW32__) && (__MSVCRT_VERSION__ >= 0x0700)))
 #  define HAVE__ALIGNED_MALLOC 1
+#endif
+
+/*
+  MSVC does not have snprintf (a C'99 feature) until Visual Studio 2015.
+
+  It is possible to cobble together an actual working equivalent using
+  _vsnprintf(), _vsnprintf_s(), and _vscprintf() but this quick hack just uses
+  sprintf since current snprintf usages were direct replacements for sprintf.
+  A proper implementation can come later.
+ */
+#if defined(_VISUALC_) && (_MSC_VER < 1900)
+#undef snprintf
+#define snprintf(str,size,format,...) sprintf(str,format,__VA_ARGS__)
 #endif
 
 /*
