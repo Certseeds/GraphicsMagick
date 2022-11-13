@@ -40,6 +40,8 @@
 <p>2022-11-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>magick/nt_base.c (NTsnprintf): New function intended to emulate
+C'99 snprintf for MSVC older than 2015.</p></li>
 <li><p>magick/nt_base.h (snprintf): For MSVC older than 2015, fall back
 to using sprintf for the moment.</p></li>
 <li><p>coders/msl.c (ProcessMSLScript): Handle parser creation failure.</p></li>

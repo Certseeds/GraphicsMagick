@@ -1,5 +1,8 @@
 2022-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/nt_base.c (NTsnprintf): New function intended to emulate
+	C'99 snprintf for MSVC older than 2015.
+
 	* magick/nt_base.h (snprintf): For MSVC older than 2015, fall back
 	to using sprintf for the moment.
 

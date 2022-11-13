@@ -215,15 +215,11 @@ extern "C" {
 
 /*
   MSVC does not have snprintf (a C'99 feature) until Visual Studio 2015.
-
-  It is possible to cobble together an actual working equivalent using
-  _vsnprintf(), _vsnprintf_s(), and _vscprintf() but this quick hack just uses
-  sprintf since current snprintf usages were direct replacements for sprintf.
-  A proper implementation can come later.
  */
 #if defined(_VISUALC_) && (_MSC_VER < 1900)
 #undef snprintf
-#define snprintf(str,size,format,...) sprintf(str,format,__VA_ARGS__)
+extern MagickExport int NTsnprintf(char* str, size_t size, const char* format, ...);
+#define snprintf(str,size,format,...) NTsnprintf(str,sizeformat,__VA_ARGS__)
 #endif
 
 /*
