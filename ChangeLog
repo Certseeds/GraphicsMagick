@@ -1,3 +1,7 @@
+2022-11-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/nt_base.h (snprintf): Add missing comma in macro.
+
 2022-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/nt_base.c (NTsnprintf): New function intended to emulate
