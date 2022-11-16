@@ -1,3 +1,7 @@
+2022-11-16 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        tiff/libtiff/tif_ojpeg.c Backported from 4.4.0 to 4.1.0
+
 2022-11-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/nt_base.h (snprintf): Add missing comma in macro.

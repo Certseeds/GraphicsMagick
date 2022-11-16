@@ -74,7 +74,7 @@
    or errors, up to the point where either these values are read, or it's clear they
    aren't there. This means that some of the data is read twice, but we feel speed
    in correcting these values is important enough to warrant this sacrifice. Although
-   there is currently no define or other configuration mechanism to disable this behaviour,
+   there is currently no define or other configuration mechanism to disable this behavior,
    the actual header scanning is build to robustly respond with error report if it
    should encounter an uncorrected mismatch of subsampling values. See
    OJPEGReadHeaderInfoSecStreamSof.
@@ -152,6 +152,12 @@
 #define JMP_BUF jmp_buf
 #define OJPEG_BUFFER 2048
 /* define EGYPTIANWALK */
+
+#define PRIu64 "%llu"
+#define PRIu32 "%u"
+#define PRIu16 "%u"
+#define PRIu8  "%u"
+#define UINT64_MAX 0xFFFFFFFFFFFFFFFFll
 
 #define JPEG_MARKER_SOF0 0xC0
 #define JPEG_MARKER_SOF1 0xC1
@@ -421,6 +427,7 @@ TIFFInitOJPEG(TIFF* tif, int scheme)
 	static const char module[]="TIFFInitOJPEG";
 	OJPEGState* sp;
 
+        (void)scheme;
 	assert(scheme==COMPRESSION_OJPEG);
 
         /*
@@ -485,34 +492,34 @@ OJPEGVGetField(TIFF* tif, uint32 tag, va_list ap)
 	switch(tag)
 	{
 		case TIFFTAG_JPEGIFOFFSET:
-			*va_arg(ap,uint64*)=(uint64)sp->jpeg_interchange_format;
+			*va_arg(ap, uint64*)=(uint64)sp->jpeg_interchange_format;
 			break;
 		case TIFFTAG_JPEGIFBYTECOUNT:
-			*va_arg(ap,uint64*)=(uint64)sp->jpeg_interchange_format_length;
+			*va_arg(ap, uint64*)=(uint64)sp->jpeg_interchange_format_length;
 			break;
 		case TIFFTAG_YCBCRSUBSAMPLING:
 			if (sp->subsamplingcorrect_done==0)
 				OJPEGSubsamplingCorrect(tif);
-			*va_arg(ap,uint16*)=(uint16)sp->subsampling_hor;
-			*va_arg(ap,uint16*)=(uint16)sp->subsampling_ver;
+			*va_arg(ap, uint16*)=(uint16)sp->subsampling_hor;
+			*va_arg(ap, uint16*)=(uint16)sp->subsampling_ver;
 			break;
 		case TIFFTAG_JPEGQTABLES:
-			*va_arg(ap,uint32*)=(uint32)sp->qtable_offset_count;
-			*va_arg(ap,void**)=(void*)sp->qtable_offset; 
+			*va_arg(ap, uint32*)=(uint32)sp->qtable_offset_count;
+			*va_arg(ap,const void**)=(const void*)sp->qtable_offset;
 			break;
 		case TIFFTAG_JPEGDCTABLES:
-			*va_arg(ap,uint32*)=(uint32)sp->dctable_offset_count;
-			*va_arg(ap,void**)=(void*)sp->dctable_offset;  
+			*va_arg(ap, uint32*)=(uint32)sp->dctable_offset_count;
+			*va_arg(ap,const void**)=(const void*)sp->dctable_offset;
 			break;
 		case TIFFTAG_JPEGACTABLES:
-			*va_arg(ap,uint32*)=(uint32)sp->actable_offset_count;
-			*va_arg(ap,void**)=(void*)sp->actable_offset;
+			*va_arg(ap, uint32*)=(uint32)sp->actable_offset_count;
+			*va_arg(ap,const void**)=(const void*)sp->actable_offset;
 			break;
 		case TIFFTAG_JPEGPROC:
-			*va_arg(ap,uint16*)=(uint16)sp->jpeg_proc;
+			*va_arg(ap, uint16*)=(uint16)sp->jpeg_proc;
 			break;
 		case TIFFTAG_JPEGRESTARTINTERVAL:
-			*va_arg(ap,uint16*)=sp->restart_interval;
+			*va_arg(ap, uint16*)=sp->restart_interval;
 			break;
 		default:
 			return (*sp->vgetparent)(tif,tag,ap);
@@ -533,20 +540,20 @@ OJPEGVSetField(TIFF* tif, uint32 tag, va_list ap)
 	switch(tag)
 	{
 		case TIFFTAG_JPEGIFOFFSET:
-			sp->jpeg_interchange_format=(uint64)va_arg(ap,uint64);
+			sp->jpeg_interchange_format=(uint64)va_arg(ap, uint64);
 			break;
 		case TIFFTAG_JPEGIFBYTECOUNT:
-			sp->jpeg_interchange_format_length=(uint64)va_arg(ap,uint64);
+			sp->jpeg_interchange_format_length=(uint64)va_arg(ap, uint64);
 			break;
 		case TIFFTAG_YCBCRSUBSAMPLING:
 			sp->subsampling_tag=1;
-			sp->subsampling_hor=(uint8)va_arg(ap,uint16_vap);
-			sp->subsampling_ver=(uint8)va_arg(ap,uint16_vap);
+			sp->subsampling_hor=(uint8)va_arg(ap, uint16_vap);
+			sp->subsampling_ver=(uint8)va_arg(ap, uint16_vap);
 			tif->tif_dir.td_ycbcrsubsampling[0]=sp->subsampling_hor;
 			tif->tif_dir.td_ycbcrsubsampling[1]=sp->subsampling_ver;
 			break;
 		case TIFFTAG_JPEGQTABLES:
-			ma=(uint32)va_arg(ap,uint32);
+			ma=(uint32)va_arg(ap, uint32);
 			if (ma!=0)
 			{
 				if (ma>3)
@@ -555,13 +562,13 @@ OJPEGVSetField(TIFF* tif, uint32 tag, va_list ap)
 					return(0);
 				}
 				sp->qtable_offset_count=(uint8)ma;
-				mb=(uint64*)va_arg(ap,uint64*);
+				mb=(uint64*)va_arg(ap, uint64*);
 				for (n=0; n<ma; n++)
 					sp->qtable_offset[n]=mb[n];
 			}
 			break;
 		case TIFFTAG_JPEGDCTABLES:
-			ma=(uint32)va_arg(ap,uint32);
+			ma=(uint32)va_arg(ap, uint32);
 			if (ma!=0)
 			{
 				if (ma>3)
@@ -570,13 +577,13 @@ OJPEGVSetField(TIFF* tif, uint32 tag, va_list ap)
 					return(0);
 				}
 				sp->dctable_offset_count=(uint8)ma;
-				mb=(uint64*)va_arg(ap,uint64*);
+				mb=(uint64*)va_arg(ap, uint64*);
 				for (n=0; n<ma; n++)
 					sp->dctable_offset[n]=mb[n];
 			}
 			break;
 		case TIFFTAG_JPEGACTABLES:
-			ma=(uint32)va_arg(ap,uint32);
+			ma=(uint32)va_arg(ap, uint32);
 			if (ma!=0)
 			{
 				if (ma>3)
@@ -585,16 +592,16 @@ OJPEGVSetField(TIFF* tif, uint32 tag, va_list ap)
 					return(0);
 				}
 				sp->actable_offset_count=(uint8)ma;
-				mb=(uint64*)va_arg(ap,uint64*);
+				mb=(uint64*)va_arg(ap, uint64*);
 				for (n=0; n<ma; n++)
 					sp->actable_offset[n]=mb[n];
 			}
 			break;
 		case TIFFTAG_JPEGPROC:
-			sp->jpeg_proc=(uint8)va_arg(ap,uint16_vap);
+			sp->jpeg_proc=(uint8)va_arg(ap, uint16_vap);
 			break;
 		case TIFFTAG_JPEGRESTARTINTERVAL:
-			sp->restart_interval=(uint16)va_arg(ap,uint16_vap);
+			sp->restart_interval=(uint16)va_arg(ap, uint16_vap);
 			break;
 		default:
 			return (*sp->vsetparent)(tif,tag,ap);
@@ -615,34 +622,34 @@ OJPEGPrintDir(TIFF* tif, FILE* fd, long flags)
 	(void)flags;
 	assert(sp!=NULL);
 	if (TIFFFieldSet(tif,FIELD_OJPEG_JPEGINTERCHANGEFORMAT))
-		fprintf(fd,"  JpegInterchangeFormat: " TIFF_UINT64_FORMAT "\n",(TIFF_UINT64_T)sp->jpeg_interchange_format);  
+		fprintf(fd,"  JpegInterchangeFormat: %" PRIu64 "\n",(uint64)sp->jpeg_interchange_format);
 	if (TIFFFieldSet(tif,FIELD_OJPEG_JPEGINTERCHANGEFORMATLENGTH))
-		fprintf(fd,"  JpegInterchangeFormatLength: " TIFF_UINT64_FORMAT "\n",(TIFF_UINT64_T)sp->jpeg_interchange_format_length);  
+		fprintf(fd,"  JpegInterchangeFormatLength: %" PRIu64 "\n",(uint64)sp->jpeg_interchange_format_length);
 	if (TIFFFieldSet(tif,FIELD_OJPEG_JPEGQTABLES))
 	{
 		fprintf(fd,"  JpegQTables:");
 		for (m=0; m<sp->qtable_offset_count; m++)
-			fprintf(fd," " TIFF_UINT64_FORMAT,(TIFF_UINT64_T)sp->qtable_offset[m]);
+			fprintf(fd," %" PRIu64,(uint64)sp->qtable_offset[m]);
 		fprintf(fd,"\n");
 	}
 	if (TIFFFieldSet(tif,FIELD_OJPEG_JPEGDCTABLES))
 	{
 		fprintf(fd,"  JpegDcTables:");
 		for (m=0; m<sp->dctable_offset_count; m++)
-			fprintf(fd," " TIFF_UINT64_FORMAT,(TIFF_UINT64_T)sp->dctable_offset[m]);
+			fprintf(fd," %" PRIu64,(uint64)sp->dctable_offset[m]);
 		fprintf(fd,"\n");
 	}
 	if (TIFFFieldSet(tif,FIELD_OJPEG_JPEGACTABLES))
 	{
 		fprintf(fd,"  JpegAcTables:");
 		for (m=0; m<sp->actable_offset_count; m++)
-			fprintf(fd," " TIFF_UINT64_FORMAT,(TIFF_UINT64_T)sp->actable_offset[m]);
+			fprintf(fd," %" PRIu64,(uint64)sp->actable_offset[m]);
 		fprintf(fd,"\n");
 	}
 	if (TIFFFieldSet(tif,FIELD_OJPEG_JPEGPROC))
-		fprintf(fd,"  JpegProc: %u\n",(unsigned int)sp->jpeg_proc);
+		fprintf(fd,"  JpegProc: %"PRIu8"\n", sp->jpeg_proc);
 	if (TIFFFieldSet(tif,FIELD_OJPEG_JPEGRESTARTINTERVAL))
-		fprintf(fd,"  JpegRestartInterval: %u\n",(unsigned int)sp->restart_interval);
+		fprintf(fd,"  JpegRestartInterval: %"PRIu16"\n", sp->restart_interval);
 	if (sp->printdir)
 		(*sp->printdir)(tif, fd, flags);
 }
@@ -658,7 +665,7 @@ static int
 OJPEGSetupDecode(TIFF* tif)
 {
 	static const char module[]="OJPEGSetupDecode";
-	TIFFWarningExt(tif->tif_clientdata,module,"Depreciated and troublesome old-style JPEG compression mode, please convert to new-style JPEG compression and notify vendor of writing software");
+	TIFFWarningExt(tif->tif_clientdata,module,"Deprecated and troublesome old-style JPEG compression mode, please convert to new-style JPEG compression and notify vendor of writing software");
 	return(1);
 }
 
@@ -794,6 +801,17 @@ OJPEGDecode(TIFF* tif, uint8* buf, tmsize_t cc, uint16 s)
             TIFFErrorExt(tif->tif_clientdata,module,"Cannot decode: decoder not correctly initialized");
             return 0;
         }
+        if( sp->libjpeg_session_active == 0 )
+        {
+            /* This should normally not happen, except that it does when */
+            /* using TIFFReadScanline() which calls OJPEGPostDecode() for */
+            /* each scanline, which assumes that a whole strile was read */
+            /* and may thus incorrectly consider it has read the whole image, causing */
+            /* OJPEGLibjpegSessionAbort() to be called prematurely. */
+            /* Triggered by https://gitlab.com/libtiff/libtiff/-/issues/337 */
+            TIFFErrorExt(tif->tif_clientdata,module,"Cannot decode: libjpeg_session_active == 0");
+            return 0;
+        }
         if( sp->error_in_raw_data_decoding )
         {
             return 0;
@@ -837,36 +855,6 @@ OJPEGDecodeRaw(TIFF* tif, uint8* buf, tmsize_t cc)
 	{
 		if (sp->subsampling_convert_state==0)
 		{
-			const jpeg_decompress_struct* cinfo = &sp->libjpeg_jpeg_decompress_struct;
-			int width = 0;
-			int last_col_width = 0;
-			int jpeg_bytes;
-			int expected_bytes;
-			int i;
-			if (cinfo->MCUs_per_row == 0)
-			{
-				sp->error_in_raw_data_decoding = 1;
-				return 0;
-			}
-			for (i = 0; i < cinfo->comps_in_scan; ++i)
-			{
-				const jpeg_component_info* info = cinfo->cur_comp_info[i];
-#if JPEG_LIB_VERSION >= 70
-				width += info->MCU_width * info->DCT_h_scaled_size;
-				last_col_width += info->last_col_width * info->DCT_h_scaled_size;
-#else
-				width += info->MCU_width * info->DCT_scaled_size;
-				last_col_width += info->last_col_width * info->DCT_scaled_size;
-#endif
-			}
-			jpeg_bytes = (cinfo->MCUs_per_row - 1) * width + last_col_width;
-			expected_bytes = sp->subsampling_convert_clinelenout * sp->subsampling_ver * sp->subsampling_hor;
-			if (jpeg_bytes != expected_bytes)
-			{
-				TIFFErrorExt(tif->tif_clientdata,module,"Inconsistent number of MCU in codestream");
-				sp->error_in_raw_data_decoding = 1;
-				return(0);
-			}
 			if (jpeg_read_raw_data_encap(sp,&(sp->libjpeg_jpeg_decompress_struct),sp->subsampling_convert_ycbcrimage,sp->subsampling_ver*8)==0)
 			{
 				sp->error_in_raw_data_decoding = 1;
@@ -930,6 +918,13 @@ OJPEGPostDecode(TIFF* tif, uint8* buf, tmsize_t cc)
 	OJPEGState* sp=(OJPEGState*)tif->tif_data;
 	(void)buf;
 	(void)cc;
+	/* This function somehow incorrectly assumes that a whole strile was read, */
+	/* which is not true when TIFFReadScanline() is called, */
+	/* and may thus incorrectly consider it has read the whole image, causing */
+	/* OJPEGLibjpegSessionAbort() to be called prematurely. */
+	/* So this logic should be fixed to take into account cc, or disable */
+	/* the scan line reading interface. */
+	/* Triggered by https://gitlab.com/libtiff/libtiff/-/issues/337 */
 	sp->write_curstrile++;
 	if (sp->write_curstrile%tif->tif_dir.td_stripsperimage==0)  
 	{
@@ -1056,21 +1051,21 @@ OJPEGSubsamplingCorrect(TIFF* tif)
 		if (((sp->subsampling_hor!=mh) || (sp->subsampling_ver!=mv)) && (sp->subsampling_force_desubsampling_inside_decompression==0))
 		{
 			if (sp->subsampling_tag==0)
-				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling tag is not set, yet subsampling inside JPEG data [%d,%d] does not match default values [2,2]; assuming subsampling inside JPEG data is correct",sp->subsampling_hor,sp->subsampling_ver);
+				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling tag is not set, yet subsampling inside JPEG data [%"PRIu8",%"PRIu8"] does not match default values [2,2]; assuming subsampling inside JPEG data is correct",sp->subsampling_hor,sp->subsampling_ver);
 			else
-				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling inside JPEG data [%d,%d] does not match subsampling tag values [%d,%d]; assuming subsampling inside JPEG data is correct",sp->subsampling_hor,sp->subsampling_ver,mh,mv);
+				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling inside JPEG data [%"PRIu8",%"PRIu8"] does not match subsampling tag values [%"PRIu8",%"PRIu8"]; assuming subsampling inside JPEG data is correct",sp->subsampling_hor,sp->subsampling_ver,mh,mv);
 		}
 		if (sp->subsampling_force_desubsampling_inside_decompression!=0)
 		{
 			if (sp->subsampling_tag==0)
 				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling tag is not set, yet subsampling inside JPEG data does not match default values [2,2] (nor any other values allowed in TIFF); assuming subsampling inside JPEG data is correct and desubsampling inside JPEG decompression");
 			else
-				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling inside JPEG data does not match subsampling tag values [%d,%d] (nor any other values allowed in TIFF); assuming subsampling inside JPEG data is correct and desubsampling inside JPEG decompression",mh,mv);
+				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling inside JPEG data does not match subsampling tag values [%"PRIu8",%"PRIu8"] (nor any other values allowed in TIFF); assuming subsampling inside JPEG data is correct and desubsampling inside JPEG decompression",mh,mv);
 		}
 		if (sp->subsampling_force_desubsampling_inside_decompression==0)
 		{
 			if (sp->subsampling_hor<sp->subsampling_ver)
-				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling values [%d,%d] are not allowed in TIFF",sp->subsampling_hor,sp->subsampling_ver);
+				TIFFWarningExt(tif->tif_clientdata,module,"Subsampling values [%"PRIu8",%"PRIu8"] are not allowed in TIFF",sp->subsampling_hor,sp->subsampling_ver);
 		}
 	}
 	sp->subsamplingcorrect_done=1;
@@ -1094,6 +1089,8 @@ OJPEGReadHeaderInfo(TIFF* tif)
 	{
 		sp->strile_width=sp->image_width;
 		sp->strile_length=tif->tif_dir.td_rowsperstrip;
+                if( sp->strile_length == (uint32)-1 )
+                    sp->strile_length = sp->image_length;
 		sp->strile_length_total=sp->image_length;
 	}
 	if (tif->tif_dir.td_samplesperpixel==1)
@@ -1108,7 +1105,7 @@ OJPEGReadHeaderInfo(TIFF* tif)
 	{
 		if (tif->tif_dir.td_samplesperpixel!=3)
 		{
-			TIFFErrorExt(tif->tif_clientdata,module,"SamplesPerPixel %d not supported for this compression scheme",sp->samples_per_pixel);
+			TIFFErrorExt(tif->tif_clientdata,module,"SamplesPerPixel %"PRIu8" not supported for this compression scheme",sp->samples_per_pixel);
 			return(0);
 		}
 		sp->samples_per_pixel=3;
@@ -1131,7 +1128,7 @@ OJPEGReadHeaderInfo(TIFF* tif)
 			TIFFErrorExt(tif->tif_clientdata,module,"Incompatible vertical subsampling and image strip/tile length");
 			return(0);
 		}
-		sp->restart_interval=(uint16)(((sp->strile_width+sp->subsampling_hor*8-1)/(sp->subsampling_hor*8))*(sp->strile_length/(sp->subsampling_ver*8)));
+		sp->restart_interval=(uint16)(((sp->strile_width + sp->subsampling_hor * 8 - 1) / (sp->subsampling_hor * 8)) * (sp->strile_length / (sp->subsampling_ver * 8)));
 	}
 	if (OJPEGReadHeaderInfoSec(tif)==0)
 		return(0);
@@ -1153,7 +1150,7 @@ OJPEGReadSecondarySos(TIFF* tif, uint16 s)
 	assert(s<3);
 	assert(sp->sos_end[0].log!=0);
 	assert(sp->sos_end[s].log==0);
-	sp->plane_sample_offset=(uint8)(s-1);
+	sp->plane_sample_offset=(uint8)(s - 1);
 	while(sp->sos_end[sp->plane_sample_offset].log==0)
 		sp->plane_sample_offset--;
 	sp->in_buffer_source=sp->sos_end[sp->plane_sample_offset].in_buffer_source;
@@ -1264,9 +1261,9 @@ OJPEGWriteHeaderInfo(TIFF* tif)
 				return(0);
 			}
 			m=sp->subsampling_convert_ycbcrimage;
-			*m++=(uint8*)(sp->subsampling_convert_ycbcrimage+3);
-			*m++=(uint8*)(sp->subsampling_convert_ycbcrimage+3+sp->subsampling_convert_ylines);
-			*m++=(uint8*)(sp->subsampling_convert_ycbcrimage+3+sp->subsampling_convert_ylines+sp->subsampling_convert_clines);
+			*m++=(uint8*)(sp->subsampling_convert_ycbcrimage + 3);
+			*m++=(uint8*)(sp->subsampling_convert_ycbcrimage + 3 + sp->subsampling_convert_ylines);
+			*m++=(uint8*)(sp->subsampling_convert_ycbcrimage + 3 + sp->subsampling_convert_ylines + sp->subsampling_convert_clines);
 			for (n=0; n<sp->subsampling_convert_ylines; n++)
 				*m++=sp->subsampling_convert_ybuf+n*sp->subsampling_convert_ylinelen;
 			for (n=0; n<sp->subsampling_convert_clines; n++)
@@ -1291,6 +1288,26 @@ OJPEGWriteHeaderInfo(TIFF* tif)
 	}
 	if (jpeg_start_decompress_encap(sp,&(sp->libjpeg_jpeg_decompress_struct))==0)
 		return(0);
+        if(sp->libjpeg_jpeg_decompress_struct.image_width != sp->strile_width ) {
+            TIFFErrorExt(tif->tif_clientdata,module,
+                         "jpeg_start_decompress() returned image_width = %u, "
+                         "expected %"PRIu32,
+                         sp->libjpeg_jpeg_decompress_struct.image_width,
+                         sp->strile_width);
+            return 0;
+        }
+        if(sp->libjpeg_jpeg_decompress_struct.max_h_samp_factor != sp->subsampling_hor ||
+           sp->libjpeg_jpeg_decompress_struct.max_v_samp_factor != sp->subsampling_ver) {
+            TIFFErrorExt(tif->tif_clientdata,module,
+                         "jpeg_start_decompress() returned max_h_samp_factor = %d "
+                         "and max_v_samp_factor = %d, expected %"PRIu8" and %"PRIu8,
+                         sp->libjpeg_jpeg_decompress_struct.max_h_samp_factor,
+                         sp->libjpeg_jpeg_decompress_struct.max_v_samp_factor,
+                         sp->subsampling_hor,
+                         sp->subsampling_ver);
+            return 0;
+        }
+
 	sp->writeheader_done=1;
 	return(1);
 }
@@ -1324,7 +1341,7 @@ OJPEGReadHeaderInfoSec(TIFF* tif)
 		else
 		{
 			if ((sp->jpeg_interchange_format_length==0) ||
-                            (sp->jpeg_interchange_format > TIFF_UINT64_MAX - sp->jpeg_interchange_format_length) ||
+                            (sp->jpeg_interchange_format > UINT64_MAX - sp->jpeg_interchange_format_length) ||
                             (sp->jpeg_interchange_format+sp->jpeg_interchange_format_length>sp->file_size))
 				sp->jpeg_interchange_format_length=sp->file_size-sp->jpeg_interchange_format;
 		}
@@ -1408,7 +1425,7 @@ OJPEGReadHeaderInfoSec(TIFF* tif)
 					return(0);
 				break;
 			default:
-				TIFFErrorExt(tif->tif_clientdata,module,"Unknown marker type %d in JPEG data",m);
+				TIFFErrorExt(tif->tif_clientdata,module,"Unknown marker type %"PRIu8" in JPEG data", m);
 				return(0);
 		}
 	} while(m!=JPEG_MARKER_SOS);
@@ -1488,7 +1505,7 @@ OJPEGReadHeaderInfoSecStreamDqt(TIFF* tif)
 				TIFFErrorExt(tif->tif_clientdata,module,"Corrupt DQT marker in JPEG data");
 				return(0);
 			}
-			na=sizeof(uint32)+69;
+			na= sizeof(uint32) + 69;
 			nb=_TIFFmalloc(na);
 			if (nb==0)
 			{
@@ -1497,14 +1514,14 @@ OJPEGReadHeaderInfoSecStreamDqt(TIFF* tif)
 			}
 			*(uint32*)nb=na;
 			nb[sizeof(uint32)]=255;
-			nb[sizeof(uint32)+1]=JPEG_MARKER_DQT;
-			nb[sizeof(uint32)+2]=0;
-			nb[sizeof(uint32)+3]=67;
-			if (OJPEGReadBlock(sp,65,&nb[sizeof(uint32)+4])==0) {
+			nb[sizeof(uint32) + 1]=JPEG_MARKER_DQT;
+			nb[sizeof(uint32) + 2]=0;
+			nb[sizeof(uint32) + 3]=67;
+			if (OJPEGReadBlock(sp,65,&nb[sizeof(uint32) + 4]) == 0) {
 				_TIFFfree(nb);
 				return(0);
 			}
-			o=nb[sizeof(uint32)+4]&15;
+			o= nb[sizeof(uint32) + 4] & 15;
 			if (3<o)
 			{
 				TIFFErrorExt(tif->tif_clientdata,module,"Corrupt DQT marker in JPEG data");
@@ -1545,7 +1562,7 @@ OJPEGReadHeaderInfoSecStreamDht(TIFF* tif)
 	}
 	else
 	{
-		na=sizeof(uint32)+2+m;
+		na= sizeof(uint32) + 2 + m;
 		nb=_TIFFmalloc(na);
 		if (nb==0)
 		{
@@ -1554,14 +1571,14 @@ OJPEGReadHeaderInfoSecStreamDht(TIFF* tif)
 		}
 		*(uint32*)nb=na;
 		nb[sizeof(uint32)]=255;
-		nb[sizeof(uint32)+1]=JPEG_MARKER_DHT;
-		nb[sizeof(uint32)+2]=(m>>8);
-		nb[sizeof(uint32)+3]=(m&255);
-		if (OJPEGReadBlock(sp,m-2,&nb[sizeof(uint32)+4])==0) {
+		nb[sizeof(uint32) + 1]=JPEG_MARKER_DHT;
+		nb[sizeof(uint32) + 2]=(m >> 8);
+		nb[sizeof(uint32) + 3]=(m & 255);
+		if (OJPEGReadBlock(sp,m-2,&nb[sizeof(uint32) + 4]) == 0) {
                         _TIFFfree(nb);
 			return(0);
                 }
-		o=nb[sizeof(uint32)+4];
+		o=nb[sizeof(uint32) + 4];
 		if ((o&240)==0)
 		{
 			if (3<o)
@@ -1657,7 +1674,7 @@ OJPEGReadHeaderInfoSecStreamSof(TIFF* tif, uint8 marker_id)
 		/* Y: Number of lines */
 		if (OJPEGReadWord(sp,&p)==0)
 			return(0);
-		if (((uint32)p<sp->image_length) && ((uint32)p<sp->strile_length_total))
+		if (((uint32)p < sp->image_length) && ((uint32)p < sp->strile_length_total))
 		{
 			TIFFErrorExt(tif->tif_clientdata,module,"JPEG compressed data indicates unexpected height");
 			return(0);
@@ -1666,12 +1683,12 @@ OJPEGReadHeaderInfoSecStreamSof(TIFF* tif, uint8 marker_id)
 		/* X: Number of samples per line */
 		if (OJPEGReadWord(sp,&p)==0)
 			return(0);
-		if (((uint32)p<sp->image_width) && ((uint32)p<sp->strile_width))
+		if (((uint32)p < sp->image_width) && ((uint32)p < sp->strile_width))
 		{
 			TIFFErrorExt(tif->tif_clientdata,module,"JPEG compressed data indicates unexpected width");
 			return(0);
 		}
-		if ((uint32)p>sp->strile_width)
+		if ((uint32)p > sp->strile_width)
 		{
 			TIFFErrorExt(tif->tif_clientdata,module,"JPEG compressed data image width exceeds expected image width");
 			return(0);
@@ -1825,7 +1842,7 @@ OJPEGReadHeaderInfoSecTablesQTable(TIFF* tif)
 					return(0);
 				}
 			}
-			oa=sizeof(uint32)+69;
+			oa= sizeof(uint32) + 69;
 			ob=_TIFFmalloc(oa);
 			if (ob==0)
 			{
@@ -1834,12 +1851,12 @@ OJPEGReadHeaderInfoSecTablesQTable(TIFF* tif)
 			}
 			*(uint32*)ob=oa;
 			ob[sizeof(uint32)]=255;
-			ob[sizeof(uint32)+1]=JPEG_MARKER_DQT;
-			ob[sizeof(uint32)+2]=0;
-			ob[sizeof(uint32)+3]=67;
-			ob[sizeof(uint32)+4]=m;
+			ob[sizeof(uint32) + 1]=JPEG_MARKER_DQT;
+			ob[sizeof(uint32) + 2]=0;
+			ob[sizeof(uint32) + 3]=67;
+			ob[sizeof(uint32) + 4]=m;
 			TIFFSeekFile(tif,sp->qtable_offset[m],SEEK_SET); 
-			p=(uint32)TIFFReadFile(tif,&ob[sizeof(uint32)+5],64);
+			p=(uint32)TIFFReadFile(tif, &ob[sizeof(uint32) + 5], 64);
 			if (p!=64)
                         {
                                 _TIFFfree(ob);
@@ -1887,13 +1904,13 @@ OJPEGReadHeaderInfoSecTablesDcTable(TIFF* tif)
 				}
 			}
 			TIFFSeekFile(tif,sp->dctable_offset[m],SEEK_SET);
-			p=(uint32)TIFFReadFile(tif,o,16);
+			p=(uint32)TIFFReadFile(tif, o, 16);
 			if (p!=16)
 				return(0);
 			q=0;
 			for (n=0; n<16; n++)
 				q+=o[n];
-			ra=sizeof(uint32)+21+q;
+			ra= sizeof(uint32) + 21 + q;
 			rb=_TIFFmalloc(ra);
 			if (rb==0)
 			{
@@ -1902,13 +1919,13 @@ OJPEGReadHeaderInfoSecTablesDcTable(TIFF* tif)
 			}
 			*(uint32*)rb=ra;
 			rb[sizeof(uint32)]=255;
-			rb[sizeof(uint32)+1]=JPEG_MARKER_DHT;
-			rb[sizeof(uint32)+2]=(uint8)((19+q)>>8);
-			rb[sizeof(uint32)+3]=((19+q)&255);
-			rb[sizeof(uint32)+4]=m;
+			rb[sizeof(uint32) + 1]=JPEG_MARKER_DHT;
+			rb[sizeof(uint32) + 2]=(uint8)((19 + q) >> 8);
+			rb[sizeof(uint32) + 3]=((19 + q) & 255);
+			rb[sizeof(uint32) + 4]=m;
 			for (n=0; n<16; n++)
-				rb[sizeof(uint32)+5+n]=o[n];
-			p=(uint32)TIFFReadFile(tif,&(rb[sizeof(uint32)+21]),q);
+				rb[sizeof(uint32) + 5 + n]=o[n];
+			p=(uint32)TIFFReadFile(tif, &(rb[sizeof(uint32) + 21]), q);
 			if (p!=q)
                         {
                                 _TIFFfree(rb);
@@ -1956,13 +1973,13 @@ OJPEGReadHeaderInfoSecTablesAcTable(TIFF* tif)
 				}
 			}
 			TIFFSeekFile(tif,sp->actable_offset[m],SEEK_SET);  
-			p=(uint32)TIFFReadFile(tif,o,16);
+			p=(uint32)TIFFReadFile(tif, o, 16);
 			if (p!=16)
 				return(0);
 			q=0;
 			for (n=0; n<16; n++)
 				q+=o[n];
-			ra=sizeof(uint32)+21+q;
+			ra= sizeof(uint32) + 21 + q;
 			rb=_TIFFmalloc(ra);
 			if (rb==0)
 			{
@@ -1971,13 +1988,13 @@ OJPEGReadHeaderInfoSecTablesAcTable(TIFF* tif)
 			}
 			*(uint32*)rb=ra;
 			rb[sizeof(uint32)]=255;
-			rb[sizeof(uint32)+1]=JPEG_MARKER_DHT;
-			rb[sizeof(uint32)+2]=(uint8)((19+q)>>8);
-			rb[sizeof(uint32)+3]=((19+q)&255);
-			rb[sizeof(uint32)+4]=(16|m);
+			rb[sizeof(uint32) + 1]=JPEG_MARKER_DHT;
+			rb[sizeof(uint32) + 2]=(uint8)((19 + q) >> 8);
+			rb[sizeof(uint32) + 3]=((19 + q) & 255);
+			rb[sizeof(uint32) + 4]=(16 | m);
 			for (n=0; n<16; n++)
-				rb[sizeof(uint32)+5+n]=o[n];
-			p=(uint32)TIFFReadFile(tif,&(rb[sizeof(uint32)+21]),q);
+				rb[sizeof(uint32) + 5 + n]=o[n];
+			p=(uint32)TIFFReadFile(tif, &(rb[sizeof(uint32) + 21]), q);
 			if (p!=q)
                         {
                                 _TIFFfree(rb);
@@ -2011,7 +2028,7 @@ OJPEGReadBufferFill(OJPEGState* sp)
 				sp->in_buffer_file_pos_log=1;
 			}
 			m=OJPEG_BUFFER;
-			if ((uint64)m>sp->in_buffer_file_togo)
+			if ((uint64)m > sp->in_buffer_file_togo)
 				m=(uint16)sp->in_buffer_file_togo;
 			n=TIFFReadFile(sp->tif,sp->in_buffer,(tmsize_t)m);
 			if (n==0)
@@ -2019,7 +2036,7 @@ OJPEGReadBufferFill(OJPEGState* sp)
 			assert(n>0);
 			assert(n<=OJPEG_BUFFER);
 			assert(n<65536);
-			assert((uint64)n<=sp->in_buffer_file_togo);
+			assert((uint64)n <= sp->in_buffer_file_togo);
 			m=(uint16)n;
 			sp->in_buffer_togo=m;
 			sp->in_buffer_cur=sp->in_buffer;
@@ -2064,7 +2081,7 @@ OJPEGReadBufferFill(OJPEGState* sp)
 							sp->in_buffer_file_togo=bytecount;
 							if (sp->in_buffer_file_togo==0)
 								sp->in_buffer_file_pos=0;
-							else if (sp->in_buffer_file_pos > TIFF_UINT64_MAX - sp->in_buffer_file_togo || 
+							else if (sp->in_buffer_file_pos > UINT64_MAX - sp->in_buffer_file_togo ||
                                                                 sp->in_buffer_file_pos+sp->in_buffer_file_togo>sp->file_size)
 								sp->in_buffer_file_togo=sp->file_size-sp->in_buffer_file_pos;
 						}
@@ -2173,7 +2190,7 @@ OJPEGReadSkip(OJPEGState* sp, uint16 len)
 	{
 		assert(sp->in_buffer_togo==0);
 		n=m;
-		if ((uint64)n>sp->in_buffer_file_togo)
+		if ((uint64)n > sp->in_buffer_file_togo)
 			n=(uint16)sp->in_buffer_file_togo;
 		sp->in_buffer_file_pos+=n;
 		sp->in_buffer_file_togo-=n;
@@ -2279,7 +2296,7 @@ OJPEGWriteStreamQTable(TIFF* tif, uint8 table_index, void** mem, uint32* len)
 	if (sp->qtable[table_index]!=0)
 	{
 		*mem=(void*)(sp->qtable[table_index]+sizeof(uint32));
-		*len=*((uint32*)sp->qtable[table_index])-sizeof(uint32);
+		*len= *((uint32*)sp->qtable[table_index]) - sizeof(uint32);
 	}
 	sp->out_state++;
 }
@@ -2291,7 +2308,7 @@ OJPEGWriteStreamDcTable(TIFF* tif, uint8 table_index, void** mem, uint32* len)
 	if (sp->dctable[table_index]!=0)
 	{
 		*mem=(void*)(sp->dctable[table_index]+sizeof(uint32));
-		*len=*((uint32*)sp->dctable[table_index])-sizeof(uint32);
+		*len= *((uint32*)sp->dctable[table_index]) - sizeof(uint32);
 	}
 	sp->out_state++;
 }
@@ -2303,7 +2320,7 @@ OJPEGWriteStreamAcTable(TIFF* tif, uint8 table_index, void** mem, uint32* len)
 	if (sp->actable[table_index]!=0)
 	{
 		*mem=(void*)(sp->actable[table_index]+sizeof(uint32));
-		*len=*((uint32*)sp->actable[table_index])-sizeof(uint32);
+		*len= *((uint32*)sp->actable[table_index]) - sizeof(uint32);
 	}
 	sp->out_state++;
 }
@@ -2342,10 +2359,10 @@ OJPEGWriteStreamSof(TIFF* tif, void** mem, uint32* len)
 	/* P */
 	sp->out_buffer[4]=8;
 	/* Y */
-	sp->out_buffer[5]=(uint8)(sp->sof_y>>8);
+	sp->out_buffer[5]=(uint8)(sp->sof_y >> 8);
 	sp->out_buffer[6]=(sp->sof_y&255);
 	/* X */
-	sp->out_buffer[7]=(uint8)(sp->sof_x>>8);
+	sp->out_buffer[7]=(uint8)(sp->sof_x >> 8);
 	sp->out_buffer[8]=(sp->sof_x&255);
 	/* Nf */
 	sp->out_buffer[9]=sp->samples_per_pixel_per_plane;
