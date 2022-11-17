@@ -104,7 +104,7 @@ testReadCompare('granite:', 'reference/read/granite.miff', q/size=>"70x46"/, 0, 
 
 print("HRZ Slow scan TV ...\n");
 ++$test;
-testReadCompare('input.hrz', 'reference/read/input_hrz.miff', q//, 0, 0);
+testRead('input.hrz', 'cf3aed87b1364c93509e15b2519c26dd0302dcef024ac92d0c870aeacf472524');
 
 print("MacPaint ...\n");
 ++$test;
@@ -313,15 +313,15 @@ testReadCompare('input.wbmp', 'reference/read/input_wbmp.miff', q//, 0, 0);
 
 print("WPG (Word Perfect Graphics image, bilevel WPG level 1) ...\n");
 ++$test;
-testReadCompare('input1_1.wpg', 'reference/read/input1_1_wpg.miff', q//, 0, 0);
+testRead('input1_1.wpg', '24f136b95afc7c11b9d5e1a22c4b53030b7aced49bf83eebaa5985128e0600f3');
 
 print("WPG (Word Perfect Graphics image, 4 bit depth WPG level 1) ...\n");
 ++$test;
-testReadCompare('input1_4.wpg', 'reference/read/input1_4_wpg.miff', q//, 0, 0);
+testRead('input1_4.wpg', '27b4d537ef0fac232f1f9cb8bc1b3e1378d6804a43d4b813770119cd6146e225');
 
 print("WPG (Word Perfect Graphics image, 8 bit depth WPG level 1) ...\n");
 ++$test;
-testReadCompare('input1_8_1.wpg', 'reference/read/input1_8_1_wpg.miff', q//, 0, 0);
+testRead('input1_8_1.wpg', '6c8a6e6e237e03a636e976b3a04fcab56470854d6051b8959bd968b526843c48');
 
 print("WPG (Word Perfect Graphics image, 1 bit depth + 24 bit depth WPG level 2) ...\n");
 ++$test;
@@ -341,20 +341,20 @@ testReadCompare('xc:black', 'reference/read/input_xc_black.miff', q/size=>"70x46
 
 print("X Windows system pixmap file (bilevel) ...\n");
 ++$test;
-testReadCompare('input_bilevel.xpm', 'reference/read/input_xpm_bilevel.miff', q//, 0, 0);
+testRead('input_bilevel.xpm', 'c100134c37f7d48c2908747f40f4f18e63a00ebf2b6124cdbe63f078bc74cc5f');
 
 print("X Windows system pixmap file (color) ...\n");
 ++$test;
-testReadCompare('input.xpm', 'reference/read/input_xpm.miff', q//, 0, 0);
+testRead('input.xpm', 'f84cb6b5817ea2f6f313c2bdd90c94af0d0e7fb144528994050b355f8d5e6a94');
 # Q:32 mean-error=0.23551931713272, maximum-error=0.989543041912839
 
 print("X Windows system pixmap file (color, 16bit palette) ...\n");
 ++$test;
-testReadCompare('input_pal16.xpm', 'reference/read/input_xpm_pal16.miff', q//, 0, 0);
+testRead('input_pal16.xpm', '45f0083676dcd95255f24b897df490a310a28f8f180c86ba2450e1624656f1f8');
 
 print("X Windows system pixmap file (color, 3 chars per pixel) ...\n");
 ++$test;
-testReadCompare('input_3chars.xpm', 'reference/read/input_3chars_xpm.miff', q//, 0, 0);
+testRead('input_3chars.xpm', '3716883efcd24e9ea3500febb299b77a86484574a6b81e11707e6b06d3c208f7');
 
 #print("X Windows system window dump file (color) ...\n");
 #++$test;

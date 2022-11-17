@@ -1,4 +1,16 @@
-2022-11-16 Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/t/read.t: Reduced distribution size by using
+	signature test method for some tests.
+
+	* PerlMagick/t/tiff/read.t: Added test for old JPEG.
+
+2022-11-17 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        PerlMagick/t/input_JPG_old.tif Added JPG embedded into TIFF using
+        old Adobe's embedding style.
+
+	2022-11-17 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         tiff/libtiff/tif_ojpeg.c Backported from 4.4.0 to 4.1.0
 

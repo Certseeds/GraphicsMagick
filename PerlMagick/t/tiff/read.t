@@ -12,7 +12,7 @@
 #
 # Written by Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
 #
-BEGIN { $| = 1; $test=1; print "1..27\n"; }
+BEGIN { $| = 1; $test=1; print "1..28\n"; }
 END {print "not ok $test\n" unless $loaded;}
 
 use Graphics::Magick;
@@ -24,7 +24,7 @@ chdir 't/tiff' || die 'Cd failed';
 
 #
 # 1) Test Reading Monochrome
-# 
+#
 print("Monochrome (min-is-white) ...\n");
 testRead ( 'input_gray_01bit_minwhite.tiff',
   '2b48bcf7d93cc31a8deb3026d872f1bb0a300b0f4e177423e5301adc638179e4' );
@@ -79,7 +79,7 @@ testRead( 'input_palette_256_planar_separate.tiff',
 
 #
 # 8) Test Reading TrueColor (8-bit)
-# 
+#
 ++$test;
 print("TrueColor (8-bit) image ...\n");
 testRead( 'input_truecolor_08.tiff',
@@ -87,7 +87,7 @@ testRead( 'input_truecolor_08.tiff',
 
 #
 # 9) Test Reading TrueColor (8-bit + matte channel)
-# 
+#
 ++$test;
 print("TrueColor (8-bit) image with alpha channel ...\n");
 testRead( 'input_truecolor_08_matte.tiff',
@@ -95,7 +95,7 @@ testRead( 'input_truecolor_08_matte.tiff',
 
 #
 # 10) Test Reading TrueColor (10-bit)
-# 
+#
 ++$test;
 print("TrueColor (10-bit) image ...\n");
 testRead( 'input_truecolor_10.tiff',
@@ -105,7 +105,7 @@ testRead( 'input_truecolor_10.tiff',
 
 #
 # 11) Test Reading TrueColor (12-bit)
-# 
+#
 ++$test;
 print("TrueColor (12-bit) image ...\n");
 testRead( 'input_truecolor_12.tiff',
@@ -115,7 +115,7 @@ testRead( 'input_truecolor_12.tiff',
 
 #
 # 12) Test Reading TrueColor (14-bit)
-# 
+#
 ++$test;
 print("TrueColor (14-bit) image ...\n");
 testRead( 'input_truecolor_14.tiff',
@@ -160,7 +160,7 @@ testRead( 'input_truecolor_08_planar.tiff',
 
 #
 # 17) Test Reading 8-bit TrueColor Stripped (8 rows per strip)
-# 
+#
 ++$test;
 print("TrueColor (8-bit) stripped image, 8 rows per strip ...\n");
 testRead( 'input_truecolor_08_stripped.tiff',
@@ -184,7 +184,7 @@ testRead( 'input_gray_04bit_matte.tiff',
 
 #
 # 20) Test Reading Grayscale 8-bit
-# 
+#
 ++$test;
 print("Grayscale (8-bit) ...\n");
 testRead( 'input_gray_08bit.tiff',
@@ -192,7 +192,7 @@ testRead( 'input_gray_08bit.tiff',
 
 #
 # 21) Test Reading Grayscale 8-bit + matte
-# 
+#
 ++$test;
 print("Grayscale (8-bit + matte) ...\n");
 testRead( 'input_gray_08bit_matte.tiff',
@@ -200,7 +200,7 @@ testRead( 'input_gray_08bit_matte.tiff',
 
 #
 # 22) Test Reading Grayscale 10-bit
-# 
+#
 ++$test;
 print("Grayscale (10-bit) ...\n");
 testRead( 'input_gray_10bit.tiff',
@@ -210,7 +210,7 @@ testRead( 'input_gray_10bit.tiff',
 
 #
 # 23) Test Reading Grayscale 12-bit
-# 
+#
 ++$test;
 print("Grayscale (12-bit) ...\n");
 testRead( 'input_gray_12bit.tiff',
@@ -220,7 +220,7 @@ testRead( 'input_gray_12bit.tiff',
 
 #
 # 24) Test Reading Grayscale 14-bit
-# 
+#
 ++$test;
 print("Grayscale (14-bit) ...\n");
 testRead( 'input_gray_14bit.tiff',
@@ -230,7 +230,7 @@ testRead( 'input_gray_14bit.tiff',
 
 #
 # 25) Test Reading Grayscale 16-bit
-# 
+#
 ++$test;
 print("Grayscale (16-bit) ...\n");
 testRead( 'input_gray_16bit.tiff',
@@ -239,7 +239,7 @@ testRead( 'input_gray_16bit.tiff',
 
 #
 # 26) Test Reading Grayscale 32-bit
-# 
+#
 ++$test;
 print("Grayscale (32-bit) ...\n");
 testRead( 'input_gray_32bit.tiff',
@@ -249,8 +249,15 @@ testRead( 'input_gray_32bit.tiff',
 
 #
 # 27) Test Reading CALS Type 1 (Group4-based)
-# 
+#
 ++$test;
 print("CALS Type 1...\n");
 testRead ( 'input_gray_01bit_minwhite.cals',
   '2b48bcf7d93cc31a8deb3026d872f1bb0a300b0f4e177423e5301adc638179e4' );
+
+#
+# 28) Test Reading Old JPEG format
+#
++print("Old JPG ...\n");
++++$test;
++testReadCompare('input_JPG_old.tif', '../reference/tiff/input_JPG_old_tif.jpg', q//, 0.003, 0.1);
