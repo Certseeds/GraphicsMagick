@@ -1,3 +1,11 @@
+2022-11-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/t/subroutines.pl (testRead): Support read-options in
+	order to be more flexible.
+
+	* PerlMagick/t/read.t: Change as many tests to be signature-based
+	as possible and remove now unneeded reference files.
+
 2022-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* PerlMagick/t/jpeg/read.t: Use JPEG image as reference image

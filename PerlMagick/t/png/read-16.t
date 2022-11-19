@@ -25,34 +25,34 @@ chdir 't/png' || die 'Cd failed';
 #
 # 1) Test Monochrome PNG
 # 
-testRead( 'input_mono.png',
+testRead( 'input_mono.png', q//,
   '19da3123692c66d023074dd1e272119ab2357b9a34855a393ad18c88af01ae86' );
 
 #
 # 2) Test 256 color pseudocolor PNG
 # 
 ++$test;
-testRead( 'input_256.png',
+testRead( 'input_256.png', q//,
   'd1340caccc7351834f1ca9693489ee780ac326a0d6bb660cd550c5c28711b2fe' );
 
 #
 # 3) Test TrueColor PNG
 # 
 ++$test;
-testRead( 'input_truecolor.png',
+testRead( 'input_truecolor.png', q//,
   'b84c31bbe78d84d0432c7414b25c58599484aa2c7174af8332509966d07f265b' );
 
 #
 # 4) Test Multiple-image Network Graphics
 # 
 ++$test;
-testRead( 'input.mng',
+testRead( 'input.mng', q//,
   'eb089161ebc5ab3964cdec1b72628c4d1c29ebd78f333a3d4a0d47c614fb3897' );
 
 #
 # 5) Test 16-bit Portable Network Graphics
 # 
 ++$test;
-testRead( 'input_16.png',
+testRead( 'input_16.png', q//,
   'a6c3f3ce8772cd6aa973ae1f3ebd94ee65292112d3f1e8e86171bf4d931bd181',
   'c87cc12715f3e0619d6fe871bd8132f88facffb3d38dd8869cb262ec6b9c4cef');

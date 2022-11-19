@@ -48,7 +48,7 @@ testFilterCompare('input.miff', "fuzz=>$fuzz", 'reference/filter/ColorFloodfill.
 
 ++$test;
 testFilterCompare('input.miff', "fuzz=>$fuzz", 'reference/filter/Colorize.miff', 'Colorize',
-  q/fill=>"red", opacity=>50/, 0, 0);
+  q/fill=>"red", opacity=>50/, 0.003, 0.004);
 
 ++$test;
 testFilterCompare('input.miff', q//, 'reference/filter/Contrast.miff', 'Contrast',
