@@ -229,7 +229,7 @@ t/rad/input.rad
 t/rad/read.t
 t/rad/write.t
 t/read.t
-t/reference/cgm/read.miff
+t/reference/cgm/read.gif
 t/reference/composite/Add.miff
 t/reference/composite/Atop.miff
 t/reference/composite/Bumpmap.miff

@@ -24,5 +24,4 @@ require 't/subroutines.pl';
 
 chdir 't/cgm' || die 'Cd failed';
 
-testReadCompare('CGM:input.cgm', '../reference/cgm/read.miff', q//, 0.0002, 0.5);
-
+testReadCompare('CGM:input.cgm', '../reference/cgm/read.gif', q//, 0.0002, 0.5);
