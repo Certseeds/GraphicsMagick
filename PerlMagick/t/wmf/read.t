@@ -22,15 +22,18 @@ require 't/subroutines.pl';
 
 chdir 't/wmf' || die 'Cd failed';
 
-testReadCompare('wizard.wmf', '../reference/wmf/wizard.miff',
+print("Rendering wizard.wmf ...\n");
+testReadCompare('wizard.wmf', '../reference/wmf/wizard.gif',
+                q//, 0.004, 0.9);
+++$test;
+print("Rendering clock.wmf ...\n");
+testReadCompare('clock.wmf', '../reference/wmf/clock.gif',
                 q//, 0.003, 0.9);
 ++$test;
-testReadCompare('clock.wmf', '../reference/wmf/clock.miff',
-                q//, 0.002, 0.9);
+print("Rendering ski.wmf ...\n");
+testReadCompare('ski.wmf', '../reference/wmf/ski.gif',
+                q//, 0.03, 1.0);
 ++$test;
-testReadCompare('ski.wmf', '../reference/wmf/ski.miff',
-                q//, 0.021, 1.0);
-++$test;
-testReadCompare('fjftest.wmf', '../reference/wmf/fjftest.miff',
+print("Rendering fjftest.wmf ...\n");
+testReadCompare('fjftest.wmf', '../reference/wmf/fjftest.gif',
                 q//, 0.004, 0.5);
-

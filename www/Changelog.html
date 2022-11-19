@@ -40,6 +40,12 @@
 <p>2022-11-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>PerlMagick/t/wmf/read.t: Change reference images from MIFF
+format to GIF format to reduce wasted space.</p></li>
+<li><p>PerlMagick/t/cgm/read.t: Change from read.miff to read.gif to
+reduce wasted space.</p></li>
+<li><p>PerlMagick/t/x/write.t: Change from congrats.miff to
+congrats.gif to reduce wasted space.</p></li>
 <li><p>coders/heif.c (ReadMetadata): If
 heif_image_handle_get_metadata_size() returns 0, then carrying on
 with reading image data. Addresses SourceForge issue 677 &quot;Memory

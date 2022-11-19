@@ -1,5 +1,8 @@
 2022-11-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* PerlMagick/t/wmf/read.t: Change reference images from MIFF
+	format to GIF format to reduce wasted space.
+
 	* PerlMagick/t/cgm/read.t: Change from read.miff to read.gif to
 	reduce wasted space.
 
