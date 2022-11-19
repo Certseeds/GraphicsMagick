@@ -55,11 +55,11 @@
 %
 %  The format of the IsHEIF  method is:
 %
-%      unsigned int IsHEIF(const unsigned char *magick,const size_t length)
+%      MagickBool IsHEIF(const unsigned char *magick,const size_t length)
 %
 %  A description of each parameter follows:
 %
-%    o status:  Method IsHEIF returns True if the image format type is HEIF.
+%    o status:  Method IsHEIF returns MagickTrue if the image format type is HEIF.
 %
 %    o magick: This string is generally the first few bytes of an image file
 %      or blob.
@@ -68,7 +68,7 @@
 %
 %
 */
-static unsigned int IsHEIF(const unsigned char *magick,const size_t length)
+static MagickBool IsHEIF(const unsigned char *magick,const size_t length)
 {
   enum heif_filetype_result
     heif_filetype;
@@ -77,16 +77,16 @@ static unsigned int IsHEIF(const unsigned char *magick,const size_t length)
                         "Testing header for supported HEIF format");
 
   if (length < 12)
-    return(False);
+    return(MagickFalse);
 
   heif_filetype = heif_check_filetype(magick, (int) length);
   if (heif_filetype == heif_filetype_yes_supported)
-    return True;
+    return MagickTrue;
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Not a supported HEIF format");
 
-  return(False);
+  return(MagickFalse);
 }
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,16 +115,23 @@ static unsigned int IsHEIF(const unsigned char *magick,const size_t length)
 */
 
 #define HEIFReadCleanup()                                              \
-  if (heif_image) heif_image_release(heif_image);                      \
-  if (heif_image_handle) heif_image_handle_release(heif_image_handle); \
-  if (heif) heif_context_free(heif);                                   \
-  MagickFreeResourceLimitedMemory(in_buf)
+  do                                                                   \
+    {                                                                  \
+      if (heif_image)                                                  \
+        heif_image_release(heif_image);                                \
+      if (heif_image_handle)                                           \
+        heif_image_handle_release(heif_image_handle);                  \
+      if (heif)                                                        \
+        heif_context_free(heif);                                       \
+      MagickFreeResourceLimitedMemory(in_buf);                         \
+    } while (0);
 
 #define ThrowHEIFReaderException(code_,reason_,image_) \
-  {                                                    \
-    HEIFReadCleanup();                                 \
-    ThrowReaderException(code_,reason_,image_)         \
-  }
+  do                                                   \
+    {                                                  \
+      HEIFReadCleanup();                               \
+      ThrowReaderException(code_,reason_,image_);      \
+    } while (0);
 
 static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
                            Image *image, ExceptionInfo *exception)
@@ -139,7 +146,9 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
   struct heif_error
     err;
 
-  count=heif_image_handle_get_number_of_metadata_blocks(heif_image_handle, NULL);
+  /* Get number of metadata blocks attached to image */
+  count=heif_image_handle_get_number_of_metadata_blocks(heif_image_handle,
+                                                        /*type_filter*/ NULL);
   if (count==0)
     return image;
 
@@ -147,57 +156,82 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
   if (ids == (heif_item_id *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
+  /* Get list of metadata block ids */
   count=heif_image_handle_get_list_of_metadata_block_IDs(heif_image_handle, NULL,
                                                          ids,count);
 
-  for (i=0; i<count; i++)
+  /* For each block id ... */
+  for (i=0; i < count; i++)
     {
-      const char*
-        profile_name=heif_image_handle_get_metadata_type(heif_image_handle,ids[i]);
+      const char
+        *content_type,
+        *profile_name;
 
       size_t
-        profile_size=heif_image_handle_get_metadata_size(heif_image_handle,ids[i]);
+        profile_size;
 
-      unsigned char*
-        profile;
+      unsigned char
+        *profile;
+
+      /* Access string indicating the type of the metadata (e.g. "Exif") */
+      profile_name=heif_image_handle_get_metadata_type(heif_image_handle,ids[i]);
+
+      /* Access string indicating the content type */
+      content_type=heif_image_handle_get_metadata_content_type(heif_image_handle,ids[i]);
+
+      /* Get the size of the raw metadata, as stored in the HEIF file */
+      profile_size=heif_image_handle_get_metadata_size(heif_image_handle,ids[i]);
 
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "Profile \"%s\" with size %" MAGICK_SIZE_T_F "u bytes",
-                              profile_name, (MAGICK_SIZE_T) profile_size);
+                              "Profile \"%s\" with content type \"%s\""
+                              " and size %" MAGICK_SIZE_T_F "u bytes",
+                              profile_name ? profile_name : "(null)",
+                              content_type ? content_type : "(null)",
+                              (MAGICK_SIZE_T) profile_size);
 
-      profile=MagickAllocateResourceLimitedArray(unsigned char*,profile_size,
-                                                 sizeof(*profile));
-      if (profile == (unsigned char*) NULL)
+      if (profile_size > 0)
         {
-          MagickFreeResourceLimitedMemory(ids);
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-        }
+          /* Allocate memory for profile */
+          profile=MagickAllocateResourceLimitedArray(unsigned char*,profile_size,
+                                                     sizeof(*profile));
+          if (profile == (unsigned char*) NULL)
+            {
+              MagickFreeResourceLimitedMemory(ids);
+              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+            }
 
-      err=heif_image_handle_get_metadata(heif_image_handle,ids[i],profile);
+          /*
+            Copy metadata into 'profile' buffer. For Exif data, you
+            probably have to skip the first four bytes of the data,
+            since they indicate the offset to the start of the TIFF
+            header of the Exif data.
+          */
+          err=heif_image_handle_get_metadata(heif_image_handle,ids[i],profile);
 
-      if (err.code != heif_error_Ok)
-        {
-          if (image->logging)
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "heif_image_handle_get_metadata() reports error \"%s\"",
-                                  err.message);
+          if (err.code != heif_error_Ok)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "heif_image_handle_get_metadata() reports error \"%s\"",
+                                      err.message);
+              MagickFreeResourceLimitedMemory(profile);
+              MagickFreeResourceLimitedMemory(ids);
+              ThrowReaderException(CorruptImageError,
+                                   AnErrorHasOccurredReadingFromFile,image);
+            }
+
+          if (strncmp(profile_name,"Exif",4) == 0 && profile_size > 4)
+            {
+              /* skip TIFF-Header */
+              SetImageProfile(image,profile_name,profile+4,profile_size-4);
+            }
+          else
+            {
+              SetImageProfile(image,profile_name,profile,profile_size);
+            }
           MagickFreeResourceLimitedMemory(profile);
-          MagickFreeResourceLimitedMemory(ids);
-          ThrowReaderException(CorruptImageError,
-                               AnErrorHasOccurredReadingFromFile,image);
         }
-
-      if (strncmp(profile_name,"Exif",4) == 0 && profile_size > 4)
-        {
-          /* skip TIFF-Header */
-          SetImageProfile(image,profile_name,profile+4,profile_size-4);
-        }
-      else
-        {
-          SetImageProfile(image,profile_name,profile,profile_size);
-        }
-      MagickFreeResourceLimitedMemory(profile);
     }
   MagickFreeResourceLimitedMemory(ids);
   return image;
