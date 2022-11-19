@@ -27,7 +27,7 @@ chdir 't/x' || die 'Cd failed';
 #
 if ( defined($ENV{'DISPLAY'}) && ($ENV{'DISPLAY'} ne '') ) {
   $image=Graphics::Magick->new;
-  $x=$image->ReadImage('congrats.miff');
+  $x=$image->ReadImage('congrats.gif');
   if( "$x" ) {
     print "not ok $test\n";
   } else {
@@ -44,4 +44,3 @@ if ( defined($ENV{'DISPLAY'}) && ($ENV{'DISPLAY'} ne '') ) {
 }
 
 $test = 0;  # Quench PERL compliaint
-

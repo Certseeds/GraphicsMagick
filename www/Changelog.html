@@ -40,6 +40,11 @@
 <p>2022-11-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/heif.c (ReadMetadata): If
+heif_image_handle_get_metadata_size() returns 0, then carrying on
+with reading image data. Addresses SourceForge issue 677 &quot;Memory
+allocation failed - HEIF&quot; but does not discover/address why
+libheif returns a zero metadata size.</p></li>
 <li><p>PerlMagick/t/subroutines.pl (testRead): Support read-options in
 order to be more flexible.</p></li>
 <li><p>PerlMagick/t/read.t: Change as many tests to be signature-based

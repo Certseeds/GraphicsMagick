@@ -1,5 +1,14 @@
 2022-11-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* PerlMagick/t/x/write.t: Change from congrats.miff to
+	congrats.gif to reduce wasted space.
+
+	* coders/heif.c (ReadMetadata): If
+	heif_image_handle_get_metadata_size() returns 0, then carrying on
+	with reading image data. Addresses SourceForge issue 677 "Memory
+	allocation failed - HEIF" but does not discover/address why
+	libheif returns a zero metadata size.
+
 	* PerlMagick/t/subroutines.pl (testRead): Support read-options in
 	order to be more flexible.
 
