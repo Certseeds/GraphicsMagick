@@ -1046,14 +1046,14 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
                        "    Version=%u.%u\n" \
                        "    EncryptKey=%u\n" \
                        "    Reserved=%u", \
-                            (unsigned int)_WPG_HEADER.FileId, \
-                            (unsigned int)_WPG_HEADER.DataOffset, \
-                            (unsigned int)_WPG_HEADER.ProductType, \
-                            (unsigned int)_WPG_HEADER.FileType, \
-                            (unsigned int)_WPG_HEADER.MajorVersion, \
-                            (unsigned int)_WPG_HEADER.MinorVersion, \
-                            (unsigned int)_WPG_HEADER.EncryptKey, \
-                            (unsigned int)_WPG_HEADER.Reserved)
+                            (unsigned int)(_WPG_HEADER)->FileId, \
+                            (unsigned int)(_WPG_HEADER)->DataOffset, \
+                            (unsigned int)(_WPG_HEADER)->ProductType, \
+                            (unsigned int)(_WPG_HEADER)->FileType, \
+                            (unsigned int)(_WPG_HEADER)->MajorVersion, \
+                            (unsigned int)(_WPG_HEADER)->MinorVersion, \
+                            (unsigned int)(_WPG_HEADER)->EncryptKey, \
+                            (unsigned int)(_WPG_HEADER)->Reserved)
 
 #define LogWPGBitmapType1(_WPG_BITMAP_TYPE1) \
   (void)LogMagickEvent(CoderEvent,GetMagickModule(), \
@@ -1063,11 +1063,11 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
                        "    Depth=%u\n" \
                        "    HorzRes=%u\n" \
                        "    VertRes=%u", \
-                            (unsigned int)_WPG_BITMAP_TYPE1.Width, \
-                            (unsigned int)_WPG_BITMAP_TYPE1.Heigth, \
-                            (unsigned int)_WPG_BITMAP_TYPE1.Depth, \
-                            (unsigned int)_WPG_BITMAP_TYPE1.HorzRes, \
-                            (unsigned int)_WPG_BITMAP_TYPE1.VertRes)
+                            (unsigned int)(_WPG_BITMAP_TYPE1)->Width, \
+                            (unsigned int)(_WPG_BITMAP_TYPE1)->Heigth, \
+                            (unsigned int)(_WPG_BITMAP_TYPE1)->Depth, \
+                            (unsigned int)(_WPG_BITMAP_TYPE1)->HorzRes, \
+                            (unsigned int)(_WPG_BITMAP_TYPE1)->VertRes)
 
 #define LogWPGBitmapType2(_WPG_BITMAP_TYPE2) \
   (void)LogMagickEvent(CoderEvent,GetMagickModule(), \
@@ -1082,16 +1082,16 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
                        "    Depth=%u\n" \
                        "    HorzRes=%u\n" \
                        "    VertRes=%u", \
-                            (unsigned int)_WPG_BITMAP_TYPE2.RotAngle, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.LowLeftX, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.LowLeftY, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.UpRightX, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.UpRightY, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.Width, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.Heigth, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.Depth, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.HorzRes, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.VertRes)
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->RotAngle, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->LowLeftX, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->LowLeftY, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->UpRightX, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->UpRightY, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->Width, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->Heigth, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->Depth, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->HorzRes, \
+                            (unsigned int)(_WPG_BITMAP_TYPE2)->VertRes)
 
 
 /*
@@ -1278,7 +1278,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   Header.MinorVersion=ReadBlobByte(image);
   Header.EncryptKey=ReadBlobLSBShort(image);
   Header.Reserved=ReadBlobLSBShort(image);
-  if(logging) LogHeaderWPG(Header);
+  if(logging) LogHeaderWPG(&Header);
 
   if (Header.FileId!=0x435057FF || (Header.ProductType>>8)!=0x16)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -1349,7 +1349,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader1.Depth=ReadBlobLSBShort(image);
               BitmapHeader1.HorzRes=ReadBlobLSBShort(image);
               BitmapHeader1.VertRes=ReadBlobLSBShort(image);
-              if(logging) LogWPGBitmapType1(BitmapHeader1);
+              if(logging) LogWPGBitmapType1(&BitmapHeader1);
 
               if(BitmapHeader1.HorzRes && BitmapHeader1.VertRes)
                 {

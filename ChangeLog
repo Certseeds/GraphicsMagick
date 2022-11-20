@@ -1,5 +1,8 @@
 2022-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c: Fix definition and use of LogHeaderWPG(),
+	LogWPGBitmapType1(), and LogWPGBitmapType2() macros.
+
 	* coders/heif.c (ReadColorProfile): Support reading ICC color
 	profile.
 
