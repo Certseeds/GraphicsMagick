@@ -2,6 +2,9 @@
 
 	* coders/wpg.c: Fix definition and use of LogHeaderWPG(),
 	LogWPGBitmapType1(), and LogWPGBitmapType2() macros.
+	
+	Replace use of ReallocColormap() with previously existing
+	ReallocateImageColormap(), which does the same thing.
 
 	* coders/heif.c (ReadColorProfile): Support reading ICC color
 	profile.

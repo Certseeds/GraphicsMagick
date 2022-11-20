@@ -235,28 +235,6 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
   return(False);
 }
 
-static MagickPassFail ReallocColormap(Image *image,unsigned int colors)
-{
-  PixelPacket *colormap;
-
-  /* FIXME: This implementation would be better using a true realloc */
-  colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
-  if (colormap != (PixelPacket *) NULL)
-    {
-      if (image->colormap != (PixelPacket *) NULL)
-        {
-          (void) memcpy(colormap,image->colormap,
-                        (size_t) Min(image->colors,colors)*sizeof(PixelPacket));
-          MagickFreeMemory(image->colormap);
-        }
-      image->colormap = colormap;
-      image->colors = colors;
-      return MagickPass;
-    }
-
-  return MagickFail;
-}
-
 static int Rd_WP_DWORD(Image *image, unsigned long *d)
 {
   unsigned char b;
@@ -1447,7 +1425,7 @@ UnpackRaster:
                 {
                   if (bpp < 24)
                     if ( (image->colors != (1UL<<bpp)) && (bpp != 24) )
-                      if (!ReallocColormap(image,1U<<bpp))
+                      if (!ReallocateImageColormap(image,1U<<bpp))
                         goto NoMemory;
                 }
 
@@ -1649,7 +1627,7 @@ UnpackRaster:
                 {
                   if(bpp < 24)
                     if(image->colors!=(1UL<<bpp) && bpp!=24)
-                      if (!ReallocColormap(image,1U<<bpp))
+                      if (!ReallocateImageColormap(image,1U<<bpp))
                         goto NoMemory;
                 }
 
