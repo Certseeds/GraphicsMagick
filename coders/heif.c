@@ -133,6 +133,9 @@ static MagickBool IsHEIF(const unsigned char *magick,const size_t length)
       ThrowReaderException(code_,reason_,image_);      \
     } while (0);
 
+/*
+  Read metadata (Exif and XMP)
+*/
 static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
                            Image *image, ExceptionInfo *exception)
 {
@@ -234,6 +237,76 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
         }
     }
   MagickFreeResourceLimitedMemory(ids);
+  return image;
+}
+
+
+/*
+  Read Color Profile
+*/
+static Image *ReadColorProfile(struct heif_image_handle *heif_image_handle,
+                               Image *image, ExceptionInfo *exception)
+{
+  struct heif_error
+    err;
+
+  enum heif_color_profile_type
+    profile_type; /* 4 chars encoded into enum by 'heif_fourcc()' */
+
+  unsigned char
+    *profile;
+
+  profile_type = heif_image_handle_get_color_profile_type(heif_image_handle);
+
+  if (heif_color_profile_type_not_present == profile_type)
+    return image;
+
+  if (image->logging && (heif_color_profile_type_not_present !=profile_type))
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Found color profile of type \"%c%c%c%c\")",
+                          ((char) ((unsigned int) profile_type >> 24) & 0xff),
+                          ((char) ((unsigned int) profile_type >> 16) & 0xff),
+                          ((char) ((unsigned int) profile_type >> 8) & 0xff),
+                          ((char) ((unsigned int) profile_type) & 0xff));
+
+  if (heif_color_profile_type_prof == profile_type)
+    {
+      size_t profile_size;
+
+      profile_size = heif_image_handle_get_raw_color_profile_size(heif_image_handle);
+
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Reading ICC profile with size %" MAGICK_SIZE_T_F "u bytes",
+                              (MAGICK_SIZE_T) profile_size);
+
+      if (profile_size > 0)
+        {
+          /* Allocate 'profile' buffer for profile */
+          profile=MagickAllocateResourceLimitedArray(unsigned char*,profile_size,
+                                                     sizeof(*profile));
+
+          if (profile == (unsigned char*) NULL)
+            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
+          /* Copy ICC profile to 'profile' buffer */
+          err = heif_image_handle_get_raw_color_profile(heif_image_handle,
+                                                        profile);
+          if (err.code != heif_error_Ok)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "heif_image_handle_get_raw_color_profile() reports error \"%s\"",
+                                      err.message);
+              MagickFreeResourceLimitedMemory(profile);
+              ThrowReaderException(CorruptImageError,
+                                   AnErrorHasOccurredReadingFromFile,image);
+
+            }
+          SetImageProfile(image,"ICM",profile,profile_size);
+          MagickFreeResourceLimitedMemory(profile);
+        }
+    }
   return image;
 }
 
@@ -416,7 +489,15 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
                             "Matte: %s", image->matte ? "True" : "False");
     }
 
+  /* Read EXIF and XMP profile */
   if (!ReadMetadata(heif_image_handle, image, exception))
+    {
+      HEIFReadCleanup();
+      return NULL;
+    }
+
+  /* Read ICC profile */
+  if (!ReadColorProfile(heif_image_handle, image, exception))
     {
       HEIFReadCleanup();
       return NULL;

@@ -1,3 +1,8 @@
+2022-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/heif.c (ReadColorProfile): Support reading ICC color
+	profile.
+
 2022-11-20 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
         coders/wpg.c Reveal more internal info to optional log.
