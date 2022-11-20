@@ -322,6 +322,10 @@ typedef UINT (CALLBACK *LPFNDLLFUNC1)(DWORD,UINT);
   Note that under WIN64 read/write appear to still return 'int' and use
   'unsigned int' rather than 'size_t' to specify the I/O size.  This really
   sucks!
+
+  The Windows <BaseTsd.h> header defines the type SSIZE_T which may be used to
+  typedef ssize_t but it is not known how it behaves.
+
  */
 #if !defined(ssize_t) && !defined(__MINGW32__) && !defined(__MINGW64__)
 #  if defined(WIN64)

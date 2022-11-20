@@ -1,5 +1,11 @@
 2022-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* VisualMagick/magick/magick_types.h.in: Declare a ssize_t typedef
+	in VisualStudio's <magick/magick_types.h> due to the unfortunate
+	accidental use of ssize_t in Wand's MagickExtentImage()
+	declaration.  This should address SourceForge issue #673 "visual
+	studio include error ssize_t redefinition".
+
 	* coders/wpg.c: Fix definition and use of LogHeaderWPG(),
 	LogWPGBitmapType1(), and LogWPGBitmapType2() macros.
 	

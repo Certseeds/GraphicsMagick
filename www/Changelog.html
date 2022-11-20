@@ -40,6 +40,11 @@
 <p>2022-11-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul>
+<li><p>VisualMagick/magick/magick_types.h.in: Declare a ssize_t typedef
+in VisualStudio's &lt;magick/magick_types.h&gt; due to the unfortunate
+accidental use of ssize_t in Wand's MagickExtentImage()
+declaration.  This should address SourceForge issue #673 &quot;visual
+studio include error ssize_t redefinition&quot;.</p></li>
 <li><p>coders/wpg.c: Fix definition and use of LogHeaderWPG(),
 LogWPGBitmapType1(), and LogWPGBitmapType2() macros.</p>
 <p>Replace use of ReallocColormap() with previously existing
