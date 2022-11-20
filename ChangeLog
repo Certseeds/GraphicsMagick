@@ -1,3 +1,7 @@
+2022-11-20 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        coders/wpg.c Reveal more internal info to optional log.
+
 2022-11-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* PerlMagick/t/wmf/read.t: Change reference images from MIFF
