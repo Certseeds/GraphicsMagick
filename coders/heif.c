@@ -193,7 +193,7 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
                               content_type ? content_type : "(null)",
                               (MAGICK_SIZE_T) profile_size);
 
-      if (profile_size > 0)
+      if (NULL != profile_name && profile_size > 0)
         {
           /* Allocate memory for profile */
           profile=MagickAllocateResourceLimitedArray(unsigned char*,profile_size,
