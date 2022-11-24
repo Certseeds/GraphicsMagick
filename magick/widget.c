@@ -2209,6 +2209,8 @@ void MagickXColorBrowserWidget(Display *display,MagickXWindows *windows,
             /*
               User pressed mode button.
             */
+            if (NULL == mode_info.text)
+              break;
             (void) strlcpy(reply_info.text,mode_info.text,MaxTextExtent);
             (void) strlcpy(primary_selection,reply_info.text,MaxTextExtent);
             (void) XSetSelectionOwner(display,XA_PRIMARY,windows->widget.id,

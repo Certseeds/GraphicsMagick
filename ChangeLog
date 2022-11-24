@@ -1,5 +1,8 @@
 2022-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/widget.c (MagickXColorBrowserWidget): If mode_info.text
+	is NULL, ignore event due to user pushing mode button.
+
 	* coders/heif.c (ReadMetadata): Also guard against profile name
 	being null.
 
