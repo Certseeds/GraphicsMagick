@@ -40,6 +40,20 @@
 <p>2022-11-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/jpeg.c (WriteJPEGImage): Useful data_precision range is 8
+to 16.</p></li>
+<li><p>magick/profile.c (ProfileImagePixels): Make sure not to use
+indexes if it is NULL.</p></li>
+<li><p>magick/xwindow.c (MagickXDitherImage): Eliminate use of
+undefined behavior.  Make sure to deallocate memory upon error.</p></li>
+<li><p>magick/widget.c (MagickXCommandWidget): Assure that prerequisite
+'number_selections' is satisfied.</p></li>
+<li><p>magick/xwindow.c (MagickXGetWindowImage): Assure that
+prereqisite 'colors' table for PseudoClass case is satisifed.</p></li>
+<li><p>coders/png.c (ReadOnePNGImage): Make sure that background index
+is initialized.</p></li>
+<li><p>magick/profile.c (ProfileImagePixels): Don't de-reference
+indexes if they were not supplied.</p></li>
 <li><p>magick/widget.c (MagickXColorBrowserWidget): If mode_info.text
 is NULL, ignore event due to user pushing mode button.</p></li>
 <li><p>coders/heif.c (ReadMetadata): Also guard against profile name

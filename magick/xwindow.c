@@ -2149,10 +2149,11 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
   PixelPacket
     color;
 
-  int
+  long
+    x,
     y;
 
-  long
+  magick_int32_t
     value;
 
   register char
@@ -2163,13 +2164,12 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
 
   register int
     i,
-    j,
-    x;
+    j;
 
   unsigned int
     scanline_pad;
 
-  register unsigned long
+  register magick_uint32_t
     pixel;
 
   unsigned char
@@ -2180,6 +2180,9 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
   /*
     Allocate and initialize dither maps.
   */
+  memset(blue_map,0,sizeof(blue_map));
+  memset(green_map,0,sizeof(green_map));
+  memset(red_map,0,sizeof(red_map));
   for (i=0; i < 2; i++)
     for (j=0; j < 16; j++)
     {
@@ -2193,7 +2196,7 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
         {
           MagickError3(ResourceLimitError,MemoryAllocationFailed,
             UnableToDitherImage);
-          return;
+          goto done_xditherimage;
         }
     }
   /*
@@ -2218,7 +2221,7 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
         value=x-32;
         if (x < 112)
           value=x/2+24;
-        value+=(dither_blue[i][j] << 1);
+        value+=((magick_uint32_t) dither_blue[i][j] << 1);
         blue_map[i][j][x]=(unsigned char)
           ((value < 0) ? 0 : (value > 255) ? 255 : value);
       }
@@ -2240,10 +2243,10 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
       color.red=red_map[i][j][ScaleQuantumToChar(p->red)] << 8;
       color.green=green_map[i][j][ScaleQuantumToChar(p->green)] << 8;
       color.blue=blue_map[i][j][ScaleQuantumToChar(p->blue)] << 8;
-      pixel=(unsigned long) ((color.red & 0xe0) |
-        ((unsigned long) (color.green & 0xe0) >> 3) |
-        ((unsigned long) (color.blue & 0xc0) >> 6));
-      *q++=(unsigned char) pixel;
+      pixel=(magick_uint32_t) ((color.red & 0xe0) |
+        ((magick_uint32_t) (color.green & 0xe0) >> 3) |
+        ((magick_uint32_t) (color.blue & 0xc0) >> 6));
+      *q++=(magick_uint32_t) pixel;
       p++;
       j++;
       if (j == 16)
@@ -2254,6 +2257,7 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
     if (i == 2)
       i=0;
   }
+ done_xditherimage:
   /*
     Free allocated memory.
   */
@@ -4488,7 +4492,8 @@ MagickXGetWindowImage(Display *display,const Window window,
             /*
               Create colormap.
             */
-            if (!AllocateImageColormap(composite_image,number_colors))
+            if ((NULL == colors) ||
+                !AllocateImageColormap(composite_image,number_colors))
               {
                 XDestroyImage(ximage);
                 ximage=(XImage *) NULL;

@@ -3095,7 +3095,7 @@ static const unsigned char tile_bits[] = {
       default:
         break;
     }
-  if (state & UpdateConfigurationState)
+  if ((state & UpdateConfigurationState) && number_selections)
     {
       /*
         Initialize button information.

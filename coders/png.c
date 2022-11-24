@@ -2077,6 +2077,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                   png_color_16
                     background;
 
+                  background.index=0;
 #ifndef PNG_READ_EMPTY_PLTE_SUPPORTED
                   if (mng_info->have_saved_bkgd_index)
                     background.index=mng_info->saved_bkgd_index;

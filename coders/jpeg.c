@@ -2718,7 +2718,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   jpeg_set_defaults(&jpeg_info);
 
   /*
-    Determine bit depth.
+    Determine bit depth (valid range in 8-16).
   */
   {
     int
@@ -3069,7 +3069,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
       ThrowJPEGWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   scanline[0]=(JSAMPROW) jpeg_pixels;
-  if (jpeg_info.data_precision > 8)
+  if (jpeg_info.data_precision > 8 && jpeg_info.data_precision <= 16)
     {
       unsigned int
         scale_short;

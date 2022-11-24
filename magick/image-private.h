@@ -16,10 +16,11 @@
 
   Emulates ((1U << bits)-1) but without the overflow problems.
 */
-#define MaxValueGivenBits(bits) ((unsigned long) \
-                                 (((int) bits <= 0) ? 0 :               \
-                                   ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1)) + \
-                                    ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1))-1))))
+#define MaxValueGivenBits(bits)                                         \
+  ((unsigned long)                                                      \
+   ((bits <= 0) ? 0 :                                                   \
+    ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1)) +       \
+     ((0x01UL << (Min(sizeof(unsigned long)*8U,(size_t)bits)-1))-1))))
 
 /*
   ImageExtra allows for expansion of Image without increasing its

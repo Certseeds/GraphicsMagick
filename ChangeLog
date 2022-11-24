@@ -1,5 +1,26 @@
 2022-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jpeg.c (WriteJPEGImage): Useful data_precision range is 8
+	to 16.
+
+	* magick/profile.c (ProfileImagePixels): Make sure not to use
+	indexes if it is NULL.
+
+	* magick/xwindow.c (MagickXDitherImage): Eliminate use of
+	undefined behavior.  Make sure to deallocate memory upon error.
+
+	* magick/widget.c (MagickXCommandWidget): Assure that prerequisite
+	'number_selections' is satisfied.
+
+	* magick/xwindow.c (MagickXGetWindowImage): Assure that
+	prereqisite 'colors' table for PseudoClass case is satisifed.
+
+	* coders/png.c (ReadOnePNGImage): Make sure that background index
+	is initialized.
+
+	* magick/profile.c (ProfileImagePixels): Don't de-reference
+	indexes if they were not supplied.
+
 	* magick/widget.c (MagickXColorBrowserWidget): If mode_info.text
 	is NULL, ignore event due to user pushing mode button.
 
