@@ -1,3 +1,14 @@
+2022-11-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadJPEGImage): Eliminate Clang Analyzer
+	diagnostic. Add support for reading deep gray images.
+
+	* magick/xwindow.c (MagickXDitherImage): Update documentation to
+	add a link to an article about the HP Color Recovery algorithm.
+
+	* coders/topol.c (ReadTOPOLImage): Eliminate Clang Analyzer
+	diagnostic.
+
 2022-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jpeg.c (WriteJPEGImage): Useful data_precision range is 8

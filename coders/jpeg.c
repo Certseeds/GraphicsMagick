@@ -1532,8 +1532,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   jpeg_calc_output_dimensions(&jpeg_info);
   image->columns=jpeg_info.output_width;
   image->rows=jpeg_info.output_height;
-  image->storage_class = jpeg_info.output_components == 1 ? PseudoClass : DirectClass;
-  image->depth=Min(jpeg_info.data_precision,QuantumDepth);
+  image->depth=Min(jpeg_info.data_precision,Min(16,QuantumDepth));
 
   if (image->logging)
     {
@@ -1597,13 +1596,20 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
                             "Sampling Factors: %s", attribute);
   }
 
-  image->depth=Min(jpeg_info.data_precision,QuantumDepth);
+  image->depth=Min(jpeg_info.data_precision,Min(16,QuantumDepth));
   if (jpeg_info.out_color_space == JCS_GRAYSCALE)
-    if (!AllocateImageColormap(image,1 << image->depth))
-      {
-        jpeg_destroy_decompress(&jpeg_info);
-        ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-      }
+    {
+      /*
+        Build colormap if we can
+      */
+      unsigned long max_index = MaxValueGivenBits(image->depth);
+      if (max_index <= MaxMap)
+        if (!AllocateImageColormap(image,max_index+1LU))
+          {
+            jpeg_destroy_decompress(&jpeg_info);
+            ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+          }
+    }
 
   /*
     Store profiles in image.
@@ -1758,12 +1764,40 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
 
       if (jpeg_info.output_components == 1)
         {
-          for (x=0; x < (long) image->columns; x++)
+          if (image->storage_class == PseudoClass)
             {
-              index=(IndexPacket) (GETJSAMPLE(*p++));
-              VerifyColormapIndex(image,index);
-              indexes[x]=index;
-              *q++=image->colormap[index];
+              for (x=0; x < (long) image->columns; x++)
+                {
+                  index=(IndexPacket) (GETJSAMPLE(*p++));
+                  VerifyColormapIndex(image,index);
+                  indexes[x]=index;
+                  *q++=image->colormap[index];
+                }
+            }
+          else
+            {
+              if (jpeg_info.data_precision > 8)
+                {
+                  unsigned int
+                    scale_short;
+
+                  scale_short=65535U/MaxValueGivenBits(jpeg_info.data_precision);
+                  for (x=0; x < (long) image->columns; x++)
+                    {
+                      q->red=q->green=q->blue=ScaleShortToQuantum(scale_short*GETJSAMPLE(*p++));
+                      q->opacity=OpaqueOpacity;
+                      q++;
+                    }
+                }
+              else
+                {
+                  for (x=0; x < (long) image->columns; x++)
+                    {
+                      q->red=q->green=q->blue=ScaleCharToQuantum(GETJSAMPLE(*p++));
+                      q->opacity=OpaqueOpacity;
+                      q++;
+                    }
+                }
             }
         }
       else if ((jpeg_info.output_components == 3) ||

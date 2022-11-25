@@ -2109,9 +2109,11 @@ MagickXDisplayImageInfo(Display *display,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method XDitherImage dithers the reference image as required by the HP
-%  Color Recovery algorithm.  The color values are quantized to 3 bits of red
-%  and green, and 2 bits of blue (3/3/2) and can be used as indices into a
-%  8-bit X standard colormap.
+%  Color Recovery algorithm
+%  (https://www.hpl.hp.com/hpjournal/95apr/apr95a6.pdf).
+%  The color values are quantized to 3 bits of red and green, and 2 bits
+%  of blue (3/3/2) and can be used as indices into a 8-bit X standard
+%  colormap.
 %
 %  The format of the XDitherImage method is:
 %
@@ -2221,6 +2223,8 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
         value=x-32;
         if (x < 112)
           value=x/2+24;
+        /* Cast to unsigned added below to avoid undefined
+           behavior. Not sure if result is what was expected! */
         value+=((magick_uint32_t) dither_blue[i][j] << 1);
         blue_map[i][j][x]=(unsigned char)
           ((value < 0) ? 0 : (value > 255) ? 255 : value);
