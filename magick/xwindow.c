@@ -2223,7 +2223,7 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
         value=x-32;
         if (x < 112)
           value=x/2+24;
-        /* Cast to unsigned added below to avoid undefined
+        /* FIXME: Cast to unsigned added below to avoid undefined
            behavior. Not sure if result is what was expected! */
         value+=((magick_uint32_t) dither_blue[i][j] << 1);
         blue_map[i][j][x]=(unsigned char)

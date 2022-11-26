@@ -483,7 +483,7 @@ release: distcheck
 #	-enable-checker security.insecureAPI.DeprecatedOrUnsafeBufferHandling
 scan-build:
 	scan-build-12 -k --html-title='GraphicsMagick' \
-	-maxloop 100 \
+	-maxloop 1000 \
 	-disable-checker deadcode.DeadStores \
 	-enable-checker security.insecureAPI.bcmp \
 	-enable-checker security.insecureAPI.bcopy \
