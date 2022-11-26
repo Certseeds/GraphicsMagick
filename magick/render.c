@@ -6183,7 +6183,15 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           status=MagickFail;
           break;
         }
-      if ((primitive_info[1].point.x != composite_image->columns) &&
+      /*
+        If the requested size is not 0x0 (to be filled in later with
+        composite image size) and the requested size is different than
+        the composite image size, then transform to the requested
+        size.
+      */
+      if ((0 != primitive_info[1].point.x) &&
+          (0 != primitive_info[1].point.y) &&
+          (primitive_info[1].point.x != composite_image->columns) &&
           (primitive_info[1].point.y != composite_image->rows))
         {
           char
