@@ -1,5 +1,10 @@
 2022-11-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/logo.c (RegisterLOGOImage): Logo image subformats do not
+	have an image extension.
+
+	* utilities/tests/convert-cmds.txt: Add more convert tests.
+
 	* magick/render.c (DrawPrimitive): Fix for SourceForge issue #679
 	"Using "0,0" for image size throws an error in v1.3.38, worked
 	previously".  This bug was added in GraphicsMagick 1.3.36.

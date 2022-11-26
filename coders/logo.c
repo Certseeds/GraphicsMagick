@@ -5105,6 +5105,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="Granite texture";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5115,6 +5116,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="Internal format";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5123,6 +5125,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->adjoin=False;
   entry->description="GraphicsMagick Embedded Image";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5133,6 +5136,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="GraphicsMagick Logo";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5142,6 +5146,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="Netscape 216 color cube";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5151,6 +5156,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="Tiled pattern image";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5159,6 +5165,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->adjoin=False;
   entry->stealth=True;
   entry->description="70x46 Truecolor rose";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->module="LOGO";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
