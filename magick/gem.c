@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -672,7 +672,7 @@ MagickExport void Hull(const long x_offset,const long y_offset,
   assert(g != (Quantum *) NULL);
   p=f+((size_t) columns+2);
   q=g+((size_t) columns+2);
-  r=p+(y_offset*((size_t) columns+2)+x_offset);
+  r=p+(long) (y_offset*((long) columns+2)+x_offset);
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime)
@@ -721,8 +721,8 @@ MagickExport void Hull(const long x_offset,const long y_offset,
     }
   p=f+((size_t) columns+2);
   q=g+((size_t) columns+2);
-  r=q+(y_offset*((size_t) columns+2)+x_offset);
-  s=q-(y_offset*((size_t) columns+2)+x_offset);
+  r=q+(long) (y_offset*((long) columns+2)+x_offset);
+  s=q-(long) (y_offset*((long) columns+2)+x_offset);
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime)

@@ -3014,8 +3014,27 @@ void Magick::Image::gifDisposeMethod ( const unsigned int disposeMethod_ )
 }
 unsigned int Magick::Image::gifDisposeMethod ( void ) const
 {
+  unsigned int
+    ret = UndefinedDispose;
+
   // FIXME: It would be better to return an enumeration
-  return constImage()->dispose;
+  switch(constImage()->dispose)
+    {
+    case UndefinedDispose:
+      ret = 0;
+      break;
+    case NoneDispose:
+      ret = 1;
+      break;
+    case BackgroundDispose:
+      ret = 2;
+      break;
+    case PreviousDispose:
+      ret = 3;
+      break;
+    }
+
+  return ret;
 }
 
 // ICC ICM color profile (BLOB)

@@ -258,7 +258,7 @@ XYZTransformPackets(void *mutable_data,          /* User provided mutable data *
   /*
     3D transform pixels from RGB to alternate colorspace.
   */
-  float
+  double
     b,
     g,
     r;
@@ -285,17 +285,17 @@ XYZTransformPackets(void *mutable_data,          /* User provided mutable data *
       y_index = ScaleQuantumToMap(pixels[i].green);
       z_index = ScaleQuantumToMap(pixels[i].blue);
 
-      r = (xform->x[x_index].x + xform->y[y_index].x + xform->z[z_index].x + xform->primary_info.x);
-      g = (xform->x[x_index].y + xform->y[y_index].y + xform->z[z_index].y + xform->primary_info.y);
-      b = (xform->x[x_index].z + xform->y[y_index].z + xform->z[z_index].z + xform->primary_info.z);
+      r = xform->x[x_index].x + xform->y[y_index].x + xform->z[z_index].x + xform->primary_info.x;
+      g = xform->x[x_index].y + xform->y[y_index].y + xform->z[z_index].y + xform->primary_info.y;
+      b = xform->x[x_index].z + xform->y[y_index].z + xform->z[z_index].z + xform->primary_info.z;
 
-      r = r < 0.0f ? 0.0f : r > MaxMapFloat ? MaxMapFloat : (r + 0.5f);
-      g = g < 0.0f ? 0.0f : g > MaxMapFloat ? MaxMapFloat : (g + 0.5f);
-      b = b < 0.0f ? 0.0f : b > MaxMapFloat ? MaxMapFloat : (b + 0.5f);
+      r = r < 0.0 ? 0.0 : r > MaxMapDouble ? MaxMapDouble : (r + 0.5);
+      g = g < 0.0 ? 0.0 : g > MaxMapDouble ? MaxMapDouble : (g + 0.5);
+      b = b < 0.0 ? 0.0 : b > MaxMapDouble ? MaxMapDouble : (b + 0.5);
 
-      pixels[i].red   = ScaleMapToQuantum((Quantum) r);
-      pixels[i].green = ScaleMapToQuantum((Quantum) g);
-      pixels[i].blue  = ScaleMapToQuantum((Quantum) b);
+      pixels[i].red   = ScaleMapToQuantum(floor(r));
+      pixels[i].green = ScaleMapToQuantum(floor(g));
+      pixels[i].blue  = ScaleMapToQuantum(floor(b));
     }
 
   return MagickPass;
@@ -1266,7 +1266,7 @@ RGBTransformPackets(void *mutable_data,         /* User provided mutable data */
   /*
     3D transform pixels to RGB.
   */
-  float
+  double
     b,
     g,
     r;
@@ -1293,13 +1293,13 @@ RGBTransformPackets(void *mutable_data,         /* User provided mutable data */
       g_index = ScaleQuantumToMap(pixels[i].green);
       b_index = ScaleQuantumToMap(pixels[i].blue);
 
-      r = (xform->r[r_index].r + xform->g[g_index].r + xform->b[b_index].r);
-      g = (xform->r[r_index].g + xform->g[g_index].g + xform->b[b_index].g);
-      b = (xform->r[r_index].b + xform->g[g_index].b + xform->b[b_index].b);
+      r = xform->r[r_index].r + xform->g[g_index].r + xform->b[b_index].r;
+      g = xform->r[r_index].g + xform->g[g_index].g + xform->b[b_index].g;
+      b = xform->r[r_index].b + xform->g[g_index].b + xform->b[b_index].b;
 
-      r = r < 0.0f ? 0.0f : r > MaxMapFloat ? MaxMapFloat : (r + 0.5f);
-      g = g < 0.0f ? 0.0f : g > MaxMapFloat ? MaxMapFloat : (g + 0.5f);
-      b = b < 0.0f ? 0.0f : b > MaxMapFloat ? MaxMapFloat : (b + 0.5f);
+      r = r < 0.0 ? 0.0 : r > MaxMapDouble ? MaxMapDouble : (r + 0.5);
+      g = g < 0.0 ? 0.0 : g > MaxMapDouble ? MaxMapDouble : (g + 0.5);
+      b = b < 0.0 ? 0.0 : b > MaxMapDouble ? MaxMapDouble : (b + 0.5);
 
       if ( xform->rgb_map != 0 )
         {
@@ -1317,9 +1317,9 @@ RGBTransformPackets(void *mutable_data,         /* User provided mutable data */
         }
       else
         {
-          pixels[i].red   = ScaleMapToQuantum(r);
-          pixels[i].green = ScaleMapToQuantum(g);
-          pixels[i].blue  = ScaleMapToQuantum(b);
+          pixels[i].red   = ScaleMapToQuantum(floor(r));
+          pixels[i].green = ScaleMapToQuantum(floor(g));
+          pixels[i].blue  = ScaleMapToQuantum(floor(b));
         }
     }
 

@@ -16,6 +16,8 @@ test_plan_fn ${count}
 cat ${commands} | sed -e "s:\${SUNRISE_MIFF}:${SUNRISE_MIFF}:g" | while read subcommand
 do
     #set -x
-    eval test_command_fn "\"${subcommand}\"" ${GM} convert -size 1000x1000 pattern:bricks ${subcommand} info:-
+    # identity:10 produces a 1000x1000 image
+    # Removed -segment 0.5x0.25 since it can not work with such images
+    eval test_command_fn "\"${subcommand}\"" ${GM} convert identity:10 ${subcommand} info:-
     #set +x
 done

@@ -100,12 +100,16 @@ extern "C" {
 #  define MAGICK_SIZE_T unsigned __int64
 #  define MAGICK_SSIZE_T_F "I64"
 #  define MAGICK_SSIZE_T signed __int64
+  typedef size_t uintptr_t;
+  typedef signed __int64 ptrdiff_t;
 #  else
   typedef unsigned long magick_uintptr_t;
 #  define MAGICK_SIZE_T_F "l"
 #  define MAGICK_SIZE_T unsigned long
-#  define MAGICK_SSIZE_T_F "l"
-#  define MAGICK_SSIZE_T long
+#  define MAGICK_SSIZE_T_F ""
+#  define MAGICK_SSIZE_T int
+  typedef long magick_ptrdiff_t
+  typedef unsigned long magick_uintptr_t;
 #  endif // defined(WIN64)
 
 #endif /* if defined(MAGICK_IMPLEMENTATION) */
@@ -148,6 +152,9 @@ extern "C" {
 
   typedef @UINTPTR_T@ magick_uintptr_t; /* uintptr_t */
 #  define MAGICK_UINTPTR_F @UINTPTR_F@  /* %tu */
+
+  typedef @PTRDIFF_T@ magick_ptrdiff_t; /* ptrdiff_t */
+#  define MAGICK_PTRDIFF_F @PTRDIFF_F@  /* %td */
 
 #  define MAGICK_SIZE_T_F @MAGICK_SIZE_T_F@ /* %zu */
 #  define MAGICK_SIZE_T @MAGICK_SIZE_T@     /* size_t */

@@ -569,7 +569,8 @@ MagickExport Image *ConstituteImage(const unsigned long width,
                   }
                 }
             }
-          indexes++;
+          if (NULL != (IndexPacket *) indexes)
+            indexes++;
           q++;
         }
       if (!SyncImagePixels(image))

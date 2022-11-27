@@ -1,4 +1,37 @@
+2022-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Magick++/lib/Image.cpp: Don't just blindly return DisposeMethod
+	as an 'int'.
+
+	* Magick++/tests/attributes.cpp (main): Test with a valid GIF
+	disposal method.
+
+	* coders/msl.c (MSLStartElement): Eliminate 'undefined behavior'
+	issues.
+
+	* magick/colorspace.c (XYZTransformPackets): Use 'double' when
+	performing summation and eliminate 'undefined behavior' issues.
+	(RGBTransformPackets): Use 'double' when performing summation and
+	eliminate 'undefined behavior' issues.
+
+	* magick/constitute.c (ConstituteImage): Eliminate 'undefined
+	behavior' issues.
+
+	* magick/fx.c (SolarizeImage): Eliminate 'undefined behavior'
+	issues.
+
+	* magick/gem.c (Hull): Eliminate 'undefined behavior' issues.
+
+	* configure.ac, magick/magick_types.h.in: Added some support for
+	deducing magick_uintptr_t and magick_ptrdiff_t types.
+
+	* utilities/tests/convert-cmds.txt: Added more command
+	permutations to execute.
+
 2022-11-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/constitute.c (ConstituteImage): Fix undefined behavior:
+	runtime error: applying non-zero offset 2 to null pointer
 
 	* coders/logo.c (RegisterLOGOImage): Logo image subformats do not
 	have an image extension.

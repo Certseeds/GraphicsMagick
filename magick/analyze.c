@@ -294,6 +294,7 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
 %
 %
 */
+#if MaxMap == MaxRGB
 static inline unsigned char MinimumDepthForValue(const Quantum quantum)
 {
   register unsigned int
@@ -309,7 +310,6 @@ static inline unsigned char MinimumDepthForValue(const Quantum quantum)
 
   return depth;
 }
-#if MaxMap == MaxRGB
 static magick_uint8_t* AllocateDepthMap(void)
 {
   magick_uint8_t

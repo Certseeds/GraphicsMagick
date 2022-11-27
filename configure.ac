@@ -1084,26 +1084,31 @@ fi
 # with Windows builds which don't use configure.
 #
 
+# int8_t
 AC_MSG_CHECKING([for signed 8-bit type])
 INT8_T='signed char'
 AC_MSG_RESULT([$INT8_T])
 AC_SUBST([INT8_T])
 
+# uint8_t
 AC_MSG_CHECKING([for unsigned 8-bit type])
 UINT8_T='unsigned char'
 AC_MSG_RESULT([$UINT8_T])
 AC_SUBST([UINT8_T])
 
+# int16_t
 AC_MSG_CHECKING([for signed 16-bit type])
 INT16_T='signed short'
 AC_MSG_RESULT([$INT16_T])
 AC_SUBST([INT16_T])
 
+# uint16_t
 AC_MSG_CHECKING([for unsigned 16-bit type])
 UINT16_T='unsigned short'
 AC_MSG_RESULT([$UINT16_T])
 AC_SUBST([UINT16_T])
 
+# int32_t
 AC_MSG_CHECKING([for signed 32-bit type])
 INT32_T='none'
 INT32_F='none'
@@ -1120,6 +1125,7 @@ AC_MSG_RESULT([$INT32_T])
 AC_SUBST([INT32_T])
 AC_SUBST([INT32_F])
 
+# uint32_t
 AC_MSG_CHECKING([for unsigned 32-bit type])
 UINT32_T='none'
 UINT32_F='none'
@@ -1136,6 +1142,7 @@ AC_MSG_RESULT([$UINT32_T])
 AC_SUBST([UINT32_T])
 AC_SUBST([UINT32_F])
 
+# int64_t
 AC_MSG_CHECKING([for signed 64-bit type])
 INT64_T='none'
 INT64_F='none'
@@ -1157,6 +1164,7 @@ AC_MSG_RESULT([$INT64_T])
 AC_SUBST([INT64_T])
 AC_SUBST([INT64_F])
 
+# uint64_t
 AC_MSG_CHECKING([for unsigned 64-bit type])
 UINT64_T='none'
 UINT64_F='none'
@@ -1178,6 +1186,7 @@ AC_MSG_RESULT([$UINT64_T])
 AC_SUBST([UINT64_T])
 AC_SUBST([UINT64_F])
 
+# uintmax_t
 AC_MSG_CHECKING([for unsigned maximum type])
 UINTMAX_T='none'
 UINTMAX_F='none'
@@ -1194,7 +1203,8 @@ AC_MSG_RESULT([$UINTMAX_T])
 AC_SUBST([UINTMAX_T])
 AC_SUBST([UINTMAX_F])
 
-AC_MSG_CHECKING([for pointer difference type])
+# uintptr_t
+AC_MSG_CHECKING([for unsigned pointer storage type])
 UINTPTR_T='none'
 UINTPTR_F='none'
 if test $ac_cv_sizeof_unsigned_long -eq $ac_cv_sizeof_unsigned_intp
@@ -1209,6 +1219,23 @@ fi
 AC_MSG_RESULT([$UINTPTR_T])
 AC_SUBST([UINTPTR_T])
 AC_SUBST([UINTPTR_F])
+
+# ptrdiff_t
+AC_MSG_CHECKING([for signed pointer difference type])
+PTRDIFF_T='none'
+PTRDDIFF_F='none'
+if test $ac_cv_sizeof_unsigned_long -eq $ac_cv_sizeof_unsigned_intp
+then
+  PTRDIFF_T='signed long'
+  PTRDIFF_F='"l"'
+elif test $ac_cv_sizeof_unsigned_long_long -eq $ac_cv_sizeof_unsigned_intp
+then
+  PTRDIFF_T='long long'
+  PTRDIFF_F='"ll"'
+fi
+AC_MSG_RESULT([$PTRDIFF_T])
+AC_SUBST([PTRDIFF_T])
+AC_SUBST([PTRDIFF_F])
 
 MAGICK_SIZE_T='none'
 MAGICK_SIZE_T_F='none'

@@ -80,7 +80,7 @@ extern "C" {
 #elif (QuantumDepth == 32)
 #  define MaxColormapSize  65536U
 #  define MaxRGB  4294967295U
-#  define MaxRGBFloat 4294967295.0f
+#  define MaxRGBFloat 4294967295.0 /* 4294967295.0f is represented as 4294967296! */
 #  define MaxRGBDouble 4294967295.0
 #  define ScaleCharToQuantum(value)    ((Quantum) (16843009U*(value)))
 #  define ScaleLongToQuantum(value)    ((Quantum) ((value)))
