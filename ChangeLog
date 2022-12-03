@@ -1,3 +1,12 @@
+2022-12-01 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/ps2.c
+	coders/ps3.c
+	coders/tiff.c
+	webp/src/webp/types.h
+        tiff/libtiff/*		Upgraded libtiff to libtiff-4.4.0 
+	But code is still compilable with MSVC2008!
+
 2022-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/lib/Image.cpp: Don't just blindly return DisposeMethod

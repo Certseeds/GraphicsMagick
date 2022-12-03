@@ -66,7 +66,7 @@ static unsigned int
 #endif
 #include "tiffio.h"
 
-#if defined(HAVE_STDINT_H) && (TIFFLIB_VERSION >= 20201219)
+#if (TIFFLIB_VERSION >= 20201219)
 #  undef uint16
 #  define uint16 uint16_t
 #  undef uint32
