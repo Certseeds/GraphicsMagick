@@ -2563,7 +2563,7 @@ void Magick::Image::colorMapSize ( const unsigned int entries_ )
   // Initialize any new new colormap entries as all black
   if (imageptr->colormap)
     {
-      Color black(0,0,0);
+      Color black((Quantum) 0U,(Quantum) 0U,(Quantum) 0U);
       for( unsigned int i=imageptr->colors; i< (entries_-1); i++ )
         (imageptr->colormap)[i] = black;
 

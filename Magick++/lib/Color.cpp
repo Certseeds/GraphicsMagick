@@ -511,9 +511,9 @@ Magick::ColorGray& Magick::ColorGray::operator = ( const Magick::Color& color_ )
 // ColorMono Implementation
 //
 Magick::ColorMono::ColorMono ( bool mono_  )
-  : Color ( ( mono_ ? MaxRGB : 0 ),
-            ( mono_ ? MaxRGB : 0 ),
-            ( mono_ ? MaxRGB : 0 ) )
+  : Color ( ( mono_ ? (Quantum) MaxRGB : (Quantum) 0U ),
+            ( mono_ ? (Quantum) MaxRGB : (Quantum) 0U ),
+            ( mono_ ? (Quantum) MaxRGB : (Quantum) 0U ) )
 {
   alphaQuantum ( OpaqueOpacity );
 }

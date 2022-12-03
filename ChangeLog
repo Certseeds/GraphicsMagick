@@ -1,3 +1,13 @@
+2022-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Magick++/lib/Color.cpp: Add Quantum casts to Color() arguments
+	to solve error with unidentified compiler.  SourceForge issue #160
+	"Add Quantum casts for 16-bit to Image.cpp and Color.cpp".
+
+	* Magick++/lib/Image.cpp: Add Quantum casts to Color() arguments
+	to solve error with unidentified compiler.  SourceForge issue #160
+	"Add Quantum casts for 16-bit to Image.cpp and Color.cpp".
+
 2022-12-01 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	coders/ps2.c
