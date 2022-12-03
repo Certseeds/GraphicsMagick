@@ -13,7 +13,7 @@ count=`sed -n '$=' ${commands}`
 # Number of tests we plan to execute
 test_plan_fn ${count}
 
-cat ${commands} | sed -e "s:\${SUNRISE_MIFF}:${SUNRISE_MIFF}:g" | while read subcommand
+cat ${commands} | sed -e "s;\${SUNRISE_MIFF};${SUNRISE_MIFF};g" | while read subcommand
 do
     #set -x
     # identity:10 produces a 1000x1000 image

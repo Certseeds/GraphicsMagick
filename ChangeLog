@@ -1,5 +1,16 @@
 2022-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac (top_srcdir_native): Produce a substituted value
+	representing the top source directory expressed suitable for the
+	native operating system.  This is to support MinGW.
+
+	* utilities/tests/convert.tap: Use ';' rather than '/' as sed
+	delimiter character since '/' is a directory separator..
+
+	* winpath.sh: Use printf rather than echo.  If an escape level is
+	not provided, then output an unescaped Windows path using
+	forward-slashes.
+
 	* Magick++/lib/Color.cpp: Add Quantum casts to Color() arguments
 	to solve error with unidentified compiler.  SourceForge issue #160
 	"Add Quantum casts for 16-bit to Image.cpp and Color.cpp".

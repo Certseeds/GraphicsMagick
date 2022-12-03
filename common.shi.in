@@ -7,6 +7,7 @@ top_srcdir='@abs_top_srcdir@'
 top_builddir='@abs_top_builddir@'
 
 set -a
+TOP_SRCDIR_NATIVE='@top_srcdir_native@'
 GM="${MEMCHECK} @abs_top_builddir@/utilities/gm"
 LD_LIBRARY_PATH="@abs_top_builddir@/magick/.libs:${LD_LIBRARY_PATH}"
 
