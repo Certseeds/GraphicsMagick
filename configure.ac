@@ -205,7 +205,7 @@ MAGICK_CODER_MODULE_PATH="${builddir}/coders"
 MAGICK_CONFIGURE_SRC_PATH="${srcdirfull}/config"
 MAGICK_CONFIGURE_BUILD_PATH="${builddir}/config"
 MAGICK_FILTER_MODULE_PATH="${builddir}/filters"
-top_srcdir_native=${srcdir}
+top_srcdir_native=${srcdirfull}
 DIRSEP=':'
 case "${build_os}" in
   mingw* )
@@ -213,7 +213,7 @@ case "${build_os}" in
     MAGICK_CONFIGURE_SRC_PATH=`$WinPathScript "${MAGICK_CONFIGURE_SRC_PATH}" 0`
     MAGICK_CONFIGURE_BUILD_PATH=`$WinPathScript "${MAGICK_CONFIGURE_BUILD_PATH}" 0`
     MAGICK_FILTER_MODULE_PATH=`$WinPathScript "${MAGICK_FILTER_MODULE_PATH}" 0`
-    top_srcdir_native=`$WinPathScript "${srcdir}"`
+    top_srcdir_native=`$WinPathScript "${srcdirfull}"`
     ;;
 esac
 case "${host_os}" in
