@@ -1,6 +1,7 @@
-# CMake build for libtiff
+# C++ library option
 #
 # Copyright © 2015 Open Microscopy Environment / University of Dundee
+# Copyright © 2021 Roger Leigh <rleigh@codelibre.net>
 # Written by Roger Leigh <rleigh@codelibre.net>
 #
 # Permission to use, copy, modify, distribute, and sell this software and
@@ -22,8 +23,10 @@
 # LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 
-extra_dist(
-  README
-  patchlevel.h
-  xtiff.c
-  xtifficon.h)
+# C++ support
+option(cxx "Enable C++ stream API building (requires C++ compiler)" ON)
+set(CXX_SUPPORT FALSE)
+if (cxx)
+    enable_language(CXX)
+    set(CXX_SUPPORT TRUE)
+endif()
