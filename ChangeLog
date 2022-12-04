@@ -1,3 +1,8 @@
+2022-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* utilities/tests/convert.tap: Produce more interesting 'info'
+	output to 'convert.log'.
+
 2022-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac (top_srcdir_native): Produce a substituted value
