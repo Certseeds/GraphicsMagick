@@ -1,3 +1,7 @@
+2022-12-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updated the news.
+
 2022-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/tests/convert.tap: Produce more interesting 'info'
@@ -30,7 +34,7 @@
 	coders/ps3.c
 	coders/tiff.c
 	webp/src/webp/types.h
-        tiff/libtiff/*		Upgraded libtiff to libtiff-4.4.0 
+        tiff/libtiff/* Upgraded libtiff to libtiff-4.4.0
 	But code is still compilable with MSVC2008!
 
 2022-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

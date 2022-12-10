@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to October 23, 2022
+This file was last updated to reflect changes up to December 10, 2022
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -34,10 +34,9 @@ Special Issues:
 
 Security Fixes:
 
-* GraphicsMagick is participating in Google's oss-fuzz project due to
-  the contributions and assistance of Alex Gaynor. Since February 4
-  2018, ??? issues have been opened by oss-fuzz and ?? issues remain
-  open.  The issues list is available at
+* GraphicsMagick is participating in Google's oss-fuzz project since
+  February 4 2018 due to the contributions and assistance of Alex
+  Gaynor and Paul Kehrer. The issues list is available at
   https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
   "graphicsmagick".  Issues are available for anyone to view and
   duplicate if they have been in "Verified" status for 30 days, or if
@@ -49,9 +48,16 @@ Security Fixes:
 
 * oss-fuzz: Several security fixes originating from oss-fuzz testing.
 
+* ALL: Replace strcpy() with strlcpy(), replace strcat() with
+  strlcat(), replace sprintf() with snprintf().  Prefer using bounded
+  string functions.
+
 Bug fixes:
 
-* Coverity: Several fixes for issues found by Coverity
+* Coverity: Several fixes for issues found by Coverity to reduce the
+  number of reported issues back down to zero.
+
+* Clang Analyzer: Fix most discovered issues.
 
 * PNG: Fix possible use of uninitialized 'ping_num_trans' value in ReadOnePNGImage().
 
@@ -64,6 +70,9 @@ Bug fixes:
 * PS: Assure that 'bounds' structure is initialized.
 
 * EPT: Assure that 'bounds' structure is initialized.
+
+* HEIF: If heif_image_handle_get_metadata_size() returns 0, then
+  carrying on with reading image data.
 
 * configure.ac: Fix Bashism in maintainer-mode check.
 
@@ -81,14 +90,16 @@ Bug fixes:
 
 * Fixed mixed encoding (non-UTF-8) errors in text and source files.
 
-* Restore non-const Image::colorMapSize() since it caused an ABI
-  change.  The compiler should choose the appropriate version.
+* DrawPrimitive(): Fix composition using "0,0" for image size.  This
+  became broken in GraphicsMagick 1.3.36.
 
-* Blob API: Fixed SEEK_END validation.  SEEK_END was not used before, but now it is.
+* Blob API: Fixed SEEK_END validation.  SEEK_END was not used before,
+  but now it is.
 
 New Features:
 
-* AVIF: Support reading AVIF via libheif if it supports decoding AVIF (still no writer support).
+* AVIF: Support reading AVIF via libheif if it supports decoding AVIF
+  (still no writer support).
 
 * LOG: Added function IsEventLogged() to report if a particular event
   will be logged.  Us this as much as possible throughout the software
@@ -96,26 +107,58 @@ New Features:
   performance hit if any logging is enabled at all and logging
   statements are executed which are filtered and produce no output.
 
-* JPEG: Optionally enable arithmetic coder in JPG images using '-define jpeg:arithmetic-coding=true'.
+* FITS: Support storing multiple scenes in one file (non-standard extension).
+
+* JPEG: Optionally enable arithmetic coder in JPG images using
+  '-define jpeg:arithmetic-coding=true'.
+
+* JPEG: Add support for reading deep gray images.
+
+* HEIF: Support reading ICC color profiles.
 
 * Produce ASCII armored ".asc" format GPG signature files.
 
+* Support reading directly from .bz2, .gz, .svgz, and .Z files
+  (without creating a temporary file), if possible.
+
 API Updates:
 
-* Magick++ Image::colorMapSize() is now a 'const' method.
+* Magick++: Provide a version of Image::colorMapSize() which is a
+  'const' method.  Continue to provide the non-const version in order
+  to avoid an ABI change.  The compiler should choose the appropriate
+  version.
 
 Feature improvements:
 
 * HTML documentation generation based on Docutils is significantly
   updated and improved.
 
+* PerlMagick: Added more sample input files and changed many reader
+  tests to use hash signature rather than comparison to reduce the
+  distribution size.
+
+* Blob: The ReadBlobString() function has been re-written to perform
+  better when reading from files.
+
+* MIME: GM "magick" to MIME mappings have been added for apng, avif,
+  bmp, ico, and webp (regardless of if they are supported).
+
+* XPM: The XPM reader performance is dramatically improved and is
+  observed to be 32x faster when reading a medium-sized XPM file
+  (e.g. the GraphicsMagick logo).
+
+* XPM: Support reading "deep" images with more pallete entries than
+  the maximum colormap size.
+
 Windows Delegate Updates/Additions:
 
 * Update bundled libjpeg to version 9e.
 
+* Update bundled libtiff to version 4.4.0 (but still compilable using MSVC2008!).
+
 Build Changes:
 
-* None
+* MSVC: Added porting function to emulate C'99 snprintf for MSVC older than 2015.
 
 Behavior Changes:
 

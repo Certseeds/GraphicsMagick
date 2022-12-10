@@ -41,7 +41,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to October 23, 2022</p>
+<p>This file was last updated to reflect changes up to December 10, 2022</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -109,10 +109,9 @@ years) to do all of the work.</p></li>
 </ul>
 <p>Security Fixes:</p>
 <ul class="simple">
-<li><p>GraphicsMagick is participating in Google's oss-fuzz project due to
-the contributions and assistance of Alex Gaynor. Since February 4
-2018, ??? issues have been opened by oss-fuzz and ?? issues remain
-open.  The issues list is available at
+<li><p>GraphicsMagick is participating in Google's oss-fuzz project since
+February 4 2018 due to the contributions and assistance of Alex
+Gaynor and Paul Kehrer. The issues list is available at
 <a class="reference external" href="https://bugs.chromium.org/p/oss-fuzz/issues/list">https://bugs.chromium.org/p/oss-fuzz/issues/list</a> under search term
 &quot;graphicsmagick&quot;.  Issues are available for anyone to view and
 duplicate if they have been in &quot;Verified&quot; status for 30 days, or if
@@ -123,16 +122,23 @@ the oss-fuzz issues list for details.</p></li>
 <p>Security Fixes:</p>
 <ul class="simple">
 <li><p>oss-fuzz: Several security fixes originating from oss-fuzz testing.</p></li>
+<li><p>ALL: Replace strcpy() with strlcpy(), replace strcat() with
+strlcat(), replace sprintf() with snprintf().  Prefer using bounded
+string functions.</p></li>
 </ul>
 <p>Bug fixes:</p>
 <ul class="simple">
-<li><p>Coverity: Several fixes for issues found by Coverity</p></li>
+<li><p>Coverity: Several fixes for issues found by Coverity to reduce the
+number of reported issues back down to zero.</p></li>
+<li><p>Clang Analyzer: Fix most discovered issues.</p></li>
 <li><p>PNG: Fix possible use of uninitialized 'ping_num_trans' value in ReadOnePNGImage().</p></li>
 <li><p>MinGW: Eliminate overwrite of existing _MSC_VER value in MinGW compile.</p></li>
 <li><p>MNG: Fix heap-use-after-free in CloseBlob.</p></li>
 <li><p>MNG: Fix indirect leak in MagickMallocCleared().</p></li>
 <li><p>PS: Assure that 'bounds' structure is initialized.</p></li>
 <li><p>EPT: Assure that 'bounds' structure is initialized.</p></li>
+<li><p>HEIF: If heif_image_handle_get_metadata_size() returns 0, then
+carrying on with reading image data.</p></li>
 <li><p>configure.ac: Fix Bashism in maintainer-mode check.</p></li>
 <li><p>TGA: Remove a defective validation of comment length, which blocked
 reading some sample TGA files from the &quot;Encyclopedia Of Graphics
@@ -144,37 +150,61 @@ builds with development version work again.</p></li>
 <li><p>Visual Studio Build (VisualMagick): Fix project file generation.
 Improve portability of code for configure.exe.</p></li>
 <li><p>Fixed mixed encoding (non-UTF-8) errors in text and source files.</p></li>
-<li><p>Restore non-const Image::colorMapSize() since it caused an ABI
-change.  The compiler should choose the appropriate version.</p></li>
-<li><p>Blob API: Fixed SEEK_END validation.  SEEK_END was not used before, but now it is.</p></li>
+<li><p>DrawPrimitive(): Fix composition using &quot;0,0&quot; for image size.  This
+became broken in GraphicsMagick 1.3.36.</p></li>
+<li><p>Blob API: Fixed SEEK_END validation.  SEEK_END was not used before,
+but now it is.</p></li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
-<li><p>AVIF: Support reading AVIF via libheif if it supports decoding AVIF (still no writer support).</p></li>
+<li><p>AVIF: Support reading AVIF via libheif if it supports decoding AVIF
+(still no writer support).</p></li>
 <li><p>LOG: Added function IsEventLogged() to report if a particular event
 will be logged.  Us this as much as possible throughout the software
 to replace use of IsEventLogging().  This avoids a possible
 performance hit if any logging is enabled at all and logging
 statements are executed which are filtered and produce no output.</p></li>
-<li><p>JPEG: Optionally enable arithmetic coder in JPG images using '-define jpeg:arithmetic-coding=true'.</p></li>
+<li><p>FITS: Support storing multiple scenes in one file (non-standard extension).</p></li>
+<li><p>JPEG: Optionally enable arithmetic coder in JPG images using
+'-define jpeg:arithmetic-coding=true'.</p></li>
+<li><p>JPEG: Add support for reading deep gray images.</p></li>
+<li><p>HEIF: Support reading ICC color profiles.</p></li>
 <li><p>Produce ASCII armored &quot;.asc&quot; format GPG signature files.</p></li>
+<li><p>Support reading directly from .bz2, .gz, .svgz, and .Z files
+(without creating a temporary file), if possible.</p></li>
 </ul>
 <p>API Updates:</p>
 <ul class="simple">
-<li><p>Magick++ Image::colorMapSize() is now a 'const' method.</p></li>
+<li><p>Magick++: Provide a version of Image::colorMapSize() which is a
+'const' method.  Continue to provide the non-const version in order
+to avoid an ABI change.  The compiler should choose the appropriate
+version.</p></li>
 </ul>
 <p>Feature improvements:</p>
 <ul class="simple">
 <li><p>HTML documentation generation based on Docutils is significantly
 updated and improved.</p></li>
+<li><p>PerlMagick: Added more sample input files and changed many reader
+tests to use hash signature rather than comparison to reduce the
+distribution size.</p></li>
+<li><p>Blob: The ReadBlobString() function has been re-written to perform
+better when reading from files.</p></li>
+<li><p>MIME: GM &quot;magick&quot; to MIME mappings have been added for apng, avif,
+bmp, ico, and webp (regardless of if they are supported).</p></li>
+<li><p>XPM: The XPM reader performance is dramatically improved and is
+observed to be 32x faster when reading a medium-sized XPM file
+(e.g. the GraphicsMagick logo).</p></li>
+<li><p>XPM: Support reading &quot;deep&quot; images with more pallete entries than
+the maximum colormap size.</p></li>
 </ul>
 <p>Windows Delegate Updates/Additions:</p>
 <ul class="simple">
 <li><p>Update bundled libjpeg to version 9e.</p></li>
+<li><p>Update bundled libtiff to version 4.4.0 (but still compilable using MSVC2008!).</p></li>
 </ul>
 <p>Build Changes:</p>
 <ul class="simple">
-<li><p>None</p></li>
+<li><p>MSVC: Added porting function to emulate C'99 snprintf for MSVC older than 2015.</p></li>
 </ul>
 <p>Behavior Changes:</p>
 <ul class="simple">
