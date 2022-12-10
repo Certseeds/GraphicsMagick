@@ -364,6 +364,9 @@ static long parse8BIM(Image *ifile, Image *ofile)
     {
       if (state == 0)
         {
+          size_t
+            name_alloc;
+
           int
             state,
             next;
@@ -389,10 +392,11 @@ static long parse8BIM(Image *ifile, Image *ofile)
                 recnum = MagickAtoI(newstr);
                 break;
               case 2:
-                name = MagickAllocateResourceLimitedMemory(char *,strlen(newstr)+1);
+                name_alloc = strlen(newstr)+1;
+                name = MagickAllocateResourceLimitedMemory(char *,name_alloc);
                 if (name == (char *) NULL)
                   goto parse8BIM_failure;
-                (void) strlcpy(name,newstr,sizeof(name));
+                (void) strlcpy(name,newstr,name_alloc);
                 break;
             }
             state++;
@@ -664,6 +668,9 @@ static long parse8BIMW(Image *ifile, Image *ofile)
     {
       if (state == 0)
         {
+          size_t
+            name_alloc;
+
           int
             state,
             next;
@@ -689,10 +696,11 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                 recnum = MagickAtoI(newstr);
                 break;
               case 2:
-                name = MagickAllocateResourceLimitedMemory(char *,strlen(newstr)+1);
+                name_alloc = strlen(newstr)+1;
+                name = MagickAllocateResourceLimitedMemory(char *,name_alloc);
                 if (name == (char *) NULL)
                   goto parse8BIMW_failure;
-                (void) strlcpy(name,newstr,sizeof(name));
+                (void) strlcpy(name,newstr,name_alloc);
                 break;
             }
             state++;

@@ -2165,19 +2165,21 @@ static void WriteICCProfile(j_compress_ptr jpeg_info,
       *profile;
 
     size_t
+      alloc_length,
       length=0;
 
 
     length=Min(profile_length-i,65519);
-    profile=MagickAllocateResourceLimitedMemory(unsigned char *,length+14);
+    alloc_length=length+14;
+    profile=MagickAllocateResourceLimitedMemory(unsigned char *,alloc_length);
     if (profile == (unsigned char *) NULL)
       break;
-    (void) strlcpy((char *) profile,"ICC_PROFILE",sizeof(profile));
+    (void) strlcpy((char *) profile,"ICC_PROFILE",alloc_length);
     profile[12]=(unsigned char) ((i/65519)+1);
     profile[13]=(unsigned char) ((profile_length/65519)+1);
     for (j=0; j < (long) length; j++)
       profile[j+14]=color_profile[i+j];
-    jpeg_write_marker(jpeg_info,ICC_MARKER,profile,(unsigned int) length+14);
+    jpeg_write_marker(jpeg_info,ICC_MARKER,profile,(unsigned int) alloc_length);
     MagickFreeResourceLimitedMemory(profile);
   }
 }

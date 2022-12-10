@@ -1,5 +1,34 @@
 2022-12-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/meta.c (parse8BIM): Fix Coverity 382245 "Incorrect
+	expression (SIZEOF_MISMATCH)".
+	(parse8BIMW): Fix Coverity 382250 "Incorrect expression
+	(SIZEOF_MISMATCH)".
+
+	* magick/widget.c (MagickXNoticeWidget): Fix Coverity 382254
+	"Incorrect expression (SIZEOF_MISMATCH)."
+	(MagickXFontBrowserWidget): Fix Coverity 382253 "Incorrect
+	expression (SIZEOF_MISMATCH)".
+	(MagickXFileBrowserWidget): Fix Coverity 382252 "Incorrect
+	expression (SIZEOF_MISMATCH)".
+	(MagickXPreferencesWidget): Fix Coverity 382251 "Incorrect
+	expression (SIZEOF_MISMATCH)".
+	(MagickXConfirmWidget): Fix Coverity 382249 "Incorrect expression
+	(SIZEOF_MISMATCH)".
+	(MagickXListBrowserWidget): Fix Coverity 382248 "Incorrect
+	expression (SIZEOF_MISMATCH)".
+	(MagickXDialogWidget): Fix Coverity 382247 "Incorrect expression
+	(SIZEOF_MISMATCH)".
+	(MagickXColorBrowserWidget): Fix Coverity 382246
+	"(SIZEOF_MISMATCH)".
+
+	* coders/jpeg.c (WriteICCProfile): Fix Coverity 382255 "Incorrect
+	expression (SIZEOF_MISMATCH)".
+
+	* Makefile.am (clean-local): Added a clean-local target to remove
+	Coverity subdirectory ('cov-int').  Building with 'coverity'
+	target leaves Coverity subdirectory in place for inspection.
+
 	* NEWS.txt: Updated the news.
 
 2022-12-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

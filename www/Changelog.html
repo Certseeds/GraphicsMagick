@@ -40,6 +40,31 @@
 <p>2022-12-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/meta.c (parse8BIM): Fix Coverity 382245 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(parse8BIMW): Fix Coverity 382250 &quot;Incorrect expression
+(SIZEOF_MISMATCH)&quot;.</p></li>
+<li><p>magick/widget.c (MagickXNoticeWidget): Fix Coverity 382254
+&quot;Incorrect expression (SIZEOF_MISMATCH).&quot;
+(MagickXFontBrowserWidget): Fix Coverity 382253 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(MagickXFileBrowserWidget): Fix Coverity 382252 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(MagickXPreferencesWidget): Fix Coverity 382251 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(MagickXConfirmWidget): Fix Coverity 382249 &quot;Incorrect expression
+(SIZEOF_MISMATCH)&quot;.
+(MagickXListBrowserWidget): Fix Coverity 382248 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(MagickXDialogWidget): Fix Coverity 382247 &quot;Incorrect expression
+(SIZEOF_MISMATCH)&quot;.
+(MagickXColorBrowserWidget): Fix Coverity 382246
+&quot;(SIZEOF_MISMATCH)&quot;.</p></li>
+<li><p>coders/jpeg.c (WriteICCProfile): Fix Coverity 382255 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.</p></li>
+<li><p>Makefile.am (clean-local): Added a clean-local target to remove
+Coverity subdirectory ('cov-int').  Building with 'coverity'
+target leaves Coverity subdirectory in place for inspection.</p></li>
 <li><p>NEWS.txt: Updated the news.</p></li>
 </ul>
 </blockquote>

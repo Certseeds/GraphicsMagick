@@ -25,6 +25,16 @@ ACLOCAL_AMFLAGS = -I m4
 MODULECOMMONFLAGS = -no-undefined -export-symbols-regex ".*" -shared -module -avoid-version
 MODULECOMMONCPPFLAGS = $(AM_CPPFLAGS)
 
+# Coverity parameters
+# FIXME: Could use info from /etc/os-release, or output from
+# lsb_release.
+# New URL is https://scan.coverity.com/projects/graphicsmagick?tab=overview
+COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
+COVERITY_TARBALL=GraphicsMagick.xz
+COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@
+COVERITY_DESCRIPTION='Ubuntu Q@QuantumDepth@'
+COVERITY_COV_INT='cov-int'
+
 # Options to pass when running configure in the distcheck target.
 #
 # We want to preserve user-provided option variables so the same
@@ -273,6 +283,10 @@ dist-hook:
 	  ) \
 	)
 
+# Special cleaning rules
+clean-local:
+	$(RM) -rf $(COVERITY_COV_INT)
+
 #
 # Additional install rules
 #
@@ -424,17 +438,11 @@ snapshot: distcheck
 
 endif # HasGRAPHICSMAGICK_SNAPSHOT_COPY
 
-# FIXME: Could use info from /etc/os-release, or output from
-# lsb_release.
-COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
-COVERITY_TARBALL=GraphicsMagick.xz
-COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@
-COVERITY_DESCRIPTION='Ubuntu Q@QuantumDepth@'
-COVERITY_COV_INT='cov-int'
-# New URL is https://scan.coverity.com/projects/graphicsmagick?tab=overview
+# Build under Coverity
 coverity:
 	$(MAKE) clean
-	cov-build --dir cov-int $(MAKE)
+	$(RM) -rf $(COVERITY_COV_INT)
+	cov-build --dir $(COVERITY_COV_INT) $(MAKE)
 	tar caf $(COVERITY_TARBALL) cov-int
 	curl --limit-rate 34K \
 	--form token=`cat $$HOME/.coverity_key_gm` \
@@ -444,7 +452,6 @@ coverity:
 	--form description=$(COVERITY_DESCRIPTION) \
 	https://scan.coverity.com/builds?project=GraphicsMagick
 	$(RM) $(COVERITY_TARBALL)
-	$(RM) -rf $(COVERITY_COV_INT)
 
 # Rules for a profiled build (according to Paolo Bonzini <bonzini@gnu.org>)
 #profile:

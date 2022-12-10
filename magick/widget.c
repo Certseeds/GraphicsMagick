@@ -1734,7 +1734,7 @@ void MagickXColorBrowserWidget(Display *display,MagickXWindows *windows,
   /*
     Map Color Browser widget.
   */
-  (void) strlcpy(windows->widget.name,"Browse and Select a Color",sizeof(windows->widget.name));
+  (void) strlcpy(windows->widget.name,"Browse and Select a Color",MaxTextExtent);
   status=XStringListToTextProperty(&windows->widget.name,1,&window_name);
   if (status != 0)
     {
@@ -2729,7 +2729,7 @@ void MagickXColorBrowserWidget(Display *display,MagickXWindows *windows,
   if (status != 0)
     return;
   MagickXNoticeWidget(display,windows,"Color is unknown to X server:",reply);
-  (void) strlcpy(reply,"gray",sizeof(reply));
+  (void) strlcpy(reply,"gray",MaxTextExtent);
 }
 
 /*
@@ -3267,7 +3267,7 @@ int MagickXConfirmWidget(Display *display,MagickXWindows *windows,
   /*
     Map Confirm widget.
   */
-  (void) strlcpy(windows->widget.name,"Confirm",sizeof(windows->widget.name));
+  (void) strlcpy(windows->widget.name,"Confirm",MaxTextExtent);
   status=XStringListToTextProperty(&windows->widget.name,1,&window_name);
   if (status != 0)
     {
@@ -3674,7 +3674,7 @@ int MagickXDialogWidget(Display *display,MagickXWindows *windows,
   /*
     Map Dialog widget.
   */
-  (void) strlcpy(windows->widget.name,"Dialog",sizeof(windows->widget.name));
+  (void) strlcpy(windows->widget.name,"Dialog",MaxTextExtent);
   status=XStringListToTextProperty(&windows->widget.name,1,&window_name);
   if (status != 0)
     {
@@ -4311,7 +4311,7 @@ void MagickXFileBrowserWidget(Display *display,MagickXWindows *windows,
   /*
     Map File Browser widget.
   */
-  (void) strlcpy(windows->widget.name,"Browse and Select a File",sizeof(windows->widget.name));
+  (void) strlcpy(windows->widget.name,"Browse and Select a File",MaxTextExtent);
   status=XStringListToTextProperty(&windows->widget.name,1,&window_name);
   if (status != 0)
     {
@@ -5565,7 +5565,7 @@ void MagickXFontBrowserWidget(Display *display,MagickXWindows *windows,
   /*
     Map Font Browser widget.
   */
-  (void) strlcpy(windows->widget.name,"Browse and Select a Font",sizeof(windows->widget.name));
+  (void) strlcpy(windows->widget.name,"Browse and Select a Font",MaxTextExtent);
   status=XStringListToTextProperty(&windows->widget.name,1,&window_name);
   if (status != 0)
     {
@@ -6793,7 +6793,7 @@ void MagickXListBrowserWidget(Display *display,MagickXWindows *windows,
   /*
     Map List Browser widget.
   */
-  (void) strlcpy(window_info->name,"Browse",sizeof(window_info->name));
+  (void) strlcpy(window_info->name,"Browse",MaxTextExtent);
   status=XStringListToTextProperty(&window_info->name,1,&window_name);
   if (status != 0)
     {
@@ -8172,7 +8172,7 @@ void MagickXNoticeWidget(Display *display,MagickXWindows *windows,
   /*
     Map Notice widget.
   */
-  (void) strlcpy(windows->widget.name,"Notice",sizeof(windows->widget.name));
+  (void) strlcpy(windows->widget.name,"Notice",MaxTextExtent);
   status=XStringListToTextProperty(&windows->widget.name,1,&window_name);
   if (status != 0)
     {
@@ -8508,7 +8508,7 @@ unsigned int MagickXPreferencesWidget(Display *display,
   /*
     Map Preferences widget.
   */
-  (void) strlcpy(windows->widget.name,"Preferences",sizeof(windows->widget.name));
+  (void) strlcpy(windows->widget.name,"Preferences",MaxTextExtent);
   status=XStringListToTextProperty(&windows->widget.name,1,&window_name);
   if (status != 0)
     {
