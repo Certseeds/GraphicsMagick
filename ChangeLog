@@ -1,5 +1,14 @@
 2022-12-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (png_error): Use a macro to report exceptions
+	(rather than calling libpng's png_error()) for exceptions thrown
+	from this module. This provides useful file/line information as
+	well as allowing code analyzers to have a more accurate idea of
+	what is going on.
+
+	* magick/widget.c (MagickXFileBrowserWidget): Fix Coverity 382252
+	"Wrong sizeof argument (SIZEOF_MISMATCH)".
+
 	* coders/meta.c (parse8BIM): Fix Coverity 382245 "Incorrect
 	expression (SIZEOF_MISMATCH)".
 	(parse8BIMW): Fix Coverity 382250 "Incorrect expression

@@ -4945,7 +4945,7 @@ void MagickXFileBrowserWidget(Display *display,MagickXWindows *windows,
             if (event.xbutton.window == windows->widget.id)
               if (MatteIsActive(special_info,event.xbutton))
                 {
-                  (void) strlcpy(reply_info.text,"x:",sizeof(reply_info.text));
+                  (void) strlcpy(reply_info.text,"x:",MaxTextExtent);
                   state|=ExitState;
                 }
             special_info.raised=True;

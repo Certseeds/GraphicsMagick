@@ -679,6 +679,28 @@ static void LogPNGChunk(int logging, png_byte const * type, size_t length)
 }
 #endif
 
+/*
+  Use a macro to report exceptions (rather than calling libpng's
+  png_error()) for exceptions thrown from this module.
+
+  This provides useful file/line information as well as allowing code
+  analyzers to have a more accurate idea of what is going on.
+*/
+#undef png_error
+#define png_error(png_ptr,error_message)                              \
+  do                                                                  \
+    {                                                                 \
+      Image *                                                         \
+        _image;                                                       \
+                                                                      \
+      _image=(Image *) png_get_error_ptr(png_ptr);                    \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),             \
+                            "  error: %.1024s", error_message);       \
+      (void) ThrowException2(&_image->exception,CoderError,           \
+                             error_message,_image->filename);         \
+      longjmp(png_jmpbuf(png_ptr),1);                                 \
+    } while(0)
+
 #if PNG_LIBPNG_VER > 10011
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1784,6 +1806,25 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 
                       &ping_filter_method);
 
+#if (defined(__clang_analyzer__) || defined(__COVERITY__))
+  /*
+    png_get_IHDR() should already have thrown an exception but
+    Coverity and Clang Analyzer can not see that since it is library
+    code.
+  */
+  if (ping_bit_depth != 1 &&
+      ping_bit_depth != 2 &&
+      ping_bit_depth != 4 &&
+      ping_bit_depth != 8 &&
+      ping_bit_depth != 16)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "  libpng-%.1024s error: %.1024s",
+                            PNG_LIBPNG_VER_STRING, "Bit depth is not valid");
+      longjmp(png_jmpbuf(ping),1);
+    }
+#endif /* #if (defined(__clang_analyzer__)  || defined(__COVERITY__)) */
+
 #if (QuantumDepth == 8)
   if (ping_bit_depth > 8)
   {
@@ -1850,15 +1891,6 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       "Number of pixels exceeds resource limit");
     png_error(ping, "Number of pixels exceeds resource limit");
   }
-
-  if (ping_bit_depth != 1 &&
-      ping_bit_depth != 2 &&
-      ping_bit_depth != 4 &&
-      ping_bit_depth != 8 &&
-      ping_bit_depth != 16)
-    {
-      png_error(ping, "Bit depth is not valid");
-    }
 
   if (ping_bit_depth < 8)
     {
@@ -2063,7 +2095,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                     if (mng_info->global_trns_length >
                         mng_info->global_plte_length)
                        png_error(ping, "global tRNS has more entries"
-                                             " than global PLTE");
+                                 " than global PLTE");
                     png_set_tRNS(ping,ping_info,mng_info->global_trns,
                                  (int) mng_info->global_trns_length,NULL);
                   }
@@ -2202,7 +2234,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 #endif
             transparent_color.opacity=(unsigned long) (
                 ping_trans_color->gray *
-                (65535L/MaxValueGivenBits(ping_file_depth)));
+                (65535L/MaxValueGivenBits(ping_file_depth))); /* Coverity 381876 Division or modulo by zero (DIVIDE_BY_ZERO) */
 
 #if (QuantumDepth == 8)
           else
@@ -2261,7 +2293,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
        (ping_colortype == PNG_COLOR_TYPE_GRAY)))
     {
       image->storage_class=PseudoClass;
-      image->colors=1U << ping_file_depth;
+      image->colors=1U << ping_file_depth; /* Coverity (#1-3 of 3): Bad bit shift operation (BAD_SHIFT) */
 #if (QuantumDepth == 8)
       if (image->colors > 256)
         image->colors=256;

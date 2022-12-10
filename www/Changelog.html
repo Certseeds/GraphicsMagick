@@ -40,6 +40,13 @@
 <p>2022-12-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/png.c (png_error): Use a macro to report exceptions
+(rather than calling libpng's png_error()) for exceptions thrown
+from this module. This provides useful file/line information as
+well as allowing code analyzers to have a more accurate idea of
+what is going on.</p></li>
+<li><p>magick/widget.c (MagickXFileBrowserWidget): Fix Coverity 382252
+&quot;Wrong sizeof argument (SIZEOF_MISMATCH)&quot;.</p></li>
 <li><p>coders/meta.c (parse8BIM): Fix Coverity 382245 &quot;Incorrect
 expression (SIZEOF_MISMATCH)&quot;.
 (parse8BIMW): Fix Coverity 382250 &quot;Incorrect expression
