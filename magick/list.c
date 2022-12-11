@@ -83,6 +83,7 @@ MagickExport void AppendImageToList(Image **images,Image *image)
   for (p=(*images); p->next != (Image *) NULL; p=p->next);
   p->next=image;
   image->previous=p;
+  /* *images=image; */ /* FIXME: Optimization for later */
 }
 
 /*

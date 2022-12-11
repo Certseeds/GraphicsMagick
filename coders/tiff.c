@@ -2207,6 +2207,12 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->rows=height;
       image->depth=bits_per_sample;
 
+      if (image->scene != 0)
+        status=MagickMonitorFormatted(image->scene-1,image->scene,
+                                      &image->exception,
+                                      LoadImageText,image->filename,
+                                      image->columns,image->rows);
+
       /*
         Obtain information about any extra samples.
       */
@@ -3670,10 +3676,6 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   return((Image *) NULL);
                 }
               image=SyncNextImageInList(image);
-              status=MagickMonitorFormatted(image->scene-1,image->scene,
-                                            &image->exception,
-                                            LoadImageText,image->filename,
-                                            image->columns,image->rows);
             }
         }
 

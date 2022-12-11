@@ -1,3 +1,11 @@
+2022-12-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (MogrifyImages): Fix performance anomaly
+	noticed with large image list.
+
+	* coders/tiff.c (ReadTIFFImage): Move monitor for list to a better
+	spot so that rows and columns are valid.
+
 2022-12-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (png_error): Use a macro to report exceptions

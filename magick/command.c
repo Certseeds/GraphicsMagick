@@ -11582,7 +11582,9 @@ MagickExport MagickPassFail MogrifyImages(const ImageInfo *image_info,
           }
       }
       AppendImageToList(&mogrify_images,image);
+      mogrify_images=image;
     }
+  mogrify_images=GetFirstImageInList(mogrify_images);
 
   /*
     Apply options to the entire image list.
