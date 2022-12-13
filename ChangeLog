@@ -1,5 +1,8 @@
 2022-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pnm.c (ReadPNMImage): Do not promote gray images to
+	PseudoClass unless the image dimensions make it worthwhile.
+
 	* coders/gif.c (ReadGIFImage): Allocate cleared memory.  Remove
 	two redundant memsets.
 

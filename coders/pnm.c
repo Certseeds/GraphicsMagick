@@ -594,7 +594,8 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
                        image->filename);
 
-      if ((1 == samples_per_pixel) && (max_value < MaxColormapSize))
+      if ((1 == samples_per_pixel) && (max_value < MaxColormapSize) &&
+          ((size_t) image->columns*image->rows >= max_value))
         {
           image->storage_class=PseudoClass;
           image->colors=
