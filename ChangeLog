@@ -1,3 +1,8 @@
+2022-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/gif.c (ReadGIFImage): Allocate cleared memory.  Remove
+	two redundant memsets.
+
 2022-12-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (MogrifyImages): Fix performance anomaly

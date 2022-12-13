@@ -149,10 +149,10 @@ static MagickPassFail DecodeImage(Image *image,const long opacity)
   /*
     Allocate decoder tables.
   */
-  packet=MagickAllocateMemory(unsigned char *,256);
-  prefix=MagickAllocateArray(unsigned short *,MaxStackSize,sizeof(short));
-  suffix=MagickAllocateMemory(unsigned char *,MaxStackSize);
-  pixel_stack=MagickAllocateMemory(unsigned char *,MaxStackSize+1);
+  packet=MagickAllocateClearedMemory(unsigned char *,256);
+  prefix=MagickAllocateClearedArray(unsigned short *,MaxStackSize,sizeof(short));
+  suffix=MagickAllocateClearedMemory(unsigned char *,MaxStackSize);
+  pixel_stack=MagickAllocateClearedMemory(unsigned char *,MaxStackSize+1);
   if ((packet == (unsigned char *) NULL) ||
       (prefix == (unsigned short *) NULL) ||
       (suffix == (unsigned char *) NULL) ||
@@ -168,18 +168,12 @@ static MagickPassFail DecodeImage(Image *image,const long opacity)
   /*
     Initialize GIF data stream decoder.
   */
-  (void) memset(packet,0,256);
-  (void) memset(prefix,0,MaxStackSize*sizeof(short));
-  (void) memset(suffix,0,MaxStackSize);
-  (void) memset(pixel_stack,0,MaxStackSize+1);
   clear=1U << data_size;
   end_of_information=clear+1;
   available=clear+2;
   old_code=NullCode;
   code_size=data_size+1;
   code_mask=(1U << code_size)-1;
-  (void) memset(prefix,0,MaxStackSize*sizeof(short));
-  (void) memset(suffix,0,MaxStackSize);
   for (code=0; code < clear; code++)
     {
       prefix[code]=0;
@@ -912,10 +906,9 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   background=ReadBlobByte(image);
   c=ReadBlobByte(image);  /* reserved */
   global_colors=1 << ((flag & 0x07)+1);
-  global_colormap=MagickAllocateArray(unsigned char *,3U,Max(global_colors,256U));
+  global_colormap=MagickAllocateClearedArray(unsigned char *,3U,Max(global_colors,256U));
   if (global_colormap == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-  (void) memset(global_colormap,0,(size_t) 3*Max(global_colors,256U));
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Global Colors: %u", global_colors);
