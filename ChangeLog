@@ -1,3 +1,9 @@
+2022-12-17 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* tiff/port/libport_config.h Added missing file
+	Documentation of libtiff upgraded.
+
+
 2022-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/rwfile_deep.tap: Add JXL tests for deep images.
