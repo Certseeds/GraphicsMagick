@@ -1,3 +1,8 @@
+2022-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jxl.c: Fix grayscale writer error.  Eliminate use of
+	deprecated functions.  Support 16-bits/sample.
+
 2022-12-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pnm.c (ReadPNMImage): Do not promote gray images to
