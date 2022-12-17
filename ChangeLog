@@ -1,5 +1,7 @@
 2022-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* tests/rwfile_deep.tap: Add JXL tests for deep images.
+
 	* coders/jxl.c: Fix grayscale writer error.  Eliminate use of
 	deprecated functions.  Support 16-bits/sample.
 
