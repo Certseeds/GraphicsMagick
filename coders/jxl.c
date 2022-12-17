@@ -759,30 +759,30 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             format.align=0;
             if (basic_info.num_color_channels == 1)
               {
-                unsigned long
-                  max_value_given_bits;
-
-                max_value_given_bits=MaxValueGivenBits(basic_info.bits_per_sample);
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "max_value_given_bits=%lu",max_value_given_bits);
-
                 if ((basic_info.bits_per_sample <= 8) && (!image->matte))
                   {
+                    unsigned long
+                      max_value_given_bits;
+
+                    max_value_given_bits=MaxValueGivenBits(basic_info.bits_per_sample);
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "max_value_given_bits=%lu",max_value_given_bits);
+
                     if (!AllocateImageColormap(image,max_value_given_bits+1))
                       ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                   }
                 grayscale=MagickTrue;
                 format.num_channels=1;
                 format.data_type=(basic_info.bits_per_sample <= 8 ? JXL_TYPE_UINT8 :
-                                  (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 : JXL_TYPE_FLOAT));
-                /* format.data_type=(basic_info.bits_per_sample > 8) ? JXL_TYPE_FLOAT : JXL_TYPE_UINT8; */
+                                  (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 :
+                                   JXL_TYPE_FLOAT));
               }
             else if (basic_info.num_color_channels == 3)
               {
                 format.num_channels=image->matte ? 4 : 3;
                 format.data_type=(basic_info.bits_per_sample <= 8 ? JXL_TYPE_UINT8 :
-                                  (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 : JXL_TYPE_FLOAT));
-                /* format.data_type=(basic_info.bits_per_sample > 8) ? JXL_TYPE_FLOAT : JXL_TYPE_UINT8; */
+                                  (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 :
+                                   JXL_TYPE_FLOAT));
               }
             else
               {
@@ -1133,7 +1133,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   else if (image->depth <= 16)
     pixel_format.data_type = JXL_TYPE_UINT16;
   else if (image->depth <= 32)
-    pixel_format.data_type = JXL_TYPE_UINT16; /* JXL_TYPE_UINT32; */
+    pixel_format.data_type = JXL_TYPE_UINT16; /* or JXL_TYPE_FLOAT */
   else
     ThrowJXLWriterException(CoderError,ColorspaceModelIsNotSupported,image);
 
@@ -1198,7 +1198,6 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   /* FIXME: For RGB we want to set JXL_COLOR_SPACE_RGB and for gray we want JXL_COLOR_SPACE_GRAY */
   basic_info.uses_original_profile = JXL_TRUE;
   JxlColorEncodingSetToSRGB(&color_encoding, pixel_format.num_channels < 3);
-  /* FIXME: Following fails for gray images */
   if (JxlEncoderSetColorEncoding(jxl_encoder, &color_encoding) != JXL_ENC_SUCCESS)
     ThrowJXLWriterException(CoderFatalError,Default,image);
 
@@ -1260,7 +1259,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   }
 
   /* get & fill pixel buffer */
-  size_row=image->columns * pixel_format.num_channels * (basic_info.bits_per_sample/8);
+  size_row=MagickArraySize(MagickArraySize(image->columns,pixel_format.num_channels),(basic_info.bits_per_sample/8));
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "size_row = %zu", size_row);
   in_buf=MagickAllocateResourceLimitedArray(unsigned char *,image->rows,size_row);
