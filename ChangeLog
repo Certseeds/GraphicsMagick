@@ -1,5 +1,14 @@
 2022-12-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Updated the news.
+
+	* magick/image.c (SetImageDepth): Restore is_monochrome and
+	is_grayscale image flags.  Changing depth should not change the
+	nature of 'gray'.
+
+	* coders/jxl.c: Support reading and writing 32-bit 'float'
+	images. Need a Q32 build in order to write 32-bit 'float' images.
+
 	* fuzzing/oss-fuzz-build.sh: Remove xz --with-pic=yes option which
 	now seems to annoy oss-fuzz build.
 

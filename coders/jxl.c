@@ -19,8 +19,15 @@
 % Status: Only support basic images (no animations) with grayscale/SRGB colorspace
 * Note that JXL is a C++ library so does require linking with a c++ compiler.
 *
-* Currently tested vs libjxl-0.6.1 on ubuntu only, likely will have build problems
+* Currently tested vs libjxl-0.7.0 on ubuntu only, likely will have build problems
 * on other platforms. Also note the amount of third-party-libs required!
+*
+* Features still to be completed:
+*
+*   * Support linear gray
+*   * Support CMYK
+*   * Support embedded profiles
+*   * Support 16-bit float ("Half") format
 */
 
 #include "magick/studio.h"
@@ -294,9 +301,10 @@ static MagickBool fill_pixels_char_grayscale(Image *image, ExceptionInfo *except
       if (image->matte) {
         FOR_PIXEL_PACKETS
           {
-            SetRedSample(q,ScaleCharToQuantum(*p));
-            SetGreenSample(q,ScaleCharToQuantum(*p));
-            SetBlueSample(q,ScaleCharToQuantum(*p)); p++;
+            const Quantum s = ScaleCharToQuantum(*p); p++;
+            SetRedSample(q,s);
+            SetGreenSample(q,s);
+            SetBlueSample(q,s);
             SetOpacitySample(q,MaxRGB-ScaleCharToQuantum(*p)); p++;
             q++;
           }
@@ -304,9 +312,10 @@ static MagickBool fill_pixels_char_grayscale(Image *image, ExceptionInfo *except
           } else {
         FOR_PIXEL_PACKETS
           {
-            SetRedSample(q,ScaleCharToQuantum(*p));
-            SetGreenSample(q,ScaleCharToQuantum(*p));
-            SetBlueSample(q,ScaleCharToQuantum(*p)); p++;
+            const Quantum s = ScaleCharToQuantum(*p); p++;
+            SetRedSample(q,s);
+            SetGreenSample(q,s);
+            SetBlueSample(q,s); p++;
             SetOpacitySample(q,OpaqueOpacity);
             q++;
           }
@@ -361,9 +370,10 @@ static MagickBool fill_pixels_short_grayscale(Image *image, ExceptionInfo *excep
       if (image->matte) {
         FOR_PIXEL_PACKETS
           {
-            SetRedSample(q,ScaleShortToQuantum(*p));
-            SetGreenSample(q,ScaleShortToQuantum(*p));
-            SetBlueSample(q,ScaleShortToQuantum(*p)); p++;
+            Quantum s = ScaleShortToQuantum(*p); p++;
+            SetRedSample(q,s);
+            SetGreenSample(q,s);
+            SetBlueSample(q,s);
             SetOpacitySample(q,MaxRGB-ScaleShortToQuantum(*p)); p++;
             q++;
           }
@@ -371,15 +381,57 @@ static MagickBool fill_pixels_short_grayscale(Image *image, ExceptionInfo *excep
           } else {
         FOR_PIXEL_PACKETS
           {
-            SetRedSample(q,ScaleShortToQuantum(*p));
-            SetGreenSample(q,ScaleShortToQuantum(*p));
-            SetBlueSample(q,ScaleShortToQuantum(*p)); p++;
+            Quantum s = ScaleShortToQuantum(*p); p++;
+            SetRedSample(q,s);
+            SetGreenSample(q,s);
+            SetBlueSample(q,s);
             SetOpacitySample(q,OpaqueOpacity);
             q++;
           }
         END_FOR_PIXEL_PACKETS
       }
     }
+  return MagickTrue;
+}
+
+
+static MagickBool fill_pixels_float_grayscale(Image *image,
+                                              ExceptionInfo *exception,
+                                              float *p)
+{
+  long
+    x,
+    y;
+
+  PixelPacket
+    *q;
+
+  image->storage_class = DirectClass;
+
+  if (image->matte) {
+    FOR_PIXEL_PACKETS
+      {
+        Quantum s = RoundFloatToQuantum(*p * MaxRGBFloat); p++;
+        SetRedSample(q,s);
+        SetGreenSample(q,s);
+        SetBlueSample(q,s);
+        SetOpacitySample(q,MaxRGB-RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
+        q++;
+      }
+    END_FOR_PIXEL_PACKETS
+      } else {
+    FOR_PIXEL_PACKETS
+      {
+        Quantum s = RoundFloatToQuantum(*p * MaxRGBFloat); p++;
+        SetRedSample(q,s);
+        SetGreenSample(q,s);
+        SetBlueSample(q,s);
+        SetOpacitySample(q,OpaqueOpacity);
+        q++;
+      }
+    END_FOR_PIXEL_PACKETS
+      }
+
   return MagickTrue;
 }
 
@@ -581,6 +633,29 @@ static const char *JxlColorSpaceAsString(const JxlColorSpace color_space)
       break;
     case JXL_COLOR_SPACE_UNKNOWN:
       str = "Unknown";
+      break;
+    }
+
+  return str;
+}
+
+static const char *JxlDataTypeAsString(const JxlDataType data_type)
+{
+  const char *str = "Unknown";
+
+  switch (data_type)
+    {
+    case JXL_TYPE_FLOAT:
+      str = "Float";
+      break;
+    case JXL_TYPE_UINT8:
+      str = "UINT8";
+      break;
+    case JXL_TYPE_UINT16:
+      str = "UINT16";
+      break;
+    case JXL_TYPE_FLOAT16:
+      str = "FLOAT16";
       break;
     }
 
@@ -955,6 +1030,10 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                   {
                     res=fill_pixels_short_grayscale(image, exception, (unsigned short *) out_buf);
                   }
+                else if (format.data_type == JXL_TYPE_FLOAT)
+                  {
+                    res=fill_pixels_float_grayscale(image, exception, (float *) out_buf);
+                  }
               }
 
             if (!res)
@@ -1020,6 +1099,28 @@ do { \
   ThrowWriterException(code_,reason_,image_); \
  } while(1)
 
+static StorageType JxlDataTypeToDispatchStorageType(const JxlDataType data_type)
+{
+  StorageType storage_type = 0;
+
+  switch (data_type)
+    {
+    case JXL_TYPE_FLOAT:
+      storage_type = FloatPixel;
+      break;
+    case JXL_TYPE_UINT8:
+      storage_type = CharPixel;
+      break;
+    case JXL_TYPE_UINT16:
+      storage_type = ShortPixel;
+      break;
+    case JXL_TYPE_FLOAT16:
+      storage_type = ShortPixel; // FIXME: Not actually supported yet
+      break;
+    }
+
+  return storage_type;
+}
 
 static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 {
@@ -1133,9 +1234,12 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   else if (image->depth <= 16)
     pixel_format.data_type = JXL_TYPE_UINT16;
   else if (image->depth <= 32)
-    pixel_format.data_type = JXL_TYPE_UINT16; /* or JXL_TYPE_FLOAT */
+    pixel_format.data_type = JXL_TYPE_FLOAT; /* or JXL_TYPE_FLOAT JXL_TYPE_UINT16 */
   else
     ThrowJXLWriterException(CoderError,ColorspaceModelIsNotSupported,image);
+
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "Using JXL '%s' data type", JxlDataTypeAsString(pixel_format.data_type));
 
   /* Initialize JxlBasicInfo struct to default values. */
   JxlEncoderInitBasicInfo(&basic_info);
@@ -1272,9 +1376,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 
   status=DispatchImage(image,0,0,image->columns,image->rows,
                        characteristics.grayscale ? "I" : (image->matte ? "RGBA" : "RGB"),
-                       basic_info.bits_per_sample == 8 ? CharPixel :
-                       (basic_info.bits_per_sample == 16 ? ShortPixel :
-                        basic_info.bits_per_sample == LongPixel),
+                       JxlDataTypeToDispatchStorageType(pixel_format.data_type),
                        in_buf,&image->exception);
   if (status == MagickFail)
     ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);

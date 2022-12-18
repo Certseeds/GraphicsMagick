@@ -2700,6 +2700,10 @@ MagickExport MagickPassFail SetImageDepth(Image *image,const unsigned long depth
   MagickPassFail
     status=MagickPass;
 
+  MagickBool
+    is_monochrome = image->is_monochrome,
+    is_grayscale = image->is_grayscale;
+
   assert(image != (Image *) NULL);
 
   status=QuantumOperatorImage(image,AllChannels,DepthQuantumOp,(double) depth,
@@ -2708,6 +2712,8 @@ MagickExport MagickPassFail SetImageDepth(Image *image,const unsigned long depth
     status=QuantumOperatorImage(image,OpacityChannel,DepthQuantumOp,(double) depth,
                                 &image->exception);
   image->depth=Min(depth,QuantumDepth);
+  image->is_monochrome = is_monochrome;
+  image->is_grayscale = is_grayscale;
   return status;
 }
 
