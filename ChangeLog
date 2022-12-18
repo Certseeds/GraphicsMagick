@@ -2,6 +2,7 @@
 
 	* tiff/port/libport_config.h Added missing file
 	Documentation of libtiff upgraded.
+        Upgraded libtiff to 4.5.0.
 
 
 2022-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
