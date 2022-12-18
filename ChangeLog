@@ -1,3 +1,8 @@
+2022-12-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Remove xz --with-pic=yes option which
+	now seems to annoy oss-fuzz build.
+
 2022-12-17 Fojtik Jaroslav  <JaFojtik@yandex.com>
         * VisualMagick/magick/magick_types.h.in
 	Reverting from 16859. The change in 16860 completelly breaks
