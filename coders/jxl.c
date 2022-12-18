@@ -1115,7 +1115,7 @@ static StorageType JxlDataTypeToDispatchStorageType(const JxlDataType data_type)
       storage_type = ShortPixel;
       break;
     case JXL_TYPE_FLOAT16:
-      storage_type = ShortPixel; // FIXME: Not actually supported yet
+      storage_type = ShortPixel; /* FIXME: Not actually supported yet */
       break;
     }
 
