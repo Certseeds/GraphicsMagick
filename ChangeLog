@@ -1,4 +1,9 @@
 2022-12-17 Fojtik Jaroslav  <JaFojtik@yandex.com>
+        * VisualMagick/magick/magick_types.h.in
+	Reverting from 16859. The change in 16860 completelly breaks
+        compillation.
+
+2022-12-17 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* tiff/port/libport_config.h Added missing file
 	Documentation of libtiff upgraded.
