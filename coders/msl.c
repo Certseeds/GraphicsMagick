@@ -122,6 +122,9 @@ typedef struct _MSLInfo
 */
 static unsigned int
   WriteMSLImage(const ImageInfo *,Image *);
+
+static void
+MSLError(void *context,const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,2,3)));
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -301,12 +304,20 @@ MSLEntityDeclaration(void *context,const xmlChar *name,int type,
      system_id != (const xmlChar *) NULL ?(char *) system_id : "none",content);
   msl_info=(MSLInfo *) context;
   if (msl_info->parser->inSubset == 1)
-    (void) xmlAddDocEntity(msl_info->document,name,type,public_id,system_id,
-                           content);
+    {
+      if (xmlAddDocEntity(msl_info->document,name,type,public_id,system_id,
+                          content) == (xmlEntityPtr) NULL)
+        MSLError(context, "SAX.entityDecl: xmlAddDocEntity() returned NULL!");
+    }
   else
-    if (msl_info->parser->inSubset == 2)
-      (void) xmlAddDtdEntity(msl_info->document,name,type,public_id,system_id,
-                             content);
+    {
+      if (msl_info->parser->inSubset == 2)
+        {
+          if (xmlAddDtdEntity(msl_info->document,name,type,public_id,system_id,
+                              content) == (xmlEntityPtr) NULL)
+            MSLError(context, "SAX.entityDecl: xmlAddDtdEntity() returned NULL!");
+        }
+    }
 }
 
 static void
@@ -4345,9 +4356,6 @@ MSLWarning(void *context,const char *format,...)
   ThrowException2(msl_info->exception,CoderError,reason,(char *) NULL);
   va_end(operands);
 }
-
-static void
-MSLError(void *context,const char *format,...) MAGICK_ATTRIBUTE((__format__ (__printf__,2,3)));
 
 static void
 MSLError(void *context,const char *format,...)

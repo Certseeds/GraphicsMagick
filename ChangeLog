@@ -1,5 +1,8 @@
 2022-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/msl.c (MSLEntityDeclaration): Report an error if
+	xmlAddDocEntity() or xmlAddDtdEntity() fails.
+
 	* coders/svg.c (SVGEntityDeclaration): Report an error if
 	xmlAddDocEntity() or xmlAddDtdEntity() fails.
 
