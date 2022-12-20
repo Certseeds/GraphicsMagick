@@ -636,7 +636,7 @@ SVGInternalSubset(void *context,const xmlChar *name,
     *svg_info;
 
   /*
-    Does this document has an internal subset?
+    Create an internal subset (svg_info->document->intSubset)
   */
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "  SAX.internalSubset(%.1024s, %.1024s, %.1024s)",(char *) name,
@@ -719,12 +719,20 @@ SVGEntityDeclaration(void *context,const xmlChar *name,int type,
                         system_id != (xmlChar *) NULL ? (char *) system_id : "none",content);
   svg_info=(SVGInfo *) context;
   if (svg_info->parser->inSubset == 1)
-    (void) xmlAddDocEntity(svg_info->document,name,type,public_id,system_id,
-                           content);
+    {
+      if (xmlAddDocEntity(svg_info->document,name,type,public_id,system_id,
+                          content) == (xmlEntityPtr) NULL)
+        SVGError(context, "SAX.entityDecl: xmlAddDocEntity() returned NULL!");
+    }
   else
-    if (svg_info->parser->inSubset == 2)
-      (void) xmlAddDtdEntity(svg_info->document,name,type,public_id,system_id,
-                             content);
+    {
+      if (svg_info->parser->inSubset == 2)
+        {
+          if (xmlAddDtdEntity(svg_info->document,name,type,public_id,system_id,
+                              content) == (xmlEntityPtr) NULL)
+            SVGError(context, "SAX.entityDecl: xmlAddDtdEntity() returned NULL!");
+        }
+    }
 }
 
 static void
@@ -4143,7 +4151,10 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
       */
       SVGEndDocument(&svg_info);
       if (svg_info.parser->myDoc != (xmlDocPtr) NULL)
-        xmlFreeDoc(svg_info.parser->myDoc);
+        {
+          xmlFreeDoc(svg_info.parser->myDoc);
+          svg_info.parser->myDoc = (xmlDocPtr) NULL;
+        }
       /*
         Free all the memory used by a parser context. However the parsed
         document in ctxt->myDoc is not freed (so we just did that).
