@@ -751,29 +751,6 @@ do { \
   ThrowWriterException(code_,reason_,image_); \
  } while(1)
 
-static StorageType JxlDataTypeToDispatchStorageType(const JxlDataType data_type)
-{
-  StorageType storage_type = 0;
-
-  switch (data_type)
-    {
-    case JXL_TYPE_FLOAT:
-      storage_type = FloatPixel;
-      break;
-    case JXL_TYPE_UINT8:
-      storage_type = CharPixel;
-      break;
-    case JXL_TYPE_UINT16:
-      storage_type = ShortPixel;
-      break;
-    case JXL_TYPE_FLOAT16:
-      storage_type = ShortPixel; /* FIXME: Not actually supported yet */
-      break;
-    }
-
-  return storage_type;
-}
-
 static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 {
   MagickPassFail
@@ -938,6 +915,17 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   if (!characteristics.opaque)
     basic_info.alpha_bits=basic_info.bits_per_sample;
 
+  /*
+    Set the feature level of the JPEG XL codestream. Valid values are 5 and
+    10, or -1 (to choose automatically). Using the minimum required level, or
+    level 5 in most cases, is recommended for compatibility with all decoders.
+
+    See <jxl/encode.h> for more details.
+  */
+  if ((jxl_status = JxlEncoderSetCodestreamLevel(jxl_encoder,-1)) != JXL_ENC_SUCCESS)
+    {
+    };
+
   /* Set the global metadata of the image encoded by this encoder. */
   if ((jxl_status = JxlEncoderSetBasicInfo(jxl_encoder,&basic_info)) != JXL_ENC_SUCCESS)
     {
@@ -1015,23 +1003,111 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   }
 
   /* get & fill pixel buffer */
-  size_row=MagickArraySize(MagickArraySize(image->columns,pixel_format.num_channels),(basic_info.bits_per_sample/8));
+  size_row=MagickArraySize(MagickArraySize(image->columns,pixel_format.num_channels),
+                           (basic_info.bits_per_sample/8));
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "size_row = %zu", size_row);
+                        "size_row = %" MAGICK_SIZE_T_F "u", (MAGICK_SIZE_T) size_row);
   in_buf=MagickAllocateResourceLimitedArray(unsigned char *,image->rows,size_row);
   if (in_buf == (unsigned char *) NULL)
     ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "DispatchImage(0,0,%lu,%lu, %s)",
-                        image->columns,image->rows,
-                        characteristics.grayscale ? "I" : (characteristics.opaque ? "RGB" : "RGBA"));
 
-  status=DispatchImage(image,0,0,image->columns,image->rows,
-                       characteristics.grayscale ? "I" : (image->matte ? "RGBA" : "RGB"),
-                       JxlDataTypeToDispatchStorageType(pixel_format.data_type),
-                       in_buf,&image->exception);
-  if (status == MagickFail)
-    ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+  /*
+    Export image pixels to allocated buffer.
+  */
+  {
+    long
+      y;
+
+    const PixelPacket
+      *q;
+
+    unsigned char
+      *p;
+
+    unsigned int
+      quantum_size;
+
+    QuantumType
+      quantum_type;
+
+    QuantumSampleType
+      sample_type = UndefinedQuantumSampleType;
+
+    ExportPixelAreaOptions
+      export_options;
+
+    ExportPixelAreaInfo
+      export_info;
+
+    quantum_size = 0;
+    switch (pixel_format.data_type)
+      {
+      case JXL_TYPE_FLOAT:
+        quantum_size = 32;
+        sample_type = FloatQuantumSampleType;
+        break;
+      case JXL_TYPE_UINT8:
+        quantum_size = 8;
+        sample_type = UnsignedQuantumSampleType;
+        break;
+      case JXL_TYPE_UINT16:
+        quantum_size = 16;
+        sample_type = UnsignedQuantumSampleType;
+        break;
+      case JXL_TYPE_FLOAT16:
+        quantum_size = 16;
+        sample_type = FloatQuantumSampleType;
+        break;
+      }
+
+    if (pixel_format.num_channels == 1)
+      {
+        if (image->matte)
+          quantum_type = GrayAlphaQuantum;
+        else
+          quantum_type = GrayQuantum;
+      }
+#if 0
+    else if (cmyk)
+      {
+        if (image->matte)
+          quantum_type = CMYKAQuantum;
+        else
+          quantum_type = CMYKQuantum;
+      }
+#endif
+    else
+      {
+        if (image->matte)
+          quantum_type = RGBAQuantum;
+        else
+          quantum_type = RGBQuantum;
+      }
+
+    ExportPixelAreaOptionsInit(&export_options);
+    export_options.sample_type = sample_type;
+    export_options.endian = NativeEndian;
+
+    p = in_buf;
+    for (y=0; y < (long) image->rows; y++)
+      {
+        q=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
+        if (q == (const PixelPacket *) NULL)
+          {
+            status = MagickFail;
+            break;
+          }
+
+        if ((status = ExportImagePixelArea(image,quantum_type,quantum_size,
+                                           p,&export_options,&export_info))
+            != MagickPass)
+          break;
+
+        p += export_info.bytes_exported;
+      }
+    if (status == MagickFail)
+      ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+  }
 
   /* real encode */
   if (JxlEncoderAddImageFrame(frame_settings,&pixel_format,in_buf,

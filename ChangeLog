@@ -2,6 +2,7 @@
 
 	* coders/jxl.c (ReadJXLImage): Now based on
 	ImportImagePixelArea().
+	(WriteJXLImage): Now based on ExportImagePixelArea();
 
 2022-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
