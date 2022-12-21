@@ -24,10 +24,14 @@
 *
 * Features still to be completed:
 *
-*   * Support linear gray
-*   * Support CMYK
+*   * Support premultiplied alpha
+*   * Support Alpha bits != RGB sample bits
+*   * Support CMYK layers
+*   * Support progressive
 *   * Support embedded profiles
 *   * Support 16-bit float ("Half") format
+*   * Support progress monitor
+*   * Use import/export functions (ImportImagePixelArea()/ExportImagePixelArea())
 */
 
 #include "magick/studio.h"
@@ -135,451 +139,20 @@ static inline OrientationType convert_orientation(JxlOrientation orientation)
     }
 }
 
-#define FOR_PIXEL_PACKETS \
-  for (y=0; y < (long)image->rows; y++)                              \
-    {                                                                \
-       q=SetImagePixelsEx(image,0,y,image->columns,1,exception);     \
-       if (q == (PixelPacket *) NULL)                                \
-         return MagickFail;                                          \
-       for (x=0; x < (long)image->columns; x++)
-
-#define END_FOR_PIXEL_PACKETS      \
-      if (!SyncImagePixels(image)) \
-        return MagickFail;         \
-    }                              \
-
-static MagickBool fill_pixels_char(Image *image,
-                                   ExceptionInfo *exception,
-                                   unsigned char *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  if (image->matte) {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,ScaleCharToQuantum(*p)); p++;
-        SetGreenSample(q,ScaleCharToQuantum(*p)); p++;
-        SetBlueSample(q,ScaleCharToQuantum(*p)); p++;
-        SetOpacitySample(q,MaxRGB-ScaleCharToQuantum(*p)); p++;
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      } else {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,ScaleCharToQuantum(*p)); p++;
-        SetGreenSample(q,ScaleCharToQuantum(*p)); p++;
-        SetBlueSample(q,ScaleCharToQuantum(*p)); p++;
-        SetOpacitySample(q,OpaqueOpacity);
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      }
-
-  return MagickTrue;
-}
-
-static MagickBool fill_pixels_short(Image *image,
-                                   ExceptionInfo *exception,
-                                   unsigned short *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  if (image->matte) {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,ScaleShortToQuantum(*p)); p++;
-        SetGreenSample(q,ScaleShortToQuantum(*p)); p++;
-        SetBlueSample(q,ScaleShortToQuantum(*p)); p++;
-        SetOpacitySample(q,MaxRGB-ScaleShortToQuantum(*p)); p++;
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      } else {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,ScaleShortToQuantum(*p)); p++;
-        SetGreenSample(q,ScaleShortToQuantum(*p)); p++;
-        SetBlueSample(q,ScaleShortToQuantum(*p)); p++;
-        SetOpacitySample(q,OpaqueOpacity);
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      }
-
-  return MagickTrue;
-}
-
-static MagickBool fill_pixels_float(Image *image,
-                                    ExceptionInfo *exception,
-                                    float *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  if (image->matte) {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
-        SetGreenSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
-        SetBlueSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
-        SetOpacitySample(q,MaxRGB-RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      } else {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
-        SetGreenSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
-        SetBlueSample(q,RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
-        SetOpacitySample(q,OpaqueOpacity);
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      }
-
-  return MagickTrue;
-}
-
-static MagickBool fill_pixels_char_grayscale(Image *image, ExceptionInfo *exception,
-                                             unsigned char *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  if (image->storage_class == PseudoClass)
-    {
-      IndexPacket
-        index;
-
-      for (y=0; y < (long)image->rows; y++)
-        {
-          register IndexPacket
-            *indexes;
-
-          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
-          if (q == (PixelPacket *) NULL)
-            return MagickFail;
-
-          indexes=AccessMutableIndexes(image);
-          if (indexes == NULL)
-            return MagickFail;
-
-          for (x=0; x < (long)image->columns; x++)
-            {
-              index=(IndexPacket)(*p++);
-              VerifyColormapIndex(image,index);
-              indexes[x]=index;
-              *q++=image->colormap[index];
-            }
-        }
-
-      if (!SyncImagePixels(image))
-        return MagickFail;
-    }
-  else
-    {
-      if (image->matte) {
-        FOR_PIXEL_PACKETS
-          {
-            const Quantum s = ScaleCharToQuantum(*p); p++;
-            SetRedSample(q,s);
-            SetGreenSample(q,s);
-            SetBlueSample(q,s);
-            SetOpacitySample(q,MaxRGB-ScaleCharToQuantum(*p)); p++;
-            q++;
-          }
-        END_FOR_PIXEL_PACKETS
-          } else {
-        FOR_PIXEL_PACKETS
-          {
-            const Quantum s = ScaleCharToQuantum(*p); p++;
-            SetRedSample(q,s);
-            SetGreenSample(q,s);
-            SetBlueSample(q,s); p++;
-            SetOpacitySample(q,OpaqueOpacity);
-            q++;
-          }
-        END_FOR_PIXEL_PACKETS
-      }
-    }
-  return MagickTrue;
-}
-
-static MagickBool fill_pixels_short_grayscale(Image *image, ExceptionInfo *exception,
-                                              unsigned short *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  if (image->storage_class == PseudoClass)
-    {
-      IndexPacket
-        index;
-
-      for (y=0; y < (long)image->rows; y++)
-        {
-          register IndexPacket
-            *indexes;
-
-          q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
-          if (q == (PixelPacket *) NULL)
-            return MagickFail;
-
-          indexes=AccessMutableIndexes(image);
-          if (indexes == NULL)
-            return MagickFail;
-
-          for (x=0; x < (long)image->columns; x++)
-            {
-              index=(IndexPacket)(*p++);
-              VerifyColormapIndex(image,index);
-              indexes[x]=index;
-              *q++=image->colormap[index];
-            }
-        }
-
-      if (!SyncImagePixels(image))
-        return MagickFail;
-    }
-  else
-    {
-      if (image->matte) {
-        FOR_PIXEL_PACKETS
-          {
-            Quantum s = ScaleShortToQuantum(*p); p++;
-            SetRedSample(q,s);
-            SetGreenSample(q,s);
-            SetBlueSample(q,s);
-            SetOpacitySample(q,MaxRGB-ScaleShortToQuantum(*p)); p++;
-            q++;
-          }
-        END_FOR_PIXEL_PACKETS
-          } else {
-        FOR_PIXEL_PACKETS
-          {
-            Quantum s = ScaleShortToQuantum(*p); p++;
-            SetRedSample(q,s);
-            SetGreenSample(q,s);
-            SetBlueSample(q,s);
-            SetOpacitySample(q,OpaqueOpacity);
-            q++;
-          }
-        END_FOR_PIXEL_PACKETS
-      }
-    }
-  return MagickTrue;
-}
-
-
-static MagickBool fill_pixels_float_grayscale(Image *image,
-                                              ExceptionInfo *exception,
-                                              float *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  image->storage_class = DirectClass;
-
-  if (image->matte) {
-    FOR_PIXEL_PACKETS
-      {
-        Quantum s = RoundFloatToQuantum(*p * MaxRGBFloat); p++;
-        SetRedSample(q,s);
-        SetGreenSample(q,s);
-        SetBlueSample(q,s);
-        SetOpacitySample(q,MaxRGB-RoundFloatToQuantum(*p * MaxRGBFloat)); p++;
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      } else {
-    FOR_PIXEL_PACKETS
-      {
-        Quantum s = RoundFloatToQuantum(*p * MaxRGBFloat); p++;
-        SetRedSample(q,s);
-        SetGreenSample(q,s);
-        SetBlueSample(q,s);
-        SetOpacitySample(q,OpaqueOpacity);
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      }
-
-  return MagickTrue;
-}
-
-
 /** Convert any linear RGB to SRGB
  *  Formula from wikipedia:
  *      https://en.wikipedia.org/wiki/SRGB
  */
-static Quantum linear2nonlinear(float p)
+static void linear2nonlinear_quantum(Quantum *q)
 {
-  if (p < 0.0031308) {
-    p=p * 12.92;
-  } else {
-    p=1.055 * powf(p, 1.0/2.4) - 0.055;
-  }
-  return RoundFloatToQuantum(p * MaxRGBFloat);
-}
-
-static MagickBool fill_pixels_float_linear(Image *image,
-                                           ExceptionInfo *exception,
-                                           float *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  if (image->matte) {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,linear2nonlinear(*p++));
-        SetGreenSample(q,linear2nonlinear(*p++));
-        SetBlueSample(q,linear2nonlinear(*p++));
-        SetOpacitySample(q,MaxRGB-linear2nonlinear(*p++));
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      } else {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,linear2nonlinear(*p++));
-        SetGreenSample(q,linear2nonlinear(*p++));
-        SetBlueSample(q,linear2nonlinear(*p++));
-        SetOpacitySample(q,OpaqueOpacity);
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      }
-
-  return MagickTrue;
-}
-
-static Quantum linear2nonlinear_char(unsigned char c)
-{
-  float p = c * (1.0f/256.0f);
-  if (p < 0.0031308) {
-    p=p * 12.92;
-  } else {
-    p=1.055 * powf(p, 1.0/2.4) - 0.055;
-  }
-  return RoundFloatToQuantum(p * MaxRGBFloat);
-}
-
-static Quantum linear2nonlinear_short(unsigned short s)
-{
-  double p = s * (1.0/256.0);
+  double p = *q * (1.0/256.0);
   if (p < 0.0031308) {
     p=p * 12.92;
   } else {
     p=1.055 * pow(p, 1.0/2.4) - 0.055;
   }
-  return RoundDoubleToQuantum(p * MaxRGBDouble);
+  *q = RoundDoubleToQuantum(p * MaxRGBDouble);
 }
-
-static MagickBool fill_pixels_char_linear(Image *image,
-                                          ExceptionInfo *exception,
-                                          unsigned char *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  if (image->matte) {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,linear2nonlinear_char(*p++));
-        SetGreenSample(q,linear2nonlinear_char(*p++));
-        SetBlueSample(q,linear2nonlinear_char(*p++));
-        SetOpacitySample(q,MaxRGB-linear2nonlinear_char(*p++));
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      } else {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,linear2nonlinear_char(*p++));
-        SetGreenSample(q,linear2nonlinear_char(*p++));
-        SetBlueSample(q,linear2nonlinear_char(*p++));
-        SetOpacitySample(q,OpaqueOpacity);
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      }
-
-  return MagickTrue;
-}
-
-static MagickBool fill_pixels_short_linear(Image *image,
-                                          ExceptionInfo *exception,
-                                          unsigned short *p)
-{
-  long
-    x,
-    y;
-
-  PixelPacket
-    *q;
-
-  if (image->matte) {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,linear2nonlinear_short(*p++));
-        SetGreenSample(q,linear2nonlinear_short(*p++));
-        SetBlueSample(q,linear2nonlinear_short(*p++));
-        SetOpacitySample(q,MaxRGB-linear2nonlinear_short(*p++));
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      } else {
-    FOR_PIXEL_PACKETS
-      {
-        SetRedSample(q,linear2nonlinear_short(*p++));
-        SetGreenSample(q,linear2nonlinear_short(*p++));
-        SetBlueSample(q,linear2nonlinear_short(*p++));
-        SetOpacitySample(q,OpaqueOpacity);
-        q++;
-      }
-    END_FOR_PIXEL_PACKETS
-      }
-
-  return MagickTrue;
-}
-
 
 static const char *JxlTransferFunctionAsString(const JxlTransferFunction fn)
 {
@@ -956,7 +529,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                     }
                   break;
                 case JXL_COLOR_SPACE_GRAY:
-                  if(!grayscale /*|| isLinear */) /* FIXME: Can't properly read linear gray */
+                  if (!grayscale)
                     ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
                   break;
                 case JXL_COLOR_SPACE_XYB:
@@ -992,47 +565,126 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
           }
         case JXL_DEC_FULL_IMAGE:
           { /* got image */
-            MagickBool
-              res=MagickFail;
+            long
+              x,
+              y;
+
+            PixelPacket
+              *q;
+
+            unsigned char
+              *p;
+
+            ImportPixelAreaOptions
+              import_options;
+
+            ImportPixelAreaInfo
+              import_area_info;
+
+            unsigned int
+              quantum_size;
+
+            QuantumType
+              quantum_type;
+
+            QuantumSampleType
+              sample_type = UndefinedQuantumSampleType;
+
+            MagickPassFail
+              res=MagickPass;
 
             assert(out_buf != (unsigned char *)NULL);
-            if (!grayscale)
+
+            quantum_size = 0;
+              switch (format.data_type)
+                {
+                case JXL_TYPE_FLOAT:
+                  quantum_size = 32;
+                  sample_type = FloatQuantumSampleType;
+                  break;
+                case JXL_TYPE_UINT8:
+                  quantum_size = 8;
+                  sample_type = UnsignedQuantumSampleType;
+                  break;
+                case JXL_TYPE_UINT16:
+                  quantum_size = 16;
+                  sample_type = UnsignedQuantumSampleType;
+                  break;
+                case JXL_TYPE_FLOAT16:
+                  quantum_size = 16;
+                  sample_type = FloatQuantumSampleType;
+                  break;
+                }
+
+            if (grayscale)
               {
-                if (format.data_type == JXL_TYPE_UINT8)
-                  {
-                    if (isLinear)
-                      res=fill_pixels_char_linear(image, exception, out_buf);
-                    else
-                      res=fill_pixels_char(image, exception, out_buf);
-                  }
-                else if (format.data_type == JXL_TYPE_UINT16)
-                  {
-                    if (isLinear)
-                      res=fill_pixels_short_linear(image, exception, (unsigned short *) out_buf);
-                    else
-                      res=fill_pixels_short(image, exception, (unsigned short *) out_buf);
-                  }
-                else if (format.data_type == JXL_TYPE_FLOAT)
-                  {
-                    if (isLinear)
-                      res=fill_pixels_float_linear(image, exception, (float*)out_buf);
-                    else
-                      res=fill_pixels_float(image, exception, (float*)out_buf);
-                  }
+                if (image->matte)
+                  quantum_type = GrayAlphaQuantum;
+                else
+                  quantum_type = GrayQuantum;
               }
+            #if 0
+            else if (cmyk)
+              {
+                if (image->matte)
+                  quantum_type = CMYKAQuantum;
+                else
+                  quantum_type = CMYKQuantum;
+              }
+            #endif
             else
               {
-                if (format.data_type == JXL_TYPE_UINT8)
+                if (image->matte)
+                  quantum_type = RGBAQuantum;
+                else
+                  quantum_type = RGBQuantum;
+              }
+
+            ImportPixelAreaOptionsInit(&import_options);
+            import_options.sample_type = sample_type;
+            import_options.endian = NativeEndian;
+
+            p = out_buf;
+            for (y=0; y < (long) image->rows; y++)
+              {
+                q=SetImagePixelsEx(image,0,y,image->columns,1,exception);
+                if (q == (PixelPacket *) NULL)
                   {
-                    res=fill_pixels_char_grayscale(image, exception, out_buf);
+                    res = MagickFail;
+                    break;
                   }
-                else if (format.data_type == JXL_TYPE_UINT16)
+
+                if ((res = ImportImagePixelArea(image,quantum_type,quantum_size,
+                                                p,
+                                                &import_options,&import_area_info))
+                    != MagickPass)
+                  break;
+                // Promote linear image to sRGB (2.4 gamma).
+                // We could also set image->gamma and return the original image.
+#if 1
+                if (isLinear)
                   {
-                    res=fill_pixels_short_grayscale(image, exception, (unsigned short *) out_buf);
+                    for (x = 0 ; x < (long) image->columns ; x++)
+                      {
+                        linear2nonlinear_quantum(&q[x].red);
+                        if (grayscale)
+                          {
+                            q[x].green = q[x].blue = q[x].red;
+                          }
+                        else
+                          {
+                            linear2nonlinear_quantum(&q[x].green);
+                            linear2nonlinear_quantum(&q[x].blue);
+                          }
+                      }
                   }
-                else if (format.data_type == JXL_TYPE_FLOAT)
+#endif
+                p += import_area_info.bytes_imported;
+
+                if (!SyncImagePixels(image))
                   {
-                    res=fill_pixels_float_grayscale(image, exception, (float *) out_buf);
+                    res = MagickFail;
+                    break;
                   }
               }
 
