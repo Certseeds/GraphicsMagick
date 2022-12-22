@@ -447,12 +447,12 @@ void cmdopts_destroy(cmdopts_t *cmdopts)
 
 int addopt(char *optstr, int maxlen, char *s)
 {
-	size_t n;
-	size_t m;
+	int n;
+	int m;
 
 	n = strlen(optstr);
 	m = n + strlen(s) + 1;
-	if (m > (size_t) maxlen) {
+	if (m > maxlen) {
 		return 1;
 	}
 	if (n > 0) {

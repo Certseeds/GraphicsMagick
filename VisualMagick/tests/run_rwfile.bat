@@ -1,5 +1,5 @@
 @echo off
-set exedir=..\bin\
+set exedir=..\binmt\
 set srcdir=..\..\tests\
 set events="exception"
 set bilevel_file=%srcdir%input_bilevel.miff

@@ -56,15 +56,17 @@
 # 
 # __END_OF_JASPER_LICENSE__
 
-AUTOMAKE_OPTIONS = foreign dist-zip dist-tarZ
+AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = README INSTALL COPYRIGHT LICENSE NEWS ChangeLog data doc \
-  jasper.spec.in jasper.spec acaux
+  jasper.spec.in jasper.spec ac_aux
+
+ACLOCAL_AMFLAGS = -I ac_m4
 
 # Note: We need to put the derived file "jasper.spec" in the distribution
 # in order to facilitate RPM building.
 
-SUBDIRS = src
+SUBDIRS = src pkgconfig
 
 rpm: dist
 	for i in BUILD RPMS SRPMS SOURCES SPECS; do \
@@ -77,15 +79,18 @@ rpm: dist
 	  -ta $(PACKAGE)-$(JAS_VERSION).tar.gz
 	rm -rf $$PWD/RPMTOP/BUILD/$(PACKAGE)-$(JAS_VERSION)
 
+@GENERATE_CHANGELOG_RULES@
+dist-hook: dist-ChangeLog
+
 # We need to ensure that any Subversion directories in the extra directories
 # are removed before the distribution archive is made.
-dist-hook:
-	for i in $(EXTRA_DIST); do \
-		if test -d $$i; then \
-			j=`find $(distdir)/$$i -name .svn`; \
-			if test -n "$$j"; then \
-				rm -rf $$j; \
-			fi; \
-		fi; \
-	done
+#dist-hook:
+#	for i in $(EXTRA_DIST); do \
+#		if test -d $$i; then \
+#			j=`find $(distdir)/$$i -name .svn`; \
+#			if test -n "$$j"; then \
+#				rm -rf $$j; \
+#			fi; \
+#		fi; \
+#	done
 

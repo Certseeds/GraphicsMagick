@@ -553,7 +553,7 @@ int jas_stream_printf(jas_stream_t *stream, const char *fmt, ...)
 	int ret;
 
 	va_start(ap, fmt);
-	ret = vsprintf(buf, fmt, ap);
+	ret = vsnprintf(buf, sizeof buf, fmt, ap);
 	jas_stream_puts(stream, buf);
 	va_end(ap);
 	return ret;
@@ -1125,14 +1125,14 @@ static int sfile_read(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	FILE *fp;
 	fp = JAS_CAST(FILE *, obj);
-	return (int) fread(buf, 1, cnt, fp);
+	return fread(buf, 1, cnt, fp);
 }
 
 static int sfile_write(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	FILE *fp;
 	fp = JAS_CAST(FILE *, obj);
-	return (int) fwrite(buf, 1, cnt, fp);
+	return fwrite(buf, 1, cnt, fp);
 }
 
 static long sfile_seek(jas_stream_obj_t *obj, long offset, int origin)

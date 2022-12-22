@@ -140,24 +140,24 @@ if {%1}=={none} goto :EOF
 if {%1}=={blob} goto :_doblob
 if {%1}=={file} goto :_dofile
 :_dofile
-..\bin\rwfile ..\..\PerlMagick\t\input_p4.pbm %TYPE%
+..\binmt\rwfile ..\..\PerlMagick\t\input_p4.pbm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
-..\bin\rwfile ..\..\PerlMagick\t\input_p5.pgm %TYPE%
+..\binmt\rwfile ..\..\PerlMagick\t\input_p5.pgm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
-..\bin\rwfile ..\..\PerlMagick\t\input_p6.ppm %TYPE%
+..\binmt\rwfile ..\..\PerlMagick\t\input_p6.ppm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
 if not {%1}=={both} goto :EOF
 :_doblob
-..\bin\rwblob ..\..\PerlMagick\t\input_p4.pbm %TYPE%
+..\binmt\rwblob ..\..\PerlMagick\t\input_p4.pbm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
-..\bin\rwblob ..\..\PerlMagick\t\input_p5.pgm %TYPE%
+..\binmt\rwblob ..\..\PerlMagick\t\input_p5.pgm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
-..\bin\rwblob ..\..\PerlMagick\t\input_p6.ppm %TYPE%
+..\binmt\rwblob ..\..\PerlMagick\t\input_p6.ppm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
 goto :EOF

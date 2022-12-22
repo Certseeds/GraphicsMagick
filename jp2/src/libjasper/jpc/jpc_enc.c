@@ -781,11 +781,10 @@ void jpc_enc_cp_destroy(jpc_enc_cp_t *cp)
 
 int ratestrtosize(char *s, uint_fast32_t rawsize, uint_fast32_t *size)
 {
-	char *cp;
 	jpc_flt_t f;
 
 	/* Note: This function must not modify output size on failure. */
-	if ((cp = strchr(s, 'B'))) {
+	if (strchr(s, 'B')) {
 		*size = atoi(s);
 	} else {
 		f = atof(s);
@@ -960,7 +959,7 @@ startoff = jas_stream_getrwcount(enc->out);
 	}
 	sprintf(buf, "Creator: JasPer Version %s", jas_getversion());
 	com = &enc->mrk->parms.com;
-	com->len = (unsigned short) strlen(buf);
+	com->len = strlen(buf);
 	com->regid = JPC_COM_LATIN;
 	if (!(com->data = JAS_CAST(uchar *, jas_strdup(buf)))) {
 		abort();
@@ -2102,8 +2101,7 @@ static jpc_enc_tcmpt_t *tcmpt_create(jpc_enc_tcmpt_t *tcmpt, jpc_enc_cp_t *cp,
 
 	tcmpt->numstepsizes = tcmpt->numbands;
 	assert(tcmpt->numstepsizes <= JPC_MAXBANDS);
-	memset(tcmpt->stepsizes, 0, sizeof(tcmpt->numstepsizes *
-	  sizeof(uint_fast16_t)));
+	memset(tcmpt->stepsizes, 0, tcmpt->numstepsizes * sizeof(uint_fast16_t));
 
 	/* Retrieve information about the various bands. */
 	jpc_tsfb_getbands(tcmpt->tsfb, jas_seq2d_xstart(tcmpt->data),

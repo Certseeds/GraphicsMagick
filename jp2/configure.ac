@@ -16,7 +16,7 @@ dnl ************************************************************
 dnl The major, minor, and micro version numbers of the package.
 define(AC_JAS_MAJOR_VERSION, 1)
 define(AC_JAS_MINOR_VERSION, 900)
-define(AC_JAS_MICRO_VERSION, 1)
+define(AC_JAS_MICRO_VERSION, 2)
 
 dnl The package version.
 define(AC_JAS_VERSION,
@@ -66,7 +66,15 @@ AC_PREREQ(2.59)
 AC_CONFIG_SRCDIR(README)
 dnl Note: Avoid the temptation to call the auxiliary directory "aux" because
 dnl Microsoft Windows will barf if you try to use "aux" as a directory name. :-(
-AC_CONFIG_AUX_DIR(acaux)
+AC_CONFIG_AUX_DIR([ac_aux])
+AC_CONFIG_MACRO_DIR([ac_m4])
+
+m4_include([ac_m4/m4_ax_generate_changelog.m4])
+
+AX_GENERATE_CHANGELOG
+
+# Initialize libtool.
+LT_INIT([shared static])
 
 # Detect the canonical host and target build environment.
 # Note: This precedes automake initialization to avoid warnings.
@@ -112,7 +120,7 @@ AH_TEMPLATE([JAS_CONFIGURE], [JasPer configure])
 AH_TEMPLATE([JAS_VERSION], [JasPer version])
 AH_TEMPLATE([DEBUG_MEMALLOC], [Debugging memory allocator])
 AH_TEMPLATE([DEBUG], [Extra debugging support])
-AH_TEMPLATE([HAVE_VLA], [Have variable length arrays])
+dnl AH_TEMPLATE([HAVE_VLA], [Have variable length arrays])
 
 AH_TOP([
 /* Avoid problems due to multiple inclusion. */
@@ -147,7 +155,6 @@ AH_BOTTOM([
 
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_RANLIB
 # AC_PROG_AWK
 # AC_PROG_CPP
 # AC_PROG_LN_S
@@ -157,15 +164,10 @@ AC_PROG_LIBTOOL
 
 AC_PATH_XTRA
 
-AC_MSG_CHECKING(whether variable-length arrays are supported)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
-	int n; int foo[n];
-]])],[AC_MSG_RESULT(yes); AC_DEFINE(HAVE_VLA)],[AC_MSG_RESULT(no)])
-
-dnl AC_TRY_COMPILE is obsolete
-dnl AC_TRY_COMPILE([], [
+dnl AC_MSG_CHECKING(whether variable-length arrays are supported)
+dnl AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
 dnl 	int n; int foo[n];
-dnl ], [AC_MSG_RESULT(yes); AC_DEFINE(HAVE_VLA)], AC_MSG_RESULT(no))
+dnl ]])],[AC_MSG_RESULT(yes); AC_DEFINE(HAVE_VLA)],[AC_MSG_RESULT(no)])
 
 ############################################################
 # Check for the IJG JPEG library.
@@ -245,7 +247,7 @@ HAVE_OPENGL=no
 OPENGL_LIBS=""
 if test $ENABLE_OPENGL = yes; then
 	if test $HAVE_OPENGL = no; then
-		TMPLIBS="-lglut -lGL -lGLU $X_PRE_LIBS -lX11 -lXmu -lXi -lXext -lXt $X_EXTRA_LIBS $X_LIBS"
+		TMPLIBS="-lglut -lGL -lGLU"
 		AC_CHECK_LIB(glut, glutInit, [HAVE_OPENGL=yes;
 		  OPENGL_LIBS=$TMPLIBS], HAVE_OPENGL=no, $TMPLIBS)
 	fi
@@ -399,6 +401,8 @@ src/libjasper/pgx/Makefile
 src/libjasper/pnm/Makefile
 src/libjasper/ras/Makefile
 src/msvc/Makefile
+pkgconfig/Makefile
+pkgconfig/jasper.pc
 jasper.spec
 ])
 AC_OUTPUT

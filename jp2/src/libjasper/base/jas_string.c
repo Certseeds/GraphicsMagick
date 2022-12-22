@@ -85,7 +85,7 @@
 
 char *jas_strdup(const char *s)
 {
-	size_t n;
+	int n;
 	char *p;
 	n = strlen(s) + 1;
 	if (!(p = jas_malloc(n * sizeof(char)))) {

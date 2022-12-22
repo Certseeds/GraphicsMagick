@@ -266,7 +266,6 @@ jas_iccprof_t *jas_iccprof_load(jas_stream_t *in)
 	jas_iccattrval_t *attrval;
 	jas_iccattrval_t *prevattrval;
 	jas_icctagtabent_t *tagtabent;
-	jas_iccattrvalinfo_t *attrvalinfo;
 	int i;
 	int len;
 
@@ -300,6 +299,7 @@ jas_iccprof_t *jas_iccprof_load(jas_stream_t *in)
 				if (jas_iccprof_setattr(prof, tagtabent->tag, attrval))
 					goto error;
 				jas_iccattrval_destroy(attrval);
+				attrval = 0;
 			} else {
 #if 0
 				jas_eprintf("warning: skipping unknown tag type\n");
@@ -325,7 +325,7 @@ jas_iccprof_t *jas_iccprof_load(jas_stream_t *in)
 			goto error;
 		}
 		curoff += 8;
-		if (!(attrvalinfo = jas_iccattrvalinfo_lookup(type))) {
+		if (!jas_iccattrvalinfo_lookup(type)) {
 #if 0
 			jas_eprintf("warning: skipping unknown tag type\n");
 #endif
@@ -1112,7 +1112,7 @@ static int jas_icctxtdesc_input(jas_iccattrval_t *attrval, jas_stream_t *in,
 	txtdesc->maclen = c;
 	if (jas_stream_read(in, txtdesc->macdata, 67) != 67)
 		goto error;
-	txtdesc->asclen = (unsigned int) strlen(txtdesc->ascdata) + 1;
+	txtdesc->asclen = strlen(txtdesc->ascdata) + 1;
 #define WORKAROUND_BAD_PROFILES
 #ifdef WORKAROUND_BAD_PROFILES
 	n = txtdesc->asclen + txtdesc->uclen * 2 + 15 + 67;
@@ -1136,7 +1136,7 @@ error:
 static int jas_icctxtdesc_getsize(jas_iccattrval_t *attrval)
 {
 	jas_icctxtdesc_t *txtdesc = &attrval->data.txtdesc;
-	return (int) strlen(txtdesc->ascdata) + 1 + txtdesc->uclen * 2 + 15 + 67;
+	return strlen(txtdesc->ascdata) + 1 + txtdesc->uclen * 2 + 15 + 67;
 }
 
 static int jas_icctxtdesc_output(jas_iccattrval_t *attrval, jas_stream_t *out)
@@ -1216,7 +1216,7 @@ error:
 static int jas_icctxt_getsize(jas_iccattrval_t *attrval)
 {
 	jas_icctxt_t *txt = &attrval->data.txt;
-	return (int) strlen(txt->string) + 1;
+	return strlen(txt->string) + 1;
 }
 
 static int jas_icctxt_output(jas_iccattrval_t *attrval, jas_stream_t *out)
@@ -1699,6 +1699,8 @@ jas_iccprof_t *jas_iccprof_createfrombuf(uchar *buf, int len)
 	jas_stream_close(in);
 	return prof;
 error:
+	if (in)
+		jas_stream_close(in);
 	return 0;
 }
 

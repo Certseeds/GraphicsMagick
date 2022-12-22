@@ -1,0 +1,728 @@
+commit 063ab4e30d9dff0b1142ca659f4af14ee1ec4296
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:   Tue Oct 4 20:19:58 2016 -0700
+
+    Bump the version number
+
+M	configure.ac
+
+commit 2f7f2d1adc1100b41d96d04cc548fc55832cb645
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Oct 4 20:13:25 2016 -0700
+
+    More changes for an automatically generated ChangeLog
+
+M	NEWS
+
+commit c0cdb38de26763acf5c6c11960458beced4215e5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Oct 4 19:58:03 2016 -0700
+
+    Added automatic ChangeLog generation from git commit history
+
+M	Makefile.am
+A	ac_m4/m4_ax_generate_changelog.m4
+M	configure.ac
+
+commit be0e91a38b701a0daa943daee99436b63cc7db33
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Sep 25 14:44:28 2016 -0700
+
+    Modified the installation instructions in the INSTALL file to explain
+    how to install the JasPer software directly from the files in the
+    git repository (for users who might be unfamiliar with Autotools).
+
+M	INSTALL
+
+commit 30a262b65b4f6fdb965caaa9d44ae8470cd6d577
+Merge: 9d3a5fc 773e70c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 23:30:22 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2016-1867'
+
+commit 773e70cbab3ca723bd6431a33c9601417c8e39cd
+Merge: 9d3a5fc 980da43
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 23:28:41 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2016-1867'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2016-1867
+
+commit 9d3a5fc8aa37e09d83772f122d43cb2b2428d9d7
+Merge: 8c0cb3e 7793a89
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 23:24:47 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2014-9029'
+
+commit 7793a893c252929b4808624655dde8d04ebe4adc
+Merge: 8c0cb3e 5dbe57e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 23:22:21 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2014-9029'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2014-9029
+
+commit 8c0cb3e569094d064fc34891b8ec035b2944789a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 23:18:28 2016 -0700
+
+    Use a gzipped tar file for distribution
+
+M	Makefile.am
+
+commit 9cc3435a48ceaf26ad6e35458e47bac9ab0ae1cb
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 23:00:32 2016 -0700
+
+    Removed another derived file
+
+D	src/libjasper/include/jasper/jas_config.h
+
+commit 63dea34b7ea5fb93cb68d2a5268d9209e9c1231e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 22:53:09 2016 -0700
+
+    Removed some derived files
+
+D	Makefile.in
+D	acaux/config.guess
+D	acaux/config.sub
+D	acaux/depcomp
+D	acaux/install-sh
+D	acaux/ltmain.sh
+D	acaux/missing
+D	acaux/mkinstalldirs
+D	configure
+D	jasper.spec
+D	src/Makefile.in
+D	src/appl/Makefile.in
+D	src/libjasper/Makefile.in
+D	src/libjasper/base/Makefile.in
+D	src/libjasper/bmp/Makefile.in
+D	src/libjasper/include/Makefile.in
+D	src/libjasper/include/jasper/Makefile.in
+D	src/libjasper/jp2/Makefile.in
+D	src/libjasper/jpc/Makefile.in
+D	src/libjasper/jpg/Makefile.in
+D	src/libjasper/mif/Makefile.in
+D	src/libjasper/pgx/Makefile.in
+D	src/libjasper/pnm/Makefile.in
+D	src/libjasper/ras/Makefile.in
+D	src/msvc/Makefile.in
+
+commit 2177d4859fc131dda4006109159fe8c293ae42e0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 22:16:46 2016 -0700
+
+    Removed HAVE_VLA stuff from various configuration and build files.
+    Also, changed a few INCLUDES to AM_CPPFLAGS in automake files
+    (since INCLUDES
+    is deprecated).
+
+M	Makefile.in
+M	acaux/ltmain.sh
+M	aclocal.m4
+M	configure
+M	configure.ac
+M	src/Makefile.in
+M	src/appl/Makefile.am
+M	src/appl/Makefile.in
+M	src/libjasper/Makefile.in
+M	src/libjasper/base/Makefile.am
+M	src/libjasper/base/Makefile.in
+M	src/libjasper/bmp/Makefile.am
+M	src/libjasper/bmp/Makefile.in
+M	src/libjasper/include/Makefile.in
+M	src/libjasper/include/jasper/Makefile.in
+M	src/libjasper/include/jasper/jas_config.h
+M	src/libjasper/include/jasper/jas_config.h.in
+M	src/libjasper/jp2/Makefile.am
+M	src/libjasper/jp2/Makefile.in
+M	src/libjasper/jpc/Makefile.am
+M	src/libjasper/jpc/Makefile.in
+M	src/libjasper/jpg/Makefile.am
+M	src/libjasper/jpg/Makefile.in
+M	src/libjasper/mif/Makefile.am
+M	src/libjasper/mif/Makefile.in
+M	src/libjasper/pgx/Makefile.am
+M	src/libjasper/pgx/Makefile.in
+M	src/libjasper/pnm/Makefile.am
+M	src/libjasper/pnm/Makefile.in
+M	src/libjasper/ras/Makefile.am
+M	src/libjasper/ras/Makefile.in
+M	src/msvc/Makefile.in
+
+commit e31a992d3869037680bd1e18305146f79a1569ee
+Merge: 268ab23 137628a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 21:41:58 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2014-8158'
+    I am merging some changes to eliminate the use of VLAs in the
+    filter bank
+    code (for security reasons).
+
+commit 137628a9ebc798b8681f900adf83a8a9953d156e
+Merge: 268ab23 0d64bde
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 21:36:39 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2014-8158'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2014-8158
+
+commit 268ab239b23542552742ae4ab29052dd1e88072c
+Merge: 95c5a55 2144881
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 21:23:50 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2014-8157'
+
+commit 214488123f5746bc4a56967d1632b068ef4ef497
+Merge: 95c5a55 3fd4067
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Sep 21 21:22:30 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2014-8157'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2014-8157
+
+commit 95c5a55f1a166b1553c6e8259ee851d3764e3455
+Merge: c966a36 3933ab6
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:59:01 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2014-8138'
+
+commit 3933ab687ca9a0abcaa8bc769088d41d72c6013a
+Merge: c966a36 c54113d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:57:23 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2014-8138'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2014-8138
+
+commit c966a3642f3eb7aac1376505c1d1087a7e15ff59
+Merge: fc6d908 d23c795
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:52:16 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2015-5221'
+
+commit d23c7955bc8ddb12e88036ada09443ce54cd6495
+Merge: fc6d908 df5d286
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:50:16 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2015-5221'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2015-5221
+
+commit fc6d908725af4fb674fcaf897c809dc12b522585
+Merge: e9e328d ad3a21e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:48:25 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2016-2116'
+
+commit ad3a21efb4750872ef86308c2cae3a6be1334348
+Merge: e9e328d 142245b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:47:24 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2016-2116'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2016-2116
+
+commit e9e328de659958ad8b15af736eb907772d73ad24
+Merge: fe94610 876698f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:45:09 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/Coverity-FORWARD_NULL'
+
+commit 876698f9f80a4cc540470f3ec51f70c800eec504
+Merge: fe94610 3e304e5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:40:36 2016 -0700
+
+    Merge branch 'wip/hughsie/Coverity-FORWARD_NULL'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/Coverity-FORWARD_NULL
+
+commit fe94610fed75619b537c5c4b820e8e6cbcc02d6c
+Merge: b8b9fbd b87cb52
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:34:28 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/jpc_dec.c'
+
+commit b87cb5259c088c7c383cb084d215e71c0ac6c5a7
+Merge: b8b9fbd d5314a0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:34:03 2016 -0700
+
+    Merge branch 'wip/hughsie/jpc_dec.c' of
+    https://github.com/hughsie/jasper into hughsie-wip/hughsie/jpc_dec.c
+
+commit b8b9fbd98eab117108f4da1760644ae871c56e8b
+Merge: e72cddd 2a66a50
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:28:51 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/Coverity-CHECKED_RETURN'
+
+commit 2a66a504dae1cb485c95505c222d3db9282fef22
+Merge: e72cddd f1b6eba
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 15:28:16 2016 -0700
+
+    Merge branch 'wip/hughsie/Coverity-CHECKED_RETURN'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/Coverity-CHECKED_RETURN
+
+commit e72cddde1ab3156fa5d199728eafab4633659e47
+Merge: 462c382 5d4290e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 08:06:38 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/pkgconfig'
+
+commit 5d4290eeb81ecd79d45fc1969a7e0dfdba4a1092
+Merge: 462c382 3cb180b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 08:06:25 2016 -0700
+
+    Merge branch 'wip/hughsie/pkgconfig' of
+    https://github.com/hughsie/jasper into hughsie-wip/hughsie/pkgconfig
+
+commit 462c38279036a5c480db9fac73ddb31d936d0bcb
+Merge: 00b33e9 e8f510f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:55:19 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2016-1577'
+
+commit e8f510fc36bd22af6bd84113669406b218ab4d2d
+Merge: 00b33e9 74ea22a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:54:54 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2016-1577'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2016-1577
+
+commit 00b33e9e2ba02c32f76d8a231bce5f33b4809350
+Merge: f40b31c 57c9355
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:48:46 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/Coverity-UNUSED_VALUE'
+
+commit 57c9355612d917214dc223e3383c4bee89383fa3
+Merge: f40b31c 0a5a633
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:48:17 2016 -0700
+
+    Merge branch 'wip/hughsie/Coverity-UNUSED_VALUE'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/Coverity-UNUSED_VALUE
+
+commit f40b31c7a54f10eb232516ef8774dfc55be1987f
+Merge: 530805c b1c9b99
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:43:00 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/Coverity-BAD_SIZEOF'
+
+commit b1c9b99c246e8341169c3a1308204d725f412f7d
+Merge: 530805c 28b05c0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:42:25 2016 -0700
+
+    Merge branch 'wip/hughsie/Coverity-BAD_SIZEOF'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/Coverity-BAD_SIZEOF
+
+commit 530805cec4e099e8a0816a6ff481ea67a2832328
+Merge: b702259 413a496
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:36:46 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/CVE-2008-3522'
+
+commit 413a496481e53ba75d9808085a6e988a86e684dd
+Merge: b702259 d678ccd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:35:39 2016 -0700
+
+    Merge branch 'wip/hughsie/CVE-2008-3522'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/CVE-2008-3522
+
+commit b70225947cd1eb9c1dee5e0844389eeb9f72dd64
+Merge: b13b8c8 58c3a5f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Sep 19 07:27:27 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/1.701.0-GL'
+
+commit 58c3a5fe07701726c941551b3d1547f4ad449d10
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    1.701.0-GL
+
+M	configure
+M	configure.ac
+
+commit 3cb180b862d36b73f56e111ec2e99333b05ac6ae
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    pkgconfig
+
+M	Makefile.am
+M	configure.ac
+A	pkgconfig/Makefile.am
+A	pkgconfig/jasper.pc.in
+
+commit 980da43d8d388a67cac505e734423b2a5aa4cede
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2016-1867
+
+M	src/libjasper/jpc/jpc_t2cod.c
+
+commit 5dbe57e4808bea4b83a97e2f4aaf8c91ab6fdecb
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2014-9029
+
+M	src/libjasper/jpc/jpc_dec.c
+
+commit 0d64bde2b3ba7e1450710d540136a8ce4199ef30
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2014-8158
+
+M	src/libjasper/jpc/jpc_qmfb.c
+
+commit 3fd4067496d8ef70f11841d7492ddeb1f1d56915
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2014-8157
+
+M	src/libjasper/jpc/jpc_dec.c
+
+commit c54113d6fa49f8f26d1572e972b806276c5b05d5
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2014-8138
+
+M	src/libjasper/jp2/jp2_dec.c
+
+commit df5d2867e8004e51e18b89865bc4aa69229227b3
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2015-5221
+
+M	src/libjasper/mif/mif_cod.c
+
+commit 142245b9bbb33274a7c620aa7a8f85bc00b2d68e
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2016-2116
+
+M	src/libjasper/base/jas_icc.c
+
+commit 3e304e5fbd4cfae7d9b8335a3e86c3be8b04f976
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    Coverity-FORWARD_NULL
+
+M	src/libjasper/jpc/jpc_dec.c
+M	src/libjasper/jpc/jpc_t1enc.c
+
+commit d5314a0d25669a01f38051d456779d6075642dfc
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    jpc_dec.c
+
+M	src/libjasper/jpc/jpc_dec.c
+
+commit f1b6ebaa4ee049d966a9094428096b8f72cd492a
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    Coverity-CHECKED_RETURN
+
+M	src/libjasper/jpc/jpc_cs.c
+M	src/libjasper/jpc/jpc_t2enc.c
+M	src/libjasper/ras/ras_enc.c
+
+commit 74ea22a7a4fe186e0a0124df25e19739b77c4a29
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2016-1577
+
+M	src/libjasper/base/jas_icc.c
+
+commit 0a5a633bdda91d765f95324cd11fff2582a604ae
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    Coverity-UNUSED_VALUE
+
+M	src/libjasper/base/jas_icc.c
+M	src/libjasper/jpc/jpc_enc.c
+
+commit 28b05c0ba53c2dc1dccae13007281470b0e59f61
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    Coverity-BAD_SIZEOF
+
+M	src/libjasper/jpc/jpc_enc.c
+
+commit d678ccd27b8a062e3bfd4c80d8ce2676a8166a27
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    CVE-2008-3522
+
+M	src/libjasper/base/jas_stream.c
+
+commit b13b8c86be870107f83b0a9a4b77557cb2b65d69
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Sep 16 12:37:51 2016 -0700
+
+    Initial commit
+
+A	COPYRIGHT
+A	ChangeLog
+A	INSTALL
+A	LICENSE
+A	Makefile.am
+A	Makefile.in
+A	NEWS
+A	README
+A	acaux/config.guess
+A	acaux/config.sub
+A	acaux/depcomp
+A	acaux/install-sh
+A	acaux/ltmain.sh
+A	acaux/missing
+A	acaux/mkinstalldirs
+A	aclocal.m4
+A	configure
+A	configure.ac
+A	data/colorprofiles/README
+A	data/colorprofiles/erimm.icm
+A	data/colorprofiles/esrgb.icm
+A	data/colorprofiles/esrgbgrey.icm
+A	data/colorprofiles/grey.icm
+A	data/colorprofiles/greyromm.icm
+A	data/colorprofiles/romm.icm
+A	data/colorprofiles/sgray.icm
+A	data/colorprofiles/srgb.icm
+A	data/colorprofiles/sycc.icm
+A	data/images/README
+A	data/images/example.mif
+A	data/images/example.mif0
+A	data/images/feep.pnm
+A	data/images/feep2.pnm
+A	data/images/goldenears.bmp
+A	data/images/goldenears.jpg
+A	data/images/goldenears.pnm
+A	data/images/goldenears.ras
+A	data/images/goldenears_gray.jpg
+A	data/images/goldenears_gray.pnm
+A	data/images/goldenears_gray.ras
+A	data/images/small_16x1.pnm
+A	data/images/small_1x1.pnm
+A	data/images/stawamuschief.pnm
+A	data/images/stawamuschief_gray.pnm
+A	data/images/test.pnm
+A	doc/README
+A	doc/jasper.pdf
+A	doc/jpeg2000.pdf
+A	jasper.spec
+A	jasper.spec.in
+A	src/Makefile.am
+A	src/Makefile.in
+A	src/README
+A	src/appl/Makefile.am
+A	src/appl/Makefile.in
+A	src/appl/dummy.c
+A	src/appl/dummy2.c
+A	src/appl/imgcmp.1
+A	src/appl/imgcmp.c
+A	src/appl/imginfo.1
+A	src/appl/imginfo.c
+A	src/appl/jasper.1
+A	src/appl/jasper.c
+A	src/appl/jiv.1
+A	src/appl/jiv.c
+A	src/appl/tmrdemo.c
+A	src/libjasper/Makefile.am
+A	src/libjasper/Makefile.in
+A	src/libjasper/README
+A	src/libjasper/base/Makefile.am
+A	src/libjasper/base/Makefile.in
+A	src/libjasper/base/jas_cm.c
+A	src/libjasper/base/jas_debug.c
+A	src/libjasper/base/jas_getopt.c
+A	src/libjasper/base/jas_icc.c
+A	src/libjasper/base/jas_iccdata.c
+A	src/libjasper/base/jas_image.c
+A	src/libjasper/base/jas_init.c
+A	src/libjasper/base/jas_malloc.c
+A	src/libjasper/base/jas_seq.c
+A	src/libjasper/base/jas_stream.c
+A	src/libjasper/base/jas_string.c
+A	src/libjasper/base/jas_tmr.c
+A	src/libjasper/base/jas_tvp.c
+A	src/libjasper/base/jas_version.c
+A	src/libjasper/bmp/Makefile.am
+A	src/libjasper/bmp/Makefile.in
+A	src/libjasper/bmp/bmp_cod.c
+A	src/libjasper/bmp/bmp_cod.h
+A	src/libjasper/bmp/bmp_dec.c
+A	src/libjasper/bmp/bmp_enc.c
+A	src/libjasper/bmp/bmp_enc.h
+A	src/libjasper/dummy.c
+A	src/libjasper/include/Makefile.am
+A	src/libjasper/include/Makefile.in
+A	src/libjasper/include/jasper/Makefile.am
+A	src/libjasper/include/jasper/Makefile.in
+A	src/libjasper/include/jasper/jas_cm.h
+A	src/libjasper/include/jasper/jas_config.h
+A	src/libjasper/include/jasper/jas_config.h.in
+A	src/libjasper/include/jasper/jas_config2.h
+A	src/libjasper/include/jasper/jas_debug.h
+A	src/libjasper/include/jasper/jas_fix.h
+A	src/libjasper/include/jasper/jas_getopt.h
+A	src/libjasper/include/jasper/jas_icc.h
+A	src/libjasper/include/jasper/jas_image.h
+A	src/libjasper/include/jasper/jas_init.h
+A	src/libjasper/include/jasper/jas_malloc.h
+A	src/libjasper/include/jasper/jas_math.h
+A	src/libjasper/include/jasper/jas_seq.h
+A	src/libjasper/include/jasper/jas_stream.h
+A	src/libjasper/include/jasper/jas_string.h
+A	src/libjasper/include/jasper/jas_tmr.h
+A	src/libjasper/include/jasper/jas_tvp.h
+A	src/libjasper/include/jasper/jas_types.h
+A	src/libjasper/include/jasper/jas_version.h
+A	src/libjasper/include/jasper/jasper.h
+A	src/libjasper/jp2/Makefile.am
+A	src/libjasper/jp2/Makefile.in
+A	src/libjasper/jp2/jp2_cod.c
+A	src/libjasper/jp2/jp2_cod.h
+A	src/libjasper/jp2/jp2_dec.c
+A	src/libjasper/jp2/jp2_dec.h
+A	src/libjasper/jp2/jp2_enc.c
+A	src/libjasper/jpc/Makefile.am
+A	src/libjasper/jpc/Makefile.in
+A	src/libjasper/jpc/jpc_bs.c
+A	src/libjasper/jpc/jpc_bs.h
+A	src/libjasper/jpc/jpc_cod.h
+A	src/libjasper/jpc/jpc_cs.c
+A	src/libjasper/jpc/jpc_cs.h
+A	src/libjasper/jpc/jpc_dec.c
+A	src/libjasper/jpc/jpc_dec.h
+A	src/libjasper/jpc/jpc_enc.c
+A	src/libjasper/jpc/jpc_enc.h
+A	src/libjasper/jpc/jpc_fix.h
+A	src/libjasper/jpc/jpc_flt.h
+A	src/libjasper/jpc/jpc_math.c
+A	src/libjasper/jpc/jpc_math.h
+A	src/libjasper/jpc/jpc_mct.c
+A	src/libjasper/jpc/jpc_mct.h
+A	src/libjasper/jpc/jpc_mqcod.c
+A	src/libjasper/jpc/jpc_mqcod.h
+A	src/libjasper/jpc/jpc_mqdec.c
+A	src/libjasper/jpc/jpc_mqdec.h
+A	src/libjasper/jpc/jpc_mqenc.c
+A	src/libjasper/jpc/jpc_mqenc.h
+A	src/libjasper/jpc/jpc_qmfb.c
+A	src/libjasper/jpc/jpc_qmfb.h
+A	src/libjasper/jpc/jpc_t1cod.c
+A	src/libjasper/jpc/jpc_t1cod.h
+A	src/libjasper/jpc/jpc_t1dec.c
+A	src/libjasper/jpc/jpc_t1dec.h
+A	src/libjasper/jpc/jpc_t1enc.c
+A	src/libjasper/jpc/jpc_t1enc.h
+A	src/libjasper/jpc/jpc_t2cod.c
+A	src/libjasper/jpc/jpc_t2cod.h
+A	src/libjasper/jpc/jpc_t2dec.c
+A	src/libjasper/jpc/jpc_t2dec.h
+A	src/libjasper/jpc/jpc_t2enc.c
+A	src/libjasper/jpc/jpc_t2enc.h
+A	src/libjasper/jpc/jpc_tagtree.c
+A	src/libjasper/jpc/jpc_tagtree.h
+A	src/libjasper/jpc/jpc_tsfb.c
+A	src/libjasper/jpc/jpc_tsfb.h
+A	src/libjasper/jpc/jpc_util.c
+A	src/libjasper/jpc/jpc_util.h
+A	src/libjasper/jpg/Makefile.am
+A	src/libjasper/jpg/Makefile.in
+A	src/libjasper/jpg/README
+A	src/libjasper/jpg/jpg_cod.h
+A	src/libjasper/jpg/jpg_dec.c
+A	src/libjasper/jpg/jpg_dummy.c
+A	src/libjasper/jpg/jpg_enc.c
+A	src/libjasper/jpg/jpg_enc.h
+A	src/libjasper/jpg/jpg_jpeglib.h
+A	src/libjasper/jpg/jpg_val.c
+A	src/libjasper/mif/Makefile.am
+A	src/libjasper/mif/Makefile.in
+A	src/libjasper/mif/README
+A	src/libjasper/mif/mif_cod.c
+A	src/libjasper/mif/mif_cod.h
+A	src/libjasper/pgx/Makefile.am
+A	src/libjasper/pgx/Makefile.in
+A	src/libjasper/pgx/pgx_cod.c
+A	src/libjasper/pgx/pgx_cod.h
+A	src/libjasper/pgx/pgx_dec.c
+A	src/libjasper/pgx/pgx_enc.c
+A	src/libjasper/pgx/pgx_enc.h
+A	src/libjasper/pnm/Makefile.am
+A	src/libjasper/pnm/Makefile.in
+A	src/libjasper/pnm/pnm_cod.c
+A	src/libjasper/pnm/pnm_cod.h
+A	src/libjasper/pnm/pnm_dec.c
+A	src/libjasper/pnm/pnm_enc.c
+A	src/libjasper/pnm/pnm_enc.h
+A	src/libjasper/ras/Makefile.am
+A	src/libjasper/ras/Makefile.in
+A	src/libjasper/ras/ras_cod.c
+A	src/libjasper/ras/ras_cod.h
+A	src/libjasper/ras/ras_dec.c
+A	src/libjasper/ras/ras_enc.c
+A	src/libjasper/ras/ras_enc.h
+A	src/msvc/Makefile.am
+A	src/msvc/Makefile.in
+A	src/msvc/README
+A	src/msvc/imgcmp.dsp
+A	src/msvc/imginfo.dsp
+A	src/msvc/jasper.dsp
+A	src/msvc/jasper.dsw
+A	src/msvc/jiv.dsp
+A	src/msvc/libjasper.dsp
