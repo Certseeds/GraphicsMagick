@@ -1,6 +1,64 @@
+commit 779ddf80c2a9021d5ed134319c54bc38ca9ef9b6
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:   Wed Oct 12 12:40:22 2016 -0700
+
+    Bump the version number.
+
+M	configure.ac
+
+commit 4bb93a6c49da7c1b6ad2acb60b18954a6547c637
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Oct 12 12:31:54 2016 -0700
+
+    Add fixes for CVE-2014-8137.
+
+M	src/libjasper/base/jas_icc.c
+M	src/libjasper/jp2/jp2_dec.c
+
+commit c87ad330a8b8d6e5eb0065675601fdfae08ebaab
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Oct 12 11:37:33 2016 -0700
+
+    Added fix for CVE-2016-2089.
+
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/base/jas_seq.c
+
+commit 1184d7e6e604d2340dac7b91077d0faee05579ec
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Oct 12 07:59:22 2016 -0700
+
+    Moved abort into default case of switch statement.
+
+M	src/libjasper/jpc/jpc_t1cod.c
+
+commit 7266072ad79a8555dfd619e7bbe8a3f1d0b58ee9
+Merge: 3ffc4e0 fadd6c4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Oct 12 07:52:27 2016 -0700
+
+    Merge branch 'hughsie-wip/hughsie/Coverity-UNREACHABLE'
+
+commit fadd6c45c6941a222c692eff7df71a6dfaa08fec
+Merge: 3ffc4e0 ac401b7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Oct 12 07:48:44 2016 -0700
+
+    Merge branch 'wip/hughsie/Coverity-UNREACHABLE'
+    of https://github.com/hughsie/jasper into
+    hughsie-wip/hughsie/Coverity-UNREACHABLE
+
+commit 3ffc4e09007e1a830828eb994c11c3b8c8237249
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Oct 12 00:09:33 2016 -0700
+
+    Remove auto-generated file aclocal.m4 from repository.
+
+D	aclocal.m4
+
 commit 063ab4e30d9dff0b1142ca659f4af14ee1ec4296
 Author: Michael Adams <mdadams@ece.uvic.ca>
-Date:   Tue Oct 4 20:19:58 2016 -0700
+Date:	Tue Oct 4 20:19:58 2016 -0700
 
     Bump the version number
 
@@ -391,6 +449,15 @@ M	Makefile.am
 M	configure.ac
 A	pkgconfig/Makefile.am
 A	pkgconfig/jasper.pc.in
+
+commit ac401b7bae573b66aa9d366c9a0b46750a2534a7
+Author: Richard Hughes <richard@hughsie.com>
+Date:	Mon Sep 19 10:03:36 2016 +0100
+
+    Coverity-UNREACHABLE
+
+M	src/libjasper/jp2/jp2_cod.c
+M	src/libjasper/jp2/jp2_enc.c
 
 commit 980da43d8d388a67cac505e734423b2a5aa4cede
 Author: Richard Hughes <richard@hughsie.com>
