@@ -1,4 +1,8 @@
 2022-12-22 Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* VisualMagick/tests/runtest.bat Make binary directory configurable
+	on one place. Report error when rwblob.exe does not exist.
+
+2022-12-22 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* jp2/* Update lib jasper from 1.900.1 to 1.900.2.
 

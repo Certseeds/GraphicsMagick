@@ -1,7 +1,14 @@
 @echo off
 set TESTS=0
 set TYPE=NONE
+set exedir=..\bin\
 
+if exist %exedir%rwblob.exe goto _binaryexists
+@echo Missing rwblob in a directory %exedir%
+goto _exit
+
+
+:_binaryexists
 if not {%1}=={} (
   (if {%1}=={all} goto :_testall)
   if not {%2}=={} (
@@ -140,24 +147,24 @@ if {%1}=={none} goto :EOF
 if {%1}=={blob} goto :_doblob
 if {%1}=={file} goto :_dofile
 :_dofile
-..\binmt\rwfile ..\..\PerlMagick\t\input_p4.pbm %TYPE%
+%exedir%rwfile ..\..\PerlMagick\t\input_p4.pbm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
-..\binmt\rwfile ..\..\PerlMagick\t\input_p5.pgm %TYPE%
+%exedir%rwfile ..\..\PerlMagick\t\input_p5.pgm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
-..\binmt\rwfile ..\..\PerlMagick\t\input_p6.ppm %TYPE%
+%exedir%rwfile ..\..\PerlMagick\t\input_p6.ppm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
 if not {%1}=={both} goto :EOF
 :_doblob
-..\binmt\rwblob ..\..\PerlMagick\t\input_p4.pbm %TYPE%
+%exedir%rwblob ..\..\PerlMagick\t\input_p4.pbm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
-..\binmt\rwblob ..\..\PerlMagick\t\input_p5.pgm %TYPE%
+%exedir%rwblob ..\..\PerlMagick\t\input_p5.pgm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
-..\binmt\rwblob ..\..\PerlMagick\t\input_p6.ppm %TYPE%
+%exedir%rwblob ..\..\PerlMagick\t\input_p6.ppm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
 goto :EOF

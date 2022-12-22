@@ -1,5 +1,5 @@
 @echo off
-set exedir=..\binmt\
+set exedir=..\bin\
 set srcdir=..\..\tests\
 %exedir%constitute.exe -storagetype char %srcdir%input_truecolor.miff RGB 
 %exedir%constitute.exe -storagetype char %srcdir%input_truecolor.miff rgb 
