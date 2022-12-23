@@ -22,16 +22,26 @@
 * Currently tested vs libjxl-0.7.0 on ubuntu only, likely will have build problems
 * on other platforms. Also note the amount of third-party-libs required!
 *
+* Libjxl requires the full uncompressed image in memory in order to compress,
+* so it requires a lot of memory when writing.
+*
+* Features which work:
+*
+*   * Gray and RGB images
+*   * 8, and 16 bit integer samples
+*   * 16 and 32-bit float samples
+*   * Store/Read ICC, EXIF, and XMP profiles
+*   * Resource-limited memory allocator
+*
 * Features still to be completed:
 *
-*   * Support premultiplied alpha
-*   * Support Alpha bits != RGB sample bits
-*   * Support CMYK layers
-*   * Support progressive
-*   * Support embedded profiles
-*   * Support 16-bit float ("Half") format
-*   * Support progress monitor
-*   * Use import/export functions (ImportImagePixelArea()/ExportImagePixelArea())
+*   * Multiple frames / animations
+*   * Premultiplied alpha
+*   * Alpha bits != RGB sample bits
+*   * CMYK layers
+*   * Progressive images
+*   * Progress monitor
+*   * Linear images (needs improvement)
 */
 
 #include "magick/studio.h"
@@ -52,7 +62,7 @@
 #include <jxl/encode.h>
 #include <jxl/thread_parallel_runner.h>
 
-#define MaxBufferExtent 16384
+#define MaxBufferExtent 65536
 
 struct MyJXLMemoryManager {
   JxlMemoryManager super;
@@ -88,6 +98,74 @@ static void MyJxlMemoryManagerInit(struct MyJXLMemoryManager *mm,
   mm->super.opaque=mm;
   mm->super.alloc=MyJXLMalloc;
   mm->super.free=MyJXLFree;
+}
+static const char *JxlDataTypeAsString(const JxlDataType data_type)
+{
+  const char *str = "Unknown";
+
+  switch (data_type)
+    {
+    case JXL_TYPE_FLOAT:
+      str = "Float";
+      break;
+    case JXL_TYPE_UINT8:
+      str = "UINT8";
+      break;
+    case JXL_TYPE_UINT16:
+      str = "UINT16";
+      break;
+    case JXL_TYPE_FLOAT16:
+      str = "FLOAT16";
+      break;
+    }
+
+  return str;
+}
+
+static QuantumSampleType JxlDataTypeToQuantumSampleType(const JxlDataType data_type)
+{
+  QuantumSampleType
+    sample_type = UndefinedQuantumSampleType;
+
+  switch (data_type)
+    {
+    case JXL_TYPE_FLOAT:
+      sample_type = FloatQuantumSampleType;
+      break;
+    case JXL_TYPE_UINT8:
+      sample_type = UnsignedQuantumSampleType;
+      break;
+    case JXL_TYPE_UINT16:
+      sample_type = UnsignedQuantumSampleType;
+      break;
+    case JXL_TYPE_FLOAT16:
+      sample_type = FloatQuantumSampleType;
+      break;
+    }
+  return sample_type;
+}
+
+static unsigned int JxlDataTypeToQuantumSize(const JxlDataType data_type)
+{
+  unsigned int
+    quantum_size = 0;
+
+  switch (data_type)
+    {
+    case JXL_TYPE_FLOAT:
+      quantum_size = 32;
+      break;
+    case JXL_TYPE_UINT8:
+      quantum_size = 8;
+      break;
+    case JXL_TYPE_UINT16:
+      quantum_size = 16;
+      break;
+    case JXL_TYPE_FLOAT16:
+      quantum_size = 16;
+      break;
+    }
+  return quantum_size;
 }
 
 /*
@@ -212,36 +290,16 @@ static const char *JxlColorSpaceAsString(const JxlColorSpace color_space)
   return str;
 }
 
-static const char *JxlDataTypeAsString(const JxlDataType data_type)
-{
-  const char *str = "Unknown";
-
-  switch (data_type)
-    {
-    case JXL_TYPE_FLOAT:
-      str = "Float";
-      break;
-    case JXL_TYPE_UINT8:
-      str = "UINT8";
-      break;
-    case JXL_TYPE_UINT16:
-      str = "UINT16";
-      break;
-    case JXL_TYPE_FLOAT16:
-      str = "FLOAT16";
-      break;
-    }
-
-  return str;
-}
 
 #define JXLReadCleanup()                                \
   MagickFreeResourceLimitedMemory(out_buf);             \
   MagickFreeResourceLimitedMemory(in_buf);              \
+  MagickFreeResourceLimitedMemory(exif_profile);        \
+  MagickFreeResourceLimitedMemory(xmp_profile);         \
   if (jxl_thread_runner)                                \
     JxlThreadParallelRunnerDestroy(jxl_thread_runner);  \
-  if (jxl)                                              \
-    JxlDecoderDestroy(jxl);
+  if (jxl_decoder)                                      \
+    JxlDecoderDestroy(jxl_decoder);
 
 
 #define ThrowJXLReaderException(code_,reason_,image_)   \
@@ -257,7 +315,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
     *image;
 
   JxlDecoder
-    *jxl = NULL;
+    *jxl_decoder = NULL;
 
   void
     *jxl_thread_runner = NULL;
@@ -266,7 +324,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
     status;
 
   JxlPixelFormat
-    format;
+    pixel_format;
 
   struct MyJXLMemoryManager
     mm;
@@ -287,12 +345,21 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   magick_off_t
     blob_len = 0;
 
+  unsigned char
+    *exif_profile = NULL,
+    *xmp_profile = NULL;
+
+  size_t
+    exif_size = 0,
+    exif_pad = 2,
+    xmp_size = 0;
+
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
-  memset(&format,0,sizeof(format));
+  memset(&pixel_format,0,sizeof(pixel_format));
 
   /*
     Open image file.
@@ -306,12 +373,12 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
   /* Init JXL-Decoder handles */
   MyJxlMemoryManagerInit(&mm,image,exception);
-  jxl=JxlDecoderCreate(&mm.super);
-  if (jxl == (JxlDecoder *) NULL)
+  jxl_decoder=JxlDecoderCreate(&mm.super);
+  if (jxl_decoder == (JxlDecoder *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
   /* Deliver image as-is. We provide autoOrient function if user requires it */
-  if (JxlDecoderSetKeepOrientation(jxl, JXL_TRUE) != JXL_DEC_SUCCESS)
+  if (JxlDecoderSetKeepOrientation(jxl_decoder, JXL_TRUE) != JXL_DEC_SUCCESS)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
   if(!image_info->ping)
@@ -319,17 +386,19 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
       jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL,(size_t) GetMagickResourceLimit(ThreadsResource));
       if (jxl_thread_runner == (void *) NULL)
         ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-      if (JxlDecoderSetParallelRunner(jxl, JxlThreadParallelRunner, jxl_thread_runner)
+      if (JxlDecoderSetParallelRunner(jxl_decoder, JxlThreadParallelRunner, jxl_thread_runner)
           != JXL_DEC_SUCCESS)
         ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
 
-  if (JxlDecoderSubscribeEvents(jxl,
+  if (JxlDecoderSubscribeEvents(jxl_decoder,
                                 (JxlDecoderStatus)(image_info->ping == MagickTrue
-                                                   ? JXL_DEC_BASIC_INFO
-                                                   : JXL_DEC_BASIC_INFO |
-                                                   JXL_DEC_FULL_IMAGE |
-                                                   JXL_DEC_COLOR_ENCODING)
+                                                   ? (JXL_DEC_BASIC_INFO |
+                                                      JXL_DEC_BOX)
+                                                   : (JXL_DEC_BASIC_INFO |
+                                                      JXL_DEC_FULL_IMAGE |
+                                                      JXL_DEC_COLOR_ENCODING |
+                                                      JXL_DEC_BOX))
                                 ) != JXL_DEC_SUCCESS)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
@@ -347,7 +416,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
         case JXL_DEC_NEED_MORE_INPUT:
           { /* read something from blob */
             size_t
-              remaining = JxlDecoderReleaseInput(jxl),
+              remaining = JxlDecoderReleaseInput(jxl_decoder),
               count;
 
             if (remaining > 0)
@@ -355,14 +424,14 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             count=ReadBlob(image,in_len-remaining,in_buf+remaining);
             if (count == 0)
               ThrowJXLReaderException(CorruptImageError, UnexpectedEndOfFile, image);
-            status = JxlDecoderSetInput(jxl,(const uint8_t *) in_buf, (size_t) count);
+            status = JxlDecoderSetInput(jxl_decoder,(const uint8_t *) in_buf, (size_t) count);
             if (blob_len > 0)
               {
                 /* If file size is known pass the info about the last block,
                    to the decoder. Note that the call is currently optional */
                 blob_len -= count;
                 if (blob_len == 0)
-                  JxlDecoderCloseInput(jxl);
+                  JxlDecoderCloseInput(jxl_decoder);
               }
             break;
           }
@@ -373,7 +442,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
             JxlEncoderInitBasicInfo(&basic_info);
 
-            status=JxlDecoderGetBasicInfo(jxl,&basic_info);
+            status=JxlDecoderGetBasicInfo(jxl_decoder,&basic_info);
             if (status != JXL_DEC_SUCCESS)
               break;
 
@@ -403,8 +472,8 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
             image->orientation=convert_orientation(basic_info.orientation);
 
-            format.endianness=JXL_NATIVE_ENDIAN;
-            format.align=0;
+            pixel_format.endianness=JXL_NATIVE_ENDIAN;
+            pixel_format.align=0;
             if (basic_info.num_color_channels == 1)
               {
                 if ((basic_info.bits_per_sample <= 8) && (!image->matte))
@@ -420,15 +489,15 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                       ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                   }
                 grayscale=MagickTrue;
-                format.num_channels=1;
-                format.data_type=(basic_info.bits_per_sample <= 8 ? JXL_TYPE_UINT8 :
+                pixel_format.num_channels=1;
+                pixel_format.data_type=(basic_info.bits_per_sample <= 8 ? JXL_TYPE_UINT8 :
                                   (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 :
                                    JXL_TYPE_FLOAT));
               }
             else if (basic_info.num_color_channels == 3)
               {
-                format.num_channels=image->matte ? 4 : 3;
-                format.data_type=(basic_info.bits_per_sample <= 8 ? JXL_TYPE_UINT8 :
+                pixel_format.num_channels=image->matte ? 4 : 3;
+                pixel_format.data_type=(basic_info.bits_per_sample <= 8 ? JXL_TYPE_UINT8 :
                                   (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 :
                                    JXL_TYPE_FLOAT));
               }
@@ -455,7 +524,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             JxlColorEncoding
               color_encoding;
 
-            status=JxlDecoderGetColorAsEncodedProfile(jxl,&format,
+            status=JxlDecoderGetColorAsEncodedProfile(jxl_decoder,&pixel_format,
                                                       JXL_COLOR_PROFILE_TARGET_DATA,&color_encoding);
             if (status == JXL_DEC_ERROR)
               {
@@ -469,6 +538,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               }
             else if (status == JXL_DEC_SUCCESS)
               {
+                /*
+                  Transfer function if have_gamma is 0
+                 */
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "Color Transfer Function: %s",
                                       JxlTransferFunctionAsString(color_encoding.transfer_function));
@@ -506,6 +578,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                       "Color Space: %s",
                                       JxlColorSpaceAsString(color_encoding.color_space));
 
+                /*
+                  Color space of the image data.
+                 */
                 switch (color_encoding.color_space) {
                 case JXL_COLOR_SPACE_RGB:
                   if (color_encoding.white_point == JXL_WHITE_POINT_D65 &&
@@ -544,7 +619,34 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                   break;
                 }
               }
-            /*TODO: get ICC-profile and keep as metadata?*/
+            /*
+              Get original ICC-profile and store as metadata
+            */
+            {
+              size_t
+                profile_size;
+
+              if (JxlDecoderGetICCProfileSize(jxl_decoder,&pixel_format,
+                                              JXL_COLOR_PROFILE_TARGET_ORIGINAL,&profile_size)
+                  == JXL_DEC_SUCCESS)
+                {
+                  unsigned char
+                    *profile;
+
+                  if ((profile=MagickAllocateResourceLimitedMemory(unsigned char *,profile_size))
+                      != NULL)
+                    {
+                      if (JxlDecoderGetColorAsICCProfile(jxl_decoder,&pixel_format,
+                                                         JXL_COLOR_PROFILE_TARGET_ORIGINAL,
+                                                         profile,
+                                                         profile_size) == JXL_DEC_SUCCESS)
+                        {
+                          (void) SetImageProfile(image,"ICM",profile,profile_size);
+                        }
+                      MagickFreeResourceLimitedMemory(profile);
+                    }
+                }
+            }
             break;
           }
         case JXL_DEC_NEED_IMAGE_OUT_BUFFER:
@@ -552,7 +654,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             size_t
               out_len;
 
-            status=JxlDecoderImageOutBufferSize(jxl,&format,&out_len);
+            status=JxlDecoderImageOutBufferSize(jxl_decoder,&pixel_format,&out_len);
             if (status != JXL_DEC_SUCCESS)
               break;
 
@@ -560,7 +662,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             if (out_buf == (unsigned char *) NULL)
               ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-            status=JxlDecoderSetImageOutBuffer(jxl,&format,out_buf,out_len);
+            status=JxlDecoderSetImageOutBuffer(jxl_decoder,&pixel_format,out_buf,out_len);
             break;
           }
         case JXL_DEC_FULL_IMAGE:
@@ -588,33 +690,15 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               quantum_type;
 
             QuantumSampleType
-              sample_type = UndefinedQuantumSampleType;
+              sample_type;
 
             MagickPassFail
               res=MagickPass;
 
             assert(out_buf != (unsigned char *)NULL);
 
-            quantum_size = 0;
-              switch (format.data_type)
-                {
-                case JXL_TYPE_FLOAT:
-                  quantum_size = 32;
-                  sample_type = FloatQuantumSampleType;
-                  break;
-                case JXL_TYPE_UINT8:
-                  quantum_size = 8;
-                  sample_type = UnsignedQuantumSampleType;
-                  break;
-                case JXL_TYPE_UINT16:
-                  quantum_size = 16;
-                  sample_type = UnsignedQuantumSampleType;
-                  break;
-                case JXL_TYPE_FLOAT16:
-                  quantum_size = 16;
-                  sample_type = FloatQuantumSampleType;
-                  break;
-                }
+            quantum_size = JxlDataTypeToQuantumSize(pixel_format.data_type);
+            sample_type = JxlDataTypeToQuantumSampleType(pixel_format.data_type);
 
             if (grayscale)
               {
@@ -692,6 +776,73 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               status=JXL_DEC_ERROR;
             break;
           }
+          case JXL_DEC_BOX:
+            {
+              do
+                {
+                  JxlBoxType
+                    type;
+
+                  magick_uint64_t
+                    profile_size = 0;
+
+                  unsigned char
+                    *profile;
+
+                  /* Release buffer to get box data */
+                  (void) JxlDecoderReleaseBoxBuffer(jxl_decoder);
+
+                  /* Get the 4-character box typename */
+                  if (JxlDecoderGetBoxType(jxl_decoder,type,JXL_FALSE) != JXL_DEC_SUCCESS)
+                    break;
+
+                  /* Get the size of the box as it appears in the container file, not decompressed. */
+                  if (JxlDecoderGetBoxSizeRaw(jxl_decoder, &profile_size) != JXL_DEC_SUCCESS)
+                    break;
+
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "JXL Box of type \"%s\" and %lu bytes",
+                                        type, (unsigned long) profile_size);
+
+                  /* Ignore tiny profiles */
+                  if (profile_size < 4)
+                    break;
+
+                  if (LocaleNCompare(type,"Exif",sizeof(type)) == 0)
+                    {
+                      /*
+                        Allocate EXIF profile box buffer (plus a bit more)
+                      */
+                      if ((profile=MagickAllocateResourceLimitedClearedMemory(unsigned char *,
+                                                                              profile_size+exif_pad))
+                          != NULL)
+                        {
+                          if (JxlDecoderSetBoxBuffer(jxl_decoder,profile+exif_pad,profile_size)
+                              == JXL_DEC_SUCCESS)
+                            {
+                              exif_profile=profile;
+                              exif_size=profile_size;
+                            }
+                        }
+                    }
+                  if (LocaleNCompare(type,"xml ",sizeof(type)) == 0)
+                    {
+                      /*
+                        Allocate XMP profile box buffer
+                      */
+                      if ((profile=MagickAllocateResourceLimitedMemory(unsigned char *,profile_size))
+                          != NULL)
+                        {
+                          if (JxlDecoderSetBoxBuffer(jxl_decoder,profile,profile_size) == JXL_DEC_SUCCESS)
+                            {
+                              xmp_profile=profile;
+                              xmp_size=profile_size;
+                            }
+                        }
+                    }
+                } while(0);
+              break;
+            }
         default:
           /* unexpected status is error.
            * - JXL_DEC_SUCCESS should never happen here so it's also an error
@@ -701,7 +852,65 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
         }
       if (status == JXL_DEC_ERROR)
         break;
-      status = JxlDecoderProcessInput(jxl);
+      status = JxlDecoderProcessInput(jxl_decoder);
+    }
+  /* Release buffer to get box data in the buffers which were passed */
+  (void) JxlDecoderReleaseBoxBuffer(jxl_decoder);
+  if (exif_profile != NULL)
+    {
+      /*
+        Read Exif profile
+
+        The EXIF box starts with a 4-byte offset to
+        the TIFF header (and may be 0).
+
+        The EXIF profile blob needs to be prefixed
+        with "Exif\0\0" prior to the TIFF header.
+
+        The buffer provided to libjxl is offset to allow adding our
+        header.
+      */
+      unsigned char *p = exif_profile;
+      magick_uint32_t exif_profile_offset;
+
+      (void) memcpy(&exif_profile_offset,p+exif_pad,sizeof(exif_profile_offset));
+#if 0
+      fprintf(stderr,
+              "BOX-1: %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x\n",
+              p[0], p[1],p[2], p[3], p[4], p[5], p[6], p[7],  p[8],  p[9],  p[10],  p[11]);
+#endif
+
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "EXIF Box: Size %lu, Offset %u",
+                            (unsigned long) exif_size, exif_profile_offset);
+
+      /*
+        FIXME: If the TIFF header offset is not zero, then need to
+        move the TIFF data forward to the correct offset.
+      */
+
+      p[0]='E';
+      p[1]='x';
+      p[2]='i';
+      p[3]='f';
+      p[4]='\0';
+      p[5]='\0';
+
+#if 0
+      fprintf(stderr,
+              "BOX-2: %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x\n",
+              p[0], p[1],p[2], p[3], p[4], p[5], p[6], p[7],  p[8],  p[9],  p[10],  p[11]);
+#endif
+      (void) SetImageProfile(image,"EXIF",exif_profile,exif_size+exif_pad);
+
+      MagickFreeResourceLimitedMemory(exif_profile);
+    }
+  if (xmp_profile != NULL)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "XMP Box: Size %lu", (unsigned long) exif_size);
+      (void) SetImageProfile(image,"XMP",xmp_profile,xmp_size);
+      MagickFreeResourceLimitedMemory(xmp_profile);
     }
   /* every break outside of success is some kind of error */
   if (status != JXL_DEC_SUCCESS) {
@@ -839,6 +1048,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   if (jxl_encoder == (JxlEncoder *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
+  /* Use the same number of threads as used for OpenMP */
   jxl_thread_runner=
     JxlThreadParallelRunnerCreate(NULL,
                                   (size_t) GetMagickResourceLimit(ThreadsResource));
@@ -857,18 +1067,21 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       pixel_format.num_channels = characteristics.opaque ? 3 : 4;
     }
 
-  /* Support writing integer depths 8 and 16 */
+  /* Support writing integer depths 8, 16, and 32 */
+  /* FIXME: Provide an option to write JXL_TYPE_FLOAT16 or really any
+     desired type here */
   if (image->depth <= 8)
     pixel_format.data_type = JXL_TYPE_UINT8;
   else if (image->depth <= 16)
-    pixel_format.data_type = JXL_TYPE_UINT16;
+    pixel_format.data_type = JXL_TYPE_UINT16; /* or JXL_TYPE_FLOAT16 JXL_TYPE_UINT16  */
   else if (image->depth <= 32)
-    pixel_format.data_type = JXL_TYPE_FLOAT; /* or JXL_TYPE_FLOAT JXL_TYPE_UINT16 */
+    pixel_format.data_type = JXL_TYPE_FLOAT; /* or JXL_TYPE_UINT16 */
   else
     ThrowJXLWriterException(CoderError,ColorspaceModelIsNotSupported,image);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "Using JXL '%s' data type", JxlDataTypeAsString(pixel_format.data_type));
+                        "Using JXL '%s' data type",
+                        JxlDataTypeAsString(pixel_format.data_type));
 
   /* Initialize JxlBasicInfo struct to default values. */
   JxlEncoderInitBasicInfo(&basic_info);
@@ -897,12 +1110,13 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       ThrowJXLWriterException(CoderError,DataStorageTypeIsNotSupported,image);
     }
 
-
   pixel_format.endianness = JXL_NATIVE_ENDIAN;
   pixel_format.align = 0;
 
   if (pixel_format.data_type == JXL_TYPE_FLOAT)
     basic_info.exponent_bits_per_sample = 8;
+  else if (pixel_format.data_type == JXL_TYPE_FLOAT16)
+    basic_info.exponent_bits_per_sample = 5;
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Using %u bits per sample", basic_info.bits_per_sample);
@@ -1002,6 +1216,60 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       }
   }
 
+  /* FIXME: Add metadata boxes */
+  do
+  {
+    const unsigned char
+      *exif,
+      *xmp;
+
+    size_t
+      exif_length,
+      xmp_length;
+
+    exif=GetImageProfile(image,"EXIF",&exif_length);
+    xmp=GetImageProfile(image,"XMP",&xmp_length);
+
+    if (!((exif != (const unsigned char *) NULL) ||
+          (xmp != (const unsigned char *) NULL)))
+      break;
+
+    (void) JxlEncoderUseBoxes(jxl_encoder);
+
+    #define ExifNamespace  "Exif\0\0"
+    if ((exif != (const unsigned char *) NULL) && (exif_length > 6) &&
+        (exif[0] == 'E' && exif[1] == 'x' && exif[2] == 'i' &&
+         exif[3] == 'f' && exif[4] == '\0' && exif[5] == '\0'))
+      {
+        /*
+          The contents of this box must be prepended by a 4-byte tiff
+          header offset, which may be 4 zero bytes in case the tiff
+          header follows immediately.  We will make the header follow
+          immediately.
+
+          The EXIF profile blob is prefixed with "Exif\0\0" but the
+          EXIF box needs to start with "\0\0\0\0" to indicate that the
+          TIFF header follows immediately.
+        */
+        unsigned char *exif_b = MagickAllocateResourceLimitedMemory(unsigned char *,
+                                                                    exif_length-2U);
+        if (exif_b != (unsigned char *) NULL)
+          {
+            (void) memset(exif_b,0,4U);
+            (void) memcpy(exif_b+4U,exif+6U,exif_length-6U);
+
+            (void) JxlEncoderAddBox(jxl_encoder,"Exif",exif_b,exif_length-2U,0);
+            MagickFreeResourceLimitedMemory(exif_b);
+          }
+      }
+
+    if (xmp != (const unsigned char *) NULL)
+      (void) JxlEncoderAddBox(jxl_encoder,"xml ",xmp,xmp_length,0);
+
+    (void) JxlEncoderCloseBoxes(jxl_encoder);
+
+  } while(0);
+
   /* get & fill pixel buffer */
   size_row=MagickArraySize(MagickArraySize(image->columns,pixel_format.num_channels),
                            (basic_info.bits_per_sample/8));
@@ -1031,7 +1299,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       quantum_type;
 
     QuantumSampleType
-      sample_type = UndefinedQuantumSampleType;
+      sample_type;
 
     ExportPixelAreaOptions
       export_options;
@@ -1039,26 +1307,8 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     ExportPixelAreaInfo
       export_info;
 
-    quantum_size = 0;
-    switch (pixel_format.data_type)
-      {
-      case JXL_TYPE_FLOAT:
-        quantum_size = 32;
-        sample_type = FloatQuantumSampleType;
-        break;
-      case JXL_TYPE_UINT8:
-        quantum_size = 8;
-        sample_type = UnsignedQuantumSampleType;
-        break;
-      case JXL_TYPE_UINT16:
-        quantum_size = 16;
-        sample_type = UnsignedQuantumSampleType;
-        break;
-      case JXL_TYPE_FLOAT16:
-        quantum_size = 16;
-        sample_type = FloatQuantumSampleType;
-        break;
-      }
+    quantum_size = JxlDataTypeToQuantumSize(pixel_format.data_type);
+    sample_type = JxlDataTypeToQuantumSampleType(pixel_format.data_type);
 
     if (pixel_format.num_channels == 1)
       {

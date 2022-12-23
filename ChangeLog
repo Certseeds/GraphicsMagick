@@ -1,3 +1,9 @@
+2022-12-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jxl.c: Support reading and writing ICC, EXIF, and XMP
+	profiles.  Lots of code cleanup.
+	* PerlMagick/t/jxl: Created some JXL sanity-test files.
+
 2022-12-22 Fojtik Jaroslav  <JaFojtik@yandex.com>
 	* VisualMagick/tests/runtest.bat Make binary directory configurable
 	on one place. Report error when rwblob.exe does not exist.

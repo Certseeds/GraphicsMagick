@@ -37,6 +37,7 @@ GraphicsMagick Supported Formats
 .. _JNG : http://www.libmng.com/
 .. _JPEG : http://www.jpeg.org/
 .. _JXL : https://github.com/libjxl/libjxl/
+.. _JXLLOC : https://www.loc.gov/preservation/digital/formats/fdd/fdd000538.shtml
 .. _M2V : http://www.mpeg.org/
 .. _MIFF : miff.html
 .. _MNG : http://www.libmng.com/
