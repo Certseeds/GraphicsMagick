@@ -142,7 +142,7 @@ jas_image_t *jas_image_create(int numcmpts, jas_image_cmptparm_t *cmptparms,
 	image->inmem_ = true;
 
 	/* Allocate memory for the per-component information. */
-	if (!(image->cmpts_ = jas_malloc(image->maxcmpts_ *
+	if (!(image->cmpts_ = jas_alloc2(image->maxcmpts_,
 	  sizeof(jas_image_cmpt_t *)))) {
 		jas_image_destroy(image);
 		return 0;
@@ -210,7 +210,10 @@ jas_image_t *jas_image_copy(jas_image_t *image)
 	jas_image_t *newimage;
 	int cmptno;
 
-	newimage = jas_image_create0();
+	if (!(newimage = jas_image_create0())) {
+		goto error;
+	}
+
 	if (jas_image_growcmpts(newimage, image->numcmpts_)) {
 		goto error;
 	}
@@ -265,18 +268,23 @@ static jas_image_cmpt_t *jas_image_cmpt_copy(jas_image_cmpt_t *cmpt)
 	newcmpt->cps_ = cmpt->cps_;
 	newcmpt->type_ = cmpt->type_;
 	if (!(newcmpt->stream_ = jas_stream_memopen(0, 0))) {
-		return 0;
+		goto error;
 	}
 	if (jas_stream_seek(cmpt->stream_, 0, SEEK_SET)) {
-		return 0;
+		goto error;
 	}
 	if (jas_stream_copy(newcmpt->stream_, cmpt->stream_, -1)) {
-		return 0;
+		goto error;
 	}
 	if (jas_stream_seek(newcmpt->stream_, 0, SEEK_SET)) {
-		return 0;
+		goto error;
 	}
 	return newcmpt;
+error:
+	if (newcmpt) {
+		jas_image_cmpt_destroy(newcmpt);
+	}
+	return 0;
 }
 
 void jas_image_destroy(jas_image_t *image)
@@ -782,8 +790,8 @@ static int jas_image_growcmpts(jas_image_t *image, int maxcmpts)
 	jas_image_cmpt_t **newcmpts;
 	int cmptno;
 
-	newcmpts = (!image->cmpts_) ? jas_malloc(maxcmpts * sizeof(jas_image_cmpt_t *)) :
-	  jas_realloc(image->cmpts_, maxcmpts * sizeof(jas_image_cmpt_t *));
+	newcmpts = (!image->cmpts_) ? jas_alloc2(maxcmpts, sizeof(jas_image_cmpt_t *)) :
+	  jas_realloc2(image->cmpts_, maxcmpts, sizeof(jas_image_cmpt_t *));
 	if (!newcmpts) {
 		return -1;
 	}
@@ -1449,5 +1457,11 @@ jas_image_dump(outimage, stderr);
 #endif
 	return outimage;
 error:
+	if (xform)
+		jas_cmxform_destroy(xform);
+	if (inimage)
+		jas_image_destroy(inimage);
+	if (outimage)
+		jas_image_destroy(outimage);
 	return 0;
 }

@@ -16,7 +16,7 @@ dnl ************************************************************
 dnl The major, minor, and micro version numbers of the package.
 define(AC_JAS_MAJOR_VERSION, 1)
 define(AC_JAS_MINOR_VERSION, 900)
-define(AC_JAS_MICRO_VERSION, 3)
+define(AC_JAS_MICRO_VERSION, 5)
 
 dnl The package version.
 define(AC_JAS_VERSION,
@@ -153,7 +153,9 @@ AH_BOTTOM([
 # Checks for programs.
 ############################################################
 
-AC_PROG_CC
+#AC_PROG_CC
+#AC_PROG_CC_C11
+AC_PROG_CC_C99
 AC_PROG_INSTALL
 # AC_PROG_AWK
 # AC_PROG_CPP
@@ -329,7 +331,11 @@ yes)
 	AC_DEFINE(DEBUG)
 	AC_DEFINE(DEBUG_OVERFLOW)
 	if test "$GCC" = yes; then
-		CFLAGS="-g -O0"
+		CFLAGS=""
+		CFLAGS="$CFLAGS -g -O0"
+		CFLAGS="$CFLAGS -fsanitize=address"
+		CFLAGS="$CFLAGS -fsanitize=leak"
+		CFLAGS="$CFLAGS -fsanitize=undefined"
 	fi
 	;;
 no)

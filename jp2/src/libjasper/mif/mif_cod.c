@@ -391,7 +391,10 @@ int mif_validate(jas_stream_t *in)
 	}
 
 	/* Compute the signature value. */
-	magic = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+	magic = (JAS_CAST(uint_fast32_t, buf[0]) << 24) |
+	  (JAS_CAST(uint_fast32_t, buf[1]) << 16) |
+	  (JAS_CAST(uint_fast32_t, buf[2]) << 8) |
+	  buf[3];
 
 	/* Ensure that the signature is correct for this format. */
 	if (magic != MIF_MAGIC) {
@@ -438,8 +441,8 @@ static int mif_hdr_growcmpts(mif_hdr_t *hdr, int maxcmpts)
 	int cmptno;
 	mif_cmpt_t **newcmpts;
 	assert(maxcmpts >= hdr->numcmpts);
-	newcmpts = (!hdr->cmpts) ? jas_malloc(maxcmpts * sizeof(mif_cmpt_t *)) :
-	  jas_realloc(hdr->cmpts, maxcmpts * sizeof(mif_cmpt_t *));
+	newcmpts = (!hdr->cmpts) ? jas_alloc2(maxcmpts, sizeof(mif_cmpt_t *)) :
+	  jas_realloc2(hdr->cmpts, maxcmpts, sizeof(mif_cmpt_t *));
 	if (!newcmpts) {
 		return -1;
 	}
@@ -565,7 +568,7 @@ static int mif_process_cmpt(mif_hdr_t *hdr, char *buf)
 			break;
 		case MIF_DATA:
 			if (!(cmpt->data = jas_strdup(jas_tvparser_getval(tvp)))) {
-				return -1;
+				goto error;
 			}
 			break;
 		}

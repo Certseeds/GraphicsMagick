@@ -1,6 +1,175 @@
+commit e85c498d29cde9d5062e7aaae5a6bf018e80552d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:   Sun Oct 16 11:56:53 2016 -0700
+
+    Bumped the version number
+
+M	configure.ac
+
+commit 4031ca321d8cb5798c316ab39c7a5dc88a61fdd7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Oct 16 11:32:01 2016 -0700
+
+    Incorporated changes from patch
+    jasper-1.900.3-libjasper-stepsizes-overflow.patch
+
+M	src/libjasper/jpc/jpc_cs.c
+
+commit 0d22460816ea58e74a124158fa6cc48efb709a47
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Oct 16 11:13:32 2016 -0700
+
+    Incorporated changes from patch
+    jasper-1.900.3-CVE-2011-4516-CVE-2011-4517-CERT-VU-887409.patch
+
+M	src/libjasper/jpc/jpc_cs.c
+
+commit 9607df5d29f4b307445e9bc16fadd70ee7ef3db8
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Oct 16 10:49:12 2016 -0700
+
+    Incorporated changes from patch
+    jasper-1.900.3-Coverity-RESOURCE_LEAK.patch
+
+M	src/appl/imgcmp.c
+M	src/libjasper/base/jas_cm.c
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/bmp/bmp_enc.c
+M	src/libjasper/jpc/jpc_dec.c
+M	src/libjasper/jpc/jpc_tagtree.c
+M	src/libjasper/mif/mif_cod.c
+
+commit 944036a199adef07aa18670075bc3f08d45090dd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Oct 16 10:19:32 2016 -0700
+
+    Incorporated patch jasper-1.900.3-Coverity-NULL_RETURNS.patch
+
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/base/jas_seq.c
+M	src/libjasper/include/jasper/jas_seq.h
+M	src/libjasper/jp2/jp2_cod.c
+
+commit fa19cadf7e16233427bfc217d6f913892d5f1fed
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Oct 16 09:42:06 2016 -0700
+
+    Fixed memory leak in jiv.
+
+M	src/appl/jiv.c
+M	src/libjasper/base/jas_icc.c
+
+commit 722e943426ce74a8d7fc5e85267cbf603546b502
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Oct 16 08:23:14 2016 -0700
+
+    Fixed indentation.
+
+M	src/libjasper/base/jas_stream.c
+
+commit 8f62b4761711d036fd8964df256b938c809b7fca
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 15 20:32:23 2016 -0700
+
+    Fixed a sanitizer failure in the BMP codec.
+    Also, added a --debug-level command line option to the imginfo command
+    for debugging purposes.
+
+M	src/appl/imginfo.c
+M	src/libjasper/bmp/bmp_dec.c
+
+commit 4549e056f82d182a51e30ab93c30aa5f9ce72b2f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 15 14:03:36 2016 -0700
+
+    Bumped the version number
+
+M	configure.ac
+
+commit 6109f6a4e731085f50aca1a483fa90668e3203d9
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 15 13:57:40 2016 -0700
+
+    Added some missing type casts to ensure promotion to the correct
+    unsigned type to avoid undefined behavior (and stop warnings from
+    USAN).
+
+M	src/libjasper/mif/mif_cod.c
+M	src/libjasper/ras/ras_dec.c
+
+commit 8b6e9a08373d3bed83a220e0b9382416994106b3
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 15 13:26:14 2016 -0700
+
+    Use C99
+
+M	configure.ac
+
+commit 679d0843280a1eab95eb1dc14d50e280d6a7edad
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 15 13:03:55 2016 -0700
+
+    Fixed a linking problem with newer versions of GCC.
+
+M	src/libjasper/base/jas_malloc.c
+
+commit 31321cdb8a356e661c1c933ea8fdfe2f164ca910
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 15 12:49:35 2016 -0700
+
+    Changed --enable-debug configure option to enable some GCC sanitizers.
+
+M	configure.ac
+
+commit d8c2604cd438c41ec72aff52c16ebd8183068020
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 15 12:22:28 2016 -0700
+
+    Added range check on XRsiz and YRsiz fields of SIZ marker segment.
+
+M	src/libjasper/jpc/jpc_cs.c
+
+commit 3c55b399c36ef46befcb21e4ebc4799367f89684
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 15 10:42:19 2016 -0700
+
+    At many places in the code, jas_malloc or jas_recalloc was being
+    invoked with the size argument being computed in a manner that
+    would not
+    allow integer overflow to be detected.  Now, these places in the code
+    have been modified to use special-purpose memory allocation functions
+    (e.g., jas_alloc2, jas_alloc3, jas_realloc2) that check for overflow.
+    This should fix many security problems.
+
+M	src/libjasper/base/jas_cm.c
+M	src/libjasper/base/jas_icc.c
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/base/jas_malloc.c
+M	src/libjasper/base/jas_seq.c
+M	src/libjasper/base/jas_stream.c
+M	src/libjasper/base/jas_string.c
+M	src/libjasper/bmp/bmp_dec.c
+M	src/libjasper/include/jasper/jas_malloc.h
+M	src/libjasper/jp2/jp2_cod.c
+M	src/libjasper/jp2/jp2_dec.c
+M	src/libjasper/jp2/jp2_enc.c
+M	src/libjasper/jpc/jpc_cs.c
+M	src/libjasper/jpc/jpc_dec.c
+M	src/libjasper/jpc/jpc_enc.c
+M	src/libjasper/jpc/jpc_mqdec.c
+M	src/libjasper/jpc/jpc_mqenc.c
+M	src/libjasper/jpc/jpc_qmfb.c
+M	src/libjasper/jpc/jpc_t1enc.c
+M	src/libjasper/jpc/jpc_t2cod.c
+M	src/libjasper/jpc/jpc_t2dec.c
+M	src/libjasper/jpc/jpc_t2enc.c
+M	src/libjasper/jpc/jpc_tagtree.c
+M	src/libjasper/jpc/jpc_util.c
+M	src/libjasper/mif/mif_cod.c
+
 commit 779ddf80c2a9021d5ed134319c54bc38ca9ef9b6
 Author: Michael Adams <mdadams@ece.uvic.ca>
-Date:   Wed Oct 12 12:40:22 2016 -0700
+Date:	Wed Oct 12 12:40:22 2016 -0700
 
     Bump the version number.
 
