@@ -141,8 +141,9 @@ Feature improvements:
   better when reading from files.
 
 * JXL: The JXL coder is updated to compile with what will likely
-  become JXL 0.8.0.  Support for 16-bit 'short' samples and 32-bit
-  float samples added.
+  become JXL 0.8.0.  Support for 16-bit 'short' samples, 16-bit
+  'float' samples, and 32-bit float samples added.  Suppor for reading
+  and writing ICC, EXIF, and XMP profiles added.
 
 * MIME: GM "magick" to MIME mappings have been added for apng, avif,
   bmp, ico, and webp (regardless of if they are supported).
@@ -155,6 +156,8 @@ Feature improvements:
   the maximum colormap size.
 
 Windows Delegate Updates/Additions:
+
+* Update bundled libjasper to version 1.900.5.
 
 * Update bundled libjpeg to version 9e.
 

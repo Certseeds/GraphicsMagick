@@ -1,7 +1,13 @@
+2022-12-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updated the news.
+
+	* coders/jxl.c (ReadJXLImage): Request that libjxl take care of
+	any pre-multiplied alpha for us so we don't need to do it
+
 2022-12-24 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* jp2/* Update lib jasper to 1.900.5.
-
 
 2022-12-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -48,14 +54,13 @@
 2022-12-17 Fojtik Jaroslav  <JaFojtik@yandex.com>
         * VisualMagick/magick/magick_types.h.in
 	Reverting from 16859. The change in 16860 completelly breaks
-        compillation.
+	compillation.
 
 2022-12-17 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* tiff/port/libport_config.h Added missing file
 	Documentation of libtiff upgraded.
-        Upgraded libtiff to 4.5.0.
-
+	Upgraded libtiff to 4.5.0.
 
 2022-12-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -154,7 +159,7 @@
 	coders/ps3.c
 	coders/tiff.c
 	webp/src/webp/types.h
-        tiff/libtiff/* Upgraded libtiff to libtiff-4.4.0
+	tiff/libtiff/* Upgraded libtiff to libtiff-4.4.0
 	But code is still compilable with MSVC2008!
 
 2022-11-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

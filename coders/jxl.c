@@ -381,6 +381,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   if (JxlDecoderSetKeepOrientation(jxl_decoder, JXL_TRUE) != JXL_DEC_SUCCESS)
     ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
+  /* Apply any pre-multiplied alpha for us so we don't need to do it. */
+  (void) JxlDecoderSetUnpremultiplyAlpha(jxl_decoder, JXL_TRUE);
+
   if(!image_info->ping)
     {
       jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL,(size_t) GetMagickResourceLimit(ThreadsResource));
