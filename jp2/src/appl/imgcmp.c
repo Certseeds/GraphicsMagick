@@ -294,7 +294,8 @@ int main(int argc, char **argv)
 	/* Ensure that both images have the same number of components. */
 	numcomps = jas_image_numcmpts(origimage);
 	if (jas_image_numcmpts(reconimage) != numcomps) {
-		fprintf(stderr, "number of components differ\n");
+		fprintf(stderr, "number of components differ (%d != %d)\n",
+		  numcomps, jas_image_numcmpts(reconimage));
 		return EXIT_FAILURE;
 	}
 
@@ -439,7 +440,7 @@ double pae(jas_matrix_t *x, jas_matrix_t *y)
 	s = 0.0;
 	for (i = 0; i < jas_matrix_numrows(x); i++) {
 		for (j = 0; j < jas_matrix_numcols(x); j++) {
-			d = abs(jas_matrix_get(y, i, j) - jas_matrix_get(x, i, j));
+			d = JAS_ABS(jas_matrix_get(y, i, j) - jas_matrix_get(x, i, j));
 			if (d > s) {
 				s = d;
 			}
@@ -479,11 +480,13 @@ double msen(jas_matrix_t *x, jas_matrix_t *y, int n)
 
 double psnr(jas_matrix_t *x, jas_matrix_t *y, int depth)
 {
-	double m;
+	double mse;
+	double rmse;
 	double p;
-	m = msen(x, y, 2);
+	mse = msen(x, y, 2);
+	rmse = sqrt(mse);
 	p = ((1 << depth) - 1);
-	return 20.0 * log10(p / sqrt(m));
+	return (rmse != 0) ? (20.0 * log10(p / rmse)) : INFINITY;
 }
 
 /******************************************************************************\

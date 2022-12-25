@@ -1,6 +1,1278 @@
+commit d9d95a0504bb0cd2857029ef3c5968762294b614
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:   Tue Nov 15 23:23:26 2016 -0800
+
+    Bump the version number
+
+M	configure.ac
+
+commit 67037b67534efe51d90944899f4923561cfe0301
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 23:00:15 2016 -0800
+
+    Made more changes for the MSVC build.
+
+M	appveyor.yml
+
+commit 2d84520ff491b2e93097cd3cadaf079b322a5464
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:57:43 2016 -0800
+
+    Made more changes for the MSVC build.
+
+M	appveyor.yml
+
+commit 3fc18a804ac4466364d2ce1d7b7c3749e5501a9c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:56:25 2016 -0800
+
+    Made more changes for the MSVC build.
+
+M	appveyor.yml
+M	src/msvc/Makefile.am
+M	src/msvc/README
+D	src/msvc/lj.proj
+
+commit 8e803f8192432cff77d381b06145207193dfa14c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:42:54 2016 -0800
+
+    Made more changes for MSVC build.
+
+M	appveyor.yml
+
+commit 9621dcd6c0ad7f124b7571f067594fa2034644b1
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:38:45 2016 -0800
+
+    More changes for MSVC build.
+
+M	src/msvc/jasper.sln
+
+commit d27a2a66b465faea390717dc391297b4be8c9299
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:36:06 2016 -0800
+
+    Made more changes for the MSVC build.
+
+M	src/appl/imginfo.c
+M	src/libjasper/include/jasper/jas_config.h.in
+
+commit 3f0f3ca1826997199cc3b0739e762ceb3ac3f03f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:26:27 2016 -0800
+
+    Another fix to the config file for the MSVC case.
+
+M	src/libjasper/include/jasper/jas_config.h.in
+
+commit a2c92dacccd59bd622893bec0425e7b685cea21d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:23:56 2016 -0800
+
+    More CI changes.
+
+M	appveyor.yml
+
+commit 4575a0e4def0f40f488ad6014bf09e9322779db4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:21:41 2016 -0800
+
+    More CI changes.
+
+M	appveyor.yml
+
+commit 03f7194140f167fe62b97c9ba9450f2bffef6643
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:15:53 2016 -0800
+
+    Added some fixes to the config file for the MSVC case.
+
+M	src/libjasper/include/jasper/jas_config.h.in
+
+commit 65980d4bbc64f0afdf7ff2d157dba6906f69c885
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:11:32 2016 -0800
+
+    More CI changes.
+
+M	appveyor.yml
+
+commit 562983fe1786ce313a1eff5c713ed36d35dbc457
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 22:06:52 2016 -0800
+
+    More CI changes.
+
+M	appveyor.yml
+A	src/msvc/imgcmp.vcxproj
+A	src/msvc/imginfo.vcxproj
+A	src/msvc/jasper.sln
+A	src/msvc/jasper.vcxproj
+A	src/msvc/jiv.vcxproj
+A	src/msvc/libjasper.vcxproj
+
+commit e4885b226d6850fe1a2244c9e53977673f125cf5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 17:06:39 2016 -0800
+
+    More CI changes.
+
+M	.travis.yml
+
+commit ce5fce8f13945e1080653091d6b88c328a7ed75f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 16:53:21 2016 -0800
+
+    More CI changes.
+
+M	.travis.yml
+
+commit a45b3ecfbc4bd12e015e75734281f14d79a21850
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 16:47:50 2016 -0800
+
+    More CI changes.
+
+M	.travis.yml
+
+commit 158aa900b777f6b1176018e834be5cb304640081
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 06:46:55 2016 -0800
+
+    More CI experimentation
+
+M	.travis.yml
+
+commit f21fc1bd2ee40c4f9278e6b8b2956450333fe679
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 06:25:36 2016 -0800
+
+    More CI experimentation
+
+M	.travis.yml
+
+commit 79be501106ec90260a9270dc21e7ad5d201bdf29
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 00:43:51 2016 -0800
+
+    More appveyor experimentation
+
+M	src/msvc/lj.proj
+
+commit 3a7f2552f9af22be7c2b441fd6a32386f01b0997
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 00:33:39 2016 -0800
+
+    More CI changes.
+
+M	.travis.yml
+M	appveyor.yml
+
+commit 0d3518aa31ab9cf43824aa0036683c7f9d00904c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 23:31:17 2016 -0800
+
+    More appveyor experimentation
+
+M	appveyor.yml
+
+commit 85bd7bdc70c9c9f0ca0254b934d38f1c827f6e27
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 23:29:15 2016 -0800
+
+    More appveyor experimentation
+
+M	src/msvc/lj.proj
+
+commit a316212cafa0786ffd6762c877209b62b573f768
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 23:23:57 2016 -0800
+
+    More appveyor experimentation
+
+M	src/msvc/lj.proj
+
+commit cb6b9e4c650c82575b943e0eee77e5b8c2da512e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 23:21:08 2016 -0800
+
+    More appveyor experimentation
+
+M	src/msvc/lj.proj
+
+commit a998c8db0e25c370fb1d54bad309a59326736a24
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 23:16:45 2016 -0800
+
+    More appveyor experimentation
+
+M	appveyor.yml
+M	src/msvc/lj.proj
+
+commit c82f5444feba9f0b23b4dc54748fde928080d374
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 23:03:26 2016 -0800
+
+    More appveyor experimentation
+
+M	src/msvc/lj.proj
+
+commit cb5064e8c631a786a3c8817950557585e0c7229c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 22:55:36 2016 -0800
+
+    More appveyor experimentation
+
+M	appveyor.yml
+
+commit 212ae823fbb03dede8884e22642b985be5803693
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 22:53:07 2016 -0800
+
+    More appveyor experimentation
+
+M	appveyor.yml
+
+commit 4fecfc7d52bef06980c2d7e90ec136f92f7eb905
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 22:46:43 2016 -0800
+
+    More appveyor experimentation
+
+M	appveyor.yml
+M	src/msvc/lj.proj
+
+commit 13c9060cfd375480dd48eb5dd3bca60f57b8437a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 22:37:58 2016 -0800
+
+    More experimentation with appveyor.
+
+M	appveyor.yml
+A	src/msvc/lj.proj
+
+commit 369e071915dfd215189d643083d117d090215ddd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 09:04:36 2016 -0800
+
+    Modify appveyor.yml
+
+M	appveyor.yml
+
+commit f7ac6452a1971563824d20385cc8d6915483356d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 09:02:32 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit c11982eb8e9fc4ff1318f5e2050c86336b2b35c5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 08:59:52 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit 5ff6e3889ff134b2e8d605966be50fb37de8d39b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 08:53:16 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit c5900f112aba85b708e3c9748410fbea8a177711
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 08:51:41 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit a8523a5aa83e5c98e45c08e2621daeeac967e20e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 08:49:24 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit 1a9686213cae751b20a5ae411f20e89afcfedbac
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 08:48:36 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit fe6c4becfbae0b65eb8130f3b8ca461628be1a6a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 08:47:00 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit 814308a7a2cf1f4c7667370742a5f220cf57bcd9
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 08:41:18 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit 6a8f8f9650a556f57fb60f7f4f51ce313f552f15
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 08:18:49 2016 -0800
+
+    Removed a duplicate inclusion of jas_math.h.
+
+M	src/libjasper/jpc/jpc_t2cod.c
+
+commit f47586221311bfe62464a969214cac8d5265bdee
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 07:54:55 2016 -0800
+
+    Another change to appveyor.yml
+
+M	appveyor.yml
+
+commit 859f28b9eff1ec4ba5a5735f12c3deee7f158f7d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 07:54:13 2016 -0800
+
+    Another change to appveyor.yml
+
+M	appveyor.yml
+
+commit 8ff9c9bd3db5c6dffb7871d46c5b41fb33a9662d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 07:53:07 2016 -0800
+
+    Another change to appveyor.yml
+
+M	appveyor.yml
+
+commit 9488db357f616b2fa25bab5935e4cc7dc4e599ce
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 07:48:22 2016 -0800
+
+    Another change to appveyor.yml
+
+M	appveyor.yml
+
+commit c7786c5f223d3a29f6a6fdb4f2ba1a7d6ef1c052
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 14 07:35:15 2016 -0800
+
+    Another change to appveyor.yml
+
+M	appveyor.yml
+
+commit 6afe28164518d30412ae44887b086c1503560df1
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 09:34:41 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit 894bb685758e53bade46c21ceaa0bd085121e86b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 09:29:20 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit ac0f9fad90865089f04bfe19f16635e42ac7a90c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 09:19:34 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit 6f1bedd87b6f4fc5436fd9853edf712e139ea232
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 09:11:24 2016 -0800
+
+    Modified appveyor.yml
+
+M	appveyor.yml
+
+commit 857c6b9f47679f971ca8da7dcb6712c3e52133e4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 09:01:33 2016 -0800
+
+    Add appveyor.yml file
+
+A	appveyor.yml
+
+commit 8069646ec217cc0080e67e5e2f3b5db6ac87b359
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 08:48:33 2016 -0800
+
+    More changes to allow things to work with Travis CI.
+
+M	.travis.yml
+M	test/bin/run_test_3
+M	test/bin/run_test_4
+
+commit 3f6c12113bdfd4969e5b3a2a2a35de656334d278
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 08:30:07 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit 4b32f5d31e8ff42c98ce72acdfc576cef4016148
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 08:25:26 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit e31f2758087cbc7b237e222918ad5f2515a22dce
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 08:20:12 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit 368f3ec600af0fe423518cc982a382f7be2130db
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 08:07:44 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit 203e26e41e399e756c7cbb99bdbfd80233cf5712
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 08:00:43 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit ecffc18330778ba68ebd9ff276242d70050443d2
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:56:54 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit d73348decfc87420c5f63806338b5438e551974a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:47:32 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit fd2583d82692c0e564798e64ec119440db85cdfe
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:43:52 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit 5eec10be3fdef9b74a9700f847e97a73f64eda3c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:27:30 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit e373b27b8cd64020265ac2f7f679ca6d25ea236e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:24:07 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit a120dc77528f6fc6eac894ffac2943cc3bc69415
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:20:00 2016 -0800
+
+    Modified .travis.yml
+
+M	.travis.yml
+
+commit e9324259c06ac6fa92d702c386659a0ae44358e8
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:14:47 2016 -0800
+
+    Modified .travis.yml file.
+
+M	.travis.yml
+
+commit 3990acdfed2f5449d498863cc80233e4d1bfc7d3
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:09:45 2016 -0800
+
+    Cosmetic change
+
+M	configure.ac
+
+commit a384ff370acf4354c10c01676fb26e399a3b3b44
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 07:04:38 2016 -0800
+
+    Add .travis.yml file for Travis CI
+
+A	.travis.yml
+
+commit d45903dd7bf025d4e5d349520cb83a1106d106bd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 05:15:32 2016 -0800
+
+    Bump the version number.
+
+M	configure.ac
+
+commit 7a0787a83671d35ef8ef921f3f5feb44c0f84ecd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 13 05:07:18 2016 -0800
+
+    Attempt to fix non-configure-based build with MSVC under Windows.
+
+M	src/libjasper/include/jasper/Makefile.am
+M	src/libjasper/include/jasper/jas_config.h.in
+D	src/libjasper/include/jasper/jas_config2.h
+
+commit 1b27876477dde912b97753d083986f15aeb0637a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 16:18:26 2016 -0800
+
+    Bump the version number.
+
+M	configure.ac
+
+commit 48ba12fa3ca22927e2f7cc891b2f2c21a5c65a37
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 16:15:28 2016 -0800
+
+    Added support for the max_samples option to the PGX and RAS decoders.
+
+M	src/libjasper/pgx/pgx_dec.c
+M	src/libjasper/ras/ras_dec.c
+
+commit 6614a6c1194b3ff84ce20b9d1166ae22ec938f67
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 15:42:24 2016 -0800
+
+    Modified configure.ac to fall back on C99 support if C11 support
+    is not available.
+
+M	configure.ac
+
+commit 62ce8d322c20f24c21effc422a0786226ce51b8a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 15:19:55 2016 -0800
+
+    Fixed some const problems in the interface to the encode and decode
+    functions.
+    (The option string should be a pointer to const char, but the
+    const was
+    missing.)
+
+    Added support for the max_samples option in the PNM decoder.
+    Also, in the PNM decoder, added a new option allow_trunc to allow
+    truncation
+    to be allowed/disallowed.
+
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/bmp/bmp_dec.c
+M	src/libjasper/bmp/bmp_enc.c
+M	src/libjasper/include/jasper/jas_image.h
+M	src/libjasper/jp2/jp2_dec.c
+M	src/libjasper/jp2/jp2_enc.c
+M	src/libjasper/jpc/jpc_dec.c
+M	src/libjasper/jpc/jpc_enc.c
+M	src/libjasper/jpg/jpg_dec.c
+M	src/libjasper/jpg/jpg_enc.c
+M	src/libjasper/mif/mif_cod.c
+M	src/libjasper/pgx/pgx_dec.c
+M	src/libjasper/pgx/pgx_enc.c
+M	src/libjasper/pnm/pnm_dec.c
+M	src/libjasper/pnm/pnm_enc.c
+M	src/libjasper/ras/ras_dec.c
+M	src/libjasper/ras/ras_enc.c
+
+commit 247cbbad4fbfba5d9baf09db9c6a757f557775da
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 08:11:28 2016 -0800
+
+    Added another regression test case.
+
+A	data/test/bad/00020-jasper-signedintoverflow-jas_image_c.jpc
+
+commit d82326571f4822427da13c70bd3005362be69dd5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 08:04:48 2016 -0800
+
+    Bump the version number.
+
+M	configure.ac
+
+commit 44c95e1ab066eb737ed24cce5568da6d2a9e73c5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 08:00:51 2016 -0800
+
+    Added new regression test case.
+
+A	data/test/bad/00028-jasper-uaf-jas_realloc.jpg
+M	test/bin/run_test_1
+
+commit 861e16ff941adad07e1ed2579765d86e8ba00bed
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 07:48:02 2016 -0800
+
+    Some minor fixes for the max_samples decoder feature.
+
+M	src/appl/imginfo.c
+M	src/libjasper/jp2/jp2_dec.c
+M	src/libjasper/jpc/jpc_dec.c
+
+commit bcf11a1447896fdd1afae67df20513d416293859
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 07:40:40 2016 -0800
+
+    Add new regression test case.
+
+A	data/test/bad/00043-jasper-assert-jas_matrix_t.jpc
+
+commit 5185cb13da413f826dcc5f1e0c1eb3e038dc0874
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 12 07:28:40 2016 -0800
+
+    Added support for the max_samples option to the JPC/JP2 decoder.
+    Cleaned up some of the code for max_samples support in other decoders
+    (including fixing some potential bugs).
+    All decoders supporting max_samples now default to the value given by
+    JAS_DEC_DEFAULT_MAX_SAMPLES in the config file.
+
+M	src/appl/imginfo.c
+M	src/libjasper/bmp/bmp_dec.c
+M	src/libjasper/include/jasper/jas_config.h.in
+M	src/libjasper/jpc/jpc_dec.c
+M	src/libjasper/jpc/jpc_dec.h
+M	src/libjasper/jpg/jpg_dec.c
+
+commit 0b10896b9963f242bffbeba59d46b01e8095d078
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 11 16:47:53 2016 -0800
+
+    Bump the version number.
+
+M	configure.ac
+
+commit d42b2388f7f8e0332c846675133acea151fc557a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 11 16:27:34 2016 -0800
+
+    The generation of the configuration file jas_config.h has been
+    completely
+    reworked in order to avoid pollution of the global namespace.
+
+    Some problematic types like uchar, ulong, and friends have been
+    replaced
+    with names with a jas_ prefix.
+
+    An option max_samples has been added to the BMP and JPEG decoders to
+    restrict the maximum size of image that they can decode.  This change
+    was made as a (possibly temporary) fix to address security concerns.
+    A max_samples command-line option has also been added to imginfo.
+
+    Whether an image component (for jas_image_t) is stored in memory or on
+    disk is now based on the component size (rather than the image size).
+
+    Some debug log message were added.
+
+    Some new integer overflow checks were added.
+
+    Some new safe integer add/multiply functions were added.
+
+    More pre-C99 cruft was removed.  JasPer has numerous "hacks" to
+    handle pre-C99 compilers.  JasPer now assumes C99 support.	So, this
+    pre-C99 cruft is unnecessary and can be removed.
+
+    The regression jasper-doublefree-mem_close.jpg has been re-enabled.
+    Theoretically, it should work more predictably now.
+
+M	.gitignore
+M	configure.ac
+M	src/appl/imginfo.c
+M	src/libjasper/base/jas_debug.c
+M	src/libjasper/base/jas_icc.c
+M	src/libjasper/base/jas_iccdata.c
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/base/jas_seq.c
+M	src/libjasper/base/jas_stream.c
+M	src/libjasper/base/jas_tmr.c
+M	src/libjasper/bmp/bmp_dec.c
+M	src/libjasper/include/jasper/jas_cm.h
+A	src/libjasper/include/jasper/jas_config.h.in
+M	src/libjasper/include/jasper/jas_config2.h
+M	src/libjasper/include/jasper/jas_debug.h
+M	src/libjasper/include/jasper/jas_fix.h
+M	src/libjasper/include/jasper/jas_getopt.h
+M	src/libjasper/include/jasper/jas_icc.h
+M	src/libjasper/include/jasper/jas_image.h
+M	src/libjasper/include/jasper/jas_init.h
+M	src/libjasper/include/jasper/jas_malloc.h
+M	src/libjasper/include/jasper/jas_math.h
+M	src/libjasper/include/jasper/jas_seq.h
+M	src/libjasper/include/jasper/jas_stream.h
+M	src/libjasper/include/jasper/jas_string.h
+M	src/libjasper/include/jasper/jas_tmr.h
+M	src/libjasper/include/jasper/jas_tvp.h
+M	src/libjasper/include/jasper/jas_types.h
+M	src/libjasper/include/jasper/jas_version.h
+M	src/libjasper/include/jasper/jasper.h
+M	src/libjasper/jp2/jp2_dec.c
+M	src/libjasper/jpc/jpc_cs.c
+M	src/libjasper/jpc/jpc_cs.h
+M	src/libjasper/jpc/jpc_dec.c
+M	src/libjasper/jpc/jpc_dec.h
+M	src/libjasper/jpc/jpc_enc.c
+M	src/libjasper/jpc/jpc_mqdec.h
+M	src/libjasper/jpg/jpg_dec.c
+M	src/libjasper/jpg/jpg_val.c
+M	src/libjasper/mif/mif_cod.c
+M	src/libjasper/pgx/pgx_dec.c
+M	src/libjasper/pnm/pnm_dec.c
+M	src/libjasper/ras/ras_dec.c
+M	test/bin/run_test_1
+
+commit 2b2efba4eda0a654ab02ca41545f50fe4f81845f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 9 15:38:03 2016 -0800
+
+    Made some cosmetic changes to fix linewrap/indentation problems.
+
+M	src/libjasper/base/jas_seq.c
+
+commit 7a9817a42645fd2c70537ae947757c3d8f5a2c75
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 9 08:56:43 2016 -0800
+
+    Bump the version number.
+
+M	configure.ac
+
+commit 05fea46e316d64ac8ef81d26875e0d46a4d0b071
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 9 08:48:33 2016 -0800
+
+    Bump AC_JAS_LT_CURRENT
+
+M	configure.ac
+
+commit f4b1908a0738e8aa354a3595398ef64c68cdd62d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 8 07:49:33 2016 -0800
+
+    Fixed a few incorrect printf format specifiers.
+
+M	src/libjasper/base/jas_malloc.c
+M	src/libjasper/jpg/jpg_dec.c
+
+commit a84018b17f2ceceea9bc4ef3144c202f2ef33d6b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 8 07:35:39 2016 -0800
+
+    Changed the manner in which PSNR is computed so that it uses INFINITY
+    to generate the value of infinity instead of dividing by zero.
+
+M	src/appl/imgcmp.c
+
+commit bb93d3d4ae347708a343882dc137e7e55efbea92
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 8 06:01:06 2016 -0800
+
+    Bump the version number.
+
+M	configure.ac
+
+commit deead461baa479436385a9b3e5eda30b90f87453
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 8 05:59:23 2016 -0800
+
+    Disabled one regression test case.
+
+M	test/bin/run_test_1
+
+commit 3eddff136c21be7374acf1ca78a7e41bb7ac1852
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 8 05:37:13 2016 -0800
+
+    Made a few global variables static to avoid global namespace
+    pollution.
+
+    Added an experimental JPEG decoder option to allow a maximum image
+    size to be specified.
+
+M	src/libjasper/jpc/jpc_dec.c
+M	src/libjasper/jpc/jpc_enc.c
+M	src/libjasper/jpg/jpg_dec.c
+M	src/libjasper/jpg/jpg_enc.c
+M	src/libjasper/pnm/pnm_enc.c
+
+commit 59ab2dd7cded652a87bddff6f700cafad3f23d41
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 8 04:21:25 2016 -0800
+
+    Fixed two potential overflow problems in jas_image_cmpt_create.
+    It is not clear that these problems could actually result in the
+    code malfunctioning, however.
+
+    In the JPEG decoder, changed an "int" to a "JDIMENSION".
+
+    Added more debugging log messages to both the JPEG decoder and the
+    I/O stream code.
+
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/base/jas_stream.c
+M	src/libjasper/jpg/jpg_dec.c
+
+commit 4786a1392bb13013ac1ca9020096f48abdac6107
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 6 10:31:04 2016 -0800
+
+    Bump the version number.
+
+M	configure.ac
+
+commit 634ce8e8a5accc0fa05dd2c20d42b4749d4b2735
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 6 10:26:16 2016 -0800
+
+    Made some changes to the I/O stream library for memory streams.
+    There were a number of potential problems due to the possibility
+    of integer overflow.
+    Changed some integral types to the larger types size_t or ssize_t.
+    For example, the function mem_resize now takes the buffer size
+    parameter
+    as a size_t.
+    Added a new function jas_stream_memopen2, which takes a
+    buffer size specified as a size_t instead of an int.
+    This can be used in jas_image_cmpt_create to avoid potential
+    overflow problems.
+
+    Added a new function jas_deprecated to warn about reliance on
+    deprecated library behavior.
+
+M	src/libjasper/base/jas_debug.c
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/base/jas_stream.c
+M	src/libjasper/include/jasper/jas_debug.h
+M	src/libjasper/include/jasper/jas_stream.h
+
+commit e8f491b655bc47bf0d11d6546fe1379d5bcb8678
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 5 22:13:26 2016 -0700
+
+    Added another regression test case.
+
+A	data/test/good/small_1x1.jpg
+
+commit fa6834f4fba8452da6d4fe1c63a378de4d3bff16
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 5 22:01:42 2016 -0700
+
+    Fixed a bug in the JPEG codec caused by an integral promotion problem.
+
+M	src/libjasper/jpg/jpg_dec.c
+
+commit 5fffc5002af3d1183c1e4e50e069b4a0180de9a8
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 5 09:47:44 2016 -0700
+
+    Bump the version number.
+
+M	configure.ac
+
+commit 511b84b5b3ca6dc59bfaae2127dc9e4a8b8eadcd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 5 09:45:38 2016 -0700
+
+    More changes to the test scripts.
+
+M	test/bin/codec_tests
+M	test/bin/run_codec_test
+M	test/bin/run_test_3
+M	test/bin/utilities
+
+commit 3d54de2ef69a4b0eefe046c6a5244a2226921046
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 5 07:58:04 2016 -0700
+
+    Added some new test images.
+
+A	data/images/signed_12.pgx
+A	data/images/signed_16.pgx
+A	data/images/signed_8.pgx
+
+commit 913155ab9c87040ef7553de0da948745b5ecd3ef
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 5 01:02:53 2016 -0700
+
+    The MIF encoder did not set the color space of the temporary images
+    that it employs before delegating to the PNM encoder, causing encoding
+    to fail in some/all cases.	This has been fixed.
+
+    Plugged some memory leaks.
+
+    Fixed some misleading error messages.
+
+    Added some debugging log messages.
+
+    Made some cosmetic changes to the code.
+
+    Fixed an UB problem in the RAS encoder.
+
+    Fixed some integral type inconsistencies in the RAS codec.
+
+    Made improvements to some of the test scripts.
+    Enabled tests with the OpenJPEG decoder if available.
+
+M	src/libjasper/mif/mif_cod.c
+M	src/libjasper/pgx/pgx_enc.c
+M	src/libjasper/pnm/pnm_dec.c
+M	src/libjasper/pnm/pnm_enc.c
+M	src/libjasper/ras/ras_dec.c
+M	src/libjasper/ras/ras_enc.c
+M	test/bin/run_codec_test
+M	test/bin/run_test_1
+M	test/bin/run_test_2
+M	test/bin/run_test_3
+
+commit 04742f560d7b82bbf745fa93c0ebea3edfaadc02
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 4 11:53:31 2016 -0700
+
+    Bump the version number.
+
+M	configure.ac
+
+commit adb1f224302823f91a9fefc0cd27930ba08b3121
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 4 11:48:51 2016 -0700
+
+    Added another regression test case.
+
+    Cleared some JPEG decoder data structures with memset to make the
+    code more predictable in the event that the JPEG library fails to
+    properly initialize them.
+
+A	data/test/good/00021-jasper-uninitvalue-jpg_mkimage.jpg
+M	src/libjasper/jpg/jpg_dec.c
+
+commit 3afacc174867cc9d1f74ef2683bc780de4b0b2df
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 4 10:14:13 2016 -0700
+
+    Made some changes in an attempt to fix a JPEG decoder problem
+    that I cannot reproduce.
+    The changes check for integer overflow/narrowing at various
+    places in the code.
+
+    The safe arithmetic functions in jas_math.h have been
+    changed so that a null pointer can be given for the
+    result parameter, in which case the result is discarded.
+
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/include/jasper/jas_image.h
+M	src/libjasper/include/jasper/jas_math.h
+M	src/libjasper/jpg/jpg_dec.c
+
+commit 93a94803ee65469cc882f39d3916b190f8b5ed18
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 4 09:03:41 2016 -0700
+
+    Added many additional debug log messages in the I/O stream code
+    as well
+    as the JPEG decoder.
+
+M	src/libjasper/base/jas_stream.c
+M	src/libjasper/jpg/jpg_dec.c
+
+commit 449fcf5d68c3239cf8790d736a520b0e46a65ae1
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 4 07:54:34 2016 -0700
+
+    Added another regression test case.
+
+A
+data/test/bad/vertcraig-heap-buffer-overflow-in-jpc_pi_nextrpcl.jp2
+
+commit 69b105154caa8cf4c67f5463076b59d57433c158
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 4 07:24:51 2016 -0700
+
+    Added another regression test case.
+
+A	data/test/bad/00029-jasper-uninitvalue-jpc_pi_nextcprl.jp2
+
+commit 1f0dfe5a42911b6880a1445f13f6d615ddb55387
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 4 07:20:23 2016 -0700
+
+    Fixed an integer overflow problem in the JPC codec that later resulted
+    in the use of uninitialized data.
+
+M	src/libjasper/jpc/jpc_t2cod.c
+M	src/libjasper/jpc/jpc_t2cod.h
+
+commit 862ba25d9b17858a9855b5436446a615f2f012ee
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 2 22:23:16 2016 -0700
+
+    Bump the version number.
+
+M	configure.ac
+
+commit 1d7a476b25a45e8682c2588ded7e69b26e606476
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 2 22:08:10 2016 -0700
+
+    As best I can tell, Clang 3.8.1 and 3.7.1 (and probably some other
+    versions around these ones) seem to generate incorrect code for the
+    ternary operator in some cases.  One use the ternary operator in the
+    JPEG2000 encoder was encountering this problem.  This was causing the
+    JPEG2000 encoder to generate all (or mostly) empty layers.	This has
+    been fixed by converting the problematic use of the ternary operator
+    into an if statement when compiling with Clang.
+
+    In the case of Clang, the configuration header file was incorrectly
+    setting
+    JAS_ATTRIBUTE_DISABLE_USAN, as Clang was falsely detected as GCC.
+    Note that Clang defines __GNUC__.  This problem has been fixed (or at
+    least made less broken, depending on your point of view).
+
+    Some cosmetic changes were made in various parts of the code to fix
+    indentation and line-wrapping problems and such.
+
+    Some corrections to the choice of integral types were made at various
+    places in the code.
+
+    A few changes to the test scripts were made to give better error
+    messages.  Some extra test cases were added as well.
+
+M	configure.ac
+M	src/libjasper/jpc/jpc_enc.c
+M	src/libjasper/jpc/jpc_t2enc.c
+M	test/bin/run_test_1
+M	test/bin/run_test_2
+
+commit dc129830baf8cfe104454d3a6e426f55af51b1d3
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 2 07:38:28 2016 -0700
+
+    Sometimes the abs function was being used in places where a type other
+    than int was involved (e.g., int_fast32_t).
+    This could lead to problems, depending on the size of int relative to
+    other integral types.
+    (One non-so-important assertion in jiv.c was using abs with doubles.)
+    These problems have been fixed by using JAS_ABS instead of abs.
+
+    The parameter JAS_IMAGE_INMEMTHRESH has been increased to 256 MB.
+    It was previously set to 16 MB, which is quite low for most systems
+    today.
+
+    Some additional assertions were added in the asl/asr code to make some
+    attempt at ensuring that shifting of negative numbers (which is in the
+    land of UB) works as expected.
+
+    A few int types were changed to jpc_fix_t in the JPC codec.
+    This change is needed to avoid potential problems on systems where int
+    and jpc_fix_t are different.
+
+M	src/appl/imgcmp.c
+M	src/appl/jiv.c
+M	src/libjasper/include/jasper/jas_image.h
+M	src/libjasper/include/jasper/jas_math.h
+M	src/libjasper/jpc/jpc_enc.c
+M	src/libjasper/jpc/jpc_t1enc.c
+
+commit 31b9f5a1a43b7a6e1726b615dba865dae4c7473c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Oct 30 21:35:22 2016 -0700
+
+    Added an --enable-msan option to configure for enabling the
+    memory sanitizer with Clang.
+
+M	configure.ac
+
+commit c2c6c410f2a423261c3e89b23dc0f6989691c559
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 29 18:49:53 2016 -0700
+
+    Bump the version number.
+
+M	configure.ac
+
+commit b032fe7fedd0b856bbe5bd7186fc1d22c03ade9f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 29 18:46:36 2016 -0700
+
+    The function attribute for ignoring UB in certain places in the code
+    was GCC specific.  Now, the case of Clang should be covered as well
+    (although I cannot test this with the ancient version of Clang on my
+    machine).
+
+M	configure.ac
+M	src/libjasper/include/jasper/jas_math.h
+
+commit 4f0e63ea0d5ab4b8b384625e4a978f09c7e94a4c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 29 17:38:52 2016 -0700
+
+    Changed some of the C compiler flag processing in configure.ac.
+    Added a file to .gitignore.
+
+M	.gitignore
+A	ac_m4/m4_ax_append_flag.m4
+A	ac_m4/m4_ax_cflags_gcc_option.m4
+A	ac_m4/m4_ax_cflags_strict_prototypes.m4
+A	ac_m4/m4_ax_cflags_warn_all.m4
+A	ac_m4/m4_ax_check_compile_flag.m4
+A	ac_m4/m4_ax_compiler_flags_cflags.m4
+M	configure.ac
+
+commit 3575007d2d3a2bd0132f2c171c1371dc06a811c4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 29 16:29:02 2016 -0700
+
+    Made a few cosmetic changes.
+
+M	src/libjasper/jpc/jpc_cs.c
+M	src/libjasper/jpc/jpc_dec.c
+M	test/bin/run_test_4
+
+commit 28734463f0da2027af800a2ce57e8d8cc46d738b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 29 13:42:25 2016 -0700
+
+    More test script/data changes.
+
+M	test/bin/decoder_tests
+M	test/bin/run_test_4
+
+commit 0831142c4fadb8e01d1a7b549813fbada00442af
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 29 13:28:43 2016 -0700
+
+    More test script changes.
+
+M	test/bin/run_test_4
+
+commit af4bd7a476befb52ff8f638b79d55285f6463335
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Oct 29 13:23:11 2016 -0700
+
+    Added more information to error messages printed in some parts of
+    the code.
+    Added a few new debugging log messages.
+
+    The PGX format appears to allow the plus/minus character in the header
+    to be omitted (which would then default to plus).  This was not
+    properly
+    handled before and has now been corrected.
+
+    One of the PGX error messages incorrectly claimed to be for the
+    BMP codec.
+    This has been fixed.
+
+    Started to add some infrastructure for performing decoder tests.
+    This will remain disabled until completed.
+
+M	src/appl/imgcmp.c
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/pgx/pgx_dec.c
+M	src/libjasper/pgx/pgx_enc.c
+M	test/bin/Makefile.am
+R100	test/bin/tests	test/bin/codec_tests
+A	test/bin/decoder_tests
+M	test/bin/jpcod
+M	test/bin/jpdec
+M	test/bin/jpenc
+R098	test/bin/run_test	test/bin/run_codec_test
+M	test/bin/run_test_3
+A	test/bin/run_test_4
+M	test/bin/utilities
+
+commit e613bbb1612d3a82abc9b8d170c4d9a5d2ec0135
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Oct 27 22:06:54 2016 -0700
+
+    Bump the version number.
+
+M	configure.ac
+
+commit ac64e9db13596c59753e6b03917f21d0618a838f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Oct 27 22:03:03 2016 -0700
+
+    Made more changes to the test scripts.
+    Enabled the script run_test_3 during "make check".
+
+M	test/bin/Makefile.am
+M	test/bin/jpcod
+M	test/bin/jpdec
+M	test/bin/jpenc
+M	test/bin/run_test
+M	test/bin/run_test_3
+M	test/bin/utilities
+
+commit 058447d37f91c92828cc40ffaad6a385c363566a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Oct 27 20:30:08 2016 -0700
+
+    Added another regression test case.
+
+A	data/test/bad/00012-jasper-assert-calcstepsizes.jp2
+
+commit ae977eeb1e7ffb3433e7e1a00e754ade81aad5f4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Oct 27 20:26:31 2016 -0700
+
+    Added another regression test case.
+
+A	data/test/bad/00013-jasper-assert-jpc_pi_nextrpcl.jpc
+
+commit 2b189525b0333ec50f79cfed2fa35f28cde7ae71
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Oct 27 20:16:11 2016 -0700
+
+    Add another regression test case.
+
+A	data/test/bad/00016-jasper-assert-jas_matrix_t.jp2
+
+commit f7038068550fba0e41e1d0c355787f1dcd5bf330
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Oct 27 20:11:57 2016 -0700
+
+    Added some missing sanity checks on the data in a SIZ marker segment.
+
+M	src/libjasper/jpc/jpc_cs.c
+
 commit dee1b64c2fa85186ca9cb10228e61b58c8691ede
 Author: Michael Adams <mdadams@ece.uvic.ca>
-Date:   Thu Oct 27 07:20:49 2016 -0700
+Date:	Thu Oct 27 07:20:49 2016 -0700
 
     Bump the version number.
 

@@ -16,7 +16,7 @@ dnl ************************************************************
 dnl The major, minor, and micro version numbers of the package.
 define(AC_JAS_MAJOR_VERSION, 1)
 define(AC_JAS_MINOR_VERSION, 900)
-define(AC_JAS_MICRO_VERSION, 16)
+define(AC_JAS_MICRO_VERSION, 29)
 
 dnl The package version.
 define(AC_JAS_VERSION,
@@ -43,7 +43,7 @@ dnl 4) If any interfaces have been removed since the last public release, then
 dnl set AGE to zero.
 
 dnl The most recent interface number that this library implements.
-define(AC_JAS_LT_CURRENT, 1)
+define(AC_JAS_LT_CURRENT, 4)
 
 dnl The implementation number of the current interface.
 define(AC_JAS_LT_REVISION, 0)
@@ -73,6 +73,9 @@ dnl Initialize automake.
 AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2])
 
 m4_include([ac_m4/m4_ax_generate_changelog.m4])
+m4_include([ac_m4/m4_ax_cflags_gcc_option.m4])
+m4_include([ac_m4/m4_ax_check_compile_flag.m4])
+m4_include([ac_m4/m4_ax_append_flag.m4])
 
 AX_GENERATE_CHANGELOG
 
@@ -140,7 +143,7 @@ AH_TOP([
 AH_BOTTOM([
 #else
 /* A configure-based build is not being used. */
-#include <jasper/jas_config2.h>
+#include <jasper/jas_pconf2.h>
 #endif
 
 #endif
@@ -151,7 +154,17 @@ AH_BOTTOM([
 ############################################################
 
 AC_PROG_CC
+
+# In the ideal world, AC_PROG_CC_C11 would exist and work.
 #AC_PROG_CC_C11
+
+# Attempt to enable C11 support if available.
+# If C11 support is not available, attempt to fall back on C99 support
+# if available.
+AX_CHECK_COMPILE_FLAG([-std=c11], [AX_APPEND_FLAG([-std=c11])], [
+  AX_CHECK_COMPILE_FLAG([-std=c99], [AX_APPEND_FLAG([-std=c99])], [])
+])
+
 AC_PROG_INSTALL
 # AC_PROG_AWK
 # AC_PROG_CPP
@@ -161,6 +174,36 @@ AM_DISABLE_SHARED
 AC_PROG_LIBTOOL
 
 AC_PATH_XTRA
+
+############################################################
+# Add a few other compiler flags.
+############################################################
+
+if test "$GCC" = yes; then
+	CFLAGS="$CFLAGS -pedantic"
+	CFLAGS="$CFLAGS -Wall -Wno-unused"
+	#CFLAGS="$CFLAGS -W -Wformat -Wmissing-prototypes -Wstrict-prototypes"
+fi
+
+AC_ARG_ENABLE(strict,
+[  --disable-strict    Disable pedantic errors.], [
+case "${enableval}" in
+yes)
+	ENABLE_STRICT=yes;;
+no)
+	ENABLE_STRICT=no;;
+*)
+	AC_MSG_ERROR(bad value ${enableval} for --disable-strict)
+	;;
+esac
+], [
+	ENABLE_STRICT=yes
+])
+if test $ENABLE_STRICT = yes; then
+	if test "$GCC" = yes; then
+		AX_APPEND_FLAG([-pedantic-errors])
+	fi
+fi
 
 ############################################################
 # Check for the IJG JPEG library.
@@ -263,31 +306,82 @@ AC_CHECK_LIB(m, main)
 # Check for header files.
 ############################################################
 
-AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h limits.h unistd.h stdint.h stdbool.h io.h windows.h sys/types.h sys/time.h stdlib.h stddef.h)
+dnl AC_HEADER_STDC
+AC_CHECK_HEADERS(fcntl.h io.h unistd.h windows.h sys/time.h sys/types.h)
+
+# Surely, there must be a better way to do this, but
+# let's just get something working for now.
+
+if test $ac_cv_header_fcntl_h = yes; then
+	AC_SUBST([JAS_HAVE_FCNTL_H], ["#define JAS_HAVE_FCNTL_H 1"])
+else
+	AC_SUBST([JAS_HAVE_FCNTL_H], ["#undef JAS_HAVE_FCNTL_H"])
+fi
+
+if test $ac_cv_header_io_h = yes; then
+	AC_SUBST([JAS_HAVE_IO_H], ["#define JAS_HAVE_IO_H 1"])
+else
+	AC_SUBST([JAS_HAVE_IO_H], ["#undef JAS_HAVE_IO_H"])
+fi
+
+if test $ac_cv_header_unistd_h = yes; then
+	AC_SUBST([JAS_HAVE_UNISTD_H], ["#define JAS_HAVE_UNISTD_H 1"])
+else
+	AC_SUBST([JAS_HAVE_UNISTD_H], ["#undef JAS_HAVE_UNISTD_H"])
+fi
+
+if test $ac_cv_header_windows_h = yes; then
+	AC_SUBST([JAS_HAVE_WINDOWS_H], ["#define JAS_HAVE_WINDOWS_H 1"])
+else
+	AC_SUBST([JAS_HAVE_WINDOWS_H], ["#undef JAS_HAVE_WINDOWS_H"])
+fi
+
+if test $ac_cv_header_sys_time_h = yes; then
+	AC_SUBST([JAS_HAVE_SYS_TIME_H], ["#define JAS_HAVE_SYS_TIME_H 1"])
+else
+	AC_SUBST([JAS_HAVE_SYS_TIME_H], ["#undef JAS_HAVE_SYS_TIME_H"])
+fi
+
+if test $ac_cv_header_sys_types_h = yes; then
+	AC_SUBST([JAS_HAVE_SYS_TYPES_H], ["#define JAS_HAVE_SYS_TYPES_H 1"])
+else
+	AC_SUBST([JAS_HAVE_SYS_TYPES_H], ["#undef JAS_HAVE_SYS_TYPES_H"])
+fi
 
 ############################################################
 # Check for typedefs, structures, and compiler characteristics.
 ############################################################
 
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_SIZE_T
-AC_CHECK_TYPE(uchar, unsigned char)
-AC_CHECK_TYPE(ushort, unsigned short)
-AC_CHECK_TYPE(uint, unsigned int)
-AC_CHECK_TYPE(ulong, unsigned long)
-AC_CHECK_TYPE(longlong, long long)
-AC_CHECK_TYPE(ulonglong, unsigned long long)
-AC_CHECK_TYPE(ssize_t, int)
+dnl AC_C_CONST
+dnl AC_C_INLINE
+dnl AC_TYPE_SIZE_T
+dnl AC_CHECK_TYPE(uchar, unsigned char)
+dnl AC_CHECK_TYPE(ushort, unsigned short)
+dnl AC_CHECK_TYPE(uint, unsigned int)
+dnl AC_CHECK_TYPE(ulong, unsigned long)
+dnl AC_CHECK_TYPE(longlong, long long)
+dnl AC_CHECK_TYPE(ulonglong, unsigned long long)
+dnl AC_CHECK_TYPE(ssize_t, int)
 AC_CHECK_FUNCS(gettimeofday)
 AC_CHECK_FUNCS(getrusage)
+
+if test $ac_cv_func_gettimeofday = yes; then
+	AC_SUBST([JAS_HAVE_GETTIMEOFDAY], ["#define JAS_HAVE_GETTIMEOFDAY 1"])
+else
+	AC_SUBST([JAS_HAVE_GETTIMEOFDAY], ["#undef JAS_HAVE_GETTIMEOFDAY"])
+fi
+
+if test $ac_cv_func_getrusage = yes; then
+	AC_SUBST([JAS_HAVE_GETRUSAGE], ["#define JAS_HAVE_GETRUSAGE 1"])
+else
+	AC_SUBST([JAS_HAVE_GETRUSAGE], ["#undef JAS_HAVE_GETRUSAGE"])
+fi
 
 ############################################################
 # Checks for library functions.
 ############################################################
 
-AC_FUNC_VPRINTF
+dnl AC_FUNC_VPRINTF
 
 ############################################################
 # Enable memory limit feature.
@@ -345,6 +439,17 @@ esac
 ],
 [])
 
+AC_ARG_ENABLE(msan,
+[  --enable-msan    Enable Memory Sanitizer.],
+[
+case "${enableval}" in
+yes)
+	CFLAGS="$CFLAGS -fsanitize=memory"
+	LDFLAGS="$LDFLAGS -fsanitize=memory"
+esac
+],
+[])
+
 ############################################################
 # Enable/disable extra code for debugging.
 ############################################################
@@ -371,36 +476,9 @@ no)
 esac
 ], [debug=no])
 
-if test "$GCC" = yes; then
-	#CFLAGS="$CFLAGS"
-	#CFLAGS="$CFLAGS -std=c99"
-	#CFLAGS="$CFLAGS -std=c11"
-	CFLAGS="$CFLAGS -pedantic"
-	CFLAGS="$CFLAGS -pedantic-errors"
-	CFLAGS="$CFLAGS -Wall -Wno-unused"
-	#CFLAGS="$CFLAGS -W -Wformat -Wmissing-prototypes -Wstrict-prototypes"
-fi
-
 ############################################################
-# Extra stuff for research purposes.
+# Extra stuff
 ############################################################
-
-AC_ARG_ENABLE(special0,
-[  --enable-special0    enable something],
-[
-case "${enableval}" in
-yes)
-	if test "$GCC" = yes; then
-		CFLAGS="-g -O0"
-	fi
-	;;
-no)
-	;;
-*)
-	AC_MSG_ERROR(bad value ${enableval} for --enable-special0)
-	;;
-esac
-], [])
 
 if test -n "$EXTRA_CFLAGS"; then
 	CFLAGS="$CFLAGS $EXTRA_CFLAGS"
@@ -410,13 +488,17 @@ fi
 # Generate the configuration header file.
 ############################################################
 
-AC_CONFIG_HEADERS([src/libjasper/include/jasper/jas_config.h])
+# The private header file generated by AC_CONFIG_HEADERS is not
+# currently used.  This just causes less verbose command lines
+# when make is run.
+AC_CONFIG_HEADERS([src/libjasper/include/jasper/jas_pconf.h])
 
 ############################################################
 # Generate the makefiles.
 ############################################################
 
 AC_CONFIG_FILES([
+src/libjasper/include/jasper/jas_config.h
 Makefile
 src/Makefile
 src/appl/Makefile
@@ -440,4 +522,3 @@ pkgconfig/jasper.pc
 jasper.spec
 ])
 AC_OUTPUT
-

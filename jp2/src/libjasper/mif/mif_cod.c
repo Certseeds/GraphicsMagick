@@ -141,7 +141,7 @@ jas_taginfo_t mif_tags[] = {
 
 /* Load an image from a stream in the MIF format. */
 
-jas_image_t *mif_decode(jas_stream_t *in, char *optstr)
+jas_image_t *mif_decode(jas_stream_t *in, const char *optstr)
 {
 	mif_hdr_t *hdr;
 	jas_image_t *image;
@@ -179,7 +179,7 @@ jas_image_t *mif_decode(jas_stream_t *in, char *optstr)
 			jas_eprintf("cannot open component file %s\n", cmpt->data);
 			goto error;
 		}
-		if (!(tmpimage = jas_image_decode(tmpstream, -1, 0))) {
+		if (!(tmpimage = jas_image_decode(tmpstream, -1, "allow_trunc=1"))) {
 			goto error;
 		}
 		if (tmpstream != in) {
@@ -263,7 +263,7 @@ error:
 
 /* Save an image to a stream in the the MIF format. */
 
-int mif_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
+int mif_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 {
 	mif_hdr_t *hdr;
 	jas_image_t *tmpimage;
@@ -311,14 +311,18 @@ int mif_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 			cmptparm.height = cmpt->height;
 			cmptparm.prec = cmpt->prec;
 			cmptparm.sgnd = false;
-			if (jas_image_addcmpt(tmpimage, jas_image_numcmpts(tmpimage), &cmptparm)) {
+			if (jas_image_addcmpt(tmpimage, jas_image_numcmpts(tmpimage),
+			  &cmptparm)) {
 				goto error;
 			}
+			jas_image_setclrspc(tmpimage, JAS_CLRSPC_SGRAY);
+			jas_image_setcmpttype(tmpimage, 0,
+			  JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_GRAY_Y));
 			if (!(data = jas_seq2d_create(0, 0, cmpt->width, cmpt->height))) {
 				goto error;
 			}
-			if (jas_image_readcmpt(image, cmptno, 0, 0, cmpt->width, cmpt->height,
-			  data)) {
+			if (jas_image_readcmpt(image, cmptno, 0, 0, cmpt->width,
+			  cmpt->height, data)) {
 				goto error;
 			}
 			if (cmpt->sgnd) {
@@ -329,8 +333,8 @@ int mif_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 					}
 				}
 			}
-			if (jas_image_writecmpt(tmpimage, 0, 0, 0, cmpt->width, cmpt->height,
-			  data)) {
+			if (jas_image_writecmpt(tmpimage, 0, 0, 0, cmpt->width,
+			  cmpt->height, data)) {
 				goto error;
 			}
 			jas_seq2d_destroy(data);
@@ -366,7 +370,7 @@ error:
 
 int mif_validate(jas_stream_t *in)
 {
-	uchar buf[MIF_MAGICLEN];
+	jas_uchar buf[MIF_MAGICLEN];
 	uint_fast32_t magic;
 	int i;
 	int n;
@@ -458,7 +462,7 @@ static int mif_hdr_growcmpts(mif_hdr_t *hdr, int maxcmpts)
 
 static mif_hdr_t *mif_hdr_get(jas_stream_t *in)
 {
-	uchar magicbuf[MIF_MAGICLEN];
+	jas_uchar magicbuf[MIF_MAGICLEN];
 	char buf[4096];
 	mif_hdr_t *hdr;
 	bool done;
@@ -776,7 +780,9 @@ static mif_hdr_t *mif_makehdrfromimage(jas_image_t *image)
 	hdr->magic = MIF_MAGIC;
 	hdr->numcmpts = jas_image_numcmpts(image);
 	for (cmptno = 0; cmptno < hdr->numcmpts; ++cmptno) {
-		hdr->cmpts[cmptno] = jas_malloc(sizeof(mif_cmpt_t));
+		if (!(hdr->cmpts[cmptno] = jas_malloc(sizeof(mif_cmpt_t)))) {
+			goto error;
+		}
 		cmpt = hdr->cmpts[cmptno];
 		cmpt->tlx = jas_image_cmpttlx(image, cmptno);
 		cmpt->tly = jas_image_cmpttly(image, cmptno);
@@ -789,4 +795,15 @@ static mif_hdr_t *mif_makehdrfromimage(jas_image_t *image)
 		cmpt->data = 0;
 	}
 	return hdr;
+
+error:
+	for (cmptno = 0; cmptno < hdr->numcmpts; ++cmptno) {
+		if (hdr->cmpts[cmptno]) {
+			jas_free(hdr->cmpts[cmptno]);
+		}
+	}
+	if (hdr) {
+		jas_free(hdr);
+	}
+	return 0;
 }

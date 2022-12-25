@@ -170,6 +170,14 @@
 #define ulonglong unsigned long long
 #endif
 
+
+#define jas_uchar unsigned char
+#define jas_uint unsigned int
+#define jas_ulong unsigned long
+#define jas_longlong long long
+#define jas_ulonglong unsigned long long
+
+
 /* The below macro is intended to be used for type casts.  By using this
   macro, type casts can be easily located in the source code with
   tools like "grep". */

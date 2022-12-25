@@ -146,12 +146,15 @@ am__aclocal_m4_deps = $(top_srcdir)/ac_m4/libtool.m4 \
 	$(top_srcdir)/ac_m4/ltversion.m4 \
 	$(top_srcdir)/ac_m4/lt~obsolete.m4 \
 	$(top_srcdir)/ac_m4/m4_ax_generate_changelog.m4 \
+	$(top_srcdir)/ac_m4/m4_ax_cflags_gcc_option.m4 \
+	$(top_srcdir)/ac_m4/m4_ax_check_compile_flag.m4 \
+	$(top_srcdir)/ac_m4/m4_ax_append_flag.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER =  \
-	$(top_builddir)/src/libjasper/include/jasper/jas_config.h
+	$(top_builddir)/src/libjasper/include/jasper/jas_pconf.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -330,6 +333,14 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+JAS_HAVE_FCNTL_H = @JAS_HAVE_FCNTL_H@
+JAS_HAVE_GETRUSAGE = @JAS_HAVE_GETRUSAGE@
+JAS_HAVE_GETTIMEOFDAY = @JAS_HAVE_GETTIMEOFDAY@
+JAS_HAVE_IO_H = @JAS_HAVE_IO_H@
+JAS_HAVE_SYS_TIME_H = @JAS_HAVE_SYS_TIME_H@
+JAS_HAVE_SYS_TYPES_H = @JAS_HAVE_SYS_TYPES_H@
+JAS_HAVE_UNISTD_H = @JAS_HAVE_UNISTD_H@
+JAS_HAVE_WINDOWS_H = @JAS_HAVE_WINDOWS_H@
 JAS_MAJOR_VERSION = @JAS_MAJOR_VERSION@
 JAS_MICRO_VERSION = @JAS_MICRO_VERSION@
 JAS_MINOR_VERSION = @JAS_MINOR_VERSION@

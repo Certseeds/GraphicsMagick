@@ -289,8 +289,9 @@ jpc_ms_t *jpc_getms(jas_stream_t *in, jpc_cstate_t *cstate)
 			jpc_ms_dump(ms, stderr);
 		}
 
-		if (JAS_CAST(ulong, jas_stream_tell(tmpstream)) != ms->len) {
-			jas_eprintf("warning: trailing garbage in marker segment (%ld bytes)\n",
+		if (JAS_CAST(jas_ulong, jas_stream_tell(tmpstream)) != ms->len) {
+			jas_eprintf(
+			  "warning: trailing garbage in marker segment (%ld bytes)\n",
 			  ms->len - jas_stream_tell(tmpstream));
 		}
 
@@ -489,6 +490,8 @@ static int jpc_siz_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
 	unsigned int i;
 	uint_fast8_t tmp;
 
+	siz->comps = 0;
+
 	/* Eliminate compiler warning about unused variables. */
 	cstate = 0;
 
@@ -502,44 +505,67 @@ static int jpc_siz_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
 	  jpc_getuint32(in, &siz->tilexoff) ||
 	  jpc_getuint32(in, &siz->tileyoff) ||
 	  jpc_getuint16(in, &siz->numcomps)) {
-		return -1;
+		goto error;
 	}
-	if (!siz->width || !siz->height || !siz->tilewidth ||
-	  !siz->tileheight || !siz->numcomps || siz->numcomps > 16384) {
-		return -1;
+	if (!siz->width || !siz->height) {
+		jas_eprintf("reference grid cannot have zero area\n");
+		goto error;
 	}
-	if (siz->tilexoff >= siz->width || siz->tileyoff >= siz->height) {
-		jas_eprintf("all tiles are outside the image area\n");
-		return -1;
+	if (!siz->tilewidth || !siz->tileheight) {
+		jas_eprintf("tile cannot have zero area\n");
+		goto error;
 	}
+	if (!siz->numcomps || siz->numcomps > 16384) {
+		jas_eprintf("number of components not in permissible range\n");
+		goto error;
+	}
+	if (siz->xoff >= siz->width) {
+		jas_eprintf("XOsiz not in permissible range\n");
+		goto error;
+	}
+	if (siz->yoff >= siz->height) {
+		jas_eprintf("YOsiz not in permissible range\n");
+		goto error;
+	}
+	if (siz->tilexoff > siz->xoff || siz->tilexoff + siz->tilewidth <= siz->xoff) {
+		jas_eprintf("XTOsiz not in permissible range\n");
+		goto error;
+	}
+	if (siz->tileyoff > siz->yoff || siz->tileyoff + siz->tileheight <= siz->yoff) {
+		jas_eprintf("YTOsiz not in permissible range\n");
+		goto error;
+	}
+
 	if (!(siz->comps = jas_alloc2(siz->numcomps, sizeof(jpc_sizcomp_t)))) {
-		return -1;
+		goto error;
 	}
 	for (i = 0; i < siz->numcomps; ++i) {
 		if (jpc_getuint8(in, &tmp) ||
 		  jpc_getuint8(in, &siz->comps[i].hsamp) ||
 		  jpc_getuint8(in, &siz->comps[i].vsamp)) {
-			jas_free(siz->comps);
-			return -1;
+			goto error;
 		}
 		if (siz->comps[i].hsamp == 0 || siz->comps[i].hsamp > 255) {
 			jas_eprintf("invalid XRsiz value %d\n", siz->comps[i].hsamp);
-			jas_free(siz->comps);
-			return -1;
+			goto error;
 		}
 		if (siz->comps[i].vsamp == 0 || siz->comps[i].vsamp > 255) {
 			jas_eprintf("invalid YRsiz value %d\n", siz->comps[i].vsamp);
-			jas_free(siz->comps);
-			return -1;
+			goto error;
 		}
 		siz->comps[i].sgnd = (tmp >> 7) & 1;
 		siz->comps[i].prec = (tmp & 0x7f) + 1;
 	}
 	if (jas_stream_eof(in)) {
-		jas_free(siz->comps);
-		return -1;
+		goto error;
 	}
 	return 0;
+
+error:
+	if (siz->comps) {
+		jas_free(siz->comps);
+	}
+	return -1;
 }
 
 static int jpc_siz_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *out)
@@ -1151,7 +1177,7 @@ static int jpc_ppm_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 		if (!(ppm->data = jas_malloc(ppm->len))) {
 			goto error;
 		}
-		if (JAS_CAST(uint, jas_stream_read(in, ppm->data, ppm->len)) != ppm->len) {
+		if (JAS_CAST(jas_uint, jas_stream_read(in, ppm->data, ppm->len)) != ppm->len) {
 			goto error;
 		}
 	} else {
@@ -1171,7 +1197,7 @@ static int jpc_ppm_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 	/* Eliminate compiler warning about unused variables. */
 	cstate = 0;
 
-	if (JAS_CAST(uint, jas_stream_write(out, (char *) ppm->data, ppm->len)) != ppm->len) {
+	if (JAS_CAST(jas_uint, jas_stream_write(out, (char *) ppm->data, ppm->len)) != ppm->len) {
 		return -1;
 	}
 	return 0;
@@ -1520,6 +1546,8 @@ static int jpc_unk_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 {
 	jpc_unk_t *unk = &ms->parms.unk;
 
+	unk->data = 0;
+
 	/* Eliminate compiler warning about unused variables. */
 	cstate = 0;
 
@@ -1527,7 +1555,8 @@ static int jpc_unk_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 		if (!(unk->data = jas_alloc2(ms->len, sizeof(unsigned char)))) {
 			return -1;
 		}
-		if (jas_stream_read(in, (char *) unk->data, ms->len) != JAS_CAST(int, ms->len)) {
+		if (jas_stream_read(in, (char *) unk->data, ms->len) !=
+		  JAS_CAST(int, ms->len)) {
 			jas_free(unk->data);
 			return -1;
 		}

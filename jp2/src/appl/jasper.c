@@ -80,18 +80,6 @@
 #include <jasper/jasper.h>
 #include <jasper/jas_debug.h>
 
-#ifdef _MSC_VER			/* Fix provided by J.Fojtik */
-#if _MSC_VER < 1800
-  unsigned long long __cdecl strtoull (
-    const char *nptr,
-    char **endptr,
-    int ibase
-    )
-{
-    return _strtoui64(nptr, endptr, ibase);
-}
-#endif
-#endif
 
 /******************************************************************************\
 *

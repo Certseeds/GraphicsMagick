@@ -70,8 +70,23 @@
 #include "jasper/jas_stream.h"
 #include "jasper/jas_image.h"
 #include "jasper/jas_string.h"
+#include "jasper/jas_debug.h"
 
 #include "pgx_cod.h"
+
+/******************************************************************************\
+* Local types.
+\******************************************************************************/
+
+typedef struct {
+	int allow_trunc;
+	size_t max_samples;
+} pgx_dec_importopts_t;
+
+typedef enum {
+	OPT_ALLOWTRUNC,
+	OPT_MAXSIZE,
+} optid_t;
 
 /******************************************************************************\
 * Local prototypes.
@@ -87,29 +102,89 @@ static int pgx_getuint32(jas_stream_t *in, uint_fast32_t *val);
 static jas_seqent_t pgx_wordtoint(uint_fast32_t word, int prec, bool sgnd);
 
 /******************************************************************************\
+* Option parsing.
+\******************************************************************************/
+
+static jas_taginfo_t pgx_decopts[] = {
+	// Not yet supported
+	// {OPT_ALLOWTRUNC, "allow_trunc"},
+	{OPT_MAXSIZE, "max_samples"},
+	{-1, 0}
+};
+
+static int pgx_dec_parseopts(const char *optstr, pgx_dec_importopts_t *opts)
+{
+	jas_tvparser_t *tvp;
+
+	opts->max_samples = JAS_DEC_DEFAULT_MAX_SAMPLES;
+	opts->allow_trunc = 0;
+
+	if (!(tvp = jas_tvparser_create(optstr ? optstr : ""))) {
+		return -1;
+	}
+
+	while (!jas_tvparser_next(tvp)) {
+		switch (jas_taginfo_nonull(jas_taginfos_lookup(pgx_decopts,
+		  jas_tvparser_gettag(tvp)))->id) {
+		case OPT_ALLOWTRUNC:
+			opts->allow_trunc = atoi(jas_tvparser_getval(tvp));
+			break;
+		case OPT_MAXSIZE:
+			opts->max_samples = strtoull(jas_tvparser_getval(tvp), 0, 10);
+			break;
+		default:
+			jas_eprintf("warning: ignoring invalid option %s\n",
+			  jas_tvparser_gettag(tvp));
+			break;
+		}
+	}
+
+	jas_tvparser_destroy(tvp);
+
+	return 0;
+}
+
+/******************************************************************************\
 * Code for load operation.
 \******************************************************************************/
 
 /* Load an image from a stream in the PGX format. */
 
-jas_image_t *pgx_decode(jas_stream_t *in, char *optstr)
+jas_image_t *pgx_decode(jas_stream_t *in, const char *optstr)
 {
 	jas_image_t *image;
 	pgx_hdr_t hdr;
 	jas_image_cmptparm_t cmptparm;
-
-	/* Avoid compiler warnings about unused parameters. */
-	optstr = 0;
+	pgx_dec_importopts_t opts;
+	size_t num_samples;
 
 	image = 0;
 
-	if (pgx_gethdr(in, &hdr)) {
+	JAS_DBGLOG(10, ("pgx_decode(%p, \"%s\")\n", in, optstr ? optstr : ""));
+
+	if (pgx_dec_parseopts(optstr, &opts)) {
 		goto error;
 	}
 
-#ifdef PGX_DEBUG
-	pgx_dumphdr(stderr, &hdr);
-#endif
+	if (pgx_gethdr(in, &hdr)) {
+		jas_eprintf("cannot get header\n");
+		goto error;
+	}
+
+	if (jas_getdbglevel() >= 10) {
+		pgx_dumphdr(stderr, &hdr);
+	}
+
+	if (!jas_safe_size_mul(hdr.width, hdr.height, &num_samples)) {
+		jas_eprintf("image too large\n");
+		goto error;
+	}
+	if (opts.max_samples > 0 && num_samples > opts.max_samples) {
+		jas_eprintf(
+		  "maximum number of samples would be exceeded (%"_PFX_PTR"u > %"_PFX_PTR"u)\n",
+		  num_samples, opts.max_samples);
+		goto error;
+	}
 
 	if (!(image = jas_image_create0())) {
 		goto error;
@@ -126,6 +201,7 @@ jas_image_t *pgx_decode(jas_stream_t *in, char *optstr)
 		goto error;
 	}
 	if (pgx_getdata(in, &hdr, image)) {
+		jas_eprintf("cannot get data\n");
 		goto error;
 	}
 
@@ -148,7 +224,7 @@ error:
 
 int pgx_validate(jas_stream_t *in)
 {
-	uchar buf[PGX_MAGICLEN];
+	jas_uchar buf[PGX_MAGICLEN];
 	uint_fast32_t magic;
 	int i;
 	int n;
@@ -192,7 +268,7 @@ int pgx_validate(jas_stream_t *in)
 static int pgx_gethdr(jas_stream_t *in, pgx_hdr_t *hdr)
 {
 	int c;
-	uchar buf[2];
+	jas_uchar buf[2];
 
 	if ((c = jas_stream_getc(in)) == EOF) {
 		goto error;
@@ -204,24 +280,30 @@ static int pgx_gethdr(jas_stream_t *in, pgx_hdr_t *hdr)
 	buf[1] = c;
 	hdr->magic = buf[0] << 8 | buf[1];
 	if (hdr->magic != PGX_MAGIC) {
+		jas_eprintf("invalid PGX signature\n");
 		goto error;
 	}
 	if ((c = pgx_getc(in)) == EOF || !isspace(c)) {
 		goto error;
 	}
 	if (pgx_getbyteorder(in, &hdr->bigendian)) {
+		jas_eprintf("cannot get byte order\n");
 		goto error;
 	}
 	if (pgx_getsgnd(in, &hdr->sgnd)) {
+		jas_eprintf("cannot get signedness\n");
 		goto error;
 	}
 	if (pgx_getuint32(in, &hdr->prec)) {
+		jas_eprintf("cannot get precision\n");
 		goto error;
 	}
 	if (pgx_getuint32(in, &hdr->width)) {
+		jas_eprintf("cannot get width\n");
 		goto error;
 	}
 	if (pgx_getuint32(in, &hdr->height)) {
+		jas_eprintf("cannot get height\n");
 		goto error;
 	}
 	return 0;
@@ -360,19 +442,42 @@ static int pgx_getsgnd(jas_stream_t *in, bool *sgnd)
 		}
 	} while (isspace(c));
 
+#if 0
 	if (c == '+') {
 		*sgnd = false;
 	} else if (c == '-') {
 		*sgnd = true;
 	} else {
-		goto error;
+		*sgnd = false;
+		if (jas_stream_ungetc(in, c)) {
+			goto error;
+		}
+		return 0;
 	}
+
 	while ((c = pgx_getc(in)) != EOF && !isspace(c)) {
 		;
 	}
 	if (c == EOF) {
 		goto error;
 	}
+#else
+	if (c == '+' || c == '-') {
+		*sgnd = (c == '-');
+		while ((c = pgx_getc(in)) != EOF && !isspace(c)) {
+			;
+		}
+		if (c == EOF) {
+			goto error;
+		}
+	} else {
+		*sgnd = false;
+		if (jas_stream_ungetc(in, c)) {
+			goto error;
+		}
+	}
+#endif
+
 	return 0;
 
 error:

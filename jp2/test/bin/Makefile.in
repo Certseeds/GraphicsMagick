@@ -145,12 +145,15 @@ am__aclocal_m4_deps = $(top_srcdir)/ac_m4/libtool.m4 \
 	$(top_srcdir)/ac_m4/ltversion.m4 \
 	$(top_srcdir)/ac_m4/lt~obsolete.m4 \
 	$(top_srcdir)/ac_m4/m4_ax_generate_changelog.m4 \
+	$(top_srcdir)/ac_m4/m4_ax_cflags_gcc_option.m4 \
+	$(top_srcdir)/ac_m4/m4_ax_check_compile_flag.m4 \
+	$(top_srcdir)/ac_m4/m4_ax_append_flag.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER =  \
-	$(top_builddir)/src/libjasper/include/jasper/jas_config.h
+	$(top_builddir)/src/libjasper/include/jasper/jas_pconf.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -410,6 +413,14 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+JAS_HAVE_FCNTL_H = @JAS_HAVE_FCNTL_H@
+JAS_HAVE_GETRUSAGE = @JAS_HAVE_GETRUSAGE@
+JAS_HAVE_GETTIMEOFDAY = @JAS_HAVE_GETTIMEOFDAY@
+JAS_HAVE_IO_H = @JAS_HAVE_IO_H@
+JAS_HAVE_SYS_TIME_H = @JAS_HAVE_SYS_TIME_H@
+JAS_HAVE_SYS_TYPES_H = @JAS_HAVE_SYS_TYPES_H@
+JAS_HAVE_UNISTD_H = @JAS_HAVE_UNISTD_H@
+JAS_HAVE_WINDOWS_H = @JAS_HAVE_WINDOWS_H@
 JAS_MAJOR_VERSION = @JAS_MAJOR_VERSION@
 JAS_MICRO_VERSION = @JAS_MICRO_VERSION@
 JAS_MINOR_VERSION = @JAS_MINOR_VERSION@
@@ -512,11 +523,13 @@ EXTRA_DIST = \
 	run_test_1 \
 	run_test_2 \
 	run_test_3 \
+	run_test_4 \
 	jpcod \
 	jpdec \
 	jpenc \
-	run_test \
-	tests \
+	run_codec_test \
+	decoder_tests \
+	codec_tests \
 	utilities
 
 AM_TESTS_ENVIRONMENT = \
@@ -527,7 +540,9 @@ AM_TESTS_ENVIRONMENT = \
 
 TESTS = \
 	run_test_1 \
-	run_test_2
+	run_test_2 \
+	run_test_3 \
+	run_test_4
 
 all: all-am
 
@@ -731,6 +746,20 @@ run_test_2.log: run_test_2
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run_test_3.log: run_test_3
+	@p='run_test_3'; \
+	b='run_test_3'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+run_test_4.log: run_test_4
+	@p='run_test_4'; \
+	b='run_test_4'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -895,8 +924,6 @@ uninstall-am:
 	mostlyclean-libtool pdf pdf-am ps ps-am recheck tags-am \
 	uninstall uninstall-am
 
-
-#	run_test_3
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

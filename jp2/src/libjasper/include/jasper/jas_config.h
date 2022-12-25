@@ -7,14 +7,14 @@
 #define JAS_CONFIG_H
 
 /* This preprocessor symbol identifies the version of JasPer. */
-#define	JAS_VERSION "1.900.16"
+#define	JAS_VERSION "1.900.29"
 /* If configure is being used, this symbol will be defined automatically
   at this point in the configuration header file. */
 
 /* The preprocessor symbol JAS_WIN_MSVC_BUILD should not be defined
   unless the JasPer software is being built under Microsoft Windows
   using Microsoft Visual C. */
-#if defined(_VISUALC_) && !defined(JAS_WIN_MSVC_BUILD)
+#if (defined(_MSC_VER) || defined(_VISUALC_)) && !defined(JAS_WIN_MSVC_BUILD)
 # define JAS_WIN_MSVC_BUILD
 #endif
 #if defined(JAS_WIN_MSVC_BUILD)
@@ -22,7 +22,6 @@
 # pragma warning(disable : 4018)
 # pragma warning(disable : 4244)
 # pragma warning(disable : 4715)
-#define __attribute__(__argument__)  /* void, fixed by JF */
 #endif
 #if !defined(JAS_WIN_MSVC_BUILD)
 /* A configure-based build is being used. */
@@ -45,64 +44,64 @@
 /* #undef HAVE_DOPRNT */
 
 /* Define to 1 if you have the <fcntl.h> header file. */
-#define HAVE_FCNTL_H 1
+#define JAS_HAVE_FCNTL_H 1
 
 /* Define to 1 if you have the `getrusage' function. */
-#define HAVE_GETRUSAGE 1
+#define JAS_HAVE_GETRUSAGE 1
 
 /* Define to 1 if you have the `gettimeofday' function. */
-#define HAVE_GETTIMEOFDAY 1
+#define JAS_HAVE_GETTIMEOFDAY 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
+#define JAS_HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <io.h> header file. */
 /* #undef HAVE_IO_H */
 
 /* Define to 1 if you have the `m' library (-lm). */
-#define HAVE_LIBM 1
+#define JAS_HAVE_LIBM 1
 
 /* Define to 1 if you have the <limits.h> header file. */
-#define HAVE_LIMITS_H 1
+#define JAS_HAVE_LIMITS_H 1
 
 /* Define to 1 if you have the <memory.h> header file. */
-#define HAVE_MEMORY_H 1
+#define JAS_HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the <stdbool.h> header file. */
-#define HAVE_STDBOOL_H 1
+#define JAS_HAVE_STDBOOL_H 1
 
 /* Define to 1 if you have the <stddef.h> header file. */
-#define HAVE_STDDEF_H 1
+#define JAS_HAVE_STDDEF_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
-#define HAVE_STDINT_H 1
+#define JAS_HAVE_STDINT_H 1
 
 /* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
+#define JAS_HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the <strings.h> header file. */
-#define HAVE_STRINGS_H 1
+#define JAS_HAVE_STRINGS_H 1
 
 /* Define to 1 if you have the <string.h> header file. */
-#define HAVE_STRING_H 1
+#define JAS_HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#define HAVE_SYS_STAT_H 1
+#define JAS_HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/time.h> header file. */
-#define HAVE_SYS_TIME_H 1
+#define JAS_HAVE_SYS_TIME_H 1
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#define HAVE_SYS_TYPES_H 1
+#define JAS_HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#define HAVE_UNISTD_H 1
+#define JAS_HAVE_UNISTD_H 1
 
 /* Have variable length arrays */
-#define HAVE_VLA 1
+#define JAS_HAVE_VLA 1
 
 /* Define to 1 if you have the `vprintf' function. */
-#define HAVE_VPRINTF 1
+#define JAS_HAVE_VPRINTF 1
 
 /* Define to 1 if you have the <windows.h> header file. */
 /* #undef HAVE_WINDOWS_H */
@@ -111,7 +110,7 @@
 #define JAS_CONFIGURE 1
 
 /* JasPer version */
-#define JAS_VERSION "1.900.16"
+#define JAS_VERSION "1.900.29"
 
 /* Name of package */
 #define PACKAGE "jasper"
@@ -123,19 +122,19 @@
 #define PACKAGE_NAME "jasper"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "jasper 1.900.16"
+#define PACKAGE_STRING "jasper 1.900.29"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "jasper"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.900.16"
+#define PACKAGE_VERSION "1.900.29"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.900.16"
+#define VERSION "1.900.29"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */
@@ -179,5 +178,20 @@
 #include <jasper/jas_config2.h>
 #endif
 
+
+#if !defined(JAS_DEC_DEFAULT_MAX_SAMPLES)
+#define JAS_DEC_DEFAULT_MAX_SAMPLES (64 * ((size_t) 1048576))
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+#define JAS_ATTRIBUTE_DISABLE_USAN \
+  __attribute__((no_sanitize_undefined))
+#elif defined(__clang__)
+#define JAS_ATTRIBUTE_DISABLE_USAN \
+  __attribute__((no_sanitize("undefined")))
+#else
+#define JAS_ATTRIBUTE_DISABLE_USAN
+#endif
+
+
+#endif

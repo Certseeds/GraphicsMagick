@@ -122,10 +122,10 @@ int jas_memdump(FILE *out, void *data, size_t len)
 {
 	size_t i;
 	size_t j;
-	uchar *dp;
+	jas_uchar *dp;
 	dp = data;
 	for (i = 0; i < len; i += 16) {
-		fprintf(out, "%04x:", (unsigned)i);  /* Fix by JFO - %04zx */
+		fprintf(out, "%04x:", (unsigned)i);	//JFO "%04zx:"
 		for (j = 0; j < 16; ++j) {
 			if (i + j < len) {
 				fprintf(out, " %02x", dp[i + j]);
@@ -134,4 +134,23 @@ int jas_memdump(FILE *out, void *data, size_t len)
 		fprintf(out, "\n");
 	}
 	return 0;
+}
+
+/******************************************************************************\
+* Code.
+\******************************************************************************/
+
+void jas_deprecated(const char *s)
+{
+	static char message[] =
+	"WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!!\n"
+	"WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!!\n"
+	"WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!!\n"
+	"YOUR CODE IS RELYING ON DEPRECATED FUNCTIONALTIY IN THE JASPER LIBRARY.\n"
+	"THIS FUNCTIONALITY WILL BE REMOVED IN THE NEAR FUTURE.\n"
+	"PLEASE FIX THIS PROBLEM BEFORE YOUR CODE STOPS WORKING!\n"
+	;
+	jas_eprintf("%s", message);
+	jas_eprintf("The specific problem is as follows:\n%s\n", s);
+	//abort();
 }

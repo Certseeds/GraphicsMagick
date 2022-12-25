@@ -129,7 +129,7 @@ void *jas_malloc(size_t size)
 	size_t ext_size;
 	size_t mem;
 
-	JAS_DBGLOG(100, ("jas_malloc(%p)\n", size)); /* Fix by JFO %zu */
+	JAS_DBGLOG(100, ("jas_malloc(%"_PFX_PTR"u)\n", size));
 #if defined(JAS_MALLOC_RETURN_NULL_PTR_FOR_ZERO_SIZE)
 	if (!size) {
 		return 0;
@@ -144,7 +144,7 @@ void *jas_malloc(size_t size)
 		result = 0;
 		mb = 0;
 	} else {
-		JAS_DBGLOG(100, ("jas_malloc: ext_size=%zu\n", ext_size));
+		JAS_DBGLOG(100, ("jas_malloc: ext_size=%"_PFX_PTR"u\n", ext_size));
 		if ((mb = malloc(ext_size))) {
 			result = jas_mb_get_data(mb);
 			mb->size = size;
@@ -153,8 +153,8 @@ void *jas_malloc(size_t size)
 			result = 0;
 		}
 	}
-	JAS_DBGLOG(99, ("jas_malloc(%zu) -> %p (mb=%p)\n", size, result, mb));
-	JAS_DBGLOG(102, ("max_mem=%zu; mem=%zu\n", jas_max_mem, jas_mem));
+	JAS_DBGLOG(99, ("jas_malloc(%"_PFX_PTR"u) -> %p (mb=%p)\n", size, result, mb));
+	JAS_DBGLOG(102, ("max_mem=%"_PFX_PTR"u; mem=%"_PFX_PTR"u\n", jas_max_mem, jas_mem));
 	return result;
 }
 
@@ -167,7 +167,7 @@ void *jas_realloc(void *ptr, size_t size)
 	size_t ext_size;
 	size_t mem;
 
-	JAS_DBGLOG(100, ("jas_realloc(%x, %zu)\n", ptr, size));
+	JAS_DBGLOG(100, ("jas_realloc(%p, %"_PFX_PTR"u)\n", ptr, size));
 	if (!ptr) {
 		return jas_malloc(size);
 	}
@@ -180,7 +180,7 @@ void *jas_realloc(void *ptr, size_t size)
 	}
 	old_mb = jas_get_mb(ptr);
 	old_size = old_mb->size;
-	JAS_DBGLOG(101, ("jas_realloc: old_mb=%x; old_size=%zu\n", old_mb,
+	JAS_DBGLOG(101, ("jas_realloc: old_mb=%p; old_size=%"_PFX_PTR"u\n", old_mb,
 	  old_size));
 	if (size > old_size) {
 		if (!jas_safe_size_add(jas_mem, ext_size, &mem) || mem > jas_max_mem) {
@@ -193,7 +193,7 @@ void *jas_realloc(void *ptr, size_t size)
 			abort();
 		}
 	}
-	JAS_DBGLOG(100, ("jas_realloc: realloc(%p, %zu)\n", old_mb, ext_size));
+	JAS_DBGLOG(100, ("jas_realloc: realloc(%p, %"_PFX_PTR"u)\n", old_mb, ext_size));
 	if (!(mb = realloc(old_mb, ext_size))) {
 		result = 0;
 	} else {
@@ -201,9 +201,9 @@ void *jas_realloc(void *ptr, size_t size)
 		mb->size = size;
 		jas_mem = mem;
 	}
-	JAS_DBGLOG(100, ("jas_realloc(%p, %zu) -> %p (%p)\n", ptr, size, result,
+	JAS_DBGLOG(100, ("jas_realloc(%p, %"_PFX_PTR"u) -> %p (%p)\n", ptr, size, result,
 	  mb));
-	JAS_DBGLOG(102, ("max_mem=%zu; mem=%zu\n", jas_max_mem, jas_mem));
+	JAS_DBGLOG(102, ("max_mem=%"_PFX_PTR"u; mem=%"_PFX_PTR"u\n", jas_max_mem, jas_mem));
 	return result;
 }
 
@@ -216,7 +216,7 @@ void jas_free(void *ptr)
 	if (ptr) {
 		mb = jas_get_mb(ptr);
 		size = mb->size;
-		JAS_DBGLOG(101, ("jas_free(%p) (mb=%p; size=%zu)\n", ptr, mb, size));
+		JAS_DBGLOG(101, ("jas_free(%p) (mb=%p; size=%"_PFX_PTR"u)\n", ptr, mb, size));
 		if (!jas_safe_size_sub(jas_mem, size, &jas_mem)) {
 			jas_eprintf("heap corruption detected\n");
 			abort();
@@ -224,7 +224,7 @@ void jas_free(void *ptr)
 		JAS_DBGLOG(100, ("jas_free: free(%p)\n", mb));
 		free(mb);
 	}
-	JAS_DBGLOG(102, ("max_mem=%zu; mem=%zu\n", jas_max_mem, jas_mem));
+	JAS_DBGLOG(102, ("max_mem=%"_PFX_PTR"u; mem=%"_PFX_PTR"u\n", jas_max_mem, jas_mem));
 }
 
 #endif
@@ -238,18 +238,18 @@ void jas_free(void *ptr)
 void *jas_malloc(size_t size)
 {
 	void *result;
-	JAS_DBGLOG(101, ("jas_malloc(%zu)\n", size));
+	JAS_DBGLOG(101, ("jas_malloc(%"_PFX_PTR"u)\n", size));
 	result = malloc(size);
-	JAS_DBGLOG(100, ("jas_malloc(%zu) -> %p\n", size, result));
+	JAS_DBGLOG(100, ("jas_malloc(%"_PFX_PTR"u) -> %p\n", size, result));
 	return result;
 }
 
 void *jas_realloc(void *ptr, size_t size)
 {
 	void *result;
-	JAS_DBGLOG(101, ("jas_realloc(%x, %zu)\n", ptr, size));
+	JAS_DBGLOG(101, ("jas_realloc(%p, %"_PFX_PTR"u)\n", ptr, size));
 	result = realloc(ptr, size);
-	JAS_DBGLOG(100, ("jas_realloc(%p, %zu) -> %p\n", ptr, size, result));
+	JAS_DBGLOG(100, ("jas_realloc(%p, %"_PFX_PTR"u) -> %p\n", ptr, size, result));
 	return result;
 }
 
