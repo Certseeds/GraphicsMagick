@@ -27,6 +27,7 @@
 #else
 #if _MSC_VER > 1500
   #include <stdint.h>
+  #include <inttypes.h>
 #else
  typedef signed   char int8_t;
  typedef unsigned char uint8_t;

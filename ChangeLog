@@ -1,3 +1,8 @@
+2022-12-25 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* webp/src/webp/types.h Need to include inttypes.h
+
+
 2022-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/symbols.h: Update symbol remappings which are enabled by
