@@ -29,7 +29,7 @@
 #include "tif_hash_set.h"
 
 #include <assert.h>
-#include <stdbool.h>
+#include "stdbool2.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

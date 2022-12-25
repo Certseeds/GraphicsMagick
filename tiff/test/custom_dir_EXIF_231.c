@@ -70,7 +70,7 @@
 
 #include <errno.h>
 #include <math.h>
-#include <stdbool.h>
+#include "stdbool2.h"
 #include <stdio.h>
 #include <string.h>
 

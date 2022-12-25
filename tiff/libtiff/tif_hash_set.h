@@ -31,7 +31,7 @@
 #ifndef TIFF_HASH_SET_H_INCLUDED
 #define TIFF_HASH_SET_H_INCLUDED
 
-#include <stdbool.h>
+#include "stdbool2.h"
 
 /**
  * \file tif_hash_set.h

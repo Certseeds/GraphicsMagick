@@ -37,7 +37,7 @@
  */
 #include "tif_predict.h"
 
-#include <stdbool.h>
+#include "stdbool2.h"
 #include <stdio.h>
 #include <stdlib.h>
 

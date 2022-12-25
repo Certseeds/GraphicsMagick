@@ -27,7 +27,7 @@
 
 #include "tif_config.h"
 
-#include <stdbool.h>
+#include "stdbool2.h"
 #include <stdio.h>
 
 #include "tiffio.h"

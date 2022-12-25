@@ -34,7 +34,7 @@
 #include "webp/decode.h"
 #include "webp/encode.h"
 
-#include <stdbool.h>
+#include "stdbool2.h"
 #include <stdio.h>
 
 #define LSTATE_INIT_DECODE 0x01
