@@ -157,7 +157,7 @@ Feature improvements:
 
 Windows Delegate Updates/Additions:
 
-* Update bundled libjasper to version 1.900.5.
+* Update bundled libjasper to version 1.900.16.
 
 * Update bundled libjpeg to version 9e.
 
