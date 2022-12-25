@@ -119,7 +119,7 @@
  * braindamage below.
  */
 #if !defined(bool)
-  #include <stdbool.h>
+  #include "stdbool2.h"
 #endif
 #if !defined(true)
 #define true	1

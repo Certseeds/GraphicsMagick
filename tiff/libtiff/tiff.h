@@ -76,7 +76,7 @@
 #endif
 
 #ifndef TIFF_DISABLE_DEPRECATED
- #include "../../src/webp/types.h"
+ #include "../../webp/src/webp/types.h"
 /*
 typedef TIFF_MSC_DEPRECATED int8_t int8 TIFF_GCC_DEPRECATED;
 typedef TIFF_MSC_DEPRECATED uint8_t uint8 TIFF_GCC_DEPRECATED;
