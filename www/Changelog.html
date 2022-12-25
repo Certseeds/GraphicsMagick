@@ -40,6 +40,29 @@
 <p>2022-12-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>magick/gem.c (Contrast): Visual Studio 17.4.3 does not like
+initializing a static constant with &quot;0.5+MagickEpsilon&quot; in
+/precise mode.</p></li>
+<li><p>magick/enhance.c (ContrastImagePixels): Visual Studio 17.4.3
+does not like initializing a static constant with
+&quot;0.5+MagickEpsilon&quot; in /precise mode.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-25 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>webp/src/webp/types.h Need to include inttypes.h</p></li>
+<li><dl class="simple">
+<dt>jp2/src/libjasper/include/jasper/jas_types.h</dt>
+<dd><p>Fix missing _PFX_PTR in newer MSVC.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</blockquote>
+<p>2022-12-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
 <li><p>magick/symbols.h: Update symbol remappings which are enabled by
 PREFIX_MAGICK_SYMBOLS.  The only new symbol since the last release
 is IsEventLogged().</p></li>

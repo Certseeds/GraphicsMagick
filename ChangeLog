@@ -1,3 +1,13 @@
+2022-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/gem.c (Contrast): Visual Studio 17.4.3 does not like
+	initializing a static constant with "0.5+MagickEpsilon" in
+	/precise mode.
+
+	* magick/enhance.c (ContrastImagePixels): Visual Studio 17.4.3
+	does not like initializing a static constant with
+	"0.5+MagickEpsilon" in /precise mode.
+
 2022-12-25 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* webp/src/webp/types.h Need to include inttypes.h
