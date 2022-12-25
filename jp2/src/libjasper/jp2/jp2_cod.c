@@ -73,6 +73,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+//#include <inttypes.h>
 
 #include "jasper/jas_stream.h"
 #include "jasper/jas_malloc.h"
@@ -250,14 +251,21 @@ jp2_box_t *jp2_box_get(jas_stream_t *in)
 	if (!(box = jas_malloc(sizeof(jp2_box_t)))) {
 		goto error;
 	}
+
+	// Mark the box data as never having been constructed
+	// so that we will not errantly attempt to destroy it later.
 	box->ops = &jp2_boxinfo_unk.ops;
+
 	if (jp2_getuint32(in, &len) || jp2_getuint32(in, &box->type)) {
 		goto error;
 	}
 	boxinfo = jp2_boxinfolookup(box->type);
 	box->info = boxinfo;
-	box->ops = &boxinfo->ops;
 	box->len = len;
+	JAS_DBGLOG(10, (
+	  "preliminary processing of JP2 box: type=%c%s%c (0x%08x); length=%d\n",
+	  '"', boxinfo->name, '"', box->type, box->len
+	  ));
 	if (box->len == 1) {
 		if (jp2_getuint64(in, &extlen)) {
 			goto error;
@@ -286,6 +294,10 @@ jp2_box_t *jp2_box_get(jas_stream_t *in)
 			goto error;
 		}
 		jas_stream_rewind(tmpstream);
+
+		// From here onwards, the box data will need to be destroyed.
+		// So, initialize the box operations.
+		box->ops = &boxinfo->ops;
 
 		if (box->ops->getdata) {
 			if ((*box->ops->getdata)(box, tmpstream)) {
@@ -319,8 +331,8 @@ void jp2_box_dump(jp2_box_t *box, FILE *out)
 	assert(boxinfo);
 
 	fprintf(out, "JP2 box: ");
-	fprintf(out, "type=%c%s%c (0x%08x); length=%d\n", '"', boxinfo->name,
-	  '"', box->type, box->len);
+	fprintf(out, "type=%c%s%c (0x%08"PRIxFAST32"); length=%"PRIuFAST32"\n", '"',
+	  boxinfo->name, '"', box->type, box->len);
 	if (box->ops->dumpdata) {
 		(*box->ops->dumpdata)(box, out);
 	}
@@ -431,7 +443,8 @@ static void jp2_cdef_dumpdata(jp2_box_t *box, FILE *out)
 	jp2_cdef_t *cdef = &box->data.cdef;
 	unsigned int i;
 	for (i = 0; i < cdef->numchans; ++i) {
-		fprintf(out, "channo=%d; type=%d; assoc=%d\n",
+		fprintf(out,
+		  "channo=%"PRIuFAST16"; type=%"PRIuFAST16"; assoc=%"PRIuFAST16"\n",
 		  cdef->ents[i].channo, cdef->ents[i].type, cdef->ents[i].assoc);
 	}
 }
@@ -871,7 +884,8 @@ static void jp2_pclr_dumpdata(jp2_box_t *box, FILE *out)
 	  (int) pclr->numchans);
 	for (i = 0; i < pclr->numlutents; ++i) {
 		for (j = 0; j < pclr->numchans; ++j) {
-			fprintf(out, "LUT[%d][%d]=%d\n", i, j, pclr->lutdata[i * pclr->numchans + j]);
+			fprintf(out, "LUT[%d][%d]=%"PRIiFAST32"\n", i, j,
+			  pclr->lutdata[i * pclr->numchans + j]);
 		}
 	}
 }

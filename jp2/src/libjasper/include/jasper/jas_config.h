@@ -7,7 +7,7 @@
 #define JAS_CONFIG_H
 
 /* This preprocessor symbol identifies the version of JasPer. */
-#define	JAS_VERSION "1.900.5"
+#define	JAS_VERSION "1.900.16"
 /* If configure is being used, this symbol will be defined automatically
   at this point in the configuration header file. */
 
@@ -22,6 +22,7 @@
 # pragma warning(disable : 4018)
 # pragma warning(disable : 4244)
 # pragma warning(disable : 4715)
+#define __attribute__(__argument__)  /* void, fixed by JF */
 #endif
 #if !defined(JAS_WIN_MSVC_BUILD)
 /* A configure-based build is being used. */
@@ -110,7 +111,7 @@
 #define JAS_CONFIGURE 1
 
 /* JasPer version */
-#define JAS_VERSION "1.900.5"
+#define JAS_VERSION "1.900.16"
 
 /* Name of package */
 #define PACKAGE "jasper"
@@ -122,19 +123,19 @@
 #define PACKAGE_NAME "jasper"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "jasper 1.900.5"
+#define PACKAGE_STRING "jasper 1.900.16"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "jasper"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.900.5"
+#define PACKAGE_VERSION "1.900.16"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.900.5"
+#define VERSION "1.900.16"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */

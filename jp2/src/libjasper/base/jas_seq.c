@@ -74,6 +74,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+//#include <inttypes.h>
 
 #include "jasper/jas_seq.h"
 #include "jasper/jas_malloc.h"
@@ -101,9 +102,16 @@ jas_matrix_t *jas_matrix_create(int numrows, int numcols)
 {
 	jas_matrix_t *matrix;
 	int i;
+	size_t size;
+
+	matrix = 0;
+
+	if (numrows < 0 || numcols < 0) {
+		goto error;
+	}
 
 	if (!(matrix = jas_malloc(sizeof(jas_matrix_t)))) {
-		return 0;
+		goto error;
 	}
 	matrix->flags_ = 0;
 	matrix->numrows_ = numrows;
@@ -111,21 +119,25 @@ jas_matrix_t *jas_matrix_create(int numrows, int numcols)
 	matrix->rows_ = 0;
 	matrix->maxrows_ = numrows;
 	matrix->data_ = 0;
-	matrix->datasize_ = numrows * numcols;
+	matrix->datasize_ = 0;
+
+	// matrix->datasize_ = numrows * numcols;
+	if (!jas_safe_size_mul(numrows, numcols, &size)) {
+		goto error;
+	}
+	matrix->datasize_ = size;
 
 	if (matrix->maxrows_ > 0) {
 		if (!(matrix->rows_ = jas_alloc2(matrix->maxrows_,
 		  sizeof(jas_seqent_t *)))) {
-			jas_matrix_destroy(matrix);
-			return 0;
+			goto error;
 		}
 	}
 
 	if (matrix->datasize_ > 0) {
 		if (!(matrix->data_ = jas_alloc2(matrix->datasize_,
 		  sizeof(jas_seqent_t)))) {
-			jas_matrix_destroy(matrix);
-			return 0;
+			goto error;
 		}
 	}
 
@@ -143,6 +155,12 @@ jas_matrix_t *jas_matrix_create(int numrows, int numcols)
 	matrix->yend_ = matrix->numrows_;
 
 	return matrix;
+
+error:
+	if (matrix) {
+		jas_matrix_destroy(matrix);
+	}
+	return 0;
 }
 
 void jas_matrix_destroy(jas_matrix_t *matrix)
@@ -330,7 +348,8 @@ void jas_matrix_asr(jas_matrix_t *matrix, int n)
 		  rowstart += rowstep) {
 			for (j = matrix->numcols_, data = rowstart; j > 0; --j,
 			  ++data) {
-				*data >>= n;
+				//*data >>= n;
+				*data = jas_seqent_asr(*data, n);
 			}
 		}
 	}
@@ -351,7 +370,8 @@ void jas_matrix_asl(jas_matrix_t *matrix, int n)
 		  rowstart += rowstep) {
 			for (j = matrix->numcols_, data = rowstart; j > 0; --j,
 			  ++data) {
-				*data <<= n;
+				//*data <<= n;
+				*data = jas_seqent_asl(*data, n);
 			}
 		}
 	}
@@ -448,9 +468,9 @@ int jas_seq2d_output(jas_matrix_t *matrix, FILE *out)
 	char sbuf[MAXLINELEN + 1];
 	int n;
 
-	fprintf(out, "%d %d\n", jas_seq2d_xstart(matrix),
+	fprintf(out, "%"PRIiFAST32" %"PRIiFAST32"\n", jas_seq2d_xstart(matrix),
 	  jas_seq2d_ystart(matrix));
-	fprintf(out, "%d %d\n", jas_matrix_numcols(matrix),
+	fprintf(out, "%"PRIiFAST32" %"PRIiFAST32"\n", jas_matrix_numcols(matrix),
 	  jas_matrix_numrows(matrix));
 
 	buf[0] = '\0';
@@ -459,8 +479,8 @@ int jas_seq2d_output(jas_matrix_t *matrix, FILE *out)
 			x = jas_matrix_get(matrix, i, j);
 			sprintf(sbuf, "%s%4ld", (strlen(buf) > 0) ? " " : "",
 			  JAS_CAST(long, x));
-			n = strlen(buf);
-			if (n + strlen(sbuf) > MAXLINELEN) {
+			n = JAS_CAST(int, strlen(buf));
+			if (n + JAS_CAST(int, strlen(sbuf)) > MAXLINELEN) {
 				fputs(buf, out);
 				fputs("\n", out);
 				buf[0] = '\0';

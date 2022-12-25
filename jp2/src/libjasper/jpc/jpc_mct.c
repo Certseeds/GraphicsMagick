@@ -115,7 +115,8 @@ void jpc_rct(jas_matrix_t *c0, jas_matrix_t *c1, jas_matrix_t *c2)
 			r = *c0p;
 			g = *c1p;
 			b = *c2p;
-			y = (r + (g << 1) + b) >> 2;
+			//y = (r + (g << 1) + b) >> 2;
+			y = jpc_fix_asr(r + jpc_fix_asl(g, 1) + b, 2);
 			u = b - g;
 			v = r - g;
 			*c0p++ = y;
@@ -158,7 +159,8 @@ void jpc_irct(jas_matrix_t *c0, jas_matrix_t *c1, jas_matrix_t *c2)
 			y = *c0p;
 			u = *c1p;
 			v = *c2p;
-			g = y - ((u + v) >> 2);
+			//g = y - ((u + v) >> 2);
+			g = y - jpc_fix_asr(u + v, 2);
 			r = v + g;
 			b = u + g;
 			*c0p++ = r;

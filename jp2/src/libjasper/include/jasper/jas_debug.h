@@ -75,8 +75,8 @@
 #include <stdio.h>
 
 #include <jasper/jas_config.h>
-#include "jasper/jas_types.h"
-#include "jasper/jas_debug.h"
+#include <jasper/jas_types.h>
+#include <jasper/jas_debug.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,7 +88,7 @@ extern "C" {
 
 /* Output debugging information to standard error provided that the debug
   level is set sufficiently high. */
-#if defined(DEBUG)
+#if !defined(NDEBUG)
 #define	JAS_DBGLOG(n, x) \
 	((jas_getdbglevel() >= (n)) ? (jas_eprintf x) : 0)
 #else

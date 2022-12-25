@@ -71,6 +71,7 @@
 #include "jasper/jas_stream.h"
 #include "jasper/jas_image.h"
 #include "jasper/jas_string.h"
+#include "jasper/jas_debug.h"
 
 #include "jpg_jpeglib.h"
 #include "jpg_cod.h"
@@ -144,12 +145,15 @@ jas_image_t *jpg_decode(jas_stream_t *in, char *optstr)
 	/* Avoid compiler warnings about unused parameters. */
 	optstr = 0;
 
+	dest_mgr->data = 0;
 	image = 0;
 	input_file = 0;
 	if (!(input_file = tmpfile())) {
+		jas_eprintf("cannot make temporary file\n");
 		goto error;
 	}
 	if (jpg_copystreamtofile(input_file, in)) {
+		jas_eprintf("cannot copy stream\n");
 		goto error;
 	}
 	rewind(input_file);
@@ -163,18 +167,30 @@ jas_image_t *jpg_decode(jas_stream_t *in, char *optstr)
 
 	/* Read the file header to obtain the image information. */
 	jpeg_read_header(&cinfo, TRUE);
+	JAS_DBGLOG(10, (
+	  "header: image_width %d; image_height %d; num_components %d\n",
+	  cinfo.image_width, cinfo.image_height, cinfo.num_components)
+	  );
 
 	/* Start the decompressor. */
 	jpeg_start_decompress(&cinfo);
+	JAS_DBGLOG(10, (
+	  "header: output_width %d; output_height %d; output_components %d\n",
+	  cinfo.output_width, cinfo.output_height, cinfo.output_components)
+	  );
 
 	/* Create an image object to hold the decoded data. */
 	if (!(image = jpg_mkimage(&cinfo))) {
+		jas_eprintf("jpg_mkimage failed\n");
 		goto error;
 	}
 
 	/* Initialize the data sink object. */
 	dest_mgr->image = image;
-	dest_mgr->data = jas_matrix_create(1, cinfo.output_width);
+	if (!(dest_mgr->data = jas_matrix_create(1, cinfo.output_width))) {
+		jas_eprintf("jas_matrix_create failed\n");
+		goto error;
+	}
 	dest_mgr->start_output = jpg_start_output;
 	dest_mgr->put_pixel_rows = jpg_put_pixel_rows;
 	dest_mgr->finish_output = jpg_finish_output;
@@ -202,14 +218,19 @@ jas_image_t *jpg_decode(jas_stream_t *in, char *optstr)
 	jas_matrix_destroy(dest_mgr->data);
 
 	fclose(input_file);
+	input_file = 0;
 
 	if (dest_mgr->error) {
+		jas_eprintf("error during decoding\n");
 		goto error;
 	}
 
 	return image;
 
 error:
+	if (dest_mgr->data) {
+		jas_matrix_destroy(dest_mgr->data);
+	}
 	if (image) {
 		jas_image_destroy(image);
 	}

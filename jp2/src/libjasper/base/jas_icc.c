@@ -60,17 +60,19 @@
  */
 
 #include <assert.h>
-#include <jasper/jas_config.h>
-#include <jasper/jas_types.h>
-#include <jasper/jas_malloc.h>
-#include <jasper/jas_debug.h>
-#include <jasper/jas_icc.h>
-#include <jasper/jas_cm.h>
-#include <jasper/jas_stream.h>
-#include <jasper/jas_string.h>
+
+#include "jasper/jas_config.h"
+#include "jasper/jas_types.h"
+#include "jasper/jas_malloc.h"
+#include "jasper/jas_debug.h"
+#include "jasper/jas_icc.h"
+#include "jasper/jas_cm.h"
+#include "jasper/jas_stream.h"
+#include "jasper/jas_string.h"
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <inttypes.h>
 
 #define	jas_iccputuint8(out, val)	jas_iccputuint(out, 1, val)
 #define	jas_iccputuint16(out, val)	jas_iccputuint(out, 2, val)
@@ -727,7 +729,7 @@ void jas_iccattrtab_dump(jas_iccattrtab_t *attrtab, FILE *out)
 		attrval = attr->val;
 		info = jas_iccattrvalinfo_lookup(attrval->type);
 		if (!info) abort();
-		fprintf(out, "attrno=%d; attrname=\"%s\"(0x%08x); attrtype=\"%s\"(0x%08x)\n",
+		fprintf(out, "attrno=%d; attrname=\"%s\"(0x%08"PRIxFAST32"); attrtype=\"%s\"(0x%08"PRIxFAST32")\n",
 		  i,
 		  jas_iccsigtostr(attr->name, &buf[0]),
 		  attr->name,
@@ -884,7 +886,7 @@ void jas_iccattrval_dump(jas_iccattrval_t *attrval, FILE *out)
 {
 	char buf[8];
 	jas_iccsigtostr(attrval->type, buf);
-	fprintf(out, "refcnt = %d; type = 0x%08x %s\n", attrval->refcnt,
+	fprintf(out, "refcnt = %d; type = 0x%08"PRIxFAST32" %s\n", attrval->refcnt,
 	  attrval->type, jas_iccsigtostr(attrval->type, &buf[0]));
 	if (attrval->ops->dump) {
 		(*attrval->ops->dump)(attrval, out);
@@ -1044,7 +1046,7 @@ static void jas_icccurv_dump(jas_iccattrval_t *attrval, FILE *out)
 {
 	int i;
 	jas_icccurv_t *curv = &attrval->data.curv;
-	fprintf(out, "number of entires = %d\n", curv->numents);
+	fprintf(out, "number of entries = %"PRIuFAST32"\n", curv->numents);
 	if (curv->numents == 1) {
 		fprintf(out, "gamma = %f\n", curv->ents[0] / 256.0);
 	} else {
@@ -1119,7 +1121,7 @@ static int jas_icctxtdesc_input(jas_iccattrval_t *attrval, jas_stream_t *in,
 	txtdesc->maclen = c;
 	if (jas_stream_read(in, txtdesc->macdata, 67) != 67)
 		goto error;
-	txtdesc->asclen = strlen(txtdesc->ascdata) + 1;
+	txtdesc->asclen = JAS_CAST(jas_iccuint32_t, strlen(txtdesc->ascdata) + 1);
 #define WORKAROUND_BAD_PROFILES
 #ifdef WORKAROUND_BAD_PROFILES
 	n = txtdesc->asclen + txtdesc->uclen * 2 + 15 + 67;
@@ -1143,7 +1145,8 @@ error:
 static int jas_icctxtdesc_getsize(jas_iccattrval_t *attrval)
 {
 	jas_icctxtdesc_t *txtdesc = &attrval->data.txtdesc;
-	return strlen(txtdesc->ascdata) + 1 + txtdesc->uclen * 2 + 15 + 67;
+	return JAS_CAST(int, strlen(txtdesc->ascdata) + 1 + txtdesc->uclen * 2 +
+	  15 + 67);
 }
 
 static int jas_icctxtdesc_output(jas_iccattrval_t *attrval, jas_stream_t *out)
@@ -1174,9 +1177,9 @@ static void jas_icctxtdesc_dump(jas_iccattrval_t *attrval, FILE *out)
 {
 	jas_icctxtdesc_t *txtdesc = &attrval->data.txtdesc;
 	fprintf(out, "ascii = \"%s\"\n", txtdesc->ascdata);
-	fprintf(out, "uclangcode = %d; uclen = %d\n", txtdesc->uclangcode,
-	  txtdesc->uclen);
-	fprintf(out, "sccode = %d\n", txtdesc->sccode);
+	fprintf(out, "uclangcode = %"PRIuFAST32"; uclen = %"PRIuFAST32"\n",
+	  txtdesc->uclangcode, txtdesc->uclen);
+	fprintf(out, "sccode = %"PRIuFAST16"\n", txtdesc->sccode);
 	fprintf(out, "maclen = %d\n", txtdesc->maclen);
 }
 
@@ -1224,7 +1227,7 @@ error:
 static int jas_icctxt_getsize(jas_iccattrval_t *attrval)
 {
 	jas_icctxt_t *txt = &attrval->data.txt;
-	return strlen(txt->string) + 1;
+	return JAS_CAST(int, strlen(txt->string) + 1);
 }
 
 static int jas_icctxt_output(jas_iccattrval_t *attrval, jas_stream_t *out)
@@ -1418,7 +1421,7 @@ static void jas_icclut8_dump(jas_iccattrval_t *attrval, FILE *out)
 		}
 		fprintf(out, "\n");
 	}
-	fprintf(out, "numintabents=%d, numouttabents=%d\n",
+	fprintf(out, "numintabents=%"PRIuFAST16", numouttabents=%"PRIuFAST16"\n",
 	  lut8->numintabents, lut8->numouttabents);
 }
 
@@ -1592,7 +1595,7 @@ static void jas_icclut16_dump(jas_iccattrval_t *attrval, FILE *out)
 		}
 		fprintf(out, "\n");
 	}
-	fprintf(out, "numintabents=%d, numouttabents=%d\n",
+	fprintf(out, "numintabents=%"PRIuFAST16", numouttabents=%"PRIuFAST16"\n",
 	  lut16->numintabents, lut16->numouttabents);
 }
 

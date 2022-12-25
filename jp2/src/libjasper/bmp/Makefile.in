@@ -136,7 +136,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-target_triplet = @target@
 subdir = src/libjasper/bmp
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/ac_aux/depcomp
@@ -350,11 +349,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
-target = @target@
 target_alias = @target_alias@
-target_cpu = @target_cpu@
-target_os = @target_os@
-target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
@@ -366,7 +361,7 @@ libbmp_la_SOURCES = \
 	bmp_dec.c \
 	bmp_enc.c
 
-AM_CPPFLAGS = -I$(top_srcdir)/src/libjasper/include
+AM_CPPFLAGS = -I$(top_builddir)/src/libjasper/include -I$(top_srcdir)/src/libjasper/include
 all: all-am
 
 .SUFFIXES:
@@ -380,9 +375,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/libjasper/bmp/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/libjasper/bmp/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/libjasper/bmp/Makefile
+	  $(AUTOMAKE) --foreign src/libjasper/bmp/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

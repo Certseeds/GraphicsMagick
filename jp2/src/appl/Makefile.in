@@ -136,7 +136,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-target_triplet = @target@
 bin_PROGRAMS = jasper$(EXEEXT) $(am__EXEEXT_2) imgcmp$(EXEEXT) \
 	imginfo$(EXEEXT) tmrdemo$(EXEEXT)
 EXTRA_PROGRAMS = $(am__EXEEXT_1) dummy$(EXEEXT) dummy2$(EXEEXT)
@@ -409,11 +408,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
-target = @target@
 target_alias = @target_alias@
-target_cpu = @target_cpu@
-target_os = @target_os@
-target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
@@ -428,9 +423,16 @@ dummy_SOURCES = dummy.c
 dummy2_SOURCES = dummy2.c
 tmrdemo_SOURCES = tmrdemo.c
 jiv_SOURCES = jiv.c
-man_MANS = imgcmp.1 imginfo.1 jasper.1 jiv.1
-EXTRA_DIST = $(man_MANS)
-AM_CPPFLAGS = -I$(top_srcdir)/src/libjasper/include
+man_MANS = \
+	imgcmp.1 \
+	imginfo.1 \
+	jasper.1 \
+	jiv.1
+
+EXTRA_DIST = \
+	$(man_MANS)
+
+AM_CPPFLAGS = -I$(top_builddir)/src/libjasper/include -I$(top_srcdir)/src/libjasper/include
 MYLDFLAGS = ../libjasper/libjasper.la
 jasper_LDADD = $(MYLDFLAGS)
 imgcmp_LDADD = $(MYLDFLAGS)
@@ -452,9 +454,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/appl/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/appl/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/appl/Makefile
+	  $(AUTOMAKE) --foreign src/appl/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

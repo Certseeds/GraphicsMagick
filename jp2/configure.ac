@@ -16,7 +16,7 @@ dnl ************************************************************
 dnl The major, minor, and micro version numbers of the package.
 define(AC_JAS_MAJOR_VERSION, 1)
 define(AC_JAS_MINOR_VERSION, 900)
-define(AC_JAS_MICRO_VERSION, 5)
+define(AC_JAS_MICRO_VERSION, 16)
 
 dnl The package version.
 define(AC_JAS_VERSION,
@@ -69,6 +69,9 @@ dnl Microsoft Windows will barf if you try to use "aux" as a directory name. :-(
 AC_CONFIG_AUX_DIR([ac_aux])
 AC_CONFIG_MACRO_DIR([ac_m4])
 
+dnl Initialize automake.
+AM_INIT_AUTOMAKE([1.11 foreign dist-xz dist-bzip2])
+
 m4_include([ac_m4/m4_ax_generate_changelog.m4])
 
 AX_GENERATE_CHANGELOG
@@ -80,10 +83,6 @@ LT_INIT([shared static])
 # Note: This precedes automake initialization to avoid warnings.
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
-AC_CANONICAL_TARGET
-
-# Initialize automake.
-AM_INIT_AUTOMAKE
 
 # Initialize version information parameters.
 JAS_MAJOR_VERSION=AC_JAS_MAJOR_VERSION
@@ -118,9 +117,7 @@ AC_DEFINE(JAS_CONFIGURE)
 AH_TEMPLATE([DEBUG_OVERFLOW], [Debugging overflow detection])
 AH_TEMPLATE([JAS_CONFIGURE], [JasPer configure])
 AH_TEMPLATE([JAS_VERSION], [JasPer version])
-AH_TEMPLATE([DEBUG_MEMALLOC], [Debugging memory allocator])
 AH_TEMPLATE([DEBUG], [Extra debugging support])
-dnl AH_TEMPLATE([HAVE_VLA], [Have variable length arrays])
 
 AH_TOP([
 /* Avoid problems due to multiple inclusion. */
@@ -153,9 +150,8 @@ AH_BOTTOM([
 # Checks for programs.
 ############################################################
 
-#AC_PROG_CC
+AC_PROG_CC
 #AC_PROG_CC_C11
-AC_PROG_CC_C99
 AC_PROG_INSTALL
 # AC_PROG_AWK
 # AC_PROG_CPP
@@ -165,11 +161,6 @@ AM_DISABLE_SHARED
 AC_PROG_LIBTOOL
 
 AC_PATH_XTRA
-
-dnl AC_MSG_CHECKING(whether variable-length arrays are supported)
-dnl AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[
-dnl 	int n; int foo[n];
-dnl ]])],[AC_MSG_RESULT(yes); AC_DEFINE(HAVE_VLA)],[AC_MSG_RESULT(no)])
 
 ############################################################
 # Check for the IJG JPEG library.
@@ -282,7 +273,6 @@ AC_CHECK_HEADERS(fcntl.h limits.h unistd.h stdint.h stdbool.h io.h windows.h sys
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
-dnl AC_CHECK_TYPE(bool, int)
 AC_CHECK_TYPE(uchar, unsigned char)
 AC_CHECK_TYPE(ushort, unsigned short)
 AC_CHECK_TYPE(uint, unsigned int)
@@ -300,23 +290,60 @@ AC_CHECK_FUNCS(getrusage)
 AC_FUNC_VPRINTF
 
 ############################################################
-# Enable/disable special memory allocator for debugging.
+# Enable memory limit feature.
 ############################################################
 
-AC_ARG_ENABLE(dmalloc,
-[  --enable-dmalloc    use special memory allocator for debugging],
+AC_ARG_ENABLE(memory-limit,
+[  --enable-memory-limit=[ARG]    Set memory limit to ARG (where ARG defaults to SIZE_MAX).],
+[
+if test "${enableval}" != no; then
+	if test "${enableval}" = yes; then
+		enableval="SIZE_MAX"
+	fi
+	AC_DEFINE_UNQUOTED([JAS_DEFAULT_MAX_MEM_USAGE],
+	[${enableval}],
+	[Maximum memory usage limit])
+fi
+],
+[])
+
+############################################################
+# Enable/disable sanitizers.
+############################################################
+
+AC_ARG_ENABLE(asan,
+[  --enable-asan    Enable Address Sanitizer.],
 [
 case "${enableval}" in
 yes)
-	AC_DEFINE(DEBUG_MEMALLOC)
-	;;
-no)
-	;;
-*)
-	AC_MSG_ERROR(bad value ${enableval} for --enable-dmalloc)
+	CFLAGS="$CFLAGS -fsanitize=address"
+	LDFLAGS="$LDFLAGS -fsanitize=address"
 	;;
 esac
-], )
+],
+[])
+
+AC_ARG_ENABLE(usan,
+[  --enable-usan    Enable Undefined-Behavior Sanitizer.],
+[
+case "${enableval}" in
+yes)
+	CFLAGS="$CFLAGS -fsanitize=undefined"
+	LDFLAGS="$LDFLAGS -fsanitize=undefined"
+esac
+],
+[])
+
+AC_ARG_ENABLE(leak,
+[  --enable-leak    Enable Leak Sanitizer.],
+[
+case "${enableval}" in
+yes)
+	CFLAGS="$CFLAGS -fsanitize=leak"
+	LDFLAGS="$LDFLAGS -fsanitize=leak"
+esac
+],
+[])
 
 ############################################################
 # Enable/disable extra code for debugging.
@@ -331,11 +358,8 @@ yes)
 	AC_DEFINE(DEBUG)
 	AC_DEFINE(DEBUG_OVERFLOW)
 	if test "$GCC" = yes; then
-		CFLAGS=""
+		#CFLAGS=""
 		CFLAGS="$CFLAGS -g -O0"
-		CFLAGS="$CFLAGS -fsanitize=address"
-		CFLAGS="$CFLAGS -fsanitize=leak"
-		CFLAGS="$CFLAGS -fsanitize=undefined"
 	fi
 	;;
 no)
@@ -348,11 +372,13 @@ esac
 ], [debug=no])
 
 if test "$GCC" = yes; then
-	CFLAGS="$CFLAGS"
+	#CFLAGS="$CFLAGS"
 	#CFLAGS="$CFLAGS -std=c99"
-	#CFLAGS="$CFLAGS -pedantic"
-	#CFLAGS="$CFLAGS -pedantic-errors"
-	#CFLAGS="$CFLAGS -W -Wall -Wno-long-long -Wformat -Wmissing-prototypes -Wstrict-prototypes"
+	#CFLAGS="$CFLAGS -std=c11"
+	CFLAGS="$CFLAGS -pedantic"
+	CFLAGS="$CFLAGS -pedantic-errors"
+	CFLAGS="$CFLAGS -Wall -Wno-unused"
+	#CFLAGS="$CFLAGS -W -Wformat -Wmissing-prototypes -Wstrict-prototypes"
 fi
 
 ############################################################
@@ -376,8 +402,8 @@ no)
 esac
 ], [])
 
-if test -n "$EXTRACFLAGS"; then
-	CFLAGS="$CFLAGS $EXTRACFLAGS"
+if test -n "$EXTRA_CFLAGS"; then
+	CFLAGS="$CFLAGS $EXTRA_CFLAGS"
 fi
 
 ############################################################
@@ -407,6 +433,8 @@ src/libjasper/pgx/Makefile
 src/libjasper/pnm/Makefile
 src/libjasper/ras/Makefile
 src/msvc/Makefile
+test/Makefile
+test/bin/Makefile
 pkgconfig/Makefile
 pkgconfig/jasper.pc
 jasper.spec

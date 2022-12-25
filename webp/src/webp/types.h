@@ -37,6 +37,25 @@
  typedef unsigned long long int uint64_t;
  typedef long long int int64_t;
 
+ typedef signed char        int_least8_t;
+ typedef short              int_least16_t;
+ typedef int                int_least32_t;
+ typedef long long          int_least64_t;
+ typedef unsigned char      uint_least8_t;
+ typedef unsigned short     uint_least16_t;
+ typedef unsigned int       uint_least32_t;
+ typedef unsigned long long uint_least64_t;
+
+ typedef signed char        int_fast8_t;
+ typedef int                int_fast16_t;
+ typedef int                int_fast32_t;
+ typedef long long          int_fast64_t;
+ typedef unsigned char      uint_fast8_t;
+ typedef unsigned int       uint_fast16_t;
+ typedef unsigned int       uint_fast32_t;
+ typedef unsigned long long uint_fast64_t;
+ 
+
 /* These macros must exactly match those in the Windows SDK's intsafe.h */
  #define INT8_MIN         (-127i8 - 1)
  #define INT16_MIN        (-32767i16 - 1)
@@ -50,6 +69,32 @@
  #define UINT16_MAX       0xffffui16
  #define UINT32_MAX       0xffffffffui32
  #define UINT64_MAX       0xffffffffffffffffui64
+
+ #define INT_LEAST8_MIN   INT8_MIN
+ #define INT_LEAST16_MIN  INT16_MIN
+ #define INT_LEAST32_MIN  INT32_MIN
+ #define INT_LEAST64_MIN  INT64_MIN
+ #define INT_LEAST8_MAX   INT8_MAX
+ #define INT_LEAST16_MAX  INT16_MAX
+ #define INT_LEAST32_MAX  INT32_MAX
+ #define INT_LEAST64_MAX  INT64_MAX
+ #define UINT_LEAST8_MAX  UINT8_MAX
+ #define UINT_LEAST16_MAX UINT16_MAX
+ #define UINT_LEAST32_MAX UINT32_MAX
+ #define UINT_LEAST64_MAX UINT64_MAX
+
+ #define INT_FAST8_MIN    INT8_MIN
+ #define INT_FAST16_MIN   INT32_MIN
+ #define INT_FAST32_MIN   INT32_MIN
+ #define INT_FAST64_MIN   INT64_MIN
+ #define INT_FAST8_MAX    INT8_MAX
+ #define INT_FAST16_MAX   INT32_MAX
+ #define INT_FAST32_MAX   INT32_MAX
+ #define INT_FAST64_MAX   INT64_MAX
+ #define UINT_FAST8_MAX   UINT8_MAX
+ #define UINT_FAST16_MAX  UINT32_MAX
+ #define UINT_FAST32_MAX  UINT32_MAX
+ #define UINT_FAST64_MAX  UINT64_MAX
 
 #ifdef _WIN64
  #define INTPTR_MIN      INT64_MIN
@@ -91,6 +136,13 @@
 #else
 #define _PFX_PTR  "l"
 #endif
+
+#ifdef _FAST16_IS_32 /* compiler test */
+#define _PFX_F16  _PFX_32
+#else /* _FAST16_IS_32 */
+#define _PFX_F16  _PFX_16
+#endif /* _FAST16_IS_32 */
+
 
 /* PRINT FORMAT MACROS */
 #define PRId8        _PFX_8 "d"
@@ -188,6 +240,7 @@
 #define PRIXFAST64   _PFX_64 "X"
 #define PRIXMAX      _PFX_64 "X"
 #define PRIXPTR      _PFX_PTR "X"
+
 
 /* SCAN FORMAT MACROS */
 #define SCNd8        _PFX_8 "d"

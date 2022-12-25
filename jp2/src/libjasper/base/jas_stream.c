@@ -91,6 +91,7 @@
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_math.h"
 
+
 /******************************************************************************\
 * Local function prototypes.
 \******************************************************************************/
@@ -283,6 +284,9 @@ jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
 
 	/* Open the underlying file. */
 	if ((obj->fd = open(filename, openflags, JAS_STREAM_PERMS)) < 0) {
+		// Free the underlying file object, since it will not otherwise
+		// be freed.
+		jas_free(obj);
 		jas_stream_destroy(stream);
 		return 0;
 	}
@@ -979,7 +983,10 @@ long jas_stream_length(jas_stream_t *stream)
 static int mem_read(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	int n;
-	jas_stream_memobj_t *m = (jas_stream_memobj_t *)obj;
+	jas_stream_memobj_t *m;
+	assert(cnt >= 0);
+	assert(buf);
+	m = (jas_stream_memobj_t *)obj;
 	n = m->len_ - m->pos_;
 	cnt = JAS_MIN(n, cnt);
 	memcpy(buf, &m->buf_[m->pos_], cnt);
@@ -991,8 +998,10 @@ static int mem_resize(jas_stream_memobj_t *m, int bufsize)
 {
 	unsigned char *buf;
 
-	assert(m->buf_);
-	if (!(buf = jas_realloc2(m->buf_, bufsize, sizeof(unsigned char)))) {
+	//assert(m->buf_);
+	assert(bufsize >= 0);
+	if (!(buf = jas_realloc2(m->buf_, bufsize, sizeof(unsigned char))) &&
+	  bufsize) {
 		return -1;
 	}
 	m->buf_ = buf;
@@ -1008,6 +1017,8 @@ static int mem_write(jas_stream_obj_t *obj, char *buf, int cnt)
 	long newbufsize;
 	long newpos;
 
+	assert(buf);
+	assert(cnt >= 0);
 	newpos = m->pos_ + cnt;
 	if (newpos > m->bufsize_ && m->growable_) {
 		newbufsize = m->bufsize_;
@@ -1124,15 +1135,24 @@ static int file_close(jas_stream_obj_t *obj)
 static int sfile_read(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	FILE *fp;
+	size_t n;
+	int result;
 	fp = JAS_CAST(FILE *, obj);
-	return fread(buf, 1, cnt, fp);
+	n = fread(buf, 1, cnt, fp);
+	if (n != cnt) {
+		result = (!ferror(fp) && feof(fp)) ? 0 : -1;
+	}
+	result = JAS_CAST(int, n);
+	return result;
 }
 
 static int sfile_write(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	FILE *fp;
+	size_t n;
 	fp = JAS_CAST(FILE *, obj);
-	return fwrite(buf, 1, cnt, fp);
+	n = fwrite(buf, 1, cnt, fp);
+	return (n != JAS_CAST(size_t, cnt)) ? (-1) : cnt;
 }
 
 static long sfile_seek(jas_stream_obj_t *obj, long offset, int origin)

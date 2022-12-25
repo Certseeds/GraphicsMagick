@@ -21,9 +21,6 @@
 /* Extra debugging support */
 #undef DEBUG
 
-/* Debugging memory allocator */
-#undef DEBUG_MEMALLOC
-
 /* Debugging overflow detection */
 #undef DEBUG_OVERFLOW
 
@@ -95,6 +92,9 @@
 
 /* JasPer configure */
 #undef JAS_CONFIGURE
+
+/* Maximum memory usage limit */
+#undef JAS_DEFAULT_MAX_MEM_USAGE
 
 /* JasPer version */
 #undef JAS_VERSION

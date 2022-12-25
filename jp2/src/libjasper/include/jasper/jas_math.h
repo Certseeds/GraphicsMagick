@@ -75,10 +75,13 @@
 \******************************************************************************/
 
 #include <jasper/jas_config.h>
+#include <jasper/jas_types.h>
 
-#include	<assert.h>
-#include	<stdio.h>
-#include	<string.h>
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,6 +112,86 @@ extern "C" {
   set to one. */
 #define	JAS_ONES(n) \
   ((1 << (n)) - 1)
+
+/******************************************************************************\
+*
+\******************************************************************************/
+
+__attribute__ ((no_sanitize_undefined))
+inline static int jas_int_asr(int x, int n)
+{
+	assert(n >= 0);
+	// The behavior is undefined when x is negative. */
+	// We tacitly assume the behavior is equivalent to a signed
+	// arithmetic right shift.
+	return x >> n;
+}
+
+__attribute__ ((no_sanitize_undefined))
+inline static int jas_int_asl(int x, int n)
+{
+	assert(n >= 0);
+	// The behavior is undefined when x is negative. */
+	// We tacitly assume the behavior is equivalent to a signed
+	// arithmetic left shift.
+	return x << n;
+}
+
+__attribute__ ((no_sanitize_undefined))
+inline static int jas_fast32_asr(int_fast32_t x, int n)
+{
+	assert(n >= 0);
+	// The behavior is undefined when x is negative. */
+	// We tacitly assume the behavior is equivalent to a signed
+	// arithmetic right shift.
+	return x >> n;
+}
+
+__attribute__ ((no_sanitize_undefined))
+inline static int jas_fast32_asl(int_fast32_t x, int n)
+{
+	assert(n >= 0);
+	// The behavior is undefined when x is negative. */
+	// We tacitly assume the behavior is equivalent to a signed
+	// arithmetic left shift.
+	return x << n;
+}
+
+/******************************************************************************\
+* Safe integer arithmetic (i.e., with overflow checking).
+\******************************************************************************/
+
+/* Compute the product of two size_t integers with overflow checking. */
+inline static bool jas_safe_size_mul(size_t x, size_t y, size_t *result)
+{
+	/* Check if overflow would occur */
+	if (x && y > SIZE_MAX / x) {
+		/* Overflow would occur. */
+		return false;
+	}
+	*result = x * y;
+	return true;
+}
+
+/* Compute the sum of two size_t integer with overflow checking. */
+inline static bool jas_safe_size_add(size_t x, size_t y, size_t *result)
+{
+	if (y > SIZE_MAX - x) {
+		return false;
+	}
+	*result = x + y;
+	return true;
+}
+
+/* Compute the difference of two size_t integer with overflow checking. */
+inline static bool jas_safe_size_sub(size_t x, size_t y, size_t *result)
+{
+	if (y > x) {
+		return false;
+	}
+	*result = x - y;
+	return true;
+}
 
 #ifdef __cplusplus
 }

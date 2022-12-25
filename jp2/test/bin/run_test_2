@@ -1,0 +1,86 @@
+#! /bin/bash
+# Copyright (c) 2016 Michael David Adams
+################################################################################
+
+cmd_dir=$(dirname $0) || exit 1
+source "$cmd_dir/utilities" || exit 1
+
+################################################################################
+
+set_source_and_build_dirs || panic "cannot set source and build directories"
+tmp_dir=$(make_tmp_dir)
+
+################################################################################
+
+echo "abs_top_builddir $abs_top_builddir"
+echo "abs_top_srcdir $abs_top_srcdir"
+
+tmp_file=$tmp_dir/data
+
+export IMGINFO_COMMAND="$abs_top_builddir/src/appl/imginfo"
+data_dir="$abs_top_srcdir/data"
+
+jasper="$abs_top_builddir/src/appl/jasper"
+imgcmp="$abs_top_builddir/src/appl/imgcmp"
+jiv="$abs_top_builddir/src/appl/jiv"
+
+image_path="$data_dir/images"
+
+in_files=()
+in_files+=(stawamuschief.pnm)
+in_files+=(stawamuschief_gray.pnm)
+in_files+=(goldenears.bmp)
+in_files+=(goldenears.ras)
+in_files+=(goldenears_gray.ras)
+##in_files+=(goldenears_gray.bmp)
+##in_files+=(target.pnm)
+
+image_formats=()
+image_formats+=(bmp)
+image_formats+=(jp2)
+image_formats+=(jpc)
+image_formats+=(pgx)
+image_formats+=(pnm)
+image_formats+=(ras)
+#image_formats+=(mif)
+#image_formats+=(jpg)
+
+error_count=0
+
+for in_file in "${in_files[@]}"; do
+	echo "############################################################"
+	in_file_base="$in_file"
+	in_file=$(image_which "$image_path" "$in_file_base") || \
+	  panic "cannot find image $in_file_base"
+	image_type=$(image_info "$in_file" "type") || \
+	  panic "cannot get image type $in_file"
+	if [ ! -f "$in_file" ]; then
+		echo "warning: cannot find image file $in_file_base"
+		continue
+	fi
+	for image_format in "${image_formats[@]}"; do
+		echo "############################################################"
+		if [ "$image_type" = rgb -a "$image_format" = pgx ]; then
+			echo "SKIPPING: $in_file_base $image_format"
+			continue
+		fi
+		echo "TEST CASE: $in_file_base $image_format"
+		rm -f "$tmp_file"
+		"$jasper" -f "$in_file" -T "$image_format" 2> /dev/null | \
+		  "$jasper" -T "$image_format" > "$tmp_file" 2> /dev/null
+		pae=$("$imgcmp" -f "$in_file" -F "$tmp_file" -m pae --max \
+		  2> /dev/null) || \
+		  panic "cannot compare image files $in_file and $tmp_file"
+		if [ "$pae" != 0 ]; then
+			echo "ERROR: $image_format $in_file_base NOT LOSSLESS (PAE=$pae)"
+			error_count=$((error_count + 1))
+			#"$jiv" $tmp_file $in_file
+		fi
+		echo "STATUS: $in_file_base $image_format OK"
+	done
+done
+
+if [ "$error_count" -gt 0 ]; then
+	echo "error count: $error_count"
+	exit 1
+fi
