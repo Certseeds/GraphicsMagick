@@ -1,5 +1,9 @@
 2022-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/symbols.h: Update symbol remappings which are enabled by
+	PREFIX_MAGICK_SYMBOLS.  The only new symbol since the last release
+	is IsEventLogged().
+
 	* NEWS.txt: Updated the news.
 
 2022-12-25 Fojtik Jaroslav  <JaFojtik@yandex.com>

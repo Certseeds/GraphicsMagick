@@ -489,6 +489,7 @@
 #define IsAccessibleAndNotEmpty GmIsAccessibleAndNotEmpty
 #define IsAccessible GmIsAccessible
 #define IsAccessibleNoLogging GmIsAccessibleNoLogging
+#define IsEventLogged GmIsEventLogged
 #define IsEventLogging GmIsEventLogging
 #define IsGeometry GmIsGeometry
 #define IsGlob GmIsGlob
