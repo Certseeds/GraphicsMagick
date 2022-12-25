@@ -145,6 +145,15 @@
  */
 #include "../webp/src/webp/types.h"
 
+#ifndef _PFX_PTR
+ #ifdef _WIN64
+  #define _PFX_PTR  "ll"
+ #else
+  #define _PFX_PTR  "l"
+ #endif
+#endif
+
+
 #include <limits.h>
 
 

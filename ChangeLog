@@ -1,7 +1,8 @@
 2022-12-25 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* webp/src/webp/types.h Need to include inttypes.h
-
+        * jp2/src/libjasper/include/jasper/jas_types.h
+		Fix missing _PFX_PTR in newer MSVC.
 
 2022-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
