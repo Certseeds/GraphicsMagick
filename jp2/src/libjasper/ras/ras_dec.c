@@ -77,8 +77,23 @@
 #include "jasper/jas_stream.h"
 #include "jasper/jas_image.h"
 #include "jasper/jas_debug.h"
+#include "jasper/jas_tvp.h"
 
 #include "ras_cod.h"
+
+/******************************************************************************\
+* Local types.
+\******************************************************************************/
+
+typedef struct {
+	int allow_trunc;
+	size_t max_samples;
+} ras_dec_importopts_t;
+
+typedef enum {
+	OPT_ALLOWTRUNC,
+	OPT_MAXSIZE,
+} optid_t;
 
 /******************************************************************************\
 * Prototypes.
@@ -94,10 +109,53 @@ static int ras_getdatastd(jas_stream_t *in, ras_hdr_t *hdr, ras_cmap_t *cmap,
 static int ras_getcmap(jas_stream_t *in, ras_hdr_t *hdr, ras_cmap_t *cmap);
 
 /******************************************************************************\
+* Option parsing.
+\******************************************************************************/
+
+static jas_taginfo_t ras_decopts[] = {
+	// Not yet supported
+	// {OPT_ALLOWTRUNC, "allow_trunc"},
+	{OPT_MAXSIZE, "max_samples"},
+	{-1, 0}
+};
+
+static int ras_dec_parseopts(const char *optstr, ras_dec_importopts_t *opts)
+{
+	jas_tvparser_t *tvp;
+
+	opts->max_samples = JAS_DEC_DEFAULT_MAX_SAMPLES;
+	opts->allow_trunc = 0;
+
+	if (!(tvp = jas_tvparser_create(optstr ? optstr : ""))) {
+		return -1;
+	}
+
+	while (!jas_tvparser_next(tvp)) {
+		switch (jas_taginfo_nonull(jas_taginfos_lookup(ras_decopts,
+		  jas_tvparser_gettag(tvp)))->id) {
+		case OPT_ALLOWTRUNC:
+			opts->allow_trunc = atoi(jas_tvparser_getval(tvp));
+			break;
+		case OPT_MAXSIZE:
+			opts->max_samples = strtoull(jas_tvparser_getval(tvp), 0, 10);
+			break;
+		default:
+			jas_eprintf("warning: ignoring invalid option %s\n",
+			  jas_tvparser_gettag(tvp));
+			break;
+		}
+	}
+
+	jas_tvparser_destroy(tvp);
+
+	return 0;
+}
+
+/******************************************************************************\
 * Code.
 \******************************************************************************/
 
-jas_image_t *ras_decode(jas_stream_t *in, char *optstr)
+jas_image_t *ras_decode(jas_stream_t *in, const char *optstr)
 {
 	ras_hdr_t hdr;
 	ras_cmap_t cmap;
@@ -107,20 +165,38 @@ jas_image_t *ras_decode(jas_stream_t *in, char *optstr)
 	int clrspc;
 	int numcmpts;
 	int i;
+	ras_dec_importopts_t opts;
+	size_t num_samples;
 
-	if (optstr) {
-		jas_eprintf("warning: ignoring RAS decoder options\n");
+	image = 0;
+
+	JAS_DBGLOG(10, ("ras_decode(%p, %p, \"%s\"\n", in, optstr ? optstr : ""));
+
+	if (ras_dec_parseopts(optstr, &opts)) {
+		goto error;
 	}
 
 	/* Read the header. */
 	if (ras_gethdr(in, &hdr)) {
-		return 0;
+		goto error;
 	}
 
 	/* Does the header information look reasonably sane? */
 	if (hdr.magic != RAS_MAGIC || hdr.width <= 0 || hdr.height <= 0 ||
 	  hdr.depth <= 0 || hdr.depth > 32) {
-		return 0;
+		goto error;
+	}
+
+	if (!jas_safe_size_mul3(hdr.width, hdr.height, (hdr.depth + 7) / 8,
+	  &num_samples)) {
+		jas_eprintf("image too large\n");
+		goto error;
+	}
+	if (opts.max_samples > 0 && num_samples > opts.max_samples) {
+		jas_eprintf(
+		  "maximum number of samples would be exceeded (%"_PFX_PTR"u > %"_PFX_PTR"u)\n",
+		  num_samples, opts.max_samples);
+		goto error;
 	}
 
 	/* In the case of the old format, do not rely on the length field
@@ -150,19 +226,17 @@ jas_image_t *ras_decode(jas_stream_t *in, char *optstr)
 	}
 	/* Create the image object. */
 	if (!(image = jas_image_create(numcmpts, cmptparms, JAS_CLRSPC_UNKNOWN))) {
-		return 0;
+		goto error;
 	}
 
 	/* Read the color map (if there is one). */
 	if (ras_getcmap(in, &hdr, &cmap)) {
-		jas_image_destroy(image);
-		return 0;
+		goto error;
 	}
 
 	/* Read the pixel data. */
 	if (ras_getdata(in, &hdr, &cmap, image)) {
-		jas_image_destroy(image);
-		return 0;
+		goto error;
 	}
 
 	jas_image_setclrspc(image, clrspc);
@@ -179,11 +253,17 @@ jas_image_t *ras_decode(jas_stream_t *in, char *optstr)
 	}
 
 	return image;
+
+error:
+	if (image) {
+		jas_image_destroy(image);
+	}
+	return 0;
 }
 
 int ras_validate(jas_stream_t *in)
 {
-	uchar buf[RAS_MAGICLEN];
+	jas_uchar buf[RAS_MAGICLEN];
 	int i;
 	int n;
 	uint_fast32_t magic;
@@ -209,7 +289,10 @@ int ras_validate(jas_stream_t *in)
 		return -1;
 	}
 
-	magic = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+	magic = (JAS_CAST(uint_fast32_t, buf[0]) << 24) |
+	  (JAS_CAST(uint_fast32_t, buf[1]) << 16) |
+	  (JAS_CAST(uint_fast32_t, buf[2]) << 8) |
+	  buf[3];
 
 	/* Is the signature correct for the Sun Rasterfile format? */
 	if (magic != RAS_MAGIC) {
@@ -257,9 +340,16 @@ static int ras_getdatastd(jas_stream_t *in, ras_hdr_t *hdr, ras_cmap_t *cmap,
 	/* Avoid compiler warnings about unused parameters. */
 	cmap = 0;
 
+	assert(jas_image_numcmpts(image) <= 3);
+
+	for (i = 0; i < 3; ++i) {
+		data[i] = 0;
+	}
+
 	for (i = 0; i < jas_image_numcmpts(image); ++i) {
-		data[i] = jas_matrix_create(1, jas_image_width(image));
-		assert(data[i]);
+		if (!(data[i] = jas_matrix_create(1, jas_image_width(image)))) {
+			goto error;
+		}
 	}
 
 	pad = RAS_ROWSIZE(hdr) - (hdr->width * hdr->depth + 7) / 8;
@@ -270,7 +360,7 @@ static int ras_getdatastd(jas_stream_t *in, ras_hdr_t *hdr, ras_cmap_t *cmap,
 		for (x = 0; x < hdr->width; x++) {
 			while (nz < hdr->depth) {
 				if ((c = jas_stream_getc(in)) == EOF) {
-					return -1;
+					goto error;
 				}
 				z = (z << 8) | c;
 				nz += 8;
@@ -290,22 +380,31 @@ static int ras_getdatastd(jas_stream_t *in, ras_hdr_t *hdr, ras_cmap_t *cmap,
 		}
 		if (pad) {
 			if ((c = jas_stream_getc(in)) == EOF) {
-				return -1;
+				goto error;
 			}
 		}
 		for (i = 0; i < jas_image_numcmpts(image); ++i) {
 			if (jas_image_writecmpt(image, i, 0, y, hdr->width, 1,
 			  data[i])) {
-				return -1;
+				goto error;
 			}
 		}
 	}
 
 	for (i = 0; i < jas_image_numcmpts(image); ++i) {
 		jas_matrix_destroy(data[i]);
+		data[i] = 0;
 	}
 
 	return 0;
+
+error:
+	for (i = 0; i < 3; ++i) {
+		if (data[i]) {
+			jas_matrix_destroy(data[i]);
+		}
+	}
+	return -1;
 }
 
 static int ras_getcmap(jas_stream_t *in, ras_hdr_t *hdr, ras_cmap_t *cmap)
@@ -324,7 +423,9 @@ static int ras_getcmap(jas_stream_t *in, ras_hdr_t *hdr, ras_cmap_t *cmap)
 		{
 		jas_eprintf("warning: palettized images not fully supported\n");
 		numcolors = 1 << hdr->depth;
-		assert(numcolors <= RAS_CMAP_MAXSIZ);
+		if (numcolors > RAS_CMAP_MAXSIZ) {
+			return -1;
+		}
 		actualnumcolors = hdr->maplength / 3;
 		for (i = 0; i < numcolors; i++) {
 			cmap->data[i] = 0;
@@ -381,7 +482,7 @@ static int ras_gethdr(jas_stream_t *in, ras_hdr_t *hdr)
 
 static int ras_getint(jas_stream_t *in, int_fast32_t *val)
 {
-	int x;
+	int_fast32_t x;
 	int c;
 	int i;
 

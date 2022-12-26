@@ -75,10 +75,17 @@ dummy_SOURCES = dummy.c
 dummy2_SOURCES = dummy2.c
 tmrdemo_SOURCES = tmrdemo.c
 jiv_SOURCES = jiv.c
-man_MANS = imgcmp.1 imginfo.1 jasper.1 jiv.1
-EXTRA_DIST = $(man_MANS)
 
-INCLUDES = -I$(top_srcdir)/src/libjasper/include
+man_MANS = \
+	imgcmp.1 \
+	imginfo.1 \
+	jasper.1 \
+	jiv.1
+
+EXTRA_DIST = \
+	$(man_MANS)
+
+AM_CPPFLAGS = -I$(top_builddir)/src/libjasper/include -I$(top_srcdir)/src/libjasper/include
 
 MYLDFLAGS = ../libjasper/libjasper.la
 jasper_LDADD = $(MYLDFLAGS)

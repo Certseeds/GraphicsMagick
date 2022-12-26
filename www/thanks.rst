@@ -24,7 +24,7 @@ Fuzz Testing
 
   * Gynvael Coldwind and Mateusz Jurczyk of the Google Security Team
 
-  * Hanno Böck
+  * Hanno BÃ¶ck
 
   * Tobias Ospelt
 

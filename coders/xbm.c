@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -542,7 +542,7 @@ static unsigned int WriteXBMImage(const ImageInfo *image_info,Image *image)
   (void) WriteBlob(image,strlen(buffer),buffer);
   FormatString(buffer,"static char %.1024s_bits[] = {\n",basename);
   (void) WriteBlob(image,strlen(buffer),buffer);
-  (void) strcpy(buffer," ");
+  (void) strlcpy(buffer," ",sizeof(buffer));
   (void) WriteBlob(image,strlen(buffer),buffer);
   /*
     Convert MIFF to X bitmap pixels.
@@ -557,7 +557,7 @@ static unsigned int WriteXBMImage(const ImageInfo *image_info,Image *image)
   count=0;
   x=0;
   y=0;
-  (void) strcpy(buffer," ");
+  (void) strlcpy(buffer," ",sizeof(buffer));
   (void) WriteBlob(image,strlen(buffer),buffer);
   for (y=0; y < (long) image->rows; y++)
   {
@@ -581,7 +581,7 @@ static unsigned int WriteXBMImage(const ImageInfo *image_info,Image *image)
           count++;
           if (count == 12)
             {
-              (void) strcpy(buffer,"\n  ");
+              (void) strlcpy(buffer,"\n  ",sizeof(buffer));
               (void) WriteBlob(image,strlen(buffer),buffer);
               count=0;
             };
@@ -601,7 +601,7 @@ static unsigned int WriteXBMImage(const ImageInfo *image_info,Image *image)
         count++;
         if (count == 12)
           {
-            (void) strcpy(buffer,"\n  ");
+            (void) strlcpy(buffer,"\n  ",sizeof(buffer));
             (void) WriteBlob(image,strlen(buffer),buffer);
             count=0;
           };
@@ -614,7 +614,7 @@ static unsigned int WriteXBMImage(const ImageInfo *image_info,Image *image)
                                   image->columns,image->rows))
         break;
   }
-  (void) strcpy(buffer,"};\n");
+  (void) strlcpy(buffer,"};\n",sizeof(buffer));
   (void) WriteBlob(image,strlen(buffer),buffer);
   CloseBlob(image);
   return(True);

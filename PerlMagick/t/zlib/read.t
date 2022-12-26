@@ -26,7 +26,7 @@ chdir 't/zlib' || die 'Cd failed';
 # 1) Test reading Zip compressed MIFF
 #
 print("Reading Zip compressed MIFF ...\n");
-testRead( 'input.miff',
+testRead( 'input.miff', q//,
   '8b19185a62241bd7b79ecf3f619711f4ebbedd73eaeca0366f05778762b6614f' );
 
 #
@@ -34,7 +34,7 @@ testRead( 'input.miff',
 #
 print("Reading Zip compressed MAT ...\n");
 ++$test;
-testRead( 'input_gray_lsb_08bit_zip.mat',
+testRead( 'input_gray_lsb_08bit_zip.mat', q//,
   'cd0e75dd75bce03537c17bf067e19e97d1e28feb18a5ba54dddaf3309097c255' );
 
 #
@@ -42,5 +42,5 @@ testRead( 'input_gray_lsb_08bit_zip.mat',
 #
 print("Reading Zip stream-compressed MIFF (.gz extension) ...\n");
 ++$test;
-testRead( 'input.miff.gz',
+testRead( 'input.miff.gz', q//,
   '8b19185a62241bd7b79ecf3f619711f4ebbedd73eaeca0366f05778762b6614f' );

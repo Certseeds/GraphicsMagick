@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>GraphicsMagick Color Quantization</title>
-<link rel="stylesheet" href="docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>GraphicsMagick Color Quantization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,17 +35,18 @@
   <li><a href="reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="graphicsmagick-color-quantization">
 <h1 class="title">GraphicsMagick Color Quantization</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
 <blockquote>
-This document describes how GraphicsMagick performs color
+<p>This document describes how GraphicsMagick performs color
 reduction on an image. To fully understand this document,
 you should have a knowledge of basic imaging techniques and
-the tree data structure and terminology.</blockquote>
+the tree data structure and terminology.</p>
+</blockquote>
 <div class="section" id="description">
 <h1>Description</h1>
 <p>For purposes of color allocation, an image is a set of n pixels, where
@@ -66,9 +70,9 @@ midpoints of each edge.</p>
 <p>The basic algorithm operates in three phases:</p>
 <blockquote>
 <ul class="simple">
-<li>Classification,</li>
-<li>Reduction, and</li>
-<li>Assignment.</li>
+<li><p>Classification,</p></li>
+<li><p>Reduction, and</p></li>
+<li><p>Assignment.</p></li>
 </ul>
 </blockquote>
 <p>Classification builds a color description tree for the image. Reduction
@@ -87,33 +91,29 @@ components in the input image are quantized to k-bit precision, so that
 Cmax = 2^k-1, the tree would need k levels below the root node to allow
 representing each possible input color in a leaf. This becomes
 prohibitive because the tree's:</p>
-<pre class="literal-block">
-total number of nodes = 1+Sum(8^i), i=1,k
+<pre class="literal-block">total number of nodes = 1+Sum(8^i), i=1,k
 
 For k=8,
 Number of nodes= 1 + (8^1+8^2+....+8^8)
 8^8 - 1
 = 1 + 8.-----------
 8 - 1
-= 19,173,961
-</pre>
+= 19,173,961</pre>
 <p>Therefore, to avoid building a fully populated tree, GraphicsMagick:</p>
 <ol class="arabic simple">
-<li>Initializes data structures for nodes only as they are needed;</li>
-<li>Chooses a maximum depth for the tree as a function of the desired
+<li><p>Initializes data structures for nodes only as they are needed;</p></li>
+<li><p>Chooses a maximum depth for the tree as a function of the desired
 number of colors in the output image (currently based-two logarithm
-of Cmax).</li>
+of Cmax).</p></li>
 </ol>
 <p>For Cmax=255,</p>
-<pre class="literal-block">
-Maximum tree depth = log (256)
+<pre class="literal-block">Maximum tree depth = log (256)
 2
 
 = log (256) / log (2)
 e e
 
-= 8
-</pre>
+= 8</pre>
 <p>A tree of this depth generally allows the best representation of the
 source image with the fastest computational speed and the least amount of
 memory. However, the default depth is inappropriate for some images.
@@ -124,23 +124,27 @@ identifies the single node which represents a cube in RGB space
 containing the pixel's color. It updates the following data for each such
 node:</p>
 <blockquote>
-<dl class="docutils">
+<dl class="simple">
 <dt>n1:</dt>
-<dd>Number of pixels whose color is contained in the RGB cube which
-this node represents;</dd>
+<dd><p>Number of pixels whose color is contained in the RGB cube which
+this node represents;</p>
+</dd>
 <dt>n2:</dt>
-<dd>Number of pixels whose color is not represented in a node at lower
+<dd><p>Number of pixels whose color is not represented in a node at lower
 depth in the tree; initially, n2=0 for all nodes except leaves of
-the tree.</dd>
+the tree.</p>
+</dd>
 <dt>Sr,Sg,Sb:</dt>
-<dd>Sums of the red, green, and blue component values for all pixels
+<dd><p>Sums of the red, green, and blue component values for all pixels
 not classified at a lower depth. The combination of these sums and
 n2 will ultimately characterize the mean color of a set of pixels
-represented by this node.</dd>
+represented by this node.</p>
+</dd>
 <dt>E:</dt>
-<dd>The distance squared in RGB space between each pixel contained
+<dd><p>The distance squared in RGB space between each pixel contained
 within a node and the nodes' center. This represents the
-quantization error for a node.</dd>
+quantization error for a node.</p>
+</dd>
 </dl>
 </blockquote>
 <p>Reduction repeatedly prunes the tree until the number of nodes with n2 &gt;
@@ -149,12 +153,10 @@ output image. On any given iteration over the tree, it selects those
 nodes whose E value is minimal for pruning and merges their color
 statistics upward. It uses a pruning threshold, Ep, to govern node
 selection as follows:</p>
-<pre class="literal-block">
-Ep = 0
+<pre class="literal-block">Ep = 0
 while number of nodes with (n2 &gt; 0) &gt; required maximum number of colors
 prune all nodes such that E &lt;= Ep
-Set Ep to minimum E in remaining nodes
-</pre>
+Set Ep to minimum E in remaining nodes</pre>
 <p>This has the effect of minimizing any quantization error when merging two
 nodes together.</p>
 <p>When a node to be pruned has offspring, the pruning procedure invokes
@@ -173,10 +175,10 @@ whose colors should be defined by nodes at a lower level in the tree.</p>
 <p>Assignment generates the output image from the pruned tree. The output
 image consists of two parts:</p>
 <ol class="arabic simple">
-<li>A color map, which is an array of color descriptions (RGB triples)
-for each color present in the output image.</li>
-<li>A pixel array, which represents each pixel as an index into the
-color map array.</li>
+<li><p>A color map, which is an array of color descriptions (RGB triples)
+for each color present in the output image.</p></li>
+<li><p>A pixel array, which represents each pixel as an index into the
+color map array.</p></li>
 </ol>
 <p>First, the assignment phase makes one pass over the pruned color
 description tree to establish the image's color map. For each node with
@@ -217,20 +219,23 @@ quantization quality.</p>
 <p>These errors are measured and printed when -verbose and -colorsare
 specified on the command line:</p>
 <blockquote>
-<dl class="docutils">
+<dl class="simple">
 <dt>mean error per pixel:</dt>
-<dd>is the mean error for any single pixel in the image.</dd>
+<dd><p>is the mean error for any single pixel in the image.</p>
+</dd>
 <dt>normalized mean square error:</dt>
-<dd>is the normalized mean square quantization error for any single
+<dd><p>is the normalized mean square quantization error for any single
 pixel in the image.
 This distance measure is normalized to a range between 0 and 1. It
 is independent of the range of red, green, and blue values in the
-image.</dd>
+image.</p>
+</dd>
 <dt>normalized maximum square error:</dt>
-<dd>is the largest normalized square quantization error for any single
+<dd><p>is the largest normalized square quantization error for any single
 pixel in the image.
 This distance measure is normalized to a range between and blue
-values in the image.</dd>
+values in the image.</p>
+</dd>
 </dl>
 </blockquote>
 </div>
@@ -246,9 +251,12 @@ permission, this document is an adaptation from a document he wrote.</p>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

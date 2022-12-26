@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -217,7 +217,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
     if (LocaleCompare(keyword,"</locale>") == 0)
       {
         ChopLocaleComponents(locale,1);
-        (void) strcat(locale,"/");
+        (void) strlcat(locale,"/",sizeof(locale));
         continue;
       }
     if (LocaleCompare(keyword,"<localemap>") == 0)
@@ -257,7 +257,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
     if (LocaleCompare(keyword,"</message>") == 0)
       {
         ChopLocaleComponents(locale,2);
-        (void) strcat(locale,"/");
+        (void) strlcat(locale,"/",sizeof(locale));
         continue;
       }
     if (*keyword == '<')
@@ -270,7 +270,7 @@ static unsigned int ReadConfigureFile(Image *image,const char *basename,
         if (*(keyword+1) == '/')
           {
             ChopLocaleComponents(locale,1);
-            (void) strcat(locale,"/");
+            (void) strlcat(locale,"/",sizeof(locale));
             continue;
           }
         token[strlen(token)-1]='\0';
@@ -807,7 +807,7 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
           locale[i]=locale[j];
           locale[j]=swap;
         }
-  if (IsEventLogging())
+  if (IsEventLogged(LocaleEvent))
     for (i=0; i < count; i++)
       (void) LogMagickEvent(LocaleEvent,GetMagickModule(),"%.1024s",locale[i]);
   if (LocaleCompare(image_info->magick,"LOCALEMC") == 0)
@@ -822,7 +822,7 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
           text[MaxTextExtent],
           path[MaxTextExtent];
 
-        int
+        unsigned int
           index;
 
         register char
@@ -834,6 +834,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < 4) && (p > path); p--)
             {
               if (*p == '/')
@@ -873,8 +875,10 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
         text[MaxTextExtent],
         path[MaxTextExtent];
 
+      unsigned int
+        index;
+
       int
-        index,
         severityindex;
 
       size_t
@@ -902,7 +906,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -942,7 +947,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -994,7 +1000,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -1040,7 +1047,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -1075,7 +1083,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')
@@ -1112,7 +1121,8 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
             p=path+strlen(path)-1;
             if (*p == '/')
               *p='\0';
-            fields[0]=""; /* this one may not exist */
+            for (index=0; index < ArraySize(fields) ; index++)
+              fields[index]="";
             for (index=0; (index < TREE_LEVELS_SUPPORTED) && (p > path); p--)
             {
               if (*p == '/')

@@ -15,6 +15,7 @@ config\.status
 \.dirstamp
 .*_out.+
 out_.*\.+
+.*__pycache__.*
 
 ^autom4te\.cache
 ^config/delegates\.mgk

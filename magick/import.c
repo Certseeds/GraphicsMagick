@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2018 GraphicsMagick Group
+  Copyright (C) 2003 - 2022 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -3610,11 +3610,13 @@ ImportViewPixelArea(ViewInfo *view,
           /* Multiply to scale up */
           unsigned_scale=(MaxRGB / (MaxRGB >> (QuantumDepth-sample_bits)));
         }
+#if QuantumDepth < 32
       else if (QuantumDepth < sample_bits)
         {
           /* Divide to scale down */
           unsigned_scale=(unsigned_maxvalue/MaxRGB);
         }
+#endif
     }
 
   image=GetCacheViewImage(view);

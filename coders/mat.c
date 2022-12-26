@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1462,7 +1462,7 @@ static MagickPassFail WriteMATLABImage(const ImageInfo *image_info,Image *image)
     Store MAT header.
   */
   (void) memset(MATLAB_HDR,' ',Min(sizeof(MATLAB_HDR),124));
-  sprintf(MATLAB_HDR,"MATLAB 5.0 MAT-file, Platform: %.8s, Created on: %.3s %.3s %2d %2d:%2d:%2d %d",
+  snprintf(MATLAB_HDR,sizeof(MATLAB_HDR),"MATLAB 5.0 MAT-file, Platform: %.8s, Created on: %.3s %.3s %2d %2d:%2d:%2d %d",
     OsDesc,
     DayOfWTab[t->tm_wday],
     MonthsTab[t->tm_mon],

@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>ChangeLog-2021.rst</title>
-<link rel="stylesheet" href="docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,9 +35,8 @@
   <li><a href="reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document">
-
-
 <p>2021-12-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* doc/{gmdoc2html, gmdocselect, imdoc2man, imdocselect}: Fixes to
@@ -68,12 +70,13 @@ Maintain a tally of the total number of octets moved by realloc.</p>
 </blockquote>
 <p>2021-12-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/mat.c (ReadMATImage): Change 'ldblk' to size_t and
+<p>* coders/mat.c (ReadMATImage): Change 'ldblk' to size_t and
 check related calculations for overflow and to avoid possible
 negative seek offsets.
 (FixLogical): Pass 'ldblk' as size_t.
 (ReadMATImage): Assure that corrupt/incomplete image is not
-returned.</blockquote>
+returned.</p>
+</blockquote>
 <p>2021-12-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* magick/profile.c (AppendImageProfile): Deprecate this function
@@ -113,11 +116,12 @@ when using -gravity with -trim&quot;.  This was more than a warning.</p>
 </blockquote>
 <p>2021-12-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jp2.c: Properly support passing JasPer options for
+<p>* coders/jp2.c: Properly support passing JasPer options for
 decoder and encoder, including the 'debug' option.
 (initialize_jasper): Call jas_conf_set_allocator() and pass the
 maximum amount of memory it should be allocated to use.  This
-seems to avoid a malfunction.  Re-enable use of jas_initialize().</blockquote>
+seems to avoid a malfunction.  Re-enable use of jas_initialize().</p>
+</blockquote>
 <p>2021-12-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/jp2.c (realloc_rlm): JasPer wants its custom memory
@@ -140,8 +144,9 @@ image.</p>
 </blockquote>
 <p>2021-12-18  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-* magick/wpg.c: Fix incorrect TrX and TrY elements in CTM.
-Backported from WP2LaTeX: <a class="reference external" href="https://hg.osdn.net/view/wp2latex/wp2latex/rev/ce47149e7e67">https://hg.osdn.net/view/wp2latex/wp2latex/rev/ce47149e7e67</a></blockquote>
+<p>* magick/wpg.c: Fix incorrect TrX and TrY elements in CTM.
+Backported from WP2LaTeX: <a class="reference external" href="https://hg.osdn.net/view/wp2latex/wp2latex/rev/ce47149e7e67">https://hg.osdn.net/view/wp2latex/wp2latex/rev/ce47149e7e67</a></p>
+</blockquote>
 <p>2021-12-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* utilities/tests/convert.tap: Use sed to count file lines rather
@@ -195,14 +200,16 @@ issues.</p>
 </blockquote>
 <p>2021-11-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/caption.c (ReadCAPTIONImage): Set draw_info to NULL upon
+<p>* coders/caption.c (ReadCAPTIONImage): Set draw_info to NULL upon
 deallocation.  Fixes an assertion reported by Michael Melcher via
-the graphicsmagick-bugs list on November 11, 2021.</blockquote>
+the graphicsmagick-bugs list on November 11, 2021.</p>
+</blockquote>
 <p>2021-11-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jp2.c (initialize_jasper): For JasPer 3.0.0 and later,
+<p>* coders/jp2.c (initialize_jasper): For JasPer 3.0.0 and later,
 use resource-limited memory allocators. JasPer 3.0.0 is not yet
-released at this time.</blockquote>
+released at this time.</p>
+</blockquote>
 <p>2021-11-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/gif.c (ReadGIFImage): Handle GIF files where the 'opaque'
@@ -236,27 +243,32 @@ NULL&quot;.</p>
 </blockquote>
 <p>2021-11-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/msl.c (MSLStartElement): Return immediately if there is
+<p>* coders/msl.c (MSLStartElement): Return immediately if there is
 already an error or the image is NULL.  Do not discard exceptions
 when calling functions which return a new image.  Try even harder
 to shut down the libxml2 parser. Fixes SourceForge issue 652 &quot;SEGV
-in gm at coders/msl.c:883&quot;.</blockquote>
+in gm at coders/msl.c:883&quot;.</p>
+</blockquote>
 <p>2021-10-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/widget.c (MagickXPreferencesWidget): Eliminate
+<p>* magick/widget.c (MagickXPreferencesWidget): Eliminate
 compilation warning about 'strlen' argument missing terminating
-nul.</blockquote>
+nul.</p>
+</blockquote>
 <p>2021-10-24  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-* magick/wpg.c: ObjectID&gt;=0x8000 automatically switches double precision on.</blockquote>
+<p>* magick/wpg.c: ObjectID&gt;=0x8000 automatically switches double precision on.</p>
+</blockquote>
 <p>2021-09-18  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-* PerlMagick/t/wmf/JPGinside.emf: Add test file: EMF that embedds
-JPG.</blockquote>
+<p>* PerlMagick/t/wmf/JPGinside.emf: Add test file: EMF that embedds
+JPG.</p>
+</blockquote>
 <p>2021-09-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/blob.c (WriteBlob): Use appropriate handle for bzip2.
-Patch by Sam James &lt;<a class="reference external" href="mailto:sam&#37;&#52;&#48;gentoo&#46;org">sam<span>&#64;</span>gentoo<span>&#46;</span>org</a>&gt;.</blockquote>
+<p>* magick/blob.c (WriteBlob): Use appropriate handle for bzip2.
+Patch by Sam James &lt;<a class="reference external" href="mailto:sam&#37;&#52;&#48;gentoo&#46;org">sam<span>&#64;</span>gentoo<span>&#46;</span>org</a>&gt;.</p>
+</blockquote>
 <p>2021-08-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/jp2.c (initialize_jasper): Make minimal use of new JasPer
@@ -301,17 +313,19 @@ columns are not zero.</p>
 </blockquote>
 <p>2021-07-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jp2.c (initialize_jasper): Update for the latest version
+<p>* coders/jp2.c (initialize_jasper): Update for the latest version
 of the evolving jas_init_custom() interface provided by the
-mdadams-callbacks branch.</blockquote>
+mdadams-callbacks branch.</p>
+</blockquote>
 <p>2021-07-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jp2.c: Assure that the designated decoder is used rather
+<p>* coders/jp2.c: Assure that the designated decoder is used rather
 than using autodetection and possibly using a different decoder
 than intended. Added experimental support for JasPer
 HAVE_JAS_INIT_CUSTOM feature, but leave disabled by default.  Fix
 a stream manager bug noticed with the madams-callbacks branch of
-JasPer.</blockquote>
+JasPer.</p>
+</blockquote>
 <p>2021-06-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/msl.c (ProcessMSLScript): Fix possible use of freed
@@ -335,12 +349,13 @@ coder_PGX_fuzzer&quot;.</p>
 </blockquote>
 <p>2021-06-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/webp.c (ReadWEBPImage): Use SetImagePixelsEx() rather
+<p>* coders/webp.c (ReadWEBPImage): Use SetImagePixelsEx() rather
 than GetImagePixelsEx() in reader.  Patch by Tobias Mark via
-SourceForge patch #66 &quot;Minor improvment webp&quot;.</blockquote>
+SourceForge patch #66 &quot;Minor improvment webp&quot;.</p>
+</blockquote>
 <p>2021-06-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/svg.c (GetTransformTokens): Fix massive over-allocation
+<p>* coders/svg.c (GetTransformTokens): Fix massive over-allocation
 of string due to use of AcquireString() on entire remaining text
 buffer. Addresses oss-fuzz 35171 &quot;graphicsmagick:coder_SVG_fuzzer:
 Out-of-memory in coder_SVG_fuzzer&quot;.
@@ -351,7 +366,8 @@ of AcquireString() on entire remaining text buffer.
 (GetStyleTokens): Don't use strlcpy() to copy token because it
 scans full text.
 (GetTransformTokens): Don't use strlcpy() to copy token because it
-scans full text.</blockquote>
+scans full text.</p>
+</blockquote>
 <p>2021-06-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/msl.c (MSLStartElement): Use resource-managed memory
@@ -381,10 +397,11 @@ length.</p>
 </blockquote>
 <p>2021-05-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* Magick++/lib/Magick++/{Drawable.h, STL.h}: Use _MSVC_LANG in
+<p>* Magick++/lib/Magick++/{Drawable.h, STL.h}: Use _MSVC_LANG in
 addition to __cplusplus when testing for C++'17 since the
 Microsoft C++ compiler only properly defines __cplusplus if the
-/Zc:__cplusplus switch was provided.</blockquote>
+/Zc:__cplusplus switch was provided.</p>
+</blockquote>
 <p>2021-05-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* Magick++/lib/Magick++/STL.h: Support compiling with C++'98
@@ -394,38 +411,43 @@ through C++'17.</p>
 </blockquote>
 <p>2021-05-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/command.c (CompareImageCommand): If user has not
+<p>* magick/command.c (CompareImageCommand): If user has not
 indicated a 'matte' preference, then include the opacity channel
 in the compare if either image has a matte channel.  Addresses
 SourceForge issue #642 &quot;Result of command &quot;gm compare&quot; depends on
-order of images&quot;.</blockquote>
+order of images&quot;.</p>
+</blockquote>
 <p>2021-04-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/compare.c (IsImagesEqual): Eliminate hard
+<p>* magick/compare.c (IsImagesEqual): Eliminate hard
 &quot;ImageOpacityDiffers&quot; error when matte channel flag differs
 between the images being compared.  Instead of throwing a hard
 error, treat the opacity channel of the image as opaque if the
-matte flag is not set.</blockquote>
+matte flag is not set.</p>
+</blockquote>
 <p>2021-04-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jpeg.c: It is apparently now undefined behavior to assign
+<p>* coders/jpeg.c: It is apparently now undefined behavior to assign
 the return value from setjmp() to a variable.  Remove recently
 added code which is now doing that.  Much thanks to Chris Gravely
-for noticing this.</blockquote>
+for noticing this.</p>
+</blockquote>
 <p>2021-04-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jpeg.c (ReadJPEGImage): Error cases depending on
+<p>* coders/jpeg.c (ReadJPEGImage): Error cases depending on
 ThrowReaderException() were now leaking client data memory.
 Replace such cases with customized ThrowJPEGReaderException()
 which assures that it is freed.
 (WriteJPEGImage): Error cases depending on ThrowWriterException()
 were now client data memory.  Replace such cases with customized
-ThrowJPEGWriterException() which assures that it is freed.</blockquote>
+ThrowJPEGWriterException() which assures that it is freed.</p>
+</blockquote>
 <p>2021-04-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/jpeg.c: Restructure client data so it is allocated on the
+<p>* coders/jpeg.c: Restructure client data so it is allocated on the
 heap rather than the stack.  Happens to fix SourceForge issue 641
-&quot;SIGSEGV thrown performing longjmp in jpeg.c&quot;.</blockquote>
+&quot;SIGSEGV thrown performing longjmp in jpeg.c&quot;.</p>
+</blockquote>
 <p>2021-04-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/png.c (ReadOnePNGImage): Assure that null
@@ -445,29 +467,33 @@ deallocate a resource-limited blob.</p>
 </blockquote>
 <p>2021-04-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/svg.c (GetStyleTokens): Limit the number of style tokens.
+<p>* coders/svg.c (GetStyleTokens): Limit the number of style tokens.
 Addresses oss-fuzz 32921 &quot;graphicsmagick:coder_SVG_fuzzer:
 Out-of-memory in coder_SVG_fuzzer&quot;.
 (SVGComment): Only capture first comment rather than concatenating
 all comments.  Addresses oss-fuzz 32944
-&quot;graphicsmagick:coder_SVGZ_fuzzer: Timeout in coder_SVGZ_fuzzer&quot;.</blockquote>
+&quot;graphicsmagick:coder_SVGZ_fuzzer: Timeout in coder_SVGZ_fuzzer&quot;.</p>
+</blockquote>
 <p>2021-04-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/msl.c (MSLReference): Fix memory leak when parser node is
+<p>* coders/msl.c (MSLReference): Fix memory leak when parser node is
 null. Addresses oss-fuzz 32713 &quot;graphicsmagick:coder_MSL_fuzzer:
-Direct-leak in xmlNewReference&quot;.</blockquote>
+Direct-leak in xmlNewReference&quot;.</p>
+</blockquote>
 <p>2021-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/png.c (ReadOnePNGImage): Avoid use of null
+<p>* coders/png.c (ReadOnePNGImage): Avoid use of null
 ping_trans_color.  Fixes oss-fuzz 32666
 &quot;graphicsmagick:coder_MNG_fuzzer: Null-dereference READ in
-ReadOnePNGImage&quot;.</blockquote>
+ReadOnePNGImage&quot;.</p>
+</blockquote>
 <p>2021-03-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/msl.c (WriteMSLImage): Add OpenBlob()/CloseBlob() which
+<p>* coders/msl.c (WriteMSLImage): Add OpenBlob()/CloseBlob() which
 seems necessary to avoid memory leak in ImageToBlob().  Hopefully
 will fix oss-fuzz 32575 &quot;graphicsmagick:coder_MSL_fuzzer:
-Direct-leak in MagickMalloc&quot;.</blockquote>
+Direct-leak in MagickMalloc&quot;.</p>
+</blockquote>
 <p>2021-03-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/jp2.c (RegisterJP2Image): Report JasPer library version.</p>
@@ -490,28 +516,32 @@ problems.</p>
 </blockquote>
 <p>2021-03-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/msl.c (ProcessMSLScript): Fix oss-fuzz 32263
+<p>* coders/msl.c (ProcessMSLScript): Fix oss-fuzz 32263
 &quot;graphicsmagick:coder_MSL_fuzzer: Heap-use-after-free in
-ProcessMSLScript&quot;.</blockquote>
+ProcessMSLScript&quot;.</p>
+</blockquote>
 <p>2021-03-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* Magick++/lib/Image.cpp (Magick::Image::write): Due to the design
+<p>* Magick++/lib/Image.cpp (Magick::Image::write): Due to the design
 of ImageToBlob(), it is possible for data to be returned although
 an exception was thrown.  Deposit it in the Blob so that it will
 be freed.  May finish fixing oss-fuzz 31965
-&quot;graphicsmagick:coder_MSL_fuzzer: Indirect-leak in MagickMalloc&quot;.</blockquote>
+&quot;graphicsmagick:coder_MSL_fuzzer: Indirect-leak in MagickMalloc&quot;.</p>
+</blockquote>
 <p>2021-03-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/msl.c (ProcessMSLScript): Attempt to address leak of
+<p>* coders/msl.c (ProcessMSLScript): Attempt to address leak of
 &quot;msl_image&quot;.  May fix oss-fuzz 31965
-&quot;graphicsmagick:coder_MSL_fuzzer: Indirect-leak in MagickMalloc&quot;.</blockquote>
+&quot;graphicsmagick:coder_MSL_fuzzer: Indirect-leak in MagickMalloc&quot;.</p>
+</blockquote>
 <p>2021-03-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/dcm.c (DCM_ReadNonNativeImages): Enforce that image depth
+<p>* coders/dcm.c (DCM_ReadNonNativeImages): Enforce that image depth
 is in the supported range of 1-16.  Embedded PGX was observed to
 cause JasPer to report a component depth of 20 bits.  Fixes
 oss-fuzz issue 31373 &quot;graphicsmagick:coder_DCM_fuzzer:
-Heap-buffer-overflow in DCM_SetupRescaleMap&quot;.</blockquote>
+Heap-buffer-overflow in DCM_SetupRescaleMap&quot;.</p>
+</blockquote>
 <p>2021-03-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/svg.c (SVGError): Force xml parser input state to
@@ -545,15 +575,17 @@ liblzma as direct dependency for the modules build.</p>
 </blockquote>
 <p>2021-03-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/svg.c (ProcessStyleClassDefs): Fix non-terminal execution
+<p>* coders/svg.c (ProcessStyleClassDefs): Fix non-terminal execution
 while traversing &quot;active&quot; list based on a patch by Gregory J
 Wolfe.  Addresses oss-fuzz 31663
-&quot;graphicsmagick:coder_SVGZ_fuzzer: Timeout in coder_SVGZ_fuzzer&quot;.</blockquote>
+&quot;graphicsmagick:coder_SVGZ_fuzzer: Timeout in coder_SVGZ_fuzzer&quot;.</p>
+</blockquote>
 <p>2021-03-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/svg.c (ProcessStyleClassDefs): Corrected fix for oss-fuzz
+<p>* coders/svg.c (ProcessStyleClassDefs): Corrected fix for oss-fuzz
 31234 &quot;graphicsmagick:coder_SVG_fuzzer: Direct-leak in
-MagickMalloc&quot; based on a patch by Gregory J Wolfe.</blockquote>
+MagickMalloc&quot; based on a patch by Gregory J Wolfe.</p>
+</blockquote>
 <p>2021-02-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* configure.ac: Add tests for Jasper jp2_decode(), jpc_decode(),
@@ -585,16 +617,18 @@ Direct-leak in xmlNewReference&quot;.</p>
 </blockquote>
 <p>2021-02-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/msl.c (MSLCDataBlock): Fix leak of value from
+<p>* coders/msl.c (MSLCDataBlock): Fix leak of value from
 xmlNewCDataBlock().  Addresses oss-fuzz 31400
 &quot;graphicsmagick:coder_MSL_fuzzer: Direct-leak in
-xmlNewCDataBlock&quot;.</blockquote>
+xmlNewCDataBlock&quot;.</p>
+</blockquote>
 <p>2021-02-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/svg.c (ProcessStyleClassDefs): Fix non-terminal loop
+<p>* coders/svg.c (ProcessStyleClassDefs): Fix non-terminal loop
 caused by a self-referential list which results in huge memory
 usage.  Addresses oss-fuzz 31238 &quot;graphicsmagick:coder_SVG_fuzzer:
-Out-of-memory in coder_SVG_fuzzer&quot;.</blockquote>
+Out-of-memory in coder_SVG_fuzzer&quot;.</p>
+</blockquote>
 <p>2021-02-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/svg.c (SVGStartElement): Reject impossibly small bounds
@@ -622,14 +656,16 @@ Jasper and libxml2 into the oss-fuzz build.</p>
 </blockquote>
 <p>2021-02-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* VisualMagick/All/All.vcproj.in: Fixes by sourcer42
+<p>* VisualMagick/All/All.vcproj.in: Fixes by sourcer42
 &lt;<a class="reference external" href="mailto:sourcer42&#37;&#52;&#48;users&#46;sourceforge&#46;net">sourcer42<span>&#64;</span>users<span>&#46;</span>sourceforge<span>&#46;</span>net</a>&gt; for the problem that Visual
 Studio is not able to load the All project if the project supports
-the x64 target.</blockquote>
+the x64 target.</p>
+</blockquote>
 <p>2021-02-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* www/Hg.rst: Document new redundant Mercurial server at OSDN,
-&quot;<a class="reference external" href="https://hg.osdn.net/view/graphicsmagick/GM">https://hg.osdn.net/view/graphicsmagick/GM</a>&quot;.</blockquote>
+<p>* www/Hg.rst: Document new redundant Mercurial server at OSDN,
+&quot;<a class="reference external" href="https://hg.osdn.net/view/graphicsmagick/GM">https://hg.osdn.net/view/graphicsmagick/GM</a>&quot;.</p>
+</blockquote>
 <p>2021-02-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* Add explicit cast to float where implicit casts to float from
@@ -639,22 +675,25 @@ not directly representable as a double.</p>
 </blockquote>
 <p>2021-02-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/utility.c (TranslateTextEx): If image resolution is
+<p>* magick/utility.c (TranslateTextEx): If image resolution is
 impossibly small, then report the default resolution of 72 DPI, or
 the equivalent in centimeters if units is in
 pixels-per-centimeter.  Addresses SourceForge bug #396 &quot;dpi not
 retrived (no default value)&quot;.  I do have some misgivings about
 this solution since it is lying about the actual value.  Not all
 usages of raster images have an associated physical reality and
-thus resolution is not necessarily relevant.</blockquote>
+thus resolution is not necessarily relevant.</p>
+</blockquote>
 <p>2021-02-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/tiff.c, coders/ps2.c, coders/ps3.c: Libtiff versions
-beyond 20201219 want to use types from stdint.h.</blockquote>
+<p>* coders/tiff.c, coders/ps2.c, coders/ps3.c: Libtiff versions
+beyond 20201219 want to use types from stdint.h.</p>
+</blockquote>
 <p>2021-01-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/monitor.c (MagickMonitorActive): Need to export this
-function for use by modules.</blockquote>
+<p>* magick/monitor.c (MagickMonitorActive): Need to export this
+function for use by modules.</p>
+</blockquote>
 <p>2021-01-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* VisualMagick/bin: Remove hp2xx.exe, mpeg2dec.exe, and
@@ -671,20 +710,23 @@ the case that the expected symbol is not resolved.</p>
 </blockquote>
 <p>2021-01-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* configure.ac: Remove updates to use recommended forms of AC_INIT
+<p>* configure.ac: Remove updates to use recommended forms of AC_INIT
 and AM_INIT_AUTOMAKE.  There were too many annoying side-effects
 to daily development from these changes.  Perhaps they will be
 re-visited if solutions for Autotools regeneration issues are
-found.</blockquote>
+found.</p>
+</blockquote>
 <p>2021-01-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* magick/render.c (InverseAffineMatrix): Avoid possible division
+<p>* magick/render.c (InverseAffineMatrix): Avoid possible division
 by zero or absurdly extreme scaling in InverseAffineMatrix().
-Fixes oss-fuzz 28293 &quot;Divide-by-zero - InverseAffineMatrix&quot;.</blockquote>
+Fixes oss-fuzz 28293 &quot;Divide-by-zero - InverseAffineMatrix&quot;.</p>
+</blockquote>
 <p>2021-01-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* configure.ac (CONFIG_STATUS_DEPENDENCIES): Regenerate
-configure.ac if ChangeLog or version.sh is updated.</blockquote>
+<p>* configure.ac (CONFIG_STATUS_DEPENDENCIES): Regenerate
+configure.ac if ChangeLog or version.sh is updated.</p>
+</blockquote>
 <p>2021-01-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/pdf.c (WritePDFImage): Converting a TIF to a PDF set the
@@ -701,8 +743,9 @@ directly.</p>
 </blockquote>
 <p>2021-01-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* coders/tiff.c: Remove unintended double-charging for memory
-resource.  Remove explicit memset where possible.</blockquote>
+<p>* coders/tiff.c: Remove unintended double-charging for memory
+resource.  Remove explicit memset where possible.</p>
+</blockquote>
 <p>2021-01-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* coders/gif.c (ReadGIFImage): Fix memory leak of global_colormap
@@ -714,12 +757,13 @@ was reallocated after being attached to blob.  Fixes oss-fuzz
 </blockquote>
 <p>2021-01-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-* configure.ac: Updates to use recommended forms of AC_INIT and
+<p>* configure.ac: Updates to use recommended forms of AC_INIT and
 AM_INIT_AUTOMAKE.  This was/is painful due to how development
 snapshot versioning is handled.  The version string produced for
 the snapshot version will now contain the snapshot date.  Effort
 has been made to avoid other impacts due to AC_INIT's enforcements
-for how version information is used.</blockquote>
+for how version information is used.</p>
+</blockquote>
 <p>2021-01-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <p>* PerlMagick/Magick.xs: Remove GCC warnings which spewed out at
@@ -737,9 +781,12 @@ the new year.</p>
 </blockquote>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

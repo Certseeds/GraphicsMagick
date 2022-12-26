@@ -4,7 +4,7 @@
  * American Society of Cinematographers Color Decision List (ASC-CDL)
  * implementation.
  *
- * Original implementation by ClÈment Follet.
+ * Original implementation by CleÃÅment Follet.
  */
 
 #ifndef _MAGICK_CDL_H

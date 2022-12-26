@@ -850,8 +850,8 @@ int main( int /*argc*/, char ** argv)
       }
 
     // Test set/get
-    image.gifDisposeMethod(4);
-    if ( image.gifDisposeMethod() != 4 )
+    image.gifDisposeMethod(3);
+    if ( image.gifDisposeMethod() != 3 )
       {
         ++failures;
         cout << "Line: " << __LINE__

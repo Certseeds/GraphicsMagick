@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999-2020
+// Copyright Bob Friesenhahn, 1999-2022
 //
 // Implementation of Image
 //
@@ -25,6 +25,7 @@ using namespace std;
 #include "Magick++/ImageRef.h"
 
 #define AbsoluteValue(x)  ((x) < 0 ? -(x) : (x))
+#define ColorMapSizeConst() static_cast<const Magick::Image *>(this)->colorMapSize()
 
 // MagickDLLDeclExtern const std::string Magick::borderGeometryDefault = "6x6+0+0";
 // MagickDLLDeclExtern const std::string Magick::frameGeometryDefault  = "25x25+6+6";
@@ -2506,7 +2507,8 @@ void Magick::Image::colorMap ( const unsigned int index_,
   modifyImage();
 
   // Ensure that colormap size is large enough
-  if ( colorMapSize() < (index_+1) )
+  const unsigned int colormap_size = ColorMapSizeConst();
+  if ( colormap_size < (index_+1) )
     colorMapSize( index_ + 1 );
 
   // Set color at index in colormap
@@ -2561,14 +2563,14 @@ void Magick::Image::colorMapSize ( const unsigned int entries_ )
   // Initialize any new new colormap entries as all black
   if (imageptr->colormap)
     {
-      Color black(0,0,0);
+      Color black((Quantum) 0U,(Quantum) 0U,(Quantum) 0U);
       for( unsigned int i=imageptr->colors; i< (entries_-1); i++ )
         (imageptr->colormap)[i] = black;
 
       imageptr->colors = entries_;
     }
 }
-unsigned int Magick::Image::colorMapSize ( void )
+unsigned int Magick::Image::colorMapSize ( void ) const
 {
   const MagickLib::Image* imageptr = constImage();
 
@@ -2577,6 +2579,13 @@ unsigned int Magick::Image::colorMapSize ( void )
                             "Image does not contain a colormap");
 
   return imageptr->colors;
+}
+// Implementation is based on const colorMapSize()
+// Deprecate?
+unsigned int Magick::Image::colorMapSize ( void )
+{
+  const unsigned int colormap_size = ColorMapSizeConst();
+  return colormap_size;
 }
 
 // Image colorspace
@@ -3005,8 +3014,27 @@ void Magick::Image::gifDisposeMethod ( const unsigned int disposeMethod_ )
 }
 unsigned int Magick::Image::gifDisposeMethod ( void ) const
 {
+  unsigned int
+    ret = UndefinedDispose;
+
   // FIXME: It would be better to return an enumeration
-  return constImage()->dispose;
+  switch(constImage()->dispose)
+    {
+    case UndefinedDispose:
+      ret = 0;
+      break;
+    case NoneDispose:
+      ret = 1;
+      break;
+    case BackgroundDispose:
+      ret = 2;
+      break;
+    case PreviousDispose:
+      ret = 3;
+      break;
+    }
+
+  return ret;
 }
 
 // ICC ICM color profile (BLOB)
@@ -3943,9 +3971,10 @@ void Magick::Image::readPixels ( const Magick::QuantumType quantum_,
 
   if ( (quantum_ == IndexQuantum) || (quantum_ == IndexAlphaQuantum) )
   {
-    if (colorMapSize() <= 256)
+    const unsigned int colormap_size = ColorMapSizeConst();
+    if (colormap_size <= 256)
       quantum_size=8;
-    else if (colorMapSize() <= 65536L)
+    else if (colormap_size <= 65536L)
       quantum_size=16;
     else
       quantum_size=32;
@@ -3966,9 +3995,10 @@ void Magick::Image::writePixels ( const Magick::QuantumType quantum_,
 
   if ( (quantum_ == IndexQuantum) || (quantum_ == IndexAlphaQuantum) )
   {
-    if (colorMapSize() <= 256)
+    const unsigned int colormap_size = ColorMapSizeConst();
+    if (colormap_size <= 256)
       quantum_size=8;
-    else if (colorMapSize() <= 65536L)
+    else if (colormap_size <= 65536L)
       quantum_size=16;
     else
       quantum_size=32;

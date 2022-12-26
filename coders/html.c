@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -371,7 +371,7 @@ static unsigned int WriteHTMLImage(const ImageInfo *image_info,Image *image)
       AppendImageFormat("gif",image->filename);
       next=image->next;
       image->next=(Image *) NULL;
-      (void) strcpy(image->magick,"GIF");
+      (void) strlcpy(image->magick,"GIF",sizeof(image->magick));
       (void) WriteImage(clone_info,image);
       image->next=next;
       /*
@@ -385,7 +385,7 @@ static unsigned int WriteHTMLImage(const ImageInfo *image_info,Image *image)
             image->filename[p-filename]='\0';
             break;
           }
-      (void) strcat(image->filename,"_map.shtml");
+      (void) strlcat(image->filename,"_map.shtml",sizeof(image->filename));
     }
   /*
     Open image map.

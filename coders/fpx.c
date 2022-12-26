@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -894,9 +894,9 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
       summary_info.comments_valid=True;
       summary_info.comments.length=strlen(comment->value);
       summary_info.comments.ptr=MagickAllocateMemory(unsigned char *,
-        strlen(comment->value)+1);
+        summary_info.comments.length+1);
       if (summary_info.comments.ptr != (unsigned char *) NULL)
-        (void) strcpy((char *) summary_info.comments.ptr,comment->value);
+        (void) strlcpy((char *) summary_info.comments.ptr,comment->value,summary_info.comments.length+1);
       else
         ThrowWriterException(CoderError,UnableToSetImageComments,image);
     }

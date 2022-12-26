@@ -1,4 +1,4 @@
-.TH gm 1 "2022/03/11" "GraphicsMagick"
+.TH gm 1 "2022/05/02" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1322,6 +1322,16 @@ ratio. The valid range is 0.0 to 1.0, with 1.0 indicating lossless
 compression. If defined, this value overrides the -quality
 setting. The default quality setting of 75 results in a rate value of
 0.06641.
+
+.in 15
+.in 15
+.B "jpeg:arithmetic={true|false}"
+.in 20
+ \fR
+.in 20
+Enables or disables arithmetic encoding if the JPEG library
+supports it (default disabled).  When this is enabled, optimize-coding
+is necessarily disabled.
 
 .in 15
 .in 15

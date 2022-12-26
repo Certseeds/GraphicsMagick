@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>memory</title>
-<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>memory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-api.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,31 +35,29 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="memory">
 <h1 class="title">memory</h1>
-<h2 class="subtitle" id="memory-allocation-deallocation-functions">Memory allocation/deallocation functions</h2>
-
+<p class="subtitle" id="memory-allocation-deallocation-functions">Memory allocation/deallocation functions</p>
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#magickallocfunctions" id="id15">MagickAllocFunctions</a></li>
-<li><a class="reference internal" href="#magickmalloc" id="id16">MagickMalloc</a></li>
-<li><a class="reference internal" href="#magickmallocaligned" id="id17">MagickMallocAligned</a></li>
-<li><a class="reference internal" href="#magickmalloccleared" id="id18">MagickMallocCleared</a></li>
-<li><a class="reference internal" href="#magickclonememory" id="id19">MagickCloneMemory</a></li>
-<li><a class="reference internal" href="#magickrealloc" id="id20">MagickRealloc</a></li>
-<li><a class="reference internal" href="#magickfree" id="id21">MagickFree</a></li>
-<li><a class="reference internal" href="#magickfreealigned" id="id22">MagickFreeAligned</a></li>
+<li><p><a class="reference internal" href="#magickallocfunctions" id="id15">MagickAllocFunctions</a></p></li>
+<li><p><a class="reference internal" href="#magickmalloc" id="id16">MagickMalloc</a></p></li>
+<li><p><a class="reference internal" href="#magickmallocaligned" id="id17">MagickMallocAligned</a></p></li>
+<li><p><a class="reference internal" href="#magickmalloccleared" id="id18">MagickMallocCleared</a></p></li>
+<li><p><a class="reference internal" href="#magickclonememory" id="id19">MagickCloneMemory</a></p></li>
+<li><p><a class="reference internal" href="#magickrealloc" id="id20">MagickRealloc</a></p></li>
+<li><p><a class="reference internal" href="#magickfree" id="id21">MagickFree</a></p></li>
+<li><p><a class="reference internal" href="#magickfreealigned" id="id22">MagickFreeAligned</a></p></li>
 </ul>
 </div>
 <div class="section" id="magickallocfunctions">
 <h1><a class="toc-backref" href="#id15">MagickAllocFunctions</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void MagickAllocFunctions( MagickFreeFunc free_func, MagickMallocFunc malloc_func,
-                           MagickReallocFunc realloc_func );
-</pre>
+<pre class="literal-block">void MagickAllocFunctions( MagickFreeFunc free_func, MagickMallocFunc malloc_func,
+                           MagickReallocFunc realloc_func );</pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
@@ -65,17 +66,18 @@ free(), malloc(), and realloc() functions.  Otherwise the default system
 versions are used.  If an alternative allocator is to be used, this
 function should be invoked prior to invoking InitializeMagick().</p>
 <p>The format of the  MagickAllocFunctions method is:</p>
-<pre class="literal-block">
-void MagickAllocFunctions( MagickFreeFunc free_func, MagickMallocFunc malloc_func,
-                           MagickReallocFunc realloc_func );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">void MagickAllocFunctions( MagickFreeFunc free_func, MagickMallocFunc malloc_func,
+                           MagickReallocFunc realloc_func );</pre>
+<dl class="simple">
 <dt>free_func:</dt>
-<dd>Function to free memory.</dd>
+<dd><p>Function to free memory.</p>
+</dd>
 <dt>malloc_func:</dt>
-<dd>Function to allocate memory.</dd>
+<dd><p>Function to allocate memory.</p>
+</dd>
 <dt>realloc_func:</dt>
-<dd>Function to reallocate memory.</dd>
+<dd><p>Function to reallocate memory.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -83,9 +85,7 @@ void MagickAllocFunctions( MagickFreeFunc free_func, MagickMallocFunc malloc_fun
 <h1><a class="toc-backref" href="#id16">MagickMalloc</a></h1>
 <div class="section" id="id1">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void *MagickMalloc( const size_t size );
-</pre>
+<pre class="literal-block">void *MagickMalloc( const size_t size );</pre>
 </div>
 <div class="section" id="id2">
 <h2>Description</h2>
@@ -93,13 +93,12 @@ void *MagickMalloc( const size_t size );
 bytes suitably aligned for any use.  NULL is returned if insufficient
 memory is available or the requested size is zero.</p>
 <p>The format of the  MagickMalloc method is:</p>
-<pre class="literal-block">
-void *MagickMalloc( const size_t size );
-</pre>
+<pre class="literal-block">void *MagickMalloc( const size_t size );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>size:</dt>
-<dd>The size of the memory in bytes to allocate.</dd>
+<dd><p>The size of the memory in bytes to allocate.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -107,9 +106,7 @@ void *MagickMalloc( const size_t size );
 <h1><a class="toc-backref" href="#id17">MagickMallocAligned</a></h1>
 <div class="section" id="id3">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void *MagickMallocAligned( size_t alignment, const size_t size );
-</pre>
+<pre class="literal-block">void *MagickMallocAligned( size_t alignment, const size_t size );</pre>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
@@ -128,16 +125,16 @@ which benefit from specific alignment.</p>
 <p>The allocated memory should only be freed using MagickFreeAligned()
 and may not be reallocated.</p>
 <p>The format of the  MagickMallocAligned method is:</p>
-<pre class="literal-block">
-void *MagickMallocAligned( size_t alignment, const size_t size );
-</pre>
+<pre class="literal-block">void *MagickMallocAligned( size_t alignment, const size_t size );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>alignment:</dt>
-<dd>The alignment of the base and size of the allocated
-memory.</dd>
+<dd><p>The alignment of the base and size of the allocated
+memory.</p>
+</dd>
 <dt>size:</dt>
-<dd>The size of the memory in bytes to allocate.</dd>
+<dd><p>The size of the memory in bytes to allocate.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -145,9 +142,7 @@ memory.</dd>
 <h1><a class="toc-backref" href="#id18">MagickMallocCleared</a></h1>
 <div class="section" id="id5">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void *MagickMallocCleared( const size_t size );
-</pre>
+<pre class="literal-block">void *MagickMallocCleared( const size_t size );</pre>
 </div>
 <div class="section" id="id6">
 <h2>Description</h2>
@@ -156,13 +151,12 @@ size bytes suitably aligned for any use.  NULL is returned if insufficient
 memory is available or the requested size is zero.  This version differs
 from MagickMalloc in that the allocated bytes are cleared to zero.</p>
 <p>The format of the  MagickMallocCleared method is:</p>
-<pre class="literal-block">
-void *MagickMallocCleared( const size_t size );
-</pre>
+<pre class="literal-block">void *MagickMallocCleared( const size_t size );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>size:</dt>
-<dd>The size of the memory in bytes to allocate.</dd>
+<dd><p>The size of the memory in bytes to allocate.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -170,9 +164,7 @@ void *MagickMallocCleared( const size_t size );
 <h1><a class="toc-backref" href="#id19">MagickCloneMemory</a></h1>
 <div class="section" id="id7">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void *MagickCloneMemory( void *destination, const void *source, const size_t size );
-</pre>
+<pre class="literal-block">void *MagickCloneMemory( void *destination, const void *source, const size_t size );</pre>
 </div>
 <div class="section" id="id8">
 <h2>Description</h2>
@@ -180,12 +172,11 @@ void *MagickCloneMemory( void *destination, const void *source, const size_t siz
 destination.  Copying between objects that overlap will take place
 correctly.  It returns destination.</p>
 <p>The format of the MagickCloneMemory method is:</p>
-<pre class="literal-block">
-void *MagickCloneMemory( void *destination, const void *source, const size_t size );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">void *MagickCloneMemory( void *destination, const void *source, const size_t size );</pre>
+<dl class="simple">
 <dt>size:</dt>
-<dd>The size of the memory in bytes to allocate.</dd>
+<dd><p>The size of the memory in bytes to allocate.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -193,9 +184,7 @@ void *MagickCloneMemory( void *destination, const void *source, const size_t siz
 <h1><a class="toc-backref" href="#id20">MagickRealloc</a></h1>
 <div class="section" id="id9">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void *MagickRealloc( void *memory, const size_t size );
-</pre>
+<pre class="literal-block">void *MagickRealloc( void *memory, const size_t size );</pre>
 </div>
 <div class="section" id="id10">
 <h2>Description</h2>
@@ -207,15 +196,15 @@ the existing memory is freed, and a NULL value is returned.</p>
 <p>Note that the behavior of this function is similar to BSD reallocf(3),
 see <a class="reference external" href="https://www.freebsd.org/cgi/man.cgi?query=reallocf">https://www.freebsd.org/cgi/man.cgi?query=reallocf</a></p>
 <p>The format of the MagickRealloc method is:</p>
-<pre class="literal-block">
-void *MagickRealloc( void *memory, const size_t size );
-</pre>
+<pre class="literal-block">void *MagickRealloc( void *memory, const size_t size );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>memory:</dt>
-<dd>A pointer to a memory allocation.</dd>
+<dd><p>A pointer to a memory allocation.</p>
+</dd>
 <dt>size:</dt>
-<dd>The new size of the allocated memory.</dd>
+<dd><p>The new size of the allocated memory.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -223,9 +212,7 @@ void *MagickRealloc( void *memory, const size_t size );
 <h1><a class="toc-backref" href="#id21">MagickFree</a></h1>
 <div class="section" id="id11">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void MagickFree( void *memory );
-</pre>
+<pre class="literal-block">void MagickFree( void *memory );</pre>
 </div>
 <div class="section" id="id12">
 <h2>Description</h2>
@@ -234,13 +221,12 @@ MagickMalloc() or other other other allocators directly compatible
 with the currently defined memory allocator (which defaults to the
 system malloc()). For convenience, a NULL argument is ignored.</p>
 <p>The format of the MagickFree method is:</p>
-<pre class="literal-block">
-void MagickFree( void *memory );
-</pre>
+<pre class="literal-block">void MagickFree( void *memory );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>memory:</dt>
-<dd>A pointer to a block of memory to free for reuse.</dd>
+<dd><p>A pointer to a block of memory to free for reuse.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -248,9 +234,7 @@ void MagickFree( void *memory );
 <h1><a class="toc-backref" href="#id22">MagickFreeAligned</a></h1>
 <div class="section" id="id13">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void MagickFreeAligned( void *memory );
-</pre>
+<pre class="literal-block">void MagickFreeAligned( void *memory );</pre>
 </div>
 <div class="section" id="id14">
 <h2>Description</h2>
@@ -260,21 +244,23 @@ ignored.</p>
 <p>This function exists in case the pointer allocated by
 MagickMallocAligned() can not be used directly with MagickFree().</p>
 <p>The format of the MagickFreeAligned method is:</p>
-<pre class="literal-block">
-void MagickFreeAligned( void *memory );
-</pre>
+<pre class="literal-block">void MagickFreeAligned( void *memory );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>memory:</dt>
-<dd>A pointer to a block of memory to free for reuse.</dd>
+<dd><p>A pointer to a block of memory to free for reuse.</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

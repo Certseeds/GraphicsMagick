@@ -67,6 +67,7 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <math.h>
+#include <inttypes.h>
 
 /******************************************************************************\
 *
@@ -99,6 +100,8 @@ typedef struct {
 	int loop;
 
 	int verbose;
+
+	size_t max_mem;
 
 } cmdopts_t;
 
@@ -190,6 +193,9 @@ jas_opt_t opts[] = {
 	{'w', "wait", JAS_OPT_HASARG},
 	{'l', "loop", 0},
 	{'t', "title", JAS_OPT_HASARG},
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	{'m', "memory-limit", JAS_OPT_HASARG},
+#endif
 	{-1, 0, 0}
 };
 
@@ -234,6 +240,9 @@ int main(int argc, char **argv)
 	cmdopts.tmout = 0;
 	cmdopts.loop = 0;
 	cmdopts.verbose = 0;
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	cmdopts.max_mem = JAS_DEFAULT_MAX_MEM_USAGE;
+#endif
 
 	while ((c = jas_getopt(argc, argv, opts)) != EOF) {
 		switch (c) {
@@ -248,6 +257,9 @@ int main(int argc, char **argv)
 			break;
 		case 'v':
 			cmdopts.verbose = 1;
+			break;
+		case 'm':
+			cmdopts.max_mem = strtoull(jas_optarg, 0, 10);
 			break;
 		case 'V':
 			printf("%s\n", JAS_VERSION);
@@ -272,6 +284,10 @@ int main(int argc, char **argv)
 		cmdopts.filenames = &null;
 		cmdopts.numfiles = 1;
 	}
+
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	jas_set_max_mem_usage(cmdopts.max_mem);
+#endif
 
 	streamin = jas_stream_fdopen(0, "rb");
 
@@ -361,7 +377,7 @@ static void displayfunc()
 
 	assert(regwidth > 0);
 	assert(regheight > 0);
-	assert(abs(((double) regheight / regwidth) - ((double) gs.viewportheight / gs.viewportwidth)) < 1e-5);
+	assert(JAS_ABS(((double) regheight / regwidth) - ((double) gs.viewportheight / gs.viewportwidth)) < 1e-5);
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, sizeof(GLshort));
@@ -763,7 +779,8 @@ static int loadimage()
 
 	if (cmdopts.verbose) {
 		fprintf(stderr, "num of components %d\n", jas_image_numcmpts(gs.image));
-		fprintf(stderr, "dimensions %d %d\n", jas_image_width(gs.image), jas_image_height(gs.image));
+		fprintf(stderr, "dimensions %"PRIiFAST32" %"PRIiFAST32"\n",
+		  jas_image_width(gs.image), jas_image_height(gs.image));
 	}
 
 	gs.viewportwidth = vw;
@@ -829,11 +846,13 @@ static void pixmap_clear(pixmap_t *p)
 
 static int pixmap_resize(pixmap_t *p, int w, int h)
 {
-	p->width = w;
-	p->height = h;
-	if (!(p->data = realloc(p->data, w * h * 4 * sizeof(GLshort)))) {
+	GLshort* buf;
+	if (!(buf = realloc(p->data, w * h * 4 * sizeof(GLshort)))) {
 		return -1;
 	}
+	p->width = w;
+	p->height = h;
+	p->data = buf;
 	return 0;
 }
 

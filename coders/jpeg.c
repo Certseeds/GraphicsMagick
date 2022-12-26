@@ -211,13 +211,16 @@ static MagickClientData *FreeMagickClientData(MagickClientData *client_data)
     i;
 
   /* Free profiles data */
-  for (i=0 ; i < ArraySize(client_data->profiles); i++)
+  if (client_data != (MagickClientData *) NULL)
     {
-      MagickFreeMemory(client_data->profiles[i].name);
-      MagickFreeResourceLimitedMemory(client_data->profiles[i].info);
-    }
+      for (i=0 ; i < ArraySize(client_data->profiles); i++)
+        {
+          MagickFreeMemory(client_data->profiles[i].name);
+          MagickFreeResourceLimitedMemory(client_data->profiles[i].info);
+        }
 
-  MagickFreeMemory(client_data);
+      MagickFreeMemory(client_data);
+    }
   return client_data;
 }
 
@@ -1529,8 +1532,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
   jpeg_calc_output_dimensions(&jpeg_info);
   image->columns=jpeg_info.output_width;
   image->rows=jpeg_info.output_height;
-  image->storage_class = jpeg_info.output_components == 1 ? PseudoClass : DirectClass;
-  image->depth=Min(jpeg_info.data_precision,QuantumDepth);
+  image->depth=Min(jpeg_info.data_precision,Min(16,QuantumDepth));
 
   if (image->logging)
     {
@@ -1594,13 +1596,20 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
                             "Sampling Factors: %s", attribute);
   }
 
-  image->depth=Min(jpeg_info.data_precision,QuantumDepth);
+  image->depth=Min(jpeg_info.data_precision,Min(16,QuantumDepth));
   if (jpeg_info.out_color_space == JCS_GRAYSCALE)
-    if (!AllocateImageColormap(image,1 << image->depth))
-      {
-        jpeg_destroy_decompress(&jpeg_info);
-        ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-      }
+    {
+      /*
+        Build colormap if we can
+      */
+      unsigned long max_index = MaxValueGivenBits(image->depth);
+      if (max_index <= MaxMap)
+        if (!AllocateImageColormap(image,max_index+1LU))
+          {
+            jpeg_destroy_decompress(&jpeg_info);
+            ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+          }
+    }
 
   /*
     Store profiles in image.
@@ -1755,12 +1764,40 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
 
       if (jpeg_info.output_components == 1)
         {
-          for (x=0; x < (long) image->columns; x++)
+          if (image->storage_class == PseudoClass)
             {
-              index=(IndexPacket) (GETJSAMPLE(*p++));
-              VerifyColormapIndex(image,index);
-              indexes[x]=index;
-              *q++=image->colormap[index];
+              for (x=0; x < (long) image->columns; x++)
+                {
+                  index=(IndexPacket) (GETJSAMPLE(*p++));
+                  VerifyColormapIndex(image,index);
+                  indexes[x]=index;
+                  *q++=image->colormap[index];
+                }
+            }
+          else
+            {
+              if (jpeg_info.data_precision > 8)
+                {
+                  unsigned int
+                    scale_short;
+
+                  scale_short=65535U/MaxValueGivenBits(jpeg_info.data_precision);
+                  for (x=0; x < (long) image->columns; x++)
+                    {
+                      q->red=q->green=q->blue=ScaleShortToQuantum(scale_short*GETJSAMPLE(*p++));
+                      q->opacity=OpaqueOpacity;
+                      q++;
+                    }
+                }
+              else
+                {
+                  for (x=0; x < (long) image->columns; x++)
+                    {
+                      q->red=q->green=q->blue=ScaleCharToQuantum(GETJSAMPLE(*p++));
+                      q->opacity=OpaqueOpacity;
+                      q++;
+                    }
+                }
             }
         }
       else if ((jpeg_info.output_components == 3) ||
@@ -2128,19 +2165,21 @@ static void WriteICCProfile(j_compress_ptr jpeg_info,
       *profile;
 
     size_t
+      alloc_length,
       length=0;
 
 
     length=Min(profile_length-i,65519);
-    profile=MagickAllocateResourceLimitedMemory(unsigned char *,length+14);
+    alloc_length=length+14;
+    profile=MagickAllocateResourceLimitedMemory(unsigned char *,alloc_length);
     if (profile == (unsigned char *) NULL)
       break;
-    (void) strcpy((char *) profile,"ICC_PROFILE");
+    (void) strlcpy((char *) profile,"ICC_PROFILE",alloc_length);
     profile[12]=(unsigned char) ((i/65519)+1);
     profile[13]=(unsigned char) ((profile_length/65519)+1);
     for (j=0; j < (long) length; j++)
       profile[j+14]=color_profile[i+j];
-    jpeg_write_marker(jpeg_info,ICC_MARKER,profile,(unsigned int) length+14);
+    jpeg_write_marker(jpeg_info,ICC_MARKER,profile,(unsigned int) alloc_length);
     MagickFreeResourceLimitedMemory(profile);
   }
 }
@@ -2715,7 +2754,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   jpeg_set_defaults(&jpeg_info);
 
   /*
-    Determine bit depth.
+    Determine bit depth (valid range in 8-16).
   */
   {
     int
@@ -2792,33 +2831,49 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   const char
     *value;
 
-  huffman_memory=0;
-  if ((value=AccessDefinition(image_info,"jpeg","optimize-coding")))
+  huffman_memory = 0;
+
+#ifdef C_ARITH_CODING_SUPPORTED
+  /*
+    Allow the user to turn on/off arithmetic coder.
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","arithmetic-coding")))
     {
       if (LocaleCompare(value,"FALSE") == 0)
-        jpeg_info.optimize_coding=MagickFalse;
+        jpeg_info.arith_code = False;
       else
-        jpeg_info.optimize_coding=MagickTrue;
+        jpeg_info.arith_code = True;
     }
-  else
-    {
+  if (!jpeg_info.arith_code)     /* jpeg_info.optimize_coding must not be set to enable arithmetic. */
+#endif
+  {
+    if ((value=AccessDefinition(image_info,"jpeg","optimize-coding")))
+      {
+        if (LocaleCompare(value,"FALSE") == 0)
+          jpeg_info.optimize_coding=MagickFalse;
+        else
+          jpeg_info.optimize_coding=MagickTrue;
+      }
+    else
+      {
       /*
         Huffman optimization requires that the whole image be buffered in
         memory.  Since this is such a large consumer, obtain a memory
         resource for the memory to be consumed.  If the memory resource
         fails to be acquired, then don't enable huffman optimization.
       */
-      huffman_memory=(magick_int64_t) jpeg_info.input_components*
-        image->columns*image->rows*sizeof(JSAMPLE);
-      jpeg_info.optimize_coding=AcquireMagickResource(MemoryResource,
+        huffman_memory=(magick_int64_t) jpeg_info.input_components*
+          image->columns*image->rows*sizeof(JSAMPLE);
+        jpeg_info.optimize_coding=AcquireMagickResource(MemoryResource,
                                                       huffman_memory);
-    }
-  if (!jpeg_info.optimize_coding)
-    huffman_memory=0;
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+      }
+    if (!jpeg_info.optimize_coding)
+      huffman_memory=0;
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Huffman optimization is %s",
                           (jpeg_info.optimize_coding ? "enabled" : "disabled"));
+   }
  }
 
 #if (JPEG_LIB_VERSION >= 61) && defined(C_PROGRESSIVE_SUPPORTED)
@@ -3050,7 +3105,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
       ThrowJPEGWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   scanline[0]=(JSAMPROW) jpeg_pixels;
-  if (jpeg_info.data_precision > 8)
+  if (jpeg_info.data_precision > 8 && jpeg_info.data_precision <= 16)
     {
       unsigned int
         scale_short;

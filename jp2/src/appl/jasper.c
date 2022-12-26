@@ -75,8 +75,26 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
+//#include <stdint.h>
 
 #include <jasper/jasper.h>
+#include <jasper/jas_debug.h>
+
+
+#ifdef _DLL
+ #ifdef _MSC_VER			/* Fix provided by J.Fojtik */
+ #if _MSC_VER < 1800
+  unsigned long long __cdecl strtoull (
+    const char *nptr,
+    char **endptr,
+    int ibase
+    )
+{
+    return _strtoui64(nptr, endptr, ibase);
+}
+ #endif
+#endif
+#endif
 
 /******************************************************************************\
 *
@@ -119,6 +137,8 @@ typedef struct {
 	int_fast32_t cmptno;
 
 	int srgb;
+
+	size_t max_mem;
 
 } cmdopts_t;
 
@@ -180,6 +200,9 @@ int main(int argc, char **argv)
 	}
 
 	jas_setdbglevel(cmdopts->debug);
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	jas_set_max_mem_usage(cmdopts->max_mem);
+#endif
 
 	if (cmdopts->verbose) {
 		cmdinfo();
@@ -312,7 +335,8 @@ cmdopts_t *cmdopts_parse(int argc, char **argv)
 		CMDOPT_VERSION,
 		CMDOPT_DEBUG,
 		CMDOPT_CMPTNO,
-		CMDOPT_SRGB
+		CMDOPT_SRGB,
+		CMDOPT_MAXMEM
 	} cmdoptid_t;
 
 	static jas_opt_t cmdoptions[] = {
@@ -335,6 +359,9 @@ cmdopts_t *cmdopts_parse(int argc, char **argv)
 		{CMDOPT_CMPTNO, "cmptno", JAS_OPT_HASARG},
 		{CMDOPT_SRGB, "force-srgb", 0},
 		{CMDOPT_SRGB, "S", 0},
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+		{CMDOPT_MAXMEM, "memory-limit", JAS_OPT_HASARG},
+#endif
 		{-1, 0, 0}
 	};
 
@@ -359,6 +386,9 @@ cmdopts_t *cmdopts_parse(int argc, char **argv)
 	cmdopts->cmptno = -1;
 	cmdopts->debug = 0;
 	cmdopts->srgb = 0;
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	cmdopts->max_mem = JAS_DEFAULT_MAX_MEM_USAGE;
+#endif
 
 	while ((c = jas_getopt(argc, argv, cmdoptions)) != EOF) {
 		switch (c) {
@@ -407,6 +437,13 @@ cmdopts_t *cmdopts_parse(int argc, char **argv)
 		case CMDOPT_SRGB:
 			cmdopts->srgb = 1;
 			break;
+		case CMDOPT_MAXMEM:
+#if defined(_MSC_VER) && _MSC_VER < 1900
+			cmdopts->max_mem = strtoul(jas_optarg, 0, 10);
+#else
+			cmdopts->max_mem = strtoull(jas_optarg, 0, 10);
+#endif
+			break;
 		default:
 			badusage();
 			break;
@@ -452,7 +489,7 @@ int addopt(char *optstr, int maxlen, char *s)
 
 	n = strlen(optstr);
 	m = n + strlen(s) + 1;
-	if (m > (size_t) maxlen) {
+	if (m > JAS_CAST(size_t, maxlen)) {
 		return 1;
 	}
 	if (n > 0) {

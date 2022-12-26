@@ -78,14 +78,23 @@
 #define	longlong	long long
 #undef ulonglong
 #define	ulonglong	unsigned long long
-/*#define	ssize_t		int*/
+#ifdef _WIN64
+ #define	ssize_t		long long
+#else
+ #define	ssize_t		int
+#endif
 
-#define	HAVE_FCNTL_H		1
-#define	HAVE_LIMITS_H		1
-#define	HAVE_IO_H		1
-#define	HAVE_WINDOWS_H		1
-#define	HAVE_SYS_TYPES_H	1
-#define	HAVE_STDLIB_H		1
-#define	HAVE_STDDEF_H		1
+#define	JAS_HAVE_FCNTL_H		1
+#define	JAS_HAVE_LIMITS_H		1
+#define	JAS_HAVE_IO_H		1
+#define	JAS_HAVE_WINDOWS_H		1
+#define	JAS_HAVE_SYS_TYPES_H	1
+#define	JAS_HAVE_STDLIB_H		1
+#define	JAS_HAVE_STDDEF_H		1
+
+#ifndef __cplusplus
+#undef inline
+#define inline __inline
+#endif
 
 #endif

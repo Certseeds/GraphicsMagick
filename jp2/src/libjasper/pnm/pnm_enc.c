@@ -97,7 +97,7 @@ typedef enum {
 	OPT_TEXT
 } pnm_optid_t;
 
-jas_taginfo_t pnm_opttab[] = {
+static jas_taginfo_t pnm_opttab[] = {
 	{OPT_TEXT, "text"},
 	{-1, 0}
 };
@@ -106,7 +106,7 @@ jas_taginfo_t pnm_opttab[] = {
 * Local function prototypes.
 \******************************************************************************/
 
-static int pnm_parseencopts(char *optstr, pnm_encopts_t *encopts);
+static int pnm_parseencopts(const char *optstr, pnm_encopts_t *encopts);
 static int pnm_puthdr(jas_stream_t *out, pnm_hdr_t *hdr);
 static int pnm_putdata(jas_stream_t *out, pnm_hdr_t *hdr, jas_image_t *image, int numcmpts, int *cmpts);
 
@@ -118,7 +118,7 @@ static int pnm_putuint16(jas_stream_t *out, uint_fast16_t val);
 * Save function.
 \******************************************************************************/
 
-int pnm_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
+int pnm_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 {
 	int width;
 	int height;
@@ -129,14 +129,19 @@ int pnm_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 	int sgnd;
 	pnm_enc_t encbuf;
 	pnm_enc_t *enc = &encbuf;
+	int clrspc_fam;
+
+	JAS_DBGLOG(10, ("pnm_encode(%p, %p, \"%s\")\n", image, out,
+	  optstr ? optstr : ""));
 
 	/* Parse the encoder option string. */
-	if (pnm_parseencopts(optstr, &encopts)) {
+	if (pnm_parseencopts(optstr ? optstr : "", &encopts)) {
 		jas_eprintf("invalid PNM encoder options specified\n");
 		return -1;
 	}
 
-	switch (jas_clrspc_fam(jas_image_clrspc(image))) {
+	clrspc_fam = jas_clrspc_fam(jas_image_clrspc(image));
+	switch (clrspc_fam) {
 	case JAS_CLRSPC_FAM_RGB:
 		if (jas_image_clrspc(image) != JAS_CLRSPC_SRGB)
 			jas_eprintf("warning: inaccurate color\n");
@@ -162,7 +167,7 @@ int pnm_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 		}
 		break;
 	default:
-		jas_eprintf("error: unsupported color space\n");
+		jas_eprintf("error: unsupported color space %d\n", clrspc_fam);
 		return -1;
 		break;
 	}
@@ -237,7 +242,7 @@ int pnm_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 \******************************************************************************/
 
 /* Parse the encoder options string. */
-static int pnm_parseencopts(char *optstr, pnm_encopts_t *encopts)
+static int pnm_parseencopts(const char *optstr, pnm_encopts_t *encopts)
 {
 	jas_tvparser_t *tvp;
 	int ret;

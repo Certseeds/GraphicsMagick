@@ -99,7 +99,7 @@ typedef struct {
 	uint_fast32_t len;
 
 	/* The data. */
-	uchar *data;
+	jas_uchar *data;
 
 } jpc_ppxstabent_t;
 
@@ -659,6 +659,8 @@ typedef struct {
 	/* This is required by the tier-2 decoder. */
 	jpc_cstate_t *cstate;
 
+	size_t max_samples;
+
 } jpc_dec_t;
 
 /* Decoder options. */
@@ -673,6 +675,8 @@ typedef struct {
 
 	/* The maximum number of packets to decode. */
 	int maxpkts;
+
+	size_t max_samples;
 
 } jpc_dec_importopts_t;
 

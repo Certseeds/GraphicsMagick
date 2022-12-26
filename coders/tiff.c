@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -87,7 +87,7 @@
 #  define HasBigTIFF 1
 #endif /* defined(TIFF_BIGTIFF_VERSION) */
 
-#if defined(HAVE_STDINT_H) && (TIFFLIB_VERSION >= 20201219)
+#if (TIFFLIB_VERSION >= 20201219)
 #  undef uint16
 #  define uint16 uint16_t
 #  undef uint32
@@ -1883,7 +1883,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
-  logging=IsEventLogging();
+  logging=IsEventLogged(CoderEvent);
   image=AllocateImage(image_info);
   more_frames=MagickFalse;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
@@ -2206,6 +2206,12 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       image->columns=width;
       image->rows=height;
       image->depth=bits_per_sample;
+
+      if (image->scene != 0)
+        status=MagickMonitorFormatted(image->scene-1,image->scene,
+                                      &image->exception,
+                                      LoadImageText,image->filename,
+                                      image->columns,image->rows);
 
       /*
         Obtain information about any extra samples.
@@ -3670,10 +3676,6 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   return((Image *) NULL);
                 }
               image=SyncNextImageInList(image);
-              status=MagickMonitorFormatted(image->scene-1,image->scene,
-                                            &image->exception,
-                                            LoadImageText,image->filename,
-                                            image->columns,image->rows);
             }
         }
 
@@ -4365,7 +4367,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   image_list_length=GetImageListLength(image);
-  logging=IsEventLogging();
+  logging=IsEventLogged(CoderEvent);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);

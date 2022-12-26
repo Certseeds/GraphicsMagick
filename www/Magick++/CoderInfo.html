@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>Magick::CoderInfo Class</title>
-<link rel="stylesheet" href="../docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>Magick::CoderInfo Class</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,9 +35,9 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="magick-coderinfo-class">
 <h1 class="title">Magick::CoderInfo Class</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
@@ -45,8 +48,7 @@ string). It may be used to provide support for a specific named format
 container when format support is queried using the coderInfoList()
 templated function.</p>
 <p>The following code fragment illustrates how CoderInfo may be used:</p>
-<pre class="literal-block">
-CoderInfo info(&quot;GIF&quot;);
+<pre class="literal-block">CoderInfo info(&quot;GIF&quot;);
 cout &lt;&lt; info-&gt;name() &lt;&lt; &quot;: (&quot; &lt;&lt; info-&gt;description() &lt;&lt; &quot;) : &quot;;
 cout &lt;&lt; &quot;Readable = &quot;;
 if ( info-&gt;isReadable() )
@@ -65,11 +67,9 @@ if ( info-&gt;isMultiframe() )
   cout &lt;&lt; &quot;true&quot;;
 else
   cout &lt;&lt; &quot;false&quot;;
-cout &lt;&lt; endl;
-</pre>
+cout &lt;&lt; endl;</pre>
 <p>The definition of class 'Magick::CoderInfo' is:</p>
-<pre class="literal-block">
-namespace Magick
+<pre class="literal-block">namespace Magick
 {
   class MagickDLLDecl CoderInfo
   {
@@ -112,14 +112,16 @@ namespace Magick
     CoderInfo&amp; operator= (const CoderInfo &amp;coder_ );
 
   };
-}
-</pre>
+}</pre>
 <p>Copyright © Bob Friesenhahn 1999 - 2022</p>
 </div>
+
 
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

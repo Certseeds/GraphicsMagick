@@ -192,16 +192,17 @@ sub testCompositeCompare {
 }
 
 #
-# Test reading a file in which several signatures are possible,
-# depending on available image depth.
+# Test reading a file (and blob) in which several signatures are
+# possible, depending on available image depth.
 #
-# Usage: testRead( read filename, expected ref_8 [, expected ref_16] [, expected ref_32] );
+# Usage: testRead( read filename, read options, expected ref_8 [, expected ref_16] [, expected ref_32] );
 #
 sub testRead {
-  my( $infile, $ref_8, $ref_16, $ref_32 ) =  @_;
+  my( $infile, $read_options, $ref_8, $ref_16, $ref_32 ) =  @_;
 
-  my($image,$magick,$success,$depth,$ref_signature);
+  my($image,$magick,$success,$depth,$ref_signature,$errorinfo,$failure,$status);
 
+  $errorinfo='';
   $failure=0;
 
   if ( !defined( $ref_16 ) )
@@ -238,6 +239,17 @@ sub testRead {
     print( "  testing reading from file \"", $infile, "\" ...\n");
     $image=Graphics::Magick->new;
     $image->Set(size=>'512x512');
+
+    if ( "$read_options" ne "" ) {
+        eval "\$status=\$image->Set($read_options);";
+        if ("$status")
+        {
+            $errorinfo = "Set($read_options): $status";
+            warn("$errorinfo");
+            goto READ_RUNTIME_ERROR;
+        }
+    }
+
     $status=$image->ReadImage("$infile");
     if( "$status" && !($status =~ /Exception ((315)|(350))/)) {
       print "ReadImage $infile: $status\n";
@@ -278,6 +290,17 @@ sub testRead {
         close( FILE );
         if( defined( $blob ) ) {
           $image=Graphics::Magick->new(magick=>$magick);
+          $image->Set(size=>'512x512');
+
+          if ( defined( $read_options ) && "$read_options" ne "" ) {
+              eval "\$status=\$image->Set($read_options);";
+              if ("$status")
+              {
+                  $errorinfo = "Set($read_options): $status";
+                  warn("$errorinfo");
+                  goto READ_RUNTIME_ERROR;
+              }
+          }
           $status=$image->BlobToImage( $blob );
           undef $blob;
           if( "$status" && !($status =~ /Exception ((315)|(350))/)) {
@@ -303,6 +326,8 @@ sub testRead {
     undef $image;
   }
 
+ READ_RUNTIME_ERROR:
+
   #
   # Display test status
   #
@@ -316,6 +341,7 @@ sub testRead {
 
 #
 # Test reading a file, and compare with a reference file
+# This one does not test reading from an in-memory blob
 #
 sub testReadCompare {
   my( $srcimage_name,$refimage_name, $read_options,
@@ -436,7 +462,7 @@ sub testReadCompare {
 # Test reading a file which requires a file size to read (GRAY, RGB, CMYK)
 # or supports multiple resolutions (JBIG, JPEG, PCD)
 #
-# Usage: testRead( read filename, size, depth, expected ref_8 [, expected ref_16] );
+# Usage: testReadSized( read filename, size, depth, expected ref_8 [, expected ref_16] );
 #
 sub testReadSized {
   my( $infile, $size, $depth, $ref_8, $ref_16, $ref_32 ) =  @_;
@@ -735,7 +761,7 @@ sub testReadWriteCompare {
 #
 # Test writing a file by first reading a source image, writing to a
 # new image, and reading the written image.  Depends on detecting
-# reported errors by ImageMagick
+# reported errors by GraphicsMagick
 #
 # Usage: testReadWrite( read filename, write filename, write options);
 #

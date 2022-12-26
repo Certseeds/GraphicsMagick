@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>GraphicsMagick Wand C API</title>
-<link rel="stylesheet" href="../docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>GraphicsMagick Wand C API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,9 +35,9 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="graphicsmagick-wand-c-api">
 <h1 class="title">GraphicsMagick Wand C API</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
@@ -48,17 +51,16 @@ in sync with the current ImageMagick version.</p>
 documentation, please reference the <a class="reference external" href="../api/types.html">types</a> documentation as required:</p>
 <blockquote>
 <ul class="simple">
-<li><a class="reference external" href="drawing_wand.html">Drawing</a>: Wand vector drawing interfaces.</li>
-<li><a class="reference external" href="magick_wand.html">Magick</a>: Wand image processing interfaces</li>
-<li><a class="reference external" href="pixel_wand.html">Pixel</a>: Wand pixel access/update interfaces</li>
+<li><p><a class="reference external" href="drawing_wand.html">Drawing</a>: Wand vector drawing interfaces.</p></li>
+<li><p><a class="reference external" href="magick_wand.html">Magick</a>: Wand image processing interfaces</p></li>
+<li><p><a class="reference external" href="pixel_wand.html">Pixel</a>: Wand pixel access/update interfaces</p></li>
 </ul>
 </blockquote>
 <p>The following is a simple example program which (assuming the program
 name is <cite>rotate</cite>) is executed similar to <cite>rotate infile outfile</cite>.  It
 reads from file <cite>infile</cite>, rotates the image 30 degrees using a black
 background, and writes the result to file <cite>outfile</cite>:</p>
-<pre class="literal-block">
-#include &lt;stdlib.h&gt;
+<pre class="literal-block">#include &lt;stdlib.h&gt;
 #include &lt;stdio.h&gt;
 #include &lt;string.h&gt;
 #include &lt;wand/magick_wand.h&gt;
@@ -124,20 +126,20 @@ int main(int argc,char **argv)
   DestroyMagick();
 
   return (status == MagickPass ? 0 : 1);
-}
-</pre>
+}</pre>
 <p>To compile on Unix, the command looks something like this:</p>
-<pre class="literal-block">
-gcc -o demo demo.c -O `GraphicsMagickWand-config --cppflags --ldflags --libs`
-</pre>
+<pre class="literal-block">gcc -o demo demo.c -O `GraphicsMagickWand-config --cppflags --ldflags --libs`</pre>
 <p>The GraphicsMagickWand-config script reproduces the options which were used to
 compile the GraphicsMagick wand library. Using compatible options ensures that
 your program will compile and run.</p>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

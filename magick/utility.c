@@ -863,8 +863,8 @@ MagickExport void ExpandFilename(char *filename)
           (void) strncpy(expanded_filename,entry->pw_dir,MaxTextExtent-1);
           if (p != (char *) NULL)
             {
-              (void) strcat(expanded_filename,"/");
-              (void) strlcat(expanded_filename,p+1,MaxTextExtent);
+              (void) strlcat(expanded_filename,"/",sizeof(expanded_filename));
+              (void) strlcat(expanded_filename,p+1,sizeof(expanded_filename));
             }
         }
 #  if defined(HAVE_GETPWNAM_R)
@@ -1216,12 +1216,12 @@ MagickExport void FormatSize(const magick_int64_t size,char *format)
     {
     default: break;
     case 0: break;
-    case 1: (void) strcat(format,"Ki"); break; /* kilo, 10^3 */
-    case 2: (void) strcat(format,"Mi"); break; /* mega, 10^6 */
-    case 3: (void) strcat(format,"Gi"); break; /* giga, 10^9 */
-    case 4: (void) strcat(format,"Ti"); break; /* tera, 10^12 */
-    case 5: (void) strcat(format,"Pi"); break; /* peta, 10^15 */
-    case 6: (void) strcat(format,"Ei"); break; /* exa,  10^18 */
+    case 1: (void) strlcat(format,"Ki",MaxTextExtent); break; /* kilo, 10^3 */
+    case 2: (void) strlcat(format,"Mi",MaxTextExtent); break; /* mega, 10^6 */
+    case 3: (void) strlcat(format,"Gi",MaxTextExtent); break; /* giga, 10^9 */
+    case 4: (void) strlcat(format,"Ti",MaxTextExtent); break; /* tera, 10^12 */
+    case 5: (void) strlcat(format,"Pi",MaxTextExtent); break; /* peta, 10^15 */
+    case 6: (void) strlcat(format,"Ei",MaxTextExtent); break; /* exa,  10^18 */
     }
 }
 
@@ -2343,7 +2343,7 @@ MagickExport char *GetPageGeometry(const char *page_geometry)
         flags=GetGeometry(page,&geometry.x,&geometry.y,&geometry.width,
           &geometry.height);
         if (!(flags & GreaterValue))
-          (void) strcat(page,">");
+          (void) strlcat(page,">",sizeof(page));
         break;
       }
   return (AcquireString(page));

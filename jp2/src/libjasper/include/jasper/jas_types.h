@@ -119,7 +119,7 @@
  * braindamage below.
  */
 #if !defined(bool)
-#define	bool	int
+  #include "stdbool2.h"
 #endif
 #if !defined(true)
 #define true	1
@@ -143,52 +143,20 @@
  * "stdint.h" as required by ISO/IEC 9899:1999.  Try to compensate for this
  * braindamage below.
  */
+#include "../webp/src/webp/types.h"
+
+#ifndef _PFX_PTR
+ #ifdef _WIN64
+  #define _PFX_PTR  "ll"
+ #else
+  #define _PFX_PTR  "l"
+ #endif
+#endif
+
+
 #include <limits.h>
-/**********/
-#if !defined(INT_FAST8_MIN)
-typedef signed char int_fast8_t;
-#define INT_FAST8_MIN	(-127)
-#define INT_FAST8_MAX	128
-#endif
-/**********/
-#if !defined(UINT_FAST8_MAX)
-typedef unsigned char uint_fast8_t;
-#define UINT_FAST8_MAX	255
-#endif
-/**********/
-#if !defined(INT_FAST16_MIN)
-typedef short int_fast16_t;
-#define INT_FAST16_MIN	SHRT_MIN
-#define INT_FAST16_MAX	SHRT_MAX
-#endif
-/**********/
-#if !defined(UINT_FAST16_MAX)
-typedef unsigned short uint_fast16_t;
-#define UINT_FAST16_MAX	USHRT_MAX
-#endif
-/**********/
-#if !defined(INT_FAST32_MIN)
-typedef int int_fast32_t;
-#define INT_FAST32_MIN	INT_MIN
-#define INT_FAST32_MAX	INT_MAX
-#endif
-/**********/
-#if !defined(UINT_FAST32_MAX)
-typedef unsigned int uint_fast32_t;
-#define UINT_FAST32_MAX	UINT_MAX
-#endif
-/**********/
-#if !defined(INT_FAST64_MIN)
-typedef longlong int_fast64_t;
-#define INT_FAST64_MIN	LLONG_MIN
-#define INT_FAST64_MAX	LLONG_MAX
-#endif
-/**********/
-#if !defined(UINT_FAST64_MAX)
-typedef ulonglong uint_fast64_t;
-#define UINT_FAST64_MAX	ULLONG_MAX
-#endif
-/**********/
+
+
 #endif
 
 /* Hopefully, these macro definitions will fix more problems than they cause. */
@@ -210,6 +178,14 @@ typedef ulonglong uint_fast64_t;
 #if !defined(ulonglong)
 #define ulonglong unsigned long long
 #endif
+
+
+#define jas_uchar unsigned char
+#define jas_uint unsigned int
+#define jas_ulong unsigned long
+#define jas_longlong long long
+#define jas_ulonglong unsigned long long
+
 
 /* The below macro is intended to be used for type casts.  By using this
   macro, type casts can be easily located in the source code with

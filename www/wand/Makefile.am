@@ -1,4 +1,4 @@
-# Copyright (C) 2009 - 2012 GraphicsMagick Group
+# Copyright (C) 2009 - 2022 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -34,8 +34,7 @@ if HasRST2HTML
 #APIWHATIS = $(top_srcdir)/scripts/whatis.txt
 #FORMATCAPI = $(top_srcdir)/scripts/format_c_api_doc.py
 
-#APIRST2HTML_COMMAND = $(RST2HTMLDECO) \
-  --link-stylesheet=../docutils-articles.css`
+#APIRST2HTML_COMMAND = $(RST2HTMLDECO) --link-stylesheet=../docutils-articles.css`
 
 $(WWWWANDAPI_HTML_TARGETS) : $(FORMATCAPI) \
 	$(RST2HTMLDECO) \
@@ -45,12 +44,12 @@ $(WWWWANDAPI_HTML_TARGETS) : $(FORMATCAPI) \
 	$(top_srcdir)/www/api/api_hyperlinks.rst
 
 $(WWWWANDAPIDIR)/%.apirst : $(top_srcdir)/wand/%.c
-	$(FORMATCAPI) --whatis-file $(APIWHATIS) \
-	--include-rst ../api/api_hyperlinks.rst $< $@
+	@printf "Updating $@ ...\n"
+	$(FORMATCAPI) --whatis-file $(APIWHATIS) --include-rst $(top_srcdir)/www/api/api_hyperlinks.rst $< $@
 
 $(WWWWANDAPIDIR)/%.html : $(WWWWANDAPIDIR)/%.apirst
-	$(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css \
-	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
+	@printf "Updating $@ ...\n"
+	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
 
 endif # HasRST2HTML
 

@@ -74,6 +74,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdarg.h>
+//#include <inttypes.h>
 
 #include "jasper/jas_types.h"
 #include "jasper/jas_malloc.h"
@@ -118,7 +119,7 @@ jpc_mqdec_t *jpc_mqdec_create(int maxctxs, jas_stream_t *in)
 	mqdec->in = in;
 	mqdec->maxctxs = maxctxs;
 	/* Allocate memory for the per-context state information. */
-	if (!(mqdec->ctxs = jas_malloc(mqdec->maxctxs * sizeof(jpc_mqstate_t *)))) {
+	if (!(mqdec->ctxs = jas_alloc2(mqdec->maxctxs, sizeof(jpc_mqstate_t *)))) {
 		goto error;
 	}
 	/* Set the current context to the first context. */
@@ -300,7 +301,7 @@ void jpc_mqdec_dump(jpc_mqdec_t *mqdec, FILE *out)
 	fprintf(out, "MQDEC A = %08lx, C = %08lx, CT=%08lx, ",
 	  (unsigned long) mqdec->areg, (unsigned long) mqdec->creg,
 	  (unsigned long) mqdec->ctreg);
-	fprintf(out, "CTX = %d, ", (int) (mqdec->curctx - mqdec->ctxs));
-	fprintf(out, "IND %d, MPS %d, QEVAL %x\n", (int) (*mqdec->curctx -
-	  jpc_mqstates), (*mqdec->curctx)->mps, (*mqdec->curctx)->qeval);
+	fprintf(out, "CTX = %" PRIdPTR ", ", mqdec->curctx - mqdec->ctxs);
+	fprintf(out, "IND %" PRIdPTR ", MPS %d, QEVAL %"PRIxFAST16"\n", *mqdec->curctx -
+	  jpc_mqstates, (*mqdec->curctx)->mps, (*mqdec->curctx)->qeval);
 }

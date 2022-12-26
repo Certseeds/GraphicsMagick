@@ -73,6 +73,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+//#include <inttypes.h>
 
 #include "jasper/jas_stream.h"
 #include "jasper/jas_malloc.h"
@@ -197,7 +198,7 @@ jpc_mqenc_t *jpc_mqenc_create(int maxctxs, jas_stream_t *out)
 	mqenc->maxctxs = maxctxs;
 
 	/* Allocate memory for the per-context state information. */
-	if (!(mqenc->ctxs = jas_malloc(mqenc->maxctxs * sizeof(jpc_mqstate_t *)))) {
+	if (!(mqenc->ctxs = jas_alloc2(mqenc->maxctxs, sizeof(jpc_mqstate_t *)))) {
 		goto error;
 	}
 
@@ -383,10 +384,10 @@ static void jpc_mqenc_setbits(jpc_mqenc_t *mqenc)
 
 int jpc_mqenc_dump(jpc_mqenc_t *mqenc, FILE *out)
 {
-	fprintf(out, "AREG = %08x, CREG = %08x, CTREG = %d\n",
+	fprintf(out, "AREG = %08"PRIxFAST32", CREG = %08"PRIxFAST32", CTREG = %"PRIuFAST32"\n",
 	  mqenc->areg, mqenc->creg, mqenc->ctreg);
-	fprintf(out, "IND = %02d, MPS = %d, QEVAL = %04x\n",
-	  (int) (*mqenc->curctx - jpc_mqstates), (*mqenc->curctx)->mps,
+	fprintf(out, "IND = %02"PRIdPTR", MPS = %d, QEVAL = %04"PRIxFAST16"\n",
+	  *mqenc->curctx - jpc_mqstates, (*mqenc->curctx)->mps,
 	  (*mqenc->curctx)->qeval);
 	return 0;
 }

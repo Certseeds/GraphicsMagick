@@ -356,7 +356,7 @@ static Image *ReadPCXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             "    left=%u\n"
                             "    top=%u\n"
                             "    right=%u\n"
-                          "    bottom=%u\n"
+                            "    bottom=%u\n"
                             "    horizontal_resolution=%u\n"
                             "    vertical_resolution=%u\n"
                             "    reserved=%u\n"

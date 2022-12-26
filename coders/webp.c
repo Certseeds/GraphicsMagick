@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013-2021 GraphicsMagick Group
+% Copyright (C) 2013-2022 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -419,7 +419,7 @@ ModuleExport void RegisterWEBPImage(void)
   webp_major=(web_encoder_version >> 16) & 0xff;
   webp_minor=(web_encoder_version >> 8) & 0xff;
   webp_revision=web_encoder_version & 0xff;
-  (void) sprintf(version,
+  (void) snprintf(version,sizeof(version),
                   "libwepb v%u.%u.%u, ENCODER ABI 0x%04X", webp_major,
                   webp_minor, webp_revision, WEBP_ENCODER_ABI_VERSION);
 

@@ -100,12 +100,16 @@ extern "C" {
 #  define MAGICK_SIZE_T unsigned __int64
 #  define MAGICK_SSIZE_T_F "I64"
 #  define MAGICK_SSIZE_T signed __int64
+  typedef size_t uintptr_t;
+  typedef signed __int64 ptrdiff_t;
 #  else
   typedef unsigned long magick_uintptr_t;
 #  define MAGICK_SIZE_T_F "l"
 #  define MAGICK_SIZE_T unsigned long
-#  define MAGICK_SSIZE_T_F "l"
-#  define MAGICK_SSIZE_T long
+#  define MAGICK_SSIZE_T_F ""
+#  define MAGICK_SSIZE_T int
+  typedef long magick_ptrdiff_t
+  typedef unsigned long magick_uintptr_t;
 #  endif // defined(WIN64)
 
 #endif /* if defined(MAGICK_IMPLEMENTATION) */
@@ -113,36 +117,50 @@ extern "C" {
 #else
 
   /* The following typedefs are subtituted when using Unixish configure */
-  typedef @INT8_T@   magick_int8_t;
-  typedef @UINT8_T@  magick_uint8_t;
+  typedef @INT8_T@   magick_int8_t;     /* int8_t */
+  typedef @UINT8_T@  magick_uint8_t;    /* uint8_t */
 
-  typedef @INT16_T@  magick_int16_t;
-  typedef @UINT16_T@ magick_uint16_t;
+  typedef @INT16_T@  magick_int16_t;    /* int16_t */
+  typedef @UINT16_T@ magick_uint16_t;   /* uint16_t */
 
-  typedef @INT32_T@  magick_int32_t;
-  typedef @UINT32_T@ magick_uint32_t;
+  typedef @INT32_T@  magick_int32_t;    /* int32_t */
+  typedef @UINT32_T@ magick_uint32_t;   /* uint32_t */
 
-  typedef @INT64_T@  magick_int64_t;
-  typedef @UINT64_T@ magick_uint64_t;
+  typedef @INT64_T@  magick_int64_t;    /* int64_t */
+  typedef @UINT64_T@ magick_uint64_t;   /* uint64_t */
 
 #  if defined(MAGICK_IMPLEMENTATION)
 
-#  define MAGICK_INT32_F @INT32_F@
-#  define MAGICK_UINT32_F @UINT32_F@
-#  define MAGICK_INT64_F @INT64_F@
-#  define MAGICK_UINT64_F @UINT64_F@
+#  define MAGICK_INT32_F @INT32_F@      /* %PRId32 */
+#  define MAGICK_UINT32_F @UINT32_F@    /* %PRIu32 */
+#  define MAGICK_INT64_F @INT64_F@      /* %PRId64 */
+#  define MAGICK_UINT64_F @UINT64_F@    /* %PRIu64 */
 
-  typedef @UINTMAX_T@ magick_uintmax_t;
-#  define MAGICK_UINTMAX_F @UINTMAX_F@
+  /*
+    C99 special size specifiers:
 
-  typedef @UINTPTR_T@ magick_uintptr_t;
-#  define MAGICK_UINTPTR_F @UINTPTR_F@
+    hh - signed char / unsigned char
+    h  - short / unsigned short
+    ll - long long / unsigned long long
+    j  - intmax_t / uintmax_t
+    z  - signed size_t / size_t
+    t  - ptrdiff_t / unsigned ptrdiff_t
+  */
 
-#  define MAGICK_SIZE_T_F @MAGICK_SIZE_T_F@
-#  define MAGICK_SIZE_T @MAGICK_SIZE_T@
+  typedef @UINTMAX_T@ magick_uintmax_t; /* uintmax_t */
+#  define MAGICK_UINTMAX_F @UINTMAX_F@  /* %ju */
 
-#  define MAGICK_SSIZE_T_F @MAGICK_SSIZE_T_F@
-#  define MAGICK_SSIZE_T @MAGICK_SSIZE_T@
+  typedef @UINTPTR_T@ magick_uintptr_t; /* uintptr_t */
+#  define MAGICK_UINTPTR_F @UINTPTR_F@  /* %tu */
+
+  typedef @PTRDIFF_T@ magick_ptrdiff_t; /* ptrdiff_t */
+#  define MAGICK_PTRDIFF_F @PTRDIFF_F@  /* %td */
+
+#  define MAGICK_SIZE_T_F @MAGICK_SIZE_T_F@ /* %zu */
+#  define MAGICK_SIZE_T @MAGICK_SIZE_T@     /* size_t */
+
+#  define MAGICK_SSIZE_T_F @MAGICK_SSIZE_T_F@ /* %zd */
+#  define MAGICK_SSIZE_T @MAGICK_SSIZE_T@     /* ssize_t */
 
 #endif /* defined(MAGICK_IMPLEMENTATION) */
 

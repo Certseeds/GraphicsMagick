@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1315,7 +1315,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
   image->columns=frame.right-frame.left;
   image->rows=frame.bottom-frame.top;
 
-  if (IsEventLogging())
+  if (IsEventLogged(CoderEvent))
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Dimensions: %lux%lu",image->columns,image->rows);
 
@@ -1352,12 +1352,12 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
       code=ReadBlobMSBShort(image); /* returns magick_uint16_t */
     if (code > 0xa1)
       {
-        if (IsEventLogging())
+        if (IsEventLogged(CoderEvent))
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Code %04X:",code);
       }
     else
       {
-        if (IsEventLogging())
+        if (IsEventLogged(CoderEvent))
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Code  %04X %.1024s: %.1024s",code,
                                 lookup_string(code_names,sizeof(code_names),code),
                                 lookup_string(code_descriptions,sizeof(code_descriptions),code));
@@ -1850,11 +1850,11 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
           }
         if (tile_image == (Image *) NULL)
           continue;
-        if (IsEventLogging())
+        if (IsEventLogged(CoderEvent))
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Tile Dimensions: %lux%lu",
                                 tile_image->columns,tile_image->rows);
-        if (IsEventLogging())
+        if (IsEventLogged(CoderEvent))
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Tile Resolution: %gx%g %s",
                                 tile_image->x_resolution,
@@ -1866,18 +1866,18 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                                  "pixels"));
         FormatString(geometry,"%lux%lu",Max(image->columns,tile_image->columns),
           Max(image->rows,tile_image->rows));
-        if (IsEventLogging())
+        if (IsEventLogged(CoderEvent))
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Tile Transform %lux%lu ==> %s",
                                 tile_image->columns,tile_image->rows,
                                 geometry);
         if (TransformImage(&tile_image,(char *) NULL,geometry) != MagickPass)
           {
-            if (IsEventLogging())
+            if (IsEventLogged(CoderEvent))
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Tile transform failed!");
           }
-        if (IsEventLogging())
+        if (IsEventLogged(CoderEvent))
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Tile Composite of %lux%lu on canvas %lux%lu at +%u,+%u",
                                 tile_image->columns,tile_image->rows,
@@ -1885,7 +1885,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
         if (CompositeImage(image,CopyCompositeOp,tile_image,frame.left,
                            frame.right) != MagickPass)
           {
-            if (IsEventLogging())
+            if (IsEventLogged(CoderEvent))
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Tile composite failed!");
           }
@@ -2279,7 +2279,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
         }
       DestroyBlob(jpeg_image);
       jpeg_image->blob=CloneBlobInfo((BlobInfo *) NULL);
-      (void) strcpy(jpeg_image->magick,"JPEG");
+      (void) strlcpy(jpeg_image->magick,"JPEG",sizeof(jpeg_image->magick));
       blob=(unsigned char *) ImageToBlob(image_info,jpeg_image,&length,
         &image->exception);
       DestroyImage(jpeg_image);

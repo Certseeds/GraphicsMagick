@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2018 GraphicsMagick Group
+# Copyright (C) 2004-2022 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -51,6 +51,7 @@ UTILITIES_EXTRA_DIST = \
 	utilities/tests/sunrise.miff
 
 UTILITIES_CLEANFILES = \
+	utilities/tests/*_out.icc \
 	utilities/tests/*_out.miff \
 	utilities/tests/*_out.pnm \
 	utilities/tests/*_out.txt \

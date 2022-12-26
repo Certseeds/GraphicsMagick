@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>log</title>
-<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>log</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-api.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,89 +35,100 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="log">
 <h1 class="title">log</h1>
-<h2 class="subtitle" id="event-logging-support">Event logging support</h2>
-
+<p class="subtitle" id="event-logging-support">Event logging support</p>
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#iseventlogging" id="id21">IsEventLogging</a></li>
-<li><a class="reference internal" href="#logmagickevent" id="id22">LogMagickEvent</a></li>
-<li><a class="reference internal" href="#setlogdefaulteventtype" id="id23">SetLogDefaultEventType</a></li>
-<li><a class="reference internal" href="#setlogdefaultgenerations" id="id24">SetLogDefaultGenerations</a></li>
-<li><a class="reference internal" href="#setlogdefaultlimit" id="id25">SetLogDefaultLimit</a></li>
-<li><a class="reference internal" href="#setlogdefaultlogmethod" id="id26">SetLogDefaultLogMethod</a></li>
-<li><a class="reference internal" href="#setlogdefaultoutputtype" id="id27">SetLogDefaultOutputType</a></li>
-<li><a class="reference internal" href="#setlogdefaultfilename" id="id28">SetLogDefaultFileName</a></li>
-<li><a class="reference internal" href="#setlogeventmask" id="id29">SetLogEventMask</a></li>
-<li><a class="reference internal" href="#setlogformat" id="id30">SetLogFormat</a></li>
-<li><a class="reference internal" href="#setlogmethod" id="id31">SetLogMethod</a></li>
+<li><p><a class="reference internal" href="#iseventlogging" id="id23">IsEventLogging</a></p></li>
+<li><p><a class="reference internal" href="#iseventlogged" id="id24">IsEventLogged</a></p></li>
+<li><p><a class="reference internal" href="#logmagickevent" id="id25">LogMagickEvent</a></p></li>
+<li><p><a class="reference internal" href="#setlogdefaulteventtype" id="id26">SetLogDefaultEventType</a></p></li>
+<li><p><a class="reference internal" href="#setlogdefaultgenerations" id="id27">SetLogDefaultGenerations</a></p></li>
+<li><p><a class="reference internal" href="#setlogdefaultlimit" id="id28">SetLogDefaultLimit</a></p></li>
+<li><p><a class="reference internal" href="#setlogdefaultlogmethod" id="id29">SetLogDefaultLogMethod</a></p></li>
+<li><p><a class="reference internal" href="#setlogdefaultoutputtype" id="id30">SetLogDefaultOutputType</a></p></li>
+<li><p><a class="reference internal" href="#setlogdefaultfilename" id="id31">SetLogDefaultFileName</a></p></li>
+<li><p><a class="reference internal" href="#setlogeventmask" id="id32">SetLogEventMask</a></p></li>
+<li><p><a class="reference internal" href="#setlogformat" id="id33">SetLogFormat</a></p></li>
+<li><p><a class="reference internal" href="#setlogmethod" id="id34">SetLogMethod</a></p></li>
 </ul>
 </div>
 <div class="section" id="iseventlogging">
-<h1><a class="toc-backref" href="#id21">IsEventLogging</a></h1>
+<h1><a class="toc-backref" href="#id23">IsEventLogging</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickBool IsEventLogging( void );
-</pre>
+<pre class="literal-block">MagickBool IsEventLogging( void );</pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
-<p>IsEventLogging() returns MagickTrue if logging of events is enabled otherwise
-MagickFalse.  This can be used to enable logging code which is otherwise
-not needed.</p>
+<p>IsEventLogging() returns MagickTrue if logging of events is enabled,
+otherwise MagickFalse.  This can be used to enable logging code which
+is otherwise not needed.</p>
 <p>The format of the IsEventLogging method is:</p>
-<pre class="literal-block">
-MagickBool IsEventLogging( void );
-</pre>
+<pre class="literal-block">MagickBool IsEventLogging( void );</pre>
+</div>
+</div>
+<div class="section" id="iseventlogged">
+<h1><a class="toc-backref" href="#id24">IsEventLogged</a></h1>
+<div class="section" id="id1">
+<h2>Synopsis</h2>
+<pre class="literal-block">MagickBool IsEventLogged( const <a class="reference external" href="../api/types.html#exceptiontype">ExceptionType</a> type );</pre>
+</div>
+<div class="section" id="id2">
+<h2>Description</h2>
+<p>IsEventLogged() returns MagickTrue if logging of events for the specified
+exception type is enabled, otherwise MagickFalse.  This can be used to
+enable logging code which is otherwise not needed.</p>
+<p>The format of the IsEventLogging method is:</p>
+<pre class="literal-block">MagickBool IsEventLogged( const <a class="reference external" href="../api/types.html#exceptiontype">ExceptionType</a> type );</pre>
 </div>
 </div>
 <div class="section" id="logmagickevent">
-<h1><a class="toc-backref" href="#id22">LogMagickEvent</a></h1>
-<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id25">LogMagickEvent</a></h1>
+<div class="section" id="id3">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail LogMagickEvent( const <a class="reference external" href="../api/types.html#logeventtype">LogEventType</a> type, const char *module,
+<pre class="literal-block">MagickPassFail LogMagickEvent( const <a class="reference external" href="../api/types.html#logeventtype">LogEventType</a> type, const char *module,
                                const char *function, const unsigned long line,
-                               const char *format, ... );
-</pre>
+                               const char *format, ... );</pre>
 </div>
-<div class="section" id="id2">
+<div class="section" id="id4">
 <h2>Description</h2>
 <p>LogMagickEvent() logs an event as determined by the current logging
 configuration. If an error occurs, MagickFail is returned otherwise
 MagickPass.</p>
 <p>The format of the LogMagickEvent method is:</p>
-<pre class="literal-block">
-MagickPassFail LogMagickEvent( const <a class="reference external" href="../api/types.html#logeventtype">LogEventType</a> type, const char *module,
+<pre class="literal-block">MagickPassFail LogMagickEvent( const <a class="reference external" href="../api/types.html#logeventtype">LogEventType</a> type, const char *module,
                                const char *function, const unsigned long line,
-                               const char *format, ... );
-</pre>
-<dl class="docutils">
+                               const char *format, ... );</pre>
+<dl class="simple">
 <dt>type:</dt>
-<dd>The event type.</dd>
+<dd><p>The event type.</p>
+</dd>
 <dt>filename:</dt>
-<dd>The source module filename.</dd>
+<dd><p>The source module filename.</p>
+</dd>
 <dt>function:</dt>
-<dd>The function name.</dd>
+<dd><p>The function name.</p>
+</dd>
 <dt>line:</dt>
-<dd>The line number of the source module.</dd>
+<dd><p>The line number of the source module.</p>
+</dd>
 <dt>format:</dt>
-<dd>The output format.</dd>
+<dd><p>The output format.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogdefaulteventtype">
-<h1><a class="toc-backref" href="#id23">SetLogDefaultEventType</a></h1>
-<div class="section" id="id3">
+<h1><a class="toc-backref" href="#id26">SetLogDefaultEventType</a></h1>
+<div class="section" id="id5">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void SetLogDefaultEventType( const char *events );
-</pre>
+<pre class="literal-block">void SetLogDefaultEventType( const char *events );</pre>
 </div>
-<div class="section" id="id4">
+<div class="section" id="id6">
 <h2>Description</h2>
 <p>SetLogDefaultEventType() accepts a comma-delimited list (Annotate, Blob,
 Cache, Coder, Configure, Deprecate, Error, Exception,  FatalError,
@@ -126,25 +140,22 @@ provides defaults used by InitializeMagick() while the logging system
 is initialized.  The events may be modified later after
 InitializeMagick() has been called using the SetLogEventMask() function.</p>
 <p>The format of SetLogDefaultEventType method is:</p>
-<pre class="literal-block">
-void SetLogDefaultEventType( const char *events );
-</pre>
+<pre class="literal-block">void SetLogDefaultEventType( const char *events );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>events:</dt>
-<dd>Comma-separated list of events to report.</dd>
+<dd><p>Comma-separated list of events to report.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogdefaultgenerations">
-<h1><a class="toc-backref" href="#id24">SetLogDefaultGenerations</a></h1>
-<div class="section" id="id5">
+<h1><a class="toc-backref" href="#id27">SetLogDefaultGenerations</a></h1>
+<div class="section" id="id7">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void SetLogDefaultGenerations( const unsigned long generations );
-</pre>
+<pre class="literal-block">void SetLogDefaultGenerations( const unsigned long generations );</pre>
 </div>
-<div class="section" id="id6">
+<div class="section" id="id8">
 <h2>Description</h2>
 <p>SetLogDefaultGenerations() specifies the maximum number of log files
 to maintain before circulating back to overwrite the first name.</p>
@@ -152,26 +163,23 @@ to maintain before circulating back to overwrite the first name.</p>
 provides defaults used by InitializeMagick() while the logging system
 is initialized.</p>
 <p>The format of SetLogDefaultGenerations method is:</p>
-<pre class="literal-block">
-void SetLogDefaultGenerations( const unsigned long generations );
-</pre>
+<pre class="literal-block">void SetLogDefaultGenerations( const unsigned long generations );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>generations:</dt>
-<dd>Number of log files to maintain before circulating back to
-the first name.</dd>
+<dd><p>Number of log files to maintain before circulating back to
+the first name.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogdefaultlimit">
-<h1><a class="toc-backref" href="#id25">SetLogDefaultLimit</a></h1>
-<div class="section" id="id7">
+<h1><a class="toc-backref" href="#id28">SetLogDefaultLimit</a></h1>
+<div class="section" id="id9">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void SetLogDefaultLimit( const unsigned long limit );
-</pre>
+<pre class="literal-block">void SetLogDefaultLimit( const unsigned long limit );</pre>
 </div>
-<div class="section" id="id8">
+<div class="section" id="id10">
 <h2>Description</h2>
 <p>SetLogDefaultLimit() specifies the maximum number of logging events which
 may occur before creating a new log file.</p>
@@ -179,25 +187,22 @@ may occur before creating a new log file.</p>
 provides defaults used by InitializeMagick() while the logging system
 is initialized.</p>
 <p>The format of SetLogDefaultLimit method is:</p>
-<pre class="literal-block">
-void SetLogDefaultLimit( const unsigned long limit );
-</pre>
+<pre class="literal-block">void SetLogDefaultLimit( const unsigned long limit );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>limit:</dt>
-<dd>Maximum number of logging events before creating a new log file.</dd>
+<dd><p>Maximum number of logging events before creating a new log file.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogdefaultlogmethod">
-<h1><a class="toc-backref" href="#id26">SetLogDefaultLogMethod</a></h1>
-<div class="section" id="id9">
+<h1><a class="toc-backref" href="#id29">SetLogDefaultLogMethod</a></h1>
+<div class="section" id="id11">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void SetLogDefaultLogMethod( const <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );
-</pre>
+<pre class="literal-block">void SetLogDefaultLogMethod( const <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );</pre>
 </div>
-<div class="section" id="id10">
+<div class="section" id="id12">
 <h2>Description</h2>
 <p>SetLogDefaultLogMethod() provides a call-back function to be invoked
 for each log event when the logging method type is MethodOutput.
@@ -209,51 +214,45 @@ function is NULL.</p>
 provides defaults used by InitializeMagick() while the logging system
 is initialized.</p>
 <p>The format of SetLogDefaultLogMethod method is:</p>
-<pre class="literal-block">
-void SetLogDefaultLogMethod( const <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );
-</pre>
+<pre class="literal-block">void SetLogDefaultLogMethod( const <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>method:</dt>
-<dd>Call-back function to be invoked for each log event.</dd>
+<dd><p>Call-back function to be invoked for each log event.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogdefaultoutputtype">
-<h1><a class="toc-backref" href="#id27">SetLogDefaultOutputType</a></h1>
-<div class="section" id="id11">
+<h1><a class="toc-backref" href="#id30">SetLogDefaultOutputType</a></h1>
+<div class="section" id="id13">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void SetLogDefaultOutputType( const <a class="reference external" href="../api/types.html#logoutputtype">LogOutputType</a> output_type );
-</pre>
+<pre class="literal-block">void SetLogDefaultOutputType( const <a class="reference external" href="../api/types.html#logoutputtype">LogOutputType</a> output_type );</pre>
 </div>
-<div class="section" id="id12">
+<div class="section" id="id14">
 <h2>Description</h2>
 <p>SetLogDefaultOutputType() sets the logging output destination.</p>
 <p>This function should be called prior to InitializeMagick() since it
 provides defaults used by InitializeMagick() while the logging system
 is initialized.</p>
 <p>The format of SetLogDefaultOutputType method is:</p>
-<pre class="literal-block">
-void SetLogDefaultOutputType( const <a class="reference external" href="../api/types.html#logoutputtype">LogOutputType</a> output_type );
-</pre>
+<pre class="literal-block">void SetLogDefaultOutputType( const <a class="reference external" href="../api/types.html#logoutputtype">LogOutputType</a> output_type );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>output_type:</dt>
-<dd>The logging output destination.  One of the enumerated
-values of LogOutputType.</dd>
+<dd><p>The logging output destination.  One of the enumerated
+values of LogOutputType.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogdefaultfilename">
-<h1><a class="toc-backref" href="#id28">SetLogDefaultFileName</a></h1>
-<div class="section" id="id13">
+<h1><a class="toc-backref" href="#id31">SetLogDefaultFileName</a></h1>
+<div class="section" id="id15">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void SetLogDefaultFileName( const char *filename );
-</pre>
+<pre class="literal-block">void SetLogDefaultFileName( const char *filename );</pre>
 </div>
-<div class="section" id="id14">
+<div class="section" id="id16">
 <h2>Description</h2>
 <p>SetLogDefaultFileName() provides the file name, or file path, to be
 written to for each log event.  Place a %d in the file name in order to
@@ -263,25 +262,22 @@ log output type uses an output file.</p>
 provides defaults used by InitializeMagick() while the logging system
 is initialized.</p>
 <p>The format of SetLogDefaultFileName method is:</p>
-<pre class="literal-block">
-void SetLogDefaultFileName( const char *filename );
-</pre>
+<pre class="literal-block">void SetLogDefaultFileName( const char *filename );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>filename:</dt>
-<dd>File name, or file path to write log output to.</dd>
+<dd><p>File name, or file path to write log output to.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogeventmask">
-<h1><a class="toc-backref" href="#id29">SetLogEventMask</a></h1>
-<div class="section" id="id15">
+<h1><a class="toc-backref" href="#id32">SetLogEventMask</a></h1>
+<div class="section" id="id17">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned long SetLogEventMask( const char *events );
-</pre>
+<pre class="literal-block">unsigned long SetLogEventMask( const char *events );</pre>
 </div>
-<div class="section" id="id16">
+<div class="section" id="id18">
 <h2>Description</h2>
 <p>SetLogEventMask() accepts a comma-delimited list (Annotate, Blob, Cache,
 Coder, Configure, Deprecate, Error, Exception,  FatalError, Information,
@@ -290,25 +286,22 @@ Warning, or X11) that determines which events to log.  All other events
 are ignored.  By default, no logging is enabled.  This method returns
 the updated log event mask.</p>
 <p>The format of the SetLogEventMask method is:</p>
-<pre class="literal-block">
-unsigned long SetLogEventMask( const char *events );
-</pre>
+<pre class="literal-block">unsigned long SetLogEventMask( const char *events );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>events:</dt>
-<dd>log these events.</dd>
+<dd><p>log these events.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogformat">
-<h1><a class="toc-backref" href="#id30">SetLogFormat</a></h1>
-<div class="section" id="id17">
+<h1><a class="toc-backref" href="#id33">SetLogFormat</a></h1>
+<div class="section" id="id19">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void SetLogFormat( const char *format );
-</pre>
+<pre class="literal-block">void SetLogFormat( const char *format );</pre>
 </div>
-<div class="section" id="id18">
+<div class="section" id="id20">
 <h2>Description</h2>
 <p>SetLogFormat() sets the format for the &quot;human readable&quot; log record.
 The format specification supports these special format characters:</p>
@@ -325,44 +318,43 @@ The format specification supports these special format characters:</p>
 n   newline,
 r   carriage return</p>
 <p>The format of the LogMagickFormat method is:</p>
-<pre class="literal-block">
-void SetLogFormat( const char *format );
-</pre>
+<pre class="literal-block">void SetLogFormat( const char *format );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>format:</dt>
-<dd>The log record format.</dd>
+<dd><p>The log record format.</p>
+</dd>
 </dl>
 </div>
 </div>
 <div class="section" id="setlogmethod">
-<h1><a class="toc-backref" href="#id31">SetLogMethod</a></h1>
-<div class="section" id="id19">
+<h1><a class="toc-backref" href="#id34">SetLogMethod</a></h1>
+<div class="section" id="id21">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void SetLogMethod( <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );
-</pre>
+<pre class="literal-block">void SetLogMethod( <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );</pre>
 </div>
-<div class="section" id="id20">
+<div class="section" id="id22">
 <h2>Description</h2>
 <p>SetLogMethod() sets the method to be called when logging.</p>
 <p>The format of the SetLogMethod method is:</p>
-<pre class="literal-block">
-void SetLogMethod( <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );
-</pre>
+<pre class="literal-block">void SetLogMethod( <a class="reference external" href="../api/types.html#logmethod">LogMethod</a> method );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>method:</dt>
-<dd>pointer to a method of type LogMethod that will be called when LogMagickEvent
-is called.  Pass a null pointer to remove a registered method.</dd>
+<dd><p>pointer to a method of type LogMethod that will be called when LogMagickEvent
+is called.  Pass a null pointer to remove a registered method.</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

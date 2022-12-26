@@ -389,7 +389,7 @@ ImportRLEPixels(Image *image,
                       quantum|=((unsigned int) *p++);
                       pixel.red=ScaleShortToQuantum(quantum);
                       quantum= ((unsigned int) *p++ << 8);
-                      quantum|=(*p++);
+                      quantum|=((unsigned int) *p++);
                       pixel.green=ScaleShortToQuantum(quantum);
                       quantum =((unsigned int) *p++ << 8);
                       quantum|=((unsigned int) *p++);
@@ -2511,11 +2511,11 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
         /*
           Set image resolution.
         */
-        (void) strcpy(units,"undefined");
+        (void) strlcpy(units,"undefined",sizeof(units));
         if (image->units == PixelsPerInchResolution)
-          (void) strcpy(units,"pixels-per-inch");
+          (void) strlcpy(units,"pixels-per-inch",sizeof(units));
         if (image->units == PixelsPerCentimeterResolution)
-          (void) strcpy(units,"pixels-per-centimeter");
+          (void) strlcpy(units,"pixels-per-centimeter",sizeof(units));
         FormatString(buffer,"Resolution=%gx%g  units=%.1024s\n",
           image->x_resolution,image->y_resolution,units);
         (void) WriteBlobString(image,buffer);
@@ -2557,26 +2557,26 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
     if (image->dispose != UndefinedDispose)
       {
         if (image->dispose == BackgroundDispose)
-          (void) strcpy(buffer,"dispose=background\n");
+          (void) strlcpy(buffer,"dispose=background\n",sizeof(buffer));
         else
           if (image->dispose == NoneDispose)
-            (void) strcpy(buffer,"dispose=none\n");
+            (void) strlcpy(buffer,"dispose=none\n",sizeof(buffer));
           else
-            (void) strcpy(buffer,"dispose=previous\n");
+            (void) strlcpy(buffer,"dispose=previous\n",sizeof(buffer));
         (void) WriteBlobString(image,buffer);
       }
     if (image->rendering_intent != UndefinedIntent)
       {
         if (image->rendering_intent == SaturationIntent)
-          (void) strcpy(buffer,"rendering-intent=saturation\n");
+          (void) strlcpy(buffer,"rendering-intent=saturation\n",sizeof(buffer));
         else
           if (image->rendering_intent == PerceptualIntent)
-            (void) strcpy(buffer,"rendering-intent=perceptual\n");
+            (void) strlcpy(buffer,"rendering-intent=perceptual\n",sizeof(buffer));
           else
             if (image->rendering_intent == AbsoluteIntent)
-              (void) strcpy(buffer,"rendering-intent=absolute\n");
+              (void) strlcpy(buffer,"rendering-intent=absolute\n",sizeof(buffer));
             else
-              (void) strcpy(buffer,"rendering-intent=relative\n");
+              (void) strlcpy(buffer,"rendering-intent=relative\n",sizeof(buffer));
         (void) WriteBlobString(image,buffer);
       }
     if (image->gamma != 0.0)

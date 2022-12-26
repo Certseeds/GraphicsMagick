@@ -90,7 +90,7 @@ static uint_fast32_t pgx_inttoword(int_fast32_t val, int prec, bool sgnd);
 
 /* Save an image to a stream in the the PGX format. */
 
-int pgx_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
+int pgx_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 {
 	pgx_hdr_t hdr;
 	uint_fast32_t width;
@@ -112,7 +112,7 @@ int pgx_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 		}
 		break;
 	default:
-		jas_eprintf("error: BMP format does not support color space\n");
+		jas_eprintf("error: PGX format does not support color space\n");
 		return -1;
 		break;
 	}
@@ -128,7 +128,7 @@ int pgx_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 	  PGX format. */
 	/* There must be exactly one component. */
 	if (jas_image_numcmpts(image) > 1 || prec > 16) {
-		jas_eprintf("The PNM format cannot be used to represent an image with this geometry.\n");
+		jas_eprintf("The PGX format cannot be used to represent an image with this geometry.\n");
 		return -1;
 	}
 
@@ -139,9 +139,9 @@ int pgx_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 	hdr.width = width;
 	hdr.height = height;
 
-#ifdef PGX_DEBUG
-	pgx_dumphdr(stderr, &hdr);
-#endif
+	if (jas_getdbglevel() >= 10) {
+		pgx_dumphdr(stderr, &hdr);
+	}
 
 	if (pgx_puthdr(out, &hdr)) {
 		return -1;

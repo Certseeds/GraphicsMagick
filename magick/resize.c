@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -852,7 +852,7 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
   MagickPassFail
     status=MagickPass;
 
-  if (IsEventLogging())
+  if (IsEventLogged(TransformEvent))
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Horizontal Filter: %lux%lu => %lux%lu "
                           "(x_factor %g, blur %g, span %"MAGICK_SIZE_T_F"u) ...",
@@ -1068,7 +1068,7 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
         }
     }
 
-  if (IsEventLogging())
+  if (IsEventLogged(TransformEvent))
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "%s exit Horizontal Filter",
                           (status == MagickFail ? "Error" : "Normal"));
@@ -1104,7 +1104,7 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
   MagickPassFail
     status=MagickPass;
 
-  if (IsEventLogging())
+  if (IsEventLogged(TransformEvent))
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Vertical Filter: %lux%lu => %lux%lu "
                           "(y_factor %g, blur %g, span %"MAGICK_SIZE_T_F"u) ...",
@@ -1324,7 +1324,7 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
         }
     }
 
-  if (IsEventLogging())
+  if (IsEventLogged(TransformEvent))
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "%s exit Vertical Filter",
                           (status == MagickFail ? "Error" : "Normal"));
@@ -1435,7 +1435,7 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
         ((x_factor*y_factor) > 1.0))
       i=(long) MitchellFilter;
 
-  if (IsEventLogging())
+  if (IsEventLogged(TransformEvent))
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Resizing image of size %lux%lu to %lux%lu using %s filter",
                           image->columns,image->rows,columns,rows,
@@ -1464,7 +1464,7 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   */
   status=MagickPass;
   quantum=0;
-  if (IsEventLogging())
+  if (IsEventLogged(TransformEvent))
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Resize filter order: %s",
                           order ? "Horizontal/Vertical" : "Vertical/Horizontal");
@@ -1805,6 +1805,7 @@ MagickExport Image *ScaleImage(const Image *image,const unsigned long columns,
       MagickFreeMemory(scale_scanline);
       MagickFreeMemory(x_vector);
       MagickFreeMemory(y_vector);
+      MagickFreeMemory(y_volumes);
       DestroyImage(scale_image);
       ThrowImageException3(ResourceLimitError,MemoryAllocationFailed,
                            UnableToScaleImage);

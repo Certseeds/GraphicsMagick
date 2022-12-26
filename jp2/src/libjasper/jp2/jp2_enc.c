@@ -86,7 +86,7 @@ static int clrspctojp2(jas_clrspc_t clrspc);
 * Functions.
 \******************************************************************************/
 
-int jp2_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
+int jp2_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 {
 	jp2_box_t *box;
 	jp2_ftyp_t *ftyp;
@@ -103,12 +103,12 @@ int jp2_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
 	jp2_cdef_t *cdef;
 	int i;
 	uint_fast32_t typeasoc;
-jas_iccprof_t *iccprof;
-jas_stream_t *iccstream;
-int pos;
-int needcdef;
-int prec;
-int sgnd;
+	jas_iccprof_t *iccprof;
+	jas_stream_t *iccstream;
+	int pos;
+	int needcdef;
+	int prec;
+	int sgnd;
 
 	box = 0;
 	tmpstream = 0;
@@ -191,7 +191,7 @@ int sgnd;
 		}
 		bpcc = &box->data.bpcc;
 		bpcc->numcmpts = jas_image_numcmpts(image);
-		if (!(bpcc->bpcs = jas_malloc(bpcc->numcmpts *
+		if (!(bpcc->bpcs = jas_alloc2(bpcc->numcmpts,
 		  sizeof(uint_fast8_t)))) {
 			goto error;
 		}
@@ -285,7 +285,7 @@ int sgnd;
 		}
 		cdef = &box->data.cdef;
 		cdef->numchans = jas_image_numcmpts(image);
-		cdef->ents = jas_malloc(cdef->numchans * sizeof(jp2_cdefchan_t));
+		cdef->ents = jas_alloc2(cdef->numchans, sizeof(jp2_cdefchan_t));
 		for (i = 0; i < jas_image_numcmpts(image); ++i) {
 			cdefchanent = &cdef->ents[i];
 			cdefchanent->channo = i;
@@ -351,7 +351,6 @@ int sgnd;
 	}
 
 	return 0;
-	abort();
 
 error:
 

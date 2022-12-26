@@ -197,8 +197,8 @@ testReadWrite( 'SUN:input.im24',
 
 print("Truevision Targa image file ...\n");
 ++$test;
-testReadWrite( 'TGA:input.tga',
-  'TGA:output.tga',
+testReadWrite( 'TGA:input_8_CC.tga',
+  'TGA:output_8_CC.tga',
   q//,
   '8b19185a62241bd7b79ecf3f619711f4ebbedd73eaeca0366f05778762b6614f');
 

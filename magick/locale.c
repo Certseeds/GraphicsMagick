@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003, 2004 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -198,7 +198,7 @@ GetLocaleMessageFromTag(const char *tag)
 
   (void) strlcpy(category,tag,MaxTextExtent);
   ChopLocaleComponents(category,2);
-  for (k=0; k < ArraySize(category_map); k++)
+  for (k=0; k < ArraySize(category_map)-1; k++)
     {
       if (LocaleCompare(category,category_map[k].name) == 0)
         {

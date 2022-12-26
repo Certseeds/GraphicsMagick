@@ -74,6 +74,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <ctype.h>
+//#include <inttypes.h>
 
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_debug.h"
@@ -199,8 +200,8 @@ static jpc_mstabent_t jpc_mstab[] = {
 	{JPC_MS_SOP, "SOP", {0, jpc_sop_getparms, jpc_sop_putparms,
 	  jpc_sop_dumpparms}},
 	{JPC_MS_EPH, "EPH", {0, 0, 0, 0}},
-	{JPC_MS_CRG, "CRG", {0, jpc_crg_getparms, jpc_crg_putparms,
-	  jpc_crg_dumpparms}},
+	{JPC_MS_CRG, "CRG", {jpc_crg_destroyparms, jpc_crg_getparms,
+	  jpc_crg_putparms, jpc_crg_dumpparms}},
 	{JPC_MS_COM, "COM", {jpc_com_destroyparms, jpc_com_getparms,
 	  jpc_com_putparms, jpc_com_dumpparms}},
 	{-1, "UNKNOWN",  {jpc_unk_destroyparms, jpc_unk_getparms,
@@ -288,8 +289,9 @@ jpc_ms_t *jpc_getms(jas_stream_t *in, jpc_cstate_t *cstate)
 			jpc_ms_dump(ms, stderr);
 		}
 
-		if (JAS_CAST(ulong, jas_stream_tell(tmpstream)) != ms->len) {
-			jas_eprintf("warning: trailing garbage in marker segment (%ld bytes)\n",
+		if (JAS_CAST(jas_ulong, jas_stream_tell(tmpstream)) != ms->len) {
+			jas_eprintf(
+			  "warning: trailing garbage in marker segment (%ld bytes)\n",
 			  ms->len - jas_stream_tell(tmpstream));
 		}
 
@@ -404,9 +406,9 @@ void jpc_ms_dump(jpc_ms_t *ms, FILE *out)
 {
 	jpc_mstabent_t *mstabent;
 	mstabent = jpc_mstab_lookup(ms->id);
-	fprintf(out, "type = 0x%04x (%s);", ms->id, mstabent->name);
+	fprintf(out, "type = 0x%04"PRIxFAST16" (%s);", ms->id, mstabent->name);
 	if (JPC_MS_HASPARMS(ms->id)) {
-		fprintf(out, " len = %d;", ms->len + 2);
+		fprintf(out, " len = %"PRIuFAST16";", ms->len + 2);
 		if (ms->ops->dumpparms) {
 			(*ms->ops->dumpparms)(ms, out);
 		} else {
@@ -434,6 +436,10 @@ static int jpc_sot_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 	  jpc_getuint8(in, &sot->numparts)) {
 		return -1;
 	}
+	if (sot->tileno > 65534 || sot->len < 12 || sot->partno > 254 ||
+	  sot->numparts < 1 || sot->numparts > 255) {
+		return -1;
+	}
 	if (jas_stream_eof(in)) {
 		return -1;
 	}
@@ -459,7 +465,8 @@ static int jpc_sot_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 static int jpc_sot_dumpparms(jpc_ms_t *ms, FILE *out)
 {
 	jpc_sot_t *sot = &ms->parms.sot;
-	fprintf(out, "tileno = %d; len = %d; partno = %d; numparts = %d\n",
+	fprintf(out,
+	  "tileno = %"PRIuFAST16"; len = %"PRIuFAST32"; partno = %d; numparts = %d\n",
 	  sot->tileno, sot->len, sot->partno, sot->numparts);
 	return 0;
 }
@@ -483,6 +490,8 @@ static int jpc_siz_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
 	unsigned int i;
 	uint_fast8_t tmp;
 
+	siz->comps = 0;
+
 	/* Eliminate compiler warning about unused variables. */
 	cstate = 0;
 
@@ -496,30 +505,67 @@ static int jpc_siz_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
 	  jpc_getuint32(in, &siz->tilexoff) ||
 	  jpc_getuint32(in, &siz->tileyoff) ||
 	  jpc_getuint16(in, &siz->numcomps)) {
-		return -1;
+		goto error;
 	}
-	if (!siz->width || !siz->height || !siz->tilewidth ||
-	  !siz->tileheight || !siz->numcomps) {
-		return -1;
+	if (!siz->width || !siz->height) {
+		jas_eprintf("reference grid cannot have zero area\n");
+		goto error;
 	}
-	if (!(siz->comps = jas_malloc(siz->numcomps * sizeof(jpc_sizcomp_t)))) {
-		return -1;
+	if (!siz->tilewidth || !siz->tileheight) {
+		jas_eprintf("tile cannot have zero area\n");
+		goto error;
+	}
+	if (!siz->numcomps || siz->numcomps > 16384) {
+		jas_eprintf("number of components not in permissible range\n");
+		goto error;
+	}
+	if (siz->xoff >= siz->width) {
+		jas_eprintf("XOsiz not in permissible range\n");
+		goto error;
+	}
+	if (siz->yoff >= siz->height) {
+		jas_eprintf("YOsiz not in permissible range\n");
+		goto error;
+	}
+	if (siz->tilexoff > siz->xoff || siz->tilexoff + siz->tilewidth <= siz->xoff) {
+		jas_eprintf("XTOsiz not in permissible range\n");
+		goto error;
+	}
+	if (siz->tileyoff > siz->yoff || siz->tileyoff + siz->tileheight <= siz->yoff) {
+		jas_eprintf("YTOsiz not in permissible range\n");
+		goto error;
+	}
+
+	if (!(siz->comps = jas_alloc2(siz->numcomps, sizeof(jpc_sizcomp_t)))) {
+		goto error;
 	}
 	for (i = 0; i < siz->numcomps; ++i) {
 		if (jpc_getuint8(in, &tmp) ||
 		  jpc_getuint8(in, &siz->comps[i].hsamp) ||
 		  jpc_getuint8(in, &siz->comps[i].vsamp)) {
-			jas_free(siz->comps);
-			return -1;
+			goto error;
+		}
+		if (siz->comps[i].hsamp == 0 || siz->comps[i].hsamp > 255) {
+			jas_eprintf("invalid XRsiz value %d\n", siz->comps[i].hsamp);
+			goto error;
+		}
+		if (siz->comps[i].vsamp == 0 || siz->comps[i].vsamp > 255) {
+			jas_eprintf("invalid YRsiz value %d\n", siz->comps[i].vsamp);
+			goto error;
 		}
 		siz->comps[i].sgnd = (tmp >> 7) & 1;
 		siz->comps[i].prec = (tmp & 0x7f) + 1;
 	}
 	if (jas_stream_eof(in)) {
-		jas_free(siz->comps);
-		return -1;
+		goto error;
 	}
 	return 0;
+
+error:
+	if (siz->comps) {
+		jas_free(siz->comps);
+	}
+	return -1;
 }
 
 static int jpc_siz_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *out)
@@ -559,12 +605,13 @@ static int jpc_siz_dumpparms(jpc_ms_t *ms, FILE *out)
 {
 	jpc_siz_t *siz = &ms->parms.siz;
 	unsigned int i;
-	fprintf(out, "caps = 0x%02x;\n", siz->caps);
-	fprintf(out, "width = %d; height = %d; xoff = %d; yoff = %d;\n",
+	fprintf(out, "caps = 0x%02"PRIxFAST16";\n", siz->caps);
+	fprintf(out, "width = %"PRIuFAST32"; height = %"PRIuFAST32"; xoff = %"PRIuFAST32"; yoff = %" PRIuFAST32 ";\n",
 	  siz->width, siz->height, siz->xoff, siz->yoff);
-	fprintf(out, "tilewidth = %d; tileheight = %d; tilexoff = %d; "
-	  "tileyoff = %d;\n", siz->tilewidth, siz->tileheight, siz->tilexoff,
-	  siz->tileyoff);
+	fprintf(out, "tilewidth = %"PRIuFAST32"; tileheight = %"PRIuFAST32"; "
+	  "tilexoff = %"PRIuFAST32"; tileyoff = %" PRIuFAST32 ";\n",
+	  siz->tilewidth, siz->tileheight, siz->tilexoff, siz->tileyoff);
+	fprintf(out, "numcomps = %"PRIuFAST16";\n", siz->numcomps);
 	for (i = 0; i < siz->numcomps; ++i) {
 		fprintf(out, "prec[%d] = %d; sgnd[%d] = %d; hsamp[%d] = %d; "
 		  "vsamp[%d] = %d\n", i, siz->comps[i].prec, i,
@@ -593,6 +640,9 @@ static int jpc_cod_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 	if (jpc_getuint8(in, &cod->prg) ||
 	  jpc_getuint16(in, &cod->numlyrs) ||
 	  jpc_getuint8(in, &cod->mctrans)) {
+		return -1;
+	}
+	if (cod->numlyrs < 1 || cod->numlyrs > 65535) {
 		return -1;
 	}
 	if (jpc_cox_getcompparms(ms, cstate, in,
@@ -631,7 +681,7 @@ static int jpc_cod_dumpparms(jpc_ms_t *ms, FILE *out)
 	fprintf(out, "csty = 0x%02x;\n", cod->compparms.csty);
 	fprintf(out, "numdlvls = %d; qmfbid = %d; mctrans = %d\n",
 	  cod->compparms.numdlvls, cod->compparms.qmfbid, cod->mctrans);
-	fprintf(out, "prg = %d; numlyrs = %d;\n",
+	fprintf(out, "prg = %d; numlyrs = %"PRIuFAST16";\n",
 	  cod->prg, cod->numlyrs);
 	fprintf(out, "cblkwidthval = %d; cblkheightval = %d; "
 	  "cblksty = 0x%02x;\n", cod->compparms.cblkwidthval, cod->compparms.cblkheightval,
@@ -709,7 +759,7 @@ static int jpc_coc_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 static int jpc_coc_dumpparms(jpc_ms_t *ms, FILE *out)
 {
 	jpc_coc_t *coc = &ms->parms.coc;
-	fprintf(out, "compno = %d; csty = 0x%02x; numdlvls = %d;\n",
+	fprintf(out, "compno = %"PRIuFAST16"; csty = 0x%02x; numdlvls = %d;\n",
 	  coc->compno, coc->compparms.csty, coc->compparms.numdlvls);
 	fprintf(out, "cblkwidthval = %d; cblkheightval = %d; "
 	  "cblksty = 0x%02x; qmfbid = %d;\n", coc->compparms.cblkwidthval,
@@ -743,25 +793,34 @@ static int jpc_cox_getcompparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
 	  jpc_getuint8(in, &compparms->qmfbid)) {
 		return -1;
 	}
+	if (compparms->numdlvls > 32) {
+		goto error;
+	}
 	compparms->numrlvls = compparms->numdlvls + 1;
+	if (compparms->numrlvls > JPC_MAXRLVLS) {
+		goto error;
+	}
 	if (prtflag) {
 		for (i = 0; i < compparms->numrlvls; ++i) {
 			if (jpc_getuint8(in, &tmp)) {
-				jpc_cox_destroycompparms(compparms);
-				return -1;
+				goto error;
 			}
 			compparms->rlvls[i].parwidthval = tmp & 0xf;
 			compparms->rlvls[i].parheightval = (tmp >> 4) & 0xf;
 		}
-/* Sigh.  This bit should be in the same field in both COC and COD mrk segs. */
-compparms->csty |= JPC_COX_PRT;
-	} else {
+		/* Sigh.
+		This bit should be in the same field in both COC and COD mrk segs. */
+		compparms->csty |= JPC_COX_PRT;
 	}
 	if (jas_stream_eof(in)) {
-		jpc_cox_destroycompparms(compparms);
-		return -1;
+		goto error;
 	}
 	return 0;
+error:
+	if (compparms) {
+		jpc_cox_destroycompparms(compparms);
+	}
+	return -1;
 }
 
 static int jpc_cox_putcompparms(jpc_ms_t *ms, jpc_cstate_t *cstate,
@@ -840,7 +899,7 @@ static int jpc_rgn_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 static int jpc_rgn_dumpparms(jpc_ms_t *ms, FILE *out)
 {
 	jpc_rgn_t *rgn = &ms->parms.rgn;
-	fprintf(out, "compno = %d; roisty = %d; roishift = %d\n",
+	fprintf(out, "compno = %"PRIuFAST16"; roisty = %d; roishift = %d\n",
 	  rgn->compno, rgn->roisty, rgn->roishift);
 	return 0;
 }
@@ -875,8 +934,8 @@ static int jpc_qcd_dumpparms(jpc_ms_t *ms, FILE *out)
 	  (int) qcd->compparms.qntsty, qcd->compparms.numguard, qcd->compparms.numstepsizes);
 	for (i = 0; i < qcd->compparms.numstepsizes; ++i) {
 		fprintf(out, "expn[%d] = 0x%04x; mant[%d] = 0x%04x;\n",
-		  i, (unsigned) JPC_QCX_GETEXPN(qcd->compparms.stepsizes[i]),
-		  i, (unsigned) JPC_QCX_GETMANT(qcd->compparms.stepsizes[i]));
+		  i, JAS_CAST(unsigned, JPC_QCX_GETEXPN(qcd->compparms.stepsizes[i])),
+		  i, JAS_CAST(unsigned, JPC_QCX_GETMANT(qcd->compparms.stepsizes[i])));
 	}
 	return 0;
 }
@@ -898,11 +957,15 @@ static int jpc_qcc_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 	int len;
 	len = ms->len;
 	if (cstate->numcomps <= 256) {
-		jpc_getuint8(in, &tmp);
+		if (jpc_getuint8(in, &tmp)) {
+			return -1;
+		}
 		qcc->compno = tmp;
 		--len;
 	} else {
-		jpc_getuint16(in, &qcc->compno);
+		if (jpc_getuint16(in, &qcc->compno)) {
+			return -1;
+		}
 		len -= 2;
 	}
 	if (jpc_qcx_getcompparms(&qcc->compparms, cstate, in, len)) {
@@ -919,9 +982,13 @@ static int jpc_qcc_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 {
 	jpc_qcc_t *qcc = &ms->parms.qcc;
 	if (cstate->numcomps <= 256) {
-		jpc_putuint8(out, qcc->compno);
+		if (jpc_putuint8(out, qcc->compno)) {
+			return -1;
+		}
 	} else {
-		jpc_putuint16(out, qcc->compno);
+		if (jpc_putuint16(out, qcc->compno)) {
+			return -1;
+		}
 	}
 	if (jpc_qcx_putcompparms(&qcc->compparms, cstate, out)) {
 		return -1;
@@ -933,7 +1000,7 @@ static int jpc_qcc_dumpparms(jpc_ms_t *ms, FILE *out)
 {
 	jpc_qcc_t *qcc = &ms->parms.qcc;
 	int i;
-	fprintf(out, "compno = %d; qntsty = %d; numguard = %d; "
+	fprintf(out, "compno = %"PRIuFAST16"; qntsty = %d; numguard = %d; "
 	  "numstepsizes = %d\n", qcc->compno, qcc->compparms.qntsty, qcc->compparms.numguard,
 	  qcc->compparms.numstepsizes);
 	for (i = 0; i < qcc->compparms.numstepsizes; ++i) {
@@ -966,7 +1033,9 @@ static int jpc_qcx_getcompparms(jpc_qcxcp_t *compparms, jpc_cstate_t *cstate,
 	cstate = 0;
 
 	n = 0;
-	jpc_getuint8(in, &tmp);
+	if (jpc_getuint8(in, &tmp)) {
+		return -1;
+	}
 	++n;
 	compparms->qntsty = tmp & 0x1f;
 	compparms->numguard = (tmp >> 5) & 7;
@@ -982,16 +1051,26 @@ static int jpc_qcx_getcompparms(jpc_qcxcp_t *compparms, jpc_cstate_t *cstate,
 		compparms->numstepsizes = (len - n) / 2;
 		break;
 	}
+	/* Ensure that the step size array is sufficiently large. */
+	if (compparms->numstepsizes > 3 * JPC_MAXRLVLS + 1) {
+		jpc_qcx_destroycompparms(compparms);
+		return -1;
+	}
 	if (compparms->numstepsizes > 0) {
-		compparms->stepsizes = jas_malloc(compparms->numstepsizes *
-		  sizeof(uint_fast16_t));
-		assert(compparms->stepsizes);
+		if (!(compparms->stepsizes = jas_alloc2(compparms->numstepsizes,
+		  sizeof(uint_fast16_t)))) {
+			abort();
+		}
 		for (i = 0; i < compparms->numstepsizes; ++i) {
 			if (compparms->qntsty == JPC_QCX_NOQNT) {
-				jpc_getuint8(in, &tmp);
+				if (jpc_getuint8(in, &tmp)) {
+					return -1;
+				}
 				compparms->stepsizes[i] = JPC_QCX_EXPN(tmp >> 3);
 			} else {
-				jpc_getuint16(in, &compparms->stepsizes[i]);
+				if (jpc_getuint16(in, &compparms->stepsizes[i])) {
+					return -1;
+				}
 			}
 		}
 	} else {
@@ -1015,10 +1094,14 @@ static int jpc_qcx_putcompparms(jpc_qcxcp_t *compparms, jpc_cstate_t *cstate,
 	jpc_putuint8(out, ((compparms->numguard & 7) << 5) | compparms->qntsty);
 	for (i = 0; i < compparms->numstepsizes; ++i) {
 		if (compparms->qntsty == JPC_QCX_NOQNT) {
-			jpc_putuint8(out, JPC_QCX_GETEXPN(
-			  compparms->stepsizes[i]) << 3);
+			if (jpc_putuint8(out, JPC_QCX_GETEXPN(
+			  compparms->stepsizes[i]) << 3)) {
+				return -1;
+			}
 		} else {
-			jpc_putuint16(out, compparms->stepsizes[i]);
+			if (jpc_putuint16(out, compparms->stepsizes[i])) {
+				return -1;
+			}
 		}
 	}
 	return 0;
@@ -1057,7 +1140,7 @@ static int jpc_sop_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 static int jpc_sop_dumpparms(jpc_ms_t *ms, FILE *out)
 {
 	jpc_sop_t *sop = &ms->parms.sop;
-	fprintf(out, "seqno = %d;\n", sop->seqno);
+	fprintf(out, "seqno = %"PRIuFAST16";\n", sop->seqno);
 	return 0;
 }
 
@@ -1091,10 +1174,10 @@ static int jpc_ppm_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 
 	ppm->len = ms->len - 1;
 	if (ppm->len > 0) {
-		if (!(ppm->data = jas_malloc(ppm->len * sizeof(unsigned char)))) {
+		if (!(ppm->data = jas_malloc(ppm->len))) {
 			goto error;
 		}
-		if (JAS_CAST(uint, jas_stream_read(in, ppm->data, ppm->len)) != ppm->len) {
+		if (JAS_CAST(jas_uint, jas_stream_read(in, ppm->data, ppm->len)) != ppm->len) {
 			goto error;
 		}
 	} else {
@@ -1114,7 +1197,7 @@ static int jpc_ppm_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 	/* Eliminate compiler warning about unused variables. */
 	cstate = 0;
 
-	if (JAS_CAST(uint, jas_stream_write(out, (char *) ppm->data, ppm->len)) != ppm->len) {
+	if (JAS_CAST(jas_uint, jas_stream_write(out, (char *) ppm->data, ppm->len)) != ppm->len) {
 		return -1;
 	}
 	return 0;
@@ -1123,7 +1206,7 @@ static int jpc_ppm_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 static int jpc_ppm_dumpparms(jpc_ms_t *ms, FILE *out)
 {
 	jpc_ppm_t *ppm = &ms->parms.ppm;
-	fprintf(out, "ind=%d; len = %d;\n", ppm->ind, ppm->len);
+	fprintf(out, "ind=%d; len = %"PRIuFAST16";\n", ppm->ind, ppm->len);
 	if (ppm->len > 0) {
 		fprintf(out, "data =\n");
 		jas_memdump(out, ppm->data, ppm->len);
@@ -1160,7 +1243,7 @@ static int jpc_ppt_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 	}
 	ppt->len = ms->len - 1;
 	if (ppt->len > 0) {
-		if (!(ppt->data = jas_malloc(ppt->len * sizeof(unsigned char)))) {
+		if (!(ppt->data = jas_malloc(ppt->len))) {
 			goto error;
 		}
 		if (jas_stream_read(in, (char *) ppt->data, ppt->len) != JAS_CAST(int, ppt->len)) {
@@ -1195,7 +1278,7 @@ static int jpc_ppt_putparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *ou
 static int jpc_ppt_dumpparms(jpc_ms_t *ms, FILE *out)
 {
 	jpc_ppt_t *ppt = &ms->parms.ppt;
-	fprintf(out, "ind=%d; len = %d;\n", ppt->ind, ppt->len);
+	fprintf(out, "ind=%d; len = %"PRIuFAST32";\n", ppt->ind, ppt->len);
 	if (ppt->len > 0) {
 		fprintf(out, "data =\n");
 		jas_memdump(out, ppt->data, ppt->len);
@@ -1223,7 +1306,7 @@ static int jpc_poc_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 	uint_fast8_t tmp;
 	poc->numpchgs = (cstate->numcomps > 256) ? (ms->len / 9) :
 	  (ms->len / 7);
-	if (!(poc->pchgs = jas_malloc(poc->numpchgs * sizeof(jpc_pocpchg_t)))) {
+	if (!(poc->pchgs = jas_alloc2(poc->numpchgs, sizeof(jpc_pocpchg_t)))) {
 		goto error;
 	}
 	for (pchgno = 0, pchg = poc->pchgs; pchgno < poc->numpchgs; ++pchgno,
@@ -1301,11 +1384,11 @@ static int jpc_poc_dumpparms(jpc_ms_t *ms, FILE *out)
 	for (pchgno = 0, pchg = poc->pchgs; pchgno < poc->numpchgs;
 	  ++pchgno, ++pchg) {
 		fprintf(out, "po[%d] = %d; ", pchgno, pchg->prgord);
-		fprintf(out, "cs[%d] = %d; ce[%d] = %d; ",
+		fprintf(out, "cs[%d] = %"PRIuFAST16"; ce[%d] = %"PRIuFAST16"; ",
 		  pchgno, pchg->compnostart, pchgno, pchg->compnoend);
 		fprintf(out, "rs[%d] = %d; re[%d] = %d; ",
 		  pchgno, pchg->rlvlnostart, pchgno, pchg->rlvlnoend);
-		fprintf(out, "le[%d] = %d\n", pchgno, pchg->lyrnoend);
+		fprintf(out, "le[%d] = %"PRIuFAST16"\n", pchgno, pchg->lyrnoend);
 	}
 	return 0;
 }
@@ -1328,7 +1411,7 @@ static int jpc_crg_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 	jpc_crgcomp_t *comp;
 	uint_fast16_t compno;
 	crg->numcomps = cstate->numcomps;
-	if (!(crg->comps = jas_malloc(cstate->numcomps * sizeof(uint_fast16_t)))) {
+	if (!(crg->comps = jas_alloc2(cstate->numcomps, sizeof(jpc_crgcomp_t)))) {
 		return -1;
 	}
 	for (compno = 0, comp = crg->comps; compno < cstate->numcomps;
@@ -1368,8 +1451,8 @@ static int jpc_crg_dumpparms(jpc_ms_t *ms, FILE *out)
 	jpc_crgcomp_t *comp;
 	for (compno = 0, comp = crg->comps; compno < crg->numcomps; ++compno,
 	  ++comp) {
-		fprintf(out, "hoff[%d] = %d; voff[%d] = %d\n", compno,
-		  comp->hoff, compno, comp->voff);
+		fprintf(out, "hoff[%d] = %"PRIuFAST16"; voff[%d] = %"PRIuFAST16"\n",
+		  compno, comp->hoff, compno, comp->voff);
 	}
 	return 0;
 }
@@ -1431,7 +1514,7 @@ static int jpc_com_dumpparms(jpc_ms_t *ms, FILE *out)
 	jpc_com_t *com = &ms->parms.com;
 	unsigned int i;
 	int printable;
-	fprintf(out, "regid = %d;\n", com->regid);
+	fprintf(out, "regid = %"PRIuFAST16";\n", com->regid);
 	printable = 1;
 	for (i = 0; i < com->len; ++i) {
 		if (!isprint(com->data[i])) {
@@ -1463,14 +1546,17 @@ static int jpc_unk_getparms(jpc_ms_t *ms, jpc_cstate_t *cstate, jas_stream_t *in
 {
 	jpc_unk_t *unk = &ms->parms.unk;
 
+	unk->data = 0;
+
 	/* Eliminate compiler warning about unused variables. */
 	cstate = 0;
 
 	if (ms->len > 0) {
-		if (!(unk->data = jas_malloc(ms->len * sizeof(unsigned char)))) {
+		if (!(unk->data = jas_alloc2(ms->len, sizeof(unsigned char)))) {
 			return -1;
 		}
-		if (jas_stream_read(in, (char *) unk->data, ms->len) != JAS_CAST(int, ms->len)) {
+		if (jas_stream_read(in, (char *) unk->data, ms->len) !=
+		  JAS_CAST(int, ms->len)) {
 			jas_free(unk->data);
 			return -1;
 		}

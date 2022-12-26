@@ -64,4 +64,3 @@ if ( defined($ENV{'DISPLAY'}) && ($ENV{'DISPLAY'} ne '') ) {
 }
 
 $test = 0;  # Quench PERL compliaint
-

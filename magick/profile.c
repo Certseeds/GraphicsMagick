@@ -551,7 +551,7 @@ ProfileImagePixels(void *mutable_data,         /* User provided mutable data */
           pixels[i].green=ScaleShortToQuantum(beta.green);
           pixels[i].blue=ScaleShortToQuantum(beta.blue);
         }
-      if (image->matte)
+      if ((image->matte) && (NULL != indexes))
         {
           if ((source_colorspace == CMYKColorspace) &&
               (target_colorspace != CMYKColorspace))

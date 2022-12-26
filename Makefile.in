@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2004-2021 GraphicsMagick Group
+# Copyright (C) 2004-2022 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -90,7 +90,7 @@
 # Makefile for building Wand library
 #
 
-# Copyright (C) 2008 - 2021 GraphicsMagick Group
+# Copyright (C) 2008 - 2022 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -99,7 +99,7 @@
 # Makefile for building HTML files
 #
 
-# Copyright (C) 2008-2011 GraphicsMagick Group
+# Copyright (C) 2008-2022 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -108,7 +108,7 @@
 # Makefile for building API HTML files
 #
 
-# Copyright (C) 2009 - 2012 GraphicsMagick Group
+# Copyright (C) 2009 - 2022 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -117,7 +117,7 @@
 # Makefile for building Wand API HTML files
 #
 
-# Copyright (C) 2004-2018 GraphicsMagick Group
+# Copyright (C) 2004-2022 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -2630,6 +2630,9 @@ PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_CXX = @PTHREAD_CXX@
 PTHREAD_LIBS = @PTHREAD_LIBS@
+PTRDIFF_F = @PTRDIFF_F@
+PTRDIFF_T = @PTRDIFF_T@
+PYTHON = @PYTHON@
 PrintDelegate = @PrintDelegate@
 QuantumDepth = @QuantumDepth@
 RANLIB = @RANLIB@
@@ -2721,6 +2724,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+top_srcdir_native = @top_srcdir_native@
 type_include_files = @type_include_files@
 windows_font_dir = @windows_font_dir@
 xml2_config = @xml2_config@
@@ -2736,6 +2740,16 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir)
 ACLOCAL_AMFLAGS = -I m4
 MODULECOMMONFLAGS = -no-undefined -export-symbols-regex ".*" -shared -module -avoid-version
 MODULECOMMONCPPFLAGS = $(AM_CPPFLAGS)
+
+# Coverity parameters
+# FIXME: Could use info from /etc/os-release, or output from
+# lsb_release.
+# New URL is https://scan.coverity.com/projects/graphicsmagick?tab=overview
+COVERITY_EMAIL = bfriesen@simple.dallas.tx.us
+COVERITY_TARBALL = GraphicsMagick.xz
+COVERITY_VERSION = snapshot-@PACKAGE_CHANGE_DATE@
+COVERITY_DESCRIPTION = 'Ubuntu Q@QuantumDepth@'
+COVERITY_COV_INT = 'cov-int'
 
 # Options to pass when running configure in the distcheck target.
 #
@@ -4623,10 +4637,9 @@ WWW_HTML_FILES = \
 WWWW_EXTRA_DIST = $(WWW_HTML_FILES) $(WWW_RST_FILES)
 WWW_MAINTAINER_TARGETS = $(WWW_HTML_FILES) $(WWWDIR)/color.html
 @MAINTAINER_MODE_TRUE@NAMED_COLORS = $(top_srcdir)/scripts/named_colors.py
-@MAINTAINER_MODE_TRUE@RST2HTMLDECO = $(top_srcdir)/scripts/rst2htmldeco.py
+@MAINTAINER_MODE_TRUE@RST2HTML5 = $(top_srcdir)/scripts/rst2html5.py
 @MAINTAINER_MODE_TRUE@RELPATH = $(top_srcdir)/scripts/relpath.py
 @MAINTAINER_MODE_TRUE@OMP_DECIMAL_ALIGN = $(top_srcdir)/scripts/omp_decimal_align.py
-@MAINTAINER_MODE_TRUE@RST2HTML_COMMAND = $(RST2HTMLDECO) --cloak-email-addresses --link-stylesheet=docutils-articles.css
 
 #
 # Build HTML version of ChangeLogs
@@ -4747,9 +4760,6 @@ WWWAPI_EXTRA_DIST = \
 WWWAPI_MAINTAINER_TARGETS = $(WWWAPI_HTML_TARGETS)
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@APIWHATIS = $(top_srcdir)/scripts/whatis.txt
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@FORMATCAPI = $(top_srcdir)/scripts/format_c_api_doc.py
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@APIRST2HTML_COMMAND = $(RST2HTMLDECO) \
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@  --link-stylesheet=../docutils-articles.css`
-
 wwwwandapidir = $(htmldir)/wand
 WWWWANDAPIDIR = $(top_srcdir)/www/wand
 WWWWANDAPI_HTML_TARGETS = \
@@ -4805,6 +4815,7 @@ UTILITIES_EXTRA_DIST = \
 	utilities/tests/sunrise.miff
 
 UTILITIES_CLEANFILES = \
+	utilities/tests/*_out.icc \
 	utilities/tests/*_out.miff \
 	utilities/tests/*_out.pnm \
 	utilities/tests/*_out.txt \
@@ -4923,13 +4934,8 @@ DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
 
 # Use a hard-coded mechanism and destination path to copy snapshot files
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@SNAPSHOT_DIRECTORY = /ftp/pub/GraphicsMagick/snapshots
-COVERITY_EMAIL = bfriesen@simple.dallas.tx.us
-COVERITY_TARBALL = GraphicsMagick.xz
-COVERITY_VERSION = snapshot-@PACKAGE_CHANGE_DATE@
-COVERITY_DESCRIPTION = 'Ubuntu Q@QuantumDepth@'
 
 # Rules for a profiled build (according to Paolo Bonzini <bonzini@gnu.org>)
-#.PHONY: profile
 #profile:
 #	$(MAKE) clean
 #	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-generate"
@@ -11045,6 +11051,8 @@ uninstall-man: uninstall-man1 uninstall-man4 uninstall-man5
 
 .PRECIOUS: Makefile
 
+
+.PHONY: www srpm rpm profile scan-build
 magick-install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(magickincdir)
 	$(INSTALL_HEADER) magick/magick_config_api.h $(DESTDIR)$(magickincdir)/magick_config.h
@@ -11071,106 +11079,133 @@ uninstall-data-html:
 
 @MAINTAINER_MODE_TRUE@$(RST2HTML_TARGETS) : \
 @MAINTAINER_MODE_TRUE@	$(top_srcdir)/scripts/html_fragments.py \
-@MAINTAINER_MODE_TRUE@	$(top_srcdir)/scripts/rst2htmldeco.py \
+@MAINTAINER_MODE_TRUE@	$(top_srcdir)/scripts/rst2html5.py \
 @MAINTAINER_MODE_TRUE@	$(top_srcdir)/scripts/omp_decimal_align.py \
 @MAINTAINER_MODE_TRUE@	$(WWWDIR)/Makefile.am
 
-# Build HTML version of RST file
+# Build HTML version of RST file (with "txt" extension)
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/%.html: $(top_srcdir)/%.txt
-@MAINTAINER_MODE_TRUE@	$(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
-@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@MAINTAINER_MODE_TRUE@	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  > $@
 
+# Build HTML version of RST file
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/%.html: $(top_srcdir)/%.rst
-@MAINTAINER_MODE_TRUE@	$(RST2HTMLDECO)  --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css \
-@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< | $(OMP_DECIMAL_ALIGN) > $@
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@MAINTAINER_MODE_TRUE@	$(RST2HTML5)  --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  | $(OMP_DECIMAL_ALIGN) > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2021.rst: $(top_srcdir)/ChangeLog.2021
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2020.rst: $(top_srcdir)/ChangeLog.2020
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2019.rst: $(top_srcdir)/ChangeLog.2019
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2018.rst: $(top_srcdir)/ChangeLog.2018
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2017.rst: $(top_srcdir)/ChangeLog.2017
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2016.rst: $(top_srcdir)/ChangeLog.2016
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2015.rst: $(top_srcdir)/ChangeLog.2015
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2014.rst: $(top_srcdir)/ChangeLog.2014
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2013.rst: $(top_srcdir)/ChangeLog.2013
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2012.rst: $(top_srcdir)/ChangeLog.2012
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2011.rst: $(top_srcdir)/ChangeLog.2011
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2010.rst: $(top_srcdir)/ChangeLog.2010
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2009.rst: $(top_srcdir)/ChangeLog.2009
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2008.rst: $(top_srcdir)/ChangeLog.2008
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2007.rst: $(top_srcdir)/ChangeLog.2007
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2006.rst: $(top_srcdir)/ChangeLog.2006
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2005.rst: $(top_srcdir)/ChangeLog.2005
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2004.rst: $(top_srcdir)/ChangeLog.2004
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2003.rst: $(top_srcdir)/ChangeLog.2003
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2002.rst: $(top_srcdir)/ChangeLog.2002
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2001.rst: $(top_srcdir)/ChangeLog.2001
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Magick++/ChangeLog.rst: $(top_srcdir)/Magick++/ChangeLog
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
 
 # Build color.html
 @MAINTAINER_MODE_TRUE@$(WWWDIR)/color.html : $(NAMED_COLORS)
+@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(NAMED_COLORS) > $@
 
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWAPI_HTML_TARGETS) : $(FORMATCAPI) $(RST2HTMLDECO) $(APIWHATIS) $(top_srcdir)/scripts/html_fragments.py $(top_srcdir)/www/api/Makefile.am $(top_srcdir)/www/api/api_hyperlinks.rst
+#APIRST2HTML_COMMAND = $(RST2HTML5) --stylesheet=../docutils-articles.css`
+
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWAPI_HTML_TARGETS) : $(FORMATCAPI) $(RST2HTML5) $(APIWHATIS) $(top_srcdir)/scripts/html_fragments.py $(top_srcdir)/www/api/Makefile.am $(top_srcdir)/www/api/api_hyperlinks.rst
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWAPIDIR)/%.apirst : $(top_srcdir)/magick/%.c
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(FORMATCAPI) --whatis-file $(APIWHATIS) $< $@
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWAPIDIR)/%.html : $(WWWAPIDIR)/%.apirst
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css \
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
 
 #APIWHATIS = $(top_srcdir)/scripts/whatis.txt
 #FORMATCAPI = $(top_srcdir)/scripts/format_c_api_doc.py
 
-#APIRST2HTML_COMMAND = $(RST2HTMLDECO) \
-#  --link-stylesheet=../docutils-articles.css`
+#APIRST2HTML_COMMAND = $(RST2HTMLDECO) --link-stylesheet=../docutils-articles.css`
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWWANDAPI_HTML_TARGETS) : $(FORMATCAPI) \
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTMLDECO) \
@@ -11180,12 +11215,12 @@ uninstall-data-html:
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(top_srcdir)/www/api/api_hyperlinks.rst
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWWANDAPIDIR)/%.apirst : $(top_srcdir)/wand/%.c
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(FORMATCAPI) --whatis-file $(APIWHATIS) \
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	--include-rst ../api/api_hyperlinks.rst $< $@
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(FORMATCAPI) --whatis-file $(APIWHATIS) --include-rst $(top_srcdir)/www/api/api_hyperlinks.rst $< $@
 
 @HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@$(WWWWANDAPIDIR)/%.html : $(WWWWANDAPIDIR)/%.apirst
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTMLDECO) --link-stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css \
-@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	--url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
+@HasRST2HTML_TRUE@@MAINTAINER_MODE_TRUE@	$(RST2HTML5) --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-api.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $< $@
 
 utilities/tests/montage.log : \
 	utilities/tests/effects.log
@@ -11296,7 +11331,6 @@ $(top_srcdir)/$(PERLMAGICK)/Magick.pm : $(PERLMAGICK)/Magick.pm
 @WITH_PERL_FALSE@distclean-perl:
 
 # Target to build just the web pages.
-@MAINTAINER_MODE_TRUE@.PHONY: www
 @MAINTAINER_MODE_TRUE@www : $(WWW_MAINTAINER_TARGETS) $(WWWAPI_MAINTAINER_TARGETS) $(WWWWANDAPI_MAINTAINER_TARGETS)
 
 all-local: $(MAGICKPP_LOCAL_TARGETS) \
@@ -11362,6 +11396,10 @@ dist-hook:
 	  ) \
 	)
 
+# Special cleaning rules
+clean-local:
+	$(RM) -rf $(COVERITY_COV_INT)
+
 #
 # Additional install rules
 #
@@ -11393,7 +11431,6 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 @HAS_P7ZIP_TRUE@	$(P7ZIP) a -t7z -mx=9 $(DIST_WINDOWS_SRC_7ZIP) $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
 @HAS_P7ZIP_TRUE@	chmod 644 $(DIST_WINDOWS_SRC_7ZIP)
 	rm -rf $(PACKAGE_NAME)-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)
-@HAS_RPM_TRUE@.PHONY: srpm
 @HAS_RPM_TRUE@$(DIST_ARCHIVE_SRPM) srpm: $(distdir).tar.bz2
 @HAS_RPM_TRUE@	rm -f $(DIST_ARCHIVE_SRPM)
 @HAS_RPM_TRUE@	$(RPM) --define="_sourcedir `pwd`" --define="_srcrpmdir `pwd`" --nodeps -bs GraphicsMagick.spec
@@ -11401,7 +11438,6 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 @HAS_RPM_TRUE@	@echo $(DIST_ARCHIVE_SRPM) is ready for distribution.
 @HAS_RPM_TRUE@	@echo ==============================================================
 
-@HAS_RPM_TRUE@.PHONY: rpm
 @HAS_RPM_TRUE@rpm:
 @HAS_RPM_TRUE@	rm -rf $(RPMDIR)
 @HAS_RPM_TRUE@	$(MKDIR_P) $(RPMDIR)
@@ -11419,22 +11455,25 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 dist-zstd: distdir
 	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-22} zstd --ultra -c >$(distdir).tar.zst
 	$(am__post_remove_distdir)
+# FIXME: Can use gpg --enarmor to produce asc files from sig files
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@snapshot: distcheck
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  rm -f $${file}.sig ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  rm -f $${file}.asc $${file}.sig ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  sha256sum $${file} > $${file}.sum ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.sig " $$f ; done` \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc %s.sig " $$f $$f ; done` \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@snapshot: distcheck
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  sha256sum $${file} > $${file}.sum ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
@@ -11442,15 +11481,18 @@ dist-zstd: distdir
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	mv $(SNAPSHOT_DIST_ARCHIVES) $(SNAPSHOT_DIRECTORY)/
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  mv $${file}.sig $(SNAPSHOT_DIRECTORY)/ ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  mv $${file}.asc $(SNAPSHOT_DIRECTORY)/ ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
-# New URL is https://brb.synopsys.com/?project=GraphicsMagick
+
+# Build under Coverity
 coverity:
 	$(MAKE) clean
-	cov-build --dir cov-int $(MAKE)
+	$(RM) -rf $(COVERITY_COV_INT)
+	cov-build --dir $(COVERITY_COV_INT) $(MAKE)
 	tar caf $(COVERITY_TARBALL) cov-int
-	curl --limit-rate 50K \
+	curl --limit-rate 34K \
 	--form token=`cat $$HOME/.coverity_key_gm` \
 	--form email=$(COVERITY_EMAIL) \
 	--form file=@$(COVERITY_TARBALL) \
@@ -11468,10 +11510,29 @@ gmsymbols:
 release: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
-	  rm -f $${file}.sig ; \
+	  rm -f $${file}.asc $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
+
+# Run Clang analyzer on the project.
+# In order for this to work, you must have first installed the 'clang'
+# and 'clang-tools' packages on your system.
+# The project should have been configured to use clang.
+#	-enable-checker security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+scan-build:
+	scan-build-12 -k --html-title='GraphicsMagick' \
+	-maxloop 1000 \
+	-disable-checker deadcode.DeadStores \
+	-enable-checker security.insecureAPI.bcmp \
+	-enable-checker security.insecureAPI.bcopy \
+	-enable-checker security.insecureAPI.bzero \
+	-enable-checker security.insecureAPI.strcpy \
+	-enable-checker valist.CopyToSelf \
+	-enable-checker valist.Uninitialized \
+	-enable-checker valist.Unterminated \
+	--use-cc $(CC) $(MAKE)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

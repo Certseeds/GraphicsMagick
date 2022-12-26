@@ -72,11 +72,13 @@
 * Includes.
 \******************************************************************************/
 
+/* The configuration header file should be included first. */
+#include <jasper/jas_config.h>
+
 #include <stdio.h>
 
-#include <jasper/jas_config.h>
-#include "jasper/jas_types.h"
-#include "jasper/jas_debug.h"
+#include <jasper/jas_types.h>
+#include <jasper/jas_debug.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,7 +90,7 @@ extern "C" {
 
 /* Output debugging information to standard error provided that the debug
   level is set sufficiently high. */
-#if defined(DEBUG)
+#if !defined(NDEBUG)
 #define	JAS_DBGLOG(n, x) \
 	((jas_getdbglevel() >= (n)) ? (jas_eprintf x) : 0)
 #else
@@ -106,6 +108,9 @@ int jas_eprintf(const char *fmt, ...);
 
 /* Dump memory to a stream. */
 int jas_memdump(FILE *out, void *data, size_t len);
+
+/* Warn about use of deprecated functionality. */
+void jas_deprecated(const char *s);
 
 #ifdef __cplusplus
 }

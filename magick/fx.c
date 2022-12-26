@@ -1222,8 +1222,8 @@ SolarizeImagePixelsCB(void *mutable_data,         /* User provided mutable data 
                       ExceptionInfo *exception)   /* Exception report */
 {
 
-  const Quantum
-    threshold = *((const double *) immutable_data);
+  const unsigned int
+    threshold = *((const unsigned int *) immutable_data);
 
   register long
     i;
@@ -1250,7 +1250,8 @@ MagickExport MagickPassFail SolarizeImage(Image *image,const double threshold)
 #define SolarizeImageText "[%s] Solarize..."
 
   unsigned int
-    is_grayscale;
+    is_grayscale,
+    threshold_int;
 
   MagickPassFail
     status=MagickPass;
@@ -1258,6 +1259,9 @@ MagickExport MagickPassFail SolarizeImage(Image *image,const double threshold)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   is_grayscale=image->is_grayscale;
+  threshold_int=(threshold < 0.0 ? 0U :
+                 (threshold > MaxRGBDouble) ? MaxRGB :
+                 (unsigned int) (threshold + 0.5));
   switch (image->storage_class)
   {
     case DirectClass:
@@ -1269,7 +1273,7 @@ MagickExport MagickPassFail SolarizeImage(Image *image,const double threshold)
       status=PixelIterateMonoModify(SolarizeImagePixelsCB,
                                     NULL,
                                     SolarizeImageText,
-                                    NULL,&threshold,0,0,image->columns,image->rows,
+                                    NULL,&threshold_int,0,0,image->columns,image->rows,
                                     image,&image->exception);
       break;
     }
@@ -1279,7 +1283,7 @@ MagickExport MagickPassFail SolarizeImage(Image *image,const double threshold)
         Solarize PseudoClass packets.
       */
       SolarizeImagePixelsCB(0,
-                            &threshold,
+                            &threshold_int,
                             image,
                             image->colormap,
                             (IndexPacket *) NULL,

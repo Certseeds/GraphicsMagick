@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -21,7 +21,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                              June 2000 - 2021                               %
+%                              June 2000 - 2022                               %
 %                         Rework for GraphicsMagick                           %
 %                              Bob Friesenhahn                                %
 %                               Feb-May 2003                                  %
@@ -235,28 +235,6 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
   return(False);
 }
 
-static MagickPassFail ReallocColormap(Image *image,unsigned int colors)
-{
-  PixelPacket *colormap;
-
-  /* FIXME: This implementation would be better using a true realloc */
-  colormap=MagickAllocateClearedArray(PixelPacket *,colors,sizeof(PixelPacket));
-  if (colormap != (PixelPacket *) NULL)
-    {
-      if (image->colormap != (PixelPacket *) NULL)
-        {
-          (void) memcpy(colormap,image->colormap,
-                        (size_t) Min(image->colors,colors)*sizeof(PixelPacket));
-          MagickFreeMemory(image->colormap);
-        }
-      image->colormap = colormap;
-      image->colors = colors;
-      return MagickPass;
-    }
-
-  return MagickFail;
-}
-
 static int Rd_WP_DWORD(Image *image, unsigned long *d)
 {
   unsigned char b;
@@ -975,7 +953,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   clone_info->blob=(void *) NULL;
   /* clone_info->length=0; */
   (void) strlcpy(clone_info->magick, format, sizeof(clone_info->magick));
-  (void) strcpy(clone_info->filename, "");
+  (void) strlcpy(clone_info->filename, "", sizeof(clone_info->filename));
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Reading embedded \"%s\" content from blob...", clone_info->magick);
   image2 = BlobToImage(clone_info, ps_data, PS_Size, &image->exception );
@@ -1037,6 +1015,62 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   return(image);
 }
 
+#define LogHeaderWPG(_WPG_HEADER) \
+  (void)LogMagickEvent(CoderEvent,GetMagickModule(), \
+                       "WPG Header Id=%Xh:\n" \
+                       "    DataOffset=%u\n" \
+                       "    ProductType=%u\n" \
+                       "    FileType=%u\n" \
+                       "    Version=%u.%u\n" \
+                       "    EncryptKey=%u\n" \
+                       "    Reserved=%u", \
+                            (unsigned int)_WPG_HEADER.FileId, \
+                            (unsigned int)_WPG_HEADER.DataOffset, \
+                            (unsigned int)_WPG_HEADER.ProductType, \
+                            (unsigned int)_WPG_HEADER.FileType, \
+                            (unsigned int)_WPG_HEADER.MajorVersion, \
+                            (unsigned int)_WPG_HEADER.MinorVersion, \
+                            (unsigned int)_WPG_HEADER.EncryptKey, \
+                            (unsigned int)_WPG_HEADER.Reserved)
+
+#define LogWPGBitmapType1(_WPG_BITMAP_TYPE1) \
+  (void)LogMagickEvent(CoderEvent,GetMagickModule(), \
+                       "WPG Bitmap1 Header:\n" \
+                       "    Width=%u\n" \
+                       "    Heigth=%u\n" \
+                       "    Depth=%u\n" \
+                       "    HorzRes=%u\n" \
+                       "    VertRes=%u", \
+                            (unsigned int)_WPG_BITMAP_TYPE1.Width, \
+                            (unsigned int)_WPG_BITMAP_TYPE1.Heigth, \
+                            (unsigned int)_WPG_BITMAP_TYPE1.Depth, \
+                            (unsigned int)_WPG_BITMAP_TYPE1.HorzRes, \
+                            (unsigned int)_WPG_BITMAP_TYPE1.VertRes)
+
+#define LogWPGBitmapType2(_WPG_BITMAP_TYPE2) \
+  (void)LogMagickEvent(CoderEvent,GetMagickModule(), \
+                       "WPG Bitmap2 Header:\n" \
+                       "    RotAngle=%u\n" \
+                       "    LowLeftX=%u\n" \
+                       "    LowLeftY=%u\n" \
+                       "    UpRightX=%u\n" \
+                       "    UpRightY=%u\n" \
+                       "    Width=%u\n" \
+                       "    Heigth=%u\n" \
+                       "    Depth=%u\n" \
+                       "    HorzRes=%u\n" \
+                       "    VertRes=%u", \
+                            (unsigned int)_WPG_BITMAP_TYPE2.RotAngle, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.LowLeftX, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.LowLeftY, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.UpRightX, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.UpRightY, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.Width, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.Heigth, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.Depth, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.HorzRes, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.VertRes)
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1066,7 +1100,6 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
 %    o image_info: Specifies a pointer to a ImageInfo structure.
 %
 %    o exception: return any errors or warnings in this structure.
-%
 %
 */
 static Image *ReadWPGImage(const ImageInfo *image_info,
@@ -1223,6 +1256,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   Header.MinorVersion=ReadBlobByte(image);
   Header.EncryptKey=ReadBlobLSBShort(image);
   Header.Reserved=ReadBlobLSBShort(image);
+  if(logging) LogHeaderWPG(Header);
 
   if (Header.FileId!=0x435057FF || (Header.ProductType>>8)!=0x16)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -1293,6 +1327,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader1.Depth=ReadBlobLSBShort(image);
               BitmapHeader1.HorzRes=ReadBlobLSBShort(image);
               BitmapHeader1.VertRes=ReadBlobLSBShort(image);
+              if(logging) LogWPGBitmapType1(BitmapHeader1);
 
               if(BitmapHeader1.HorzRes && BitmapHeader1.VertRes)
                 {
@@ -1303,7 +1338,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               image->columns=BitmapHeader1.Width;
               image->rows=BitmapHeader1.Heigth;
               bpp=BitmapHeader1.Depth;
-
+				// Whole palette is useless for bilevel image.
+              if(bpp==1) image->storage_class=DirectClass;
               goto UnpackRaster;
 
             case 0x0E:  /*Color palette */
@@ -1344,6 +1380,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader2.Depth=ReadBlobLSBShort(image);
               BitmapHeader2.HorzRes=ReadBlobLSBShort(image);
               BitmapHeader2.VertRes=ReadBlobLSBShort(image);
+              if(logging) LogWPGBitmapType2(BitmapHeader2);
 
               image->units=PixelsPerCentimeterResolution;
               image->page.width=(unsigned int)
@@ -1365,7 +1402,7 @@ UnpackRaster:
               if(bpp>24)
                 {ThrowReaderException(CoderError,ColorTypeNotSupported,image)}
 
-              if ((image->storage_class != PseudoClass) && (bpp != 24))
+              if ((image->storage_class != PseudoClass) && (bpp != 24) && bpp!=1)
                 {
                   image->colors=1 << bpp;
                   if (!AllocateImageColormap(image,image->colors))
@@ -1387,8 +1424,8 @@ UnpackRaster:
               else
                 {
                   if (bpp < 24)
-                    if ( (image->colors < (1UL<<bpp)) && (bpp != 24) )
-                      if (!ReallocColormap(image,1U<<bpp))
+                    if ( (image->colors != (1UL<<bpp)) && (bpp != 24) )
+                      if (!ReallocateImageColormap(image,1U<<bpp))
                         goto NoMemory;
                 }
 
@@ -1589,8 +1626,8 @@ UnpackRaster:
               else
                 {
                   if(bpp < 24)
-                    if( image->colors<(1UL<<bpp) && bpp!=24 )
-                      if (!ReallocColormap(image,1U<<bpp))
+                    if(image->colors!=(1UL<<bpp) && bpp!=24)
+                      if (!ReallocateImageColormap(image,1U<<bpp))
                         goto NoMemory;
                 }
 

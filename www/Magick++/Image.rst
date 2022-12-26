@@ -2753,7 +2753,8 @@ The image cache supports the following methods:
 getConstPixels
 ++++++++++++++
 
-Transfers read-only pixels from the image to the pixel cache as
+Transfers read-only pixels (DirectClass PixelPackets, and IndexPackets
+if applicable for the image type) from the image to the pixel cache as
 defined by the specified region::
 
     const PixelPacket* getConstPixels ( const int x_, const int y_,
@@ -2763,24 +2764,28 @@ defined by the specified region::
 getIndexes
 ++++++++++
 
-Obtain mutable image pixel indexes (valid for PseudoClass images)::
+Obtain mutable image pixel indexes (valid for PseudoClass images). The
+selected region is defined by the prior getPixels(), getConstPixels(),
+or setPixels() call::
 
     IndexPacket* getIndexes ( void )
 
 getConstIndexes
 +++++++++++++++
 
-Obtain immutable image pixel indexes (valid for PseudoClass images)::
+Obtain immutable image pixel indexes (valid for PseudoClass
+images). The selected region is defined by the prior getPixels(),
+getConstPixels(), or setPixels() call::
 
     const IndexPacket* getConstIndexes ( void ) const
 
 getPixels
 +++++++++
 
-Transfers pixels from the image to the pixel cache as defined by the
-specified region. Modified pixels may be subsequently transferred back
-to the image via syncPixels.  This method is valid for DirectClass
-images::
+Transfers pixels (DirectClass PixelPackets, and IndexPackets if
+applicable for the image type) from the image to the pixel cache as
+defined by the specified region. Modified pixels may be subsequently
+transferred back to the image via syncPixels::
 
     PixelPacket* getPixels ( const int x_, const int y_,
                              const unsigned int columns_,

@@ -148,7 +148,7 @@ $$QuantumDepth
 #define HasJBIG
 
 // Define to use the Jasper JPEG v2 library (3.0.0 or later is recommended)
-#undef HasJP2
+#define HasJP2
 
 // Define to use the IJG JPEG v1 library
 #define HasJPEG

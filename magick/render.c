@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -846,7 +846,7 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
   polygon_info->number_edges=edge;
   qsort(polygon_info->edges,polygon_info->number_edges,sizeof(EdgeInfo),
     CompareEdges);
-  if (IsEventLogging())
+  if (IsEventLogged(RenderEvent))
     LogPolygonInfo(polygon_info);
   return(polygon_info);
 }
@@ -1024,7 +1024,7 @@ ConvertPrimitiveToPath(const DrawInfo *draw_info,
   path_info[n].code=EndCode;
   path_info[n].point.x=0.0;
   path_info[n].point.y=0.0;
-  if (IsEventLogging())
+  if (IsEventLogged(RenderEvent))
     LogPathInfo(path_info);
   return(path_info);
 }
@@ -5907,7 +5907,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
   dvalue=ceil(primitive_info->point.x-0.5);
   if (MAGICK_ISNAN(dvalue) || ((dvalue < DTOLONG_MIN)) || (dvalue > DTOLONG_MAX))
     {
-      char double_str[18];
+      char double_str[MaxTextExtent];
       FormatString(double_str,"%g",dvalue);
       ThrowException(&image->exception,DrawError,PrimitiveArithmeticOverflow,double_str);
       return MagickFail;
@@ -5916,7 +5916,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
   dvalue=ceil(primitive_info->point.y-0.5);
   if (MAGICK_ISNAN(dvalue) || ((dvalue < DTOLONG_MIN)) || (dvalue > DTOLONG_MAX))
     {
-      char double_str[18];
+      char double_str[MaxTextExtent];
       FormatString(double_str,"%g",dvalue);
       ThrowException(&image->exception,DrawError,PrimitiveArithmeticOverflow,double_str);
       return MagickFail;
@@ -6183,7 +6183,15 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
           status=MagickFail;
           break;
         }
-      if ((primitive_info[1].point.x != composite_image->columns) &&
+      /*
+        If the requested size is not 0x0 (to be filled in later with
+        composite image size) and the requested size is different than
+        the composite image size, then transform to the requested
+        size.
+      */
+      if ((0 != primitive_info[1].point.x) &&
+          (0 != primitive_info[1].point.y) &&
+          (primitive_info[1].point.x != composite_image->columns) &&
           (primitive_info[1].point.y != composite_image->rows))
         {
           char
@@ -6224,7 +6232,7 @@ DrawPrimitive(Image *image,const DrawInfo *draw_info,
       DrawInfo
         *clone_info;
 
-      if (IsEventLogging())
+      if (IsEventLogged(RenderEvent))
         LogPrimitiveInfo(primitive_info);
       scale=ExpandAffine(&draw_info->affine);
       if ((draw_info->dash_pattern != (double *) NULL) &&

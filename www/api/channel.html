@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>channel</title>
-<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>channel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-api.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,28 +35,26 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="channel">
 <h1 class="title">channel</h1>
-<h2 class="subtitle" id="image-channel-functions">Image channel functions</h2>
-
+<p class="subtitle" id="image-channel-functions">Image channel functions</p>
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#channelimage" id="id11">ChannelImage</a></li>
-<li><a class="reference internal" href="#exportimagechannel" id="id12">ExportImageChannel</a></li>
-<li><a class="reference internal" href="#getimagechanneldepth" id="id13">GetImageChannelDepth</a></li>
-<li><a class="reference internal" href="#importimagechannel" id="id14">ImportImageChannel</a></li>
-<li><a class="reference internal" href="#importimagechannelsmasked" id="id15">ImportImageChannelsMasked</a></li>
-<li><a class="reference internal" href="#setimagechanneldepth" id="id16">SetImageChannelDepth</a></li>
+<li><p><a class="reference internal" href="#channelimage" id="id11">ChannelImage</a></p></li>
+<li><p><a class="reference internal" href="#exportimagechannel" id="id12">ExportImageChannel</a></p></li>
+<li><p><a class="reference internal" href="#getimagechanneldepth" id="id13">GetImageChannelDepth</a></p></li>
+<li><p><a class="reference internal" href="#importimagechannel" id="id14">ImportImageChannel</a></p></li>
+<li><p><a class="reference internal" href="#importimagechannelsmasked" id="id15">ImportImageChannelsMasked</a></p></li>
+<li><p><a class="reference internal" href="#setimagechanneldepth" id="id16">SetImageChannelDepth</a></p></li>
 </ul>
 </div>
 <div class="section" id="channelimage">
 <h1><a class="toc-backref" href="#id11">ChannelImage</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int ChannelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );
-</pre>
+<pre class="literal-block">unsigned int ChannelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );</pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
@@ -65,16 +66,16 @@ colorspaces other than RGB or CMYK. For example, if the image is currently
 transformed to the HWB colorspace, the 'B' channel may be extracted by
 specifying RedChannel as the ChannelType argument.</p>
 <p>The format of the ChannelImage method is:</p>
-<pre class="literal-block">
-unsigned int ChannelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );
-</pre>
+<pre class="literal-block">unsigned int ChannelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>channel:</dt>
-<dd>Identify which channel to extract: Red, Cyan, Green, Magenta,
-Blue, Yellow, or Opacity.</dd>
+<dd><p>Identify which channel to extract: Red, Cyan, Green, Magenta,
+Blue, Yellow, or Opacity.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -82,26 +83,25 @@ Blue, Yellow, or Opacity.</dd>
 <h1><a class="toc-backref" href="#id12">ExportImageChannel</a></h1>
 <div class="section" id="id1">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *ExportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
-                           <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ExportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
+                           <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id2">
 <h2>Description</h2>
 <p>ExportImageChannel() exports a specified image channel as a new image.</p>
 <p>The format of the ExportImageChannel method is:</p>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *ExportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
-                           <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ExportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
+                           <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The source image.</dd>
+<dd><p>The source image.</p>
+</dd>
 <dt>channel:</dt>
-<dd>The image channel to export</dd>
+<dd><p>The image channel to export</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -109,10 +109,8 @@ Blue, Yellow, or Opacity.</dd>
 <h1><a class="toc-backref" href="#id13">GetImageChannelDepth</a></h1>
 <div class="section" id="id3">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned long GetImageChannelDepth( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
-                                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block">unsigned long GetImageChannelDepth( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
+                                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
@@ -125,17 +123,18 @@ supports the scale of the pixel within the range (i.e. no information is
 lost). As an example, the value one is returned for a bilevel channel
 since only one bit of resolution is required to represent a bilevel channel.</p>
 <p>The format of the GetImageChannelDepth method is:</p>
-<pre class="literal-block">
-unsigned long GetImageChannelDepth( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
-                                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">unsigned long GetImageChannelDepth( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
+                                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>channel:</dt>
-<dd>Channel to test.</dd>
+<dd><p>Channel to test.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -143,26 +142,25 @@ unsigned long GetImageChannelDepth( const <a class="reference external" href="..
 <h1><a class="toc-backref" href="#id14">ImportImageChannel</a></h1>
 <div class="section" id="id5">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail ImportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image, <a class="reference external" href="../api/types.html#image">Image</a> *update_image,
-                                   const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );
-</pre>
+<pre class="literal-block">MagickPassFail ImportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image, <a class="reference external" href="../api/types.html#image">Image</a> *update_image,
+                                   const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );</pre>
 </div>
 <div class="section" id="id6">
 <h2>Description</h2>
 <p>ImportImageChannel() imports an image into the specified image channel.</p>
 <p>The format of the ImportImageChannel method is:</p>
-<pre class="literal-block">
-MagickPassFail ImportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image, <a class="reference external" href="../api/types.html#image">Image</a> *update_image,
-                                   const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">MagickPassFail ImportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image, <a class="reference external" href="../api/types.html#image">Image</a> *update_image,
+                                   const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );</pre>
+<dl class="simple">
 <dt>source_image:</dt>
-<dd>The image to use as the replacement image channel.</dd>
+<dd><p>The image to use as the replacement image channel.</p>
+</dd>
 <dt>update_image:</dt>
-<dd>The image to import the channel into.</dd>
+<dd><p>The image to import the channel into.</p>
+</dd>
 <dt>channel:</dt>
-<dd>The image channel to import</dd>
+<dd><p>The image channel to import</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -170,29 +168,28 @@ MagickPassFail ImportImageChannel( const <a class="reference external" href="../
 <h1><a class="toc-backref" href="#id15">ImportImageChannelsMasked</a></h1>
 <div class="section" id="id7">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail ImportImageChannelsMasked( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image,
+<pre class="literal-block">MagickPassFail ImportImageChannelsMasked( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image,
                                           <a class="reference external" href="../api/types.html#image">Image</a> *update_image,
-                                          const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channels );
-</pre>
+                                          const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channels );</pre>
 </div>
 <div class="section" id="id8">
 <h2>Description</h2>
 <p>ImportImageChannelsMasked() imports all the channels from a source
 image to an update image, except for the channels specified.</p>
 <p>The format of the ImportImageChannelsMasked method is:</p>
-<pre class="literal-block">
-MagickPassFail ImportImageChannelsMasked( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image,
+<pre class="literal-block">MagickPassFail ImportImageChannelsMasked( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image,
                                           <a class="reference external" href="../api/types.html#image">Image</a> *update_image,
-                                          const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channels );
-</pre>
-<dl class="docutils">
+                                          const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channels );</pre>
+<dl class="simple">
 <dt>source_image:</dt>
-<dd>The image from which to extract the replacement channels.</dd>
+<dd><p>The image from which to extract the replacement channels.</p>
+</dd>
 <dt>update_image:</dt>
-<dd>The image to import the channels into.</dd>
+<dd><p>The image to import the channels into.</p>
+</dd>
 <dt>channel:</dt>
-<dd>The image channel to import</dd>
+<dd><p>The image channel to import</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -200,10 +197,8 @@ MagickPassFail ImportImageChannelsMasked( const <a class="reference external" hr
 <h1><a class="toc-backref" href="#id16">SetImageChannelDepth</a></h1>
 <div class="section" id="id9">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail SetImageChannelDepth( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
-                                     const unsigned int depth );
-</pre>
+<pre class="literal-block">MagickPassFail SetImageChannelDepth( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
+                                     const unsigned int depth );</pre>
 </div>
 <div class="section" id="id10">
 <h2>Description</h2>
@@ -215,25 +210,29 @@ to increase the effective depth of the image channels. A non-zero
 value is returned if the operation is successful. Check the exception
 member of image to determine the cause for any failure.</p>
 <p>The format of the SetImageChannelDepth method is:</p>
-<pre class="literal-block">
-MagickPassFail SetImageChannelDepth( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
-                                     const unsigned int depth );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">MagickPassFail SetImageChannelDepth( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
+                                     const unsigned int depth );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image to update.</dd>
+<dd><p>The image to update.</p>
+</dd>
 <dt>channel:</dt>
-<dd>Channel to modify.</dd>
+<dd><p>Channel to modify.</p>
+</dd>
 <dt>depth:</dt>
-<dd>Desired channel depth (range 1 to QuantumDepth)</dd>
+<dd><p>Desired channel depth (range 1 to QuantumDepth)</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

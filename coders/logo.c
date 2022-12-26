@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Parts Copyright (c) 1985-1988 by Supoj Sutanthavibul
 % Parts Copyright (c) 1989-2000 by Brian V. Smith
 % Parts Copyright (c) 1991 by Paul King
@@ -5011,7 +5011,7 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
   */
   if (!(LocaleCompare(image_info->magick,"IMAGE") == 0) &&
       !(LocaleCompare(image_info->magick,"PATTERN") == 0))
-    (void) strcpy(clone_info->filename,image_info->magick);
+    (void) strlcpy(clone_info->filename,image_info->magick,sizeof(clone_info->filename));
 
   /*
     Search for image name in list
@@ -5019,7 +5019,7 @@ static Image *ReadLOGOImage(const ImageInfo *image_info,
   for( i=0; i < ArraySize(EmbeddedImageList); i++)
     if (LocaleCompare(clone_info->filename, EmbeddedImageList[i].name) == 0)
       {
-        (void) strcpy(clone_info->magick,EmbeddedImageList[i].magick);
+        (void) strlcpy(clone_info->magick,EmbeddedImageList[i].magick,sizeof(clone_info->magick));
         blob=EmbeddedImageList[i].blob;
         extent=EmbeddedImageList[i].extent;
         break;
@@ -5105,6 +5105,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="Granite texture";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5115,6 +5116,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="Internal format";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5123,6 +5125,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->adjoin=False;
   entry->description="GraphicsMagick Embedded Image";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5133,6 +5136,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="GraphicsMagick Logo";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5142,6 +5146,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="Netscape 216 color cube";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5151,6 +5156,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->stealth=True;
   entry->description="Tiled pattern image";
   entry->module="LOGO";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -5159,6 +5165,7 @@ ModuleExport void RegisterLOGOImage(void)
   entry->adjoin=False;
   entry->stealth=True;
   entry->description="70x46 Truecolor rose";
+  entry->extension_treatment=IgnoreExtensionTreatment;
   entry->module="LOGO";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -5273,17 +5280,17 @@ static unsigned int WriteLOGOImage(const ImageInfo *image_info,Image *image)
   if ((characteristics.monochrome) &&
       (logo_image->columns*logo_image->rows < 4097))
     {
-      (void) strcpy(logo_image->magick,"PBM");
+      (void) strlcpy(logo_image->magick,"PBM",sizeof(logo_image->magick));
       length=((logo_image->columns*logo_image->rows)/8)+16;
     }
   else if (LocaleCompare(image_info->magick,"ROSE") == 0)
     {
-      (void) strcpy(logo_image->magick,"PPM");
+      (void) strlcpy(logo_image->magick,"PPM",sizeof(logo_image->magick));
       length=3*logo_image->columns*logo_image->rows;
     }
   else
     {
-      (void) strcpy(logo_image->magick,"GIF");
+      (void) strlcpy(logo_image->magick,"GIF",sizeof(logo_image->magick));
       length=logo_image->columns*logo_image->rows;
     }
   blob=ImageToBlob(image_info,logo_image,&length,&image->exception);
@@ -5311,7 +5318,7 @@ static unsigned int WriteLOGOImage(const ImageInfo *image_info,Image *image)
     (void) WriteBlobString(image,buffer);
     if (((i+1) % 12) == 0)
       {
-        (void) strcpy(buffer,"\n    ");
+        (void) strlcpy(buffer,"\n    ",sizeof(buffer));
         (void) WriteBlobString(image,buffer);
       }
     p++;

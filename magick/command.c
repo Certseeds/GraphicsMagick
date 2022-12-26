@@ -1161,7 +1161,11 @@ MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
       {
         if (LocaleCompare("map",option+1) == 0)
           {
-            (void) strcpy(argv[i]+1,"sans");
+            /*
+              Indicate that option was already handled so
+              MogrifyImage() will ignore it.
+             */
+            (void) strlcpy(argv[i]+1,"Z",strlen(argv[i]+1)+1);
             resource_info.map_type=(char *) NULL;
             if (*option == '-')
               {
@@ -6922,7 +6926,7 @@ MagickExport MagickPassFail DisplayImageCommand(ImageInfo *image_info,
               (void) MagickSceneFileName(filename,image_info->filename,".%lu",MagickTrue,scene);
               (void) strlcpy(image_info->filename,filename,MaxTextExtent);
             }
-          (void) strcpy(image_info->magick,"MIFF");
+          (void) strlcpy(image_info->magick,"MIFF",sizeof(image_info->magick));
           image_info->colorspace=quantize_info->colorspace;
           image_info->dither=quantize_info->dither;
           DestroyExceptionInfo(exception);
@@ -7590,7 +7594,11 @@ MagickExport MagickPassFail DisplayImageCommand(ImageInfo *image_info,
           }
         if (LocaleCompare("map",option+1) == 0)
           {
-            (void) strcpy(argv[i]+1,"sans");
+            /*
+              Indicate that option was already handled so
+              MogrifyImage() will ignore it.
+             */
+            (void) strlcpy(argv[i]+1,"Z",strlen(argv[i]+1)+1);
             resource_info.map_type=(char *) NULL;
             if (*option == '-')
               {
@@ -8834,15 +8842,15 @@ static void IdentifyUsage(void)
 */
 static void InitializeBatchOptions(MagickBool prompt)
 {
-  strcpy(batch_options.pass, "PASS");
-  strcpy(batch_options.fail, "FAIL");
+  strlcpy(batch_options.pass, "PASS", sizeof(batch_options.pass));
+  strlcpy(batch_options.fail, "FAIL", sizeof(batch_options.fail));
 #if defined(MSWINDOWS)
   batch_options.command_line_parser = ParseWindowsCommandLine;
 #else
   batch_options.command_line_parser = ParseUnixCommandLine;
 #endif
   if (prompt)
-    strcpy(batch_options.prompt, "GM> ");
+    strlcpy(batch_options.prompt, "GM> ", sizeof(batch_options.prompt));
 }
 
 
@@ -10896,9 +10904,6 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             NormalizeSamplingFactor(clone_info);
             continue;
           }
-        if (LocaleCompare("sans",option+1) == 0)
-          if (*option == '-')
-            i++;
         if (LocaleCompare("scale",option+1) == 0)
           {
             Image
@@ -11388,6 +11393,20 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
           }
         break;
       }
+      case 'Z':
+      {
+        /*
+          Option -Z (used to be "sans") indicates an already handled
+          option (so ignore it).
+        */
+        if (LocaleCompare("Z",option+1) == 0)
+          if (*option == '-')
+            {
+              i++;
+              continue;
+            }
+        break;
+      }
       default:
         break;
     }
@@ -11563,7 +11582,9 @@ MagickExport MagickPassFail MogrifyImages(const ImageInfo *image_info,
           }
       }
       AppendImageToList(&mogrify_images,image);
+      mogrify_images=image;
     }
+  mogrify_images=GetFirstImageInList(mogrify_images);
 
   /*
     Apply options to the entire image list.
@@ -11945,7 +11966,7 @@ static MagickPassFail* TransmogrifyImage(TransmogrifyOptions *options)
           if (IsWriteable(output_filename))
             {
               (void) strlcpy(temporary_filename,output_filename,MaxTextExtent);
-              (void) strcat(temporary_filename,"~");
+              (void) strlcat(temporary_filename,"~",sizeof(temporary_filename));
               if (rename(output_filename,temporary_filename) == 0)
                 {
                   if (image_info->verbose)
@@ -12671,7 +12692,7 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
                     option);
                 (void) CloneString(&format,argv[i]);
                 (void) strlcpy(image_info->filename,format,MaxTextExtent);
-                (void) strcat(image_info->filename,":");
+                (void) strlcat(image_info->filename,":",sizeof(image_info->filename));
                 (void) SetImageInfo(image_info,SETMAGICK_WRITE,exception);
                 if (*image_info->magick == '\0')
                   ThrowMogrifyException(OptionError,UnrecognizedImageFormat,format);
@@ -14584,7 +14605,11 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
         if (LocaleCompare("frame",option+1) == 0)
           {
             (void) CloneString(&montage_info->frame,(char *) NULL);
-            (void) strcpy(argv[i]+1,"sans");
+            /*
+              Indicate that option was already handled so
+              MogrifyImage() will ignore it.
+             */
+            (void) strlcpy(argv[i]+1,"Z",strlen(argv[i]+1)+1);
             if (*option == '-')
               {
                 i++;
@@ -15031,7 +15056,11 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
         if (LocaleCompare("tile",option+1) == 0)
           {
             (void) CloneString(&montage_info->tile,(char *) NULL);
-            (void) strcpy(argv[i]+1,"sans");
+            /*
+              Indicate that option was already handled so
+              MogrifyImage() will ignore it.
+             */
+            (void) strlcpy(argv[i]+1,"Z",strlen(argv[i]+1)+1);
             if (*option == '-')
               {
                 i++;
@@ -16061,7 +16090,11 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
           }
         if (LocaleCompare("snaps",option+1) == 0)
           {
-            (void) strcpy(argv[i]+1,"sans");
+            /*
+              Indicate that option was already handled so
+              MogrifyImage() will ignore it.
+             */
+            (void) strlcpy(argv[i]+1,"Z",strlen(argv[i]+1)+1);
             i++;
             if ((i == argc) || !sscanf(argv[i],"%ld",&x))
               MagickFatalError(OptionFatalError,MissingArgument,option);
@@ -16178,8 +16211,8 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
     status&=next_image != (Image *) NULL;
     if (next_image == (Image *) NULL)
       continue;
-    (void) strlcpy(next_image->filename,filename,MaxTextExtent);
-    (void) strcpy(next_image->magick,"PS");
+    (void) strlcpy(next_image->filename,filename,sizeof(next_image->filename));
+    (void) strlcpy(next_image->magick,"PS",sizeof(next_image->magick));
     next_image->scene=i;
     next_image->previous=image;
     if (image != (Image *) NULL)
@@ -17366,8 +17399,8 @@ static MagickPassFail RegisterCommand(ImageInfo *image_info,
   ARG_NOT_USED(exception);
 
   memset(szKey, 0, _MAX_PATH*2*sizeof(char));
-  strcpy(szKey, szRegPath);
-  strcat(szKey, "GraphicsMagick");
+  strlcpy(szKey, szRegPath, sizeof(szKey));
+  strlcat(szKey, "GraphicsMagick", sizeof(szKey));
 
   /* open the registry event source key */
   lRet = RegCreateKeyEx(HKEY_LOCAL_MACHINE, szKey, 0, NULL,

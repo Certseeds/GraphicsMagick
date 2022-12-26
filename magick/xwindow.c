@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2109,9 +2109,11 @@ MagickXDisplayImageInfo(Display *display,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method XDitherImage dithers the reference image as required by the HP
-%  Color Recovery algorithm.  The color values are quantized to 3 bits of red
-%  and green, and 2 bits of blue (3/3/2) and can be used as indices into a
-%  8-bit X standard colormap.
+%  Color Recovery algorithm
+%  (https://www.hpl.hp.com/hpjournal/95apr/apr95a6.pdf).
+%  The color values are quantized to 3 bits of red and green, and 2 bits
+%  of blue (3/3/2) and can be used as indices into a 8-bit X standard
+%  colormap.
 %
 %  The format of the XDitherImage method is:
 %
@@ -2149,10 +2151,11 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
   PixelPacket
     color;
 
-  int
+  long
+    x,
     y;
 
-  long
+  magick_int32_t
     value;
 
   register char
@@ -2163,13 +2166,12 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
 
   register int
     i,
-    j,
-    x;
+    j;
 
   unsigned int
     scanline_pad;
 
-  register unsigned long
+  register magick_uint32_t
     pixel;
 
   unsigned char
@@ -2180,6 +2182,9 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
   /*
     Allocate and initialize dither maps.
   */
+  memset(blue_map,0,sizeof(blue_map));
+  memset(green_map,0,sizeof(green_map));
+  memset(red_map,0,sizeof(red_map));
   for (i=0; i < 2; i++)
     for (j=0; j < 16; j++)
     {
@@ -2193,7 +2198,7 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
         {
           MagickError3(ResourceLimitError,MemoryAllocationFailed,
             UnableToDitherImage);
-          return;
+          goto done_xditherimage;
         }
     }
   /*
@@ -2218,7 +2223,9 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
         value=x-32;
         if (x < 112)
           value=x/2+24;
-        value+=(dither_blue[i][j] << 1);
+        /* FIXME: Cast to unsigned added below to avoid undefined
+           behavior. Not sure if result is what was expected! */
+        value+=((magick_uint32_t) dither_blue[i][j] << 1);
         blue_map[i][j][x]=(unsigned char)
           ((value < 0) ? 0 : (value > 255) ? 255 : value);
       }
@@ -2240,10 +2247,10 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
       color.red=red_map[i][j][ScaleQuantumToChar(p->red)] << 8;
       color.green=green_map[i][j][ScaleQuantumToChar(p->green)] << 8;
       color.blue=blue_map[i][j][ScaleQuantumToChar(p->blue)] << 8;
-      pixel=(unsigned long) ((color.red & 0xe0) |
-        ((unsigned long) (color.green & 0xe0) >> 3) |
-        ((unsigned long) (color.blue & 0xc0) >> 6));
-      *q++=(unsigned char) pixel;
+      pixel=(magick_uint32_t) ((color.red & 0xe0) |
+        ((magick_uint32_t) (color.green & 0xe0) >> 3) |
+        ((magick_uint32_t) (color.blue & 0xc0) >> 6));
+      *q++=(magick_uint32_t) pixel;
       p++;
       j++;
       if (j == 16)
@@ -2254,6 +2261,7 @@ static void MagickXDitherImage(Image *image,XImage *ximage)
     if (i == 2)
       i=0;
   }
+ done_xditherimage:
   /*
     Free allocated memory.
   */
@@ -3910,7 +3918,7 @@ MagickXGetWindowColor(Display *display,MagickXWindows *windows,char *name)
     pixel;
 
   RectangleInfo
-    crop_info;
+    crop_info = { 0, 0, 0, 0 };
 
   unsigned int
     status;
@@ -4488,7 +4496,8 @@ MagickXGetWindowImage(Display *display,const Window window,
             /*
               Create colormap.
             */
-            if (!AllocateImageColormap(composite_image,number_colors))
+            if ((NULL == colors) ||
+                !AllocateImageColormap(composite_image,number_colors))
               {
                 XDestroyImage(ximage);
                 ximage=(XImage *) NULL;
@@ -5233,7 +5242,7 @@ MagickXInitializeWindows(Display *display,
 #if defined(MSWINDOWS)
   (void) XSynchronize(display,IsWindows95());
 #endif
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) XSynchronize(display,True);
       (void) LogMagickEvent(X11Event,GetMagickModule(),"Version: %.1024s",
@@ -5300,7 +5309,7 @@ MagickXInitializeWindows(Display *display,
       (windows->icon_visual == (XVisualInfo *) NULL))
     MagickFatalError(XServerFatalError,UnableToGetVisual,
       resource_info->visual_type);
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),"Visual:");
       (void) LogMagickEvent(X11Event,GetMagickModule(),"  visual id: 0x%lx",
@@ -5783,7 +5792,7 @@ MagickXMakeImage(Display *display,
       (void) XDefineCursor(display,window->id,window->cursor);
       return(False);
     }
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),"XImage:");
       (void) LogMagickEvent(X11Event,GetMagickModule(),"  width x height: %dx%d",
@@ -5891,7 +5900,7 @@ MagickXMakeImage(Display *display,
         */
         matte_image=XCreateImage(display,window->visual,1,XYBitmap,0,
           (char *) NULL,width,height,XBitmapPad(display),0);
-        if (IsEventLogging())
+        if (IsEventLogged(X11Event))
           {
             (void) LogMagickEvent(X11Event,GetMagickModule(),"Matte Image:");
             (void) LogMagickEvent(X11Event,GetMagickModule(),
@@ -7195,6 +7204,13 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
     magnify>>=1;
   while (magnify > windows->magnify.height)
     magnify>>=1;
+  if (magnify == 0)
+    {
+      if (previous_magnify != 0)
+        magnify = previous_magnify;
+      else
+        magnify = 1;
+    }
   if (magnify != previous_magnify)
     {
       unsigned int
@@ -7635,7 +7651,7 @@ MagickXMakePixmap(Display *display,
   if (!window->shared_memory)
     (void) XPutImage(display,window->pixmap,window->annotate_context,
       window->ximage,0,0,0,0,width,height);
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),"Pixmap:");
       (void) LogMagickEvent(X11Event,GetMagickModule(),"  width, height: %ux%u",
@@ -7816,7 +7832,7 @@ MagickXMakeStandardColormap(Display *display,
             (void) SetImageType(image,TrueColorType);
             DestroyImage(map_image);
           }
-      if (IsEventLogging())
+      if (IsEventLogged(X11Event))
         {
           (void) LogMagickEvent(X11Event,GetMagickModule(),"Standard Colormap:");
           (void) LogMagickEvent(X11Event,GetMagickModule(),"  colormap id: 0x%lx",
@@ -8257,7 +8273,7 @@ MagickXMakeStandardColormap(Display *display,
       pixel->colors=image->colors+MaxNumberPens;
     }
   MagickFreeMemory(colors);
-  if (IsEventLogging())
+  if (IsEventLogged(X11Event))
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),"Standard Colormap:");
       (void) LogMagickEvent(X11Event,GetMagickModule(),"  colormap id: 0x%lx",

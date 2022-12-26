@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -253,7 +253,7 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
       bounds.x=0;
       bounds.y=0;
     }
-  if (image->logging)
+  if (IsEventLogged(TransformEvent))
     (void) LogMagickEvent(TransformEvent,GetMagickModule(),
                           "Bounding Box: %lux%lu%+ld%+ld",
                           bounds.width, bounds.height, bounds.x, bounds.y);
@@ -294,6 +294,7 @@ MagickExport RectangleInfo GetImageBoundingBox(const Image *image,
 %
 %
 */
+#if MaxMap == MaxRGB
 static inline unsigned char MinimumDepthForValue(const Quantum quantum)
 {
   register unsigned int
@@ -309,7 +310,6 @@ static inline unsigned char MinimumDepthForValue(const Quantum quantum)
 
   return depth;
 }
-#if MaxMap == MaxRGB
 static magick_uint8_t* AllocateDepthMap(void)
 {
   magick_uint8_t

@@ -77,8 +77,22 @@
 #include "jasper/jas_stream.h"
 #include "jasper/jas_image.h"
 #include "jasper/jas_malloc.h"
+#include "jasper/jas_debug.h"
+#include "jasper/jas_tvp.h"
 
 #include "bmp_cod.h"
+
+/******************************************************************************\
+* Local types.
+\******************************************************************************/
+
+typedef struct {
+	size_t max_samples;
+} bmp_dec_importopts_t;
+
+typedef enum {
+	OPT_MAXSIZE,
+} optid_t;
 
 /******************************************************************************\
 * Local prototypes.
@@ -92,10 +106,47 @@ static int bmp_getint32(jas_stream_t *in, int_fast32_t *val);
 static int bmp_gobble(jas_stream_t *in, long n);
 
 /******************************************************************************\
+* Option parsing.
+\******************************************************************************/
+
+static jas_taginfo_t decopts[] = {
+	{OPT_MAXSIZE, "max_samples"},
+	{-1, 0}
+};
+
+static int bmp_dec_parseopts(const char *optstr, bmp_dec_importopts_t *opts)
+{
+	jas_tvparser_t *tvp;
+
+	opts->max_samples = JAS_DEC_DEFAULT_MAX_SAMPLES;
+
+	if (!(tvp = jas_tvparser_create(optstr ? optstr : ""))) {
+		return -1;
+	}
+
+	while (!jas_tvparser_next(tvp)) {
+		switch (jas_taginfo_nonull(jas_taginfos_lookup(decopts,
+		  jas_tvparser_gettag(tvp)))->id) {
+		case OPT_MAXSIZE:
+			opts->max_samples = strtoull(jas_tvparser_getval(tvp), 0, 10);
+			break;
+		default:
+			jas_eprintf("warning: ignoring invalid option %s\n",
+			  jas_tvparser_gettag(tvp));
+			break;
+		}
+	}
+
+	jas_tvparser_destroy(tvp);
+
+	return 0;
+}
+
+/******************************************************************************\
 * Interface functions.
 \******************************************************************************/
 
-jas_image_t *bmp_decode(jas_stream_t *in, char *optstr)
+jas_image_t *bmp_decode(jas_stream_t *in, const char *optstr)
 {
 	jas_image_t *image;
 	bmp_hdr_t hdr;
@@ -105,9 +156,14 @@ jas_image_t *bmp_decode(jas_stream_t *in, char *optstr)
 	jas_image_cmptparm_t *cmptparm;
 	uint_fast16_t numcmpts;
 	long n;
+	bmp_dec_importopts_t opts;
+	size_t num_samples;
 
-	if (optstr) {
-		jas_eprintf("warning: ignoring BMP decoder options\n");
+	image = 0;
+	info = 0;
+
+	if (bmp_dec_parseopts(optstr, &opts)) {
+		goto error;
 	}
 
 	jas_eprintf(
@@ -120,33 +176,62 @@ jas_image_t *bmp_decode(jas_stream_t *in, char *optstr)
 	/* Read the bitmap header. */
 	if (bmp_gethdr(in, &hdr)) {
 		jas_eprintf("cannot get header\n");
-		return 0;
+		goto error;
 	}
+	JAS_DBGLOG(1, (
+	  "BMP header: magic 0x%x; siz %d; res1 %d; res2 %d; off %d\n",
+	  hdr.magic, hdr.siz, hdr.reserved1, hdr.reserved2, hdr.off
+	  ));
 
 	/* Read the bitmap information. */
 	if (!(info = bmp_getinfo(in))) {
 		jas_eprintf("cannot get info\n");
-		return 0;
+		goto error;
+	}
+	JAS_DBGLOG(1,
+	  ("BMP information: len %ld; width %ld; height %ld; numplanes %d; "
+	  "depth %d; enctype %ld; siz %ld; hres %ld; vres %ld; numcolors %ld; "
+	  "mincolors %ld\n", JAS_CAST(long, info->len),
+	  JAS_CAST(long, info->width), JAS_CAST(long, info->height),
+	  JAS_CAST(long, info->numplanes), JAS_CAST(long, info->depth),
+	  JAS_CAST(long, info->enctype), JAS_CAST(long, info->siz),
+	  JAS_CAST(long, info->hres), JAS_CAST(long, info->vres),
+	  JAS_CAST(long, info->numcolors), JAS_CAST(long, info->mincolors)));
+
+	if (info->width < 0 || info->height < 0 || info->numplanes < 0 ||
+	  info->depth < 0 || info->siz < 0 || info->hres < 0 || info->vres < 0) {
+		jas_eprintf("corrupt bit stream\n");
+		goto error;
+	}
+
+	if (!jas_safe_size_mul3(info->width, info->height, info->numplanes,
+	  &num_samples)) {
+		jas_eprintf("image size too large\n");
+		goto error;
+	}
+
+	if (opts.max_samples > 0 && num_samples > opts.max_samples) {
+		jas_eprintf("maximum number of pixels exceeded (%"_PFX_PTR"u)\n",
+		  opts.max_samples);
+		goto error;
 	}
 
 	/* Ensure that we support this type of BMP file. */
 	if (!bmp_issupported(&hdr, info)) {
 		jas_eprintf("error: unsupported BMP encoding\n");
-		bmp_info_destroy(info);
-		return 0;
+		goto error;
 	}
 
 	/* Skip over any useless data between the end of the palette
 	  and start of the bitmap data. */
 	if ((n = hdr.off - (BMP_HDRLEN + BMP_INFOLEN + BMP_PALLEN(info))) < 0) {
 		jas_eprintf("error: possibly bad bitmap offset?\n");
-		return 0;
+		goto error;
 	}
 	if (n > 0) {
 		jas_eprintf("skipping unknown data in BMP file\n");
 		if (bmp_gobble(in, n)) {
-			bmp_info_destroy(info);
-			return 0;
+			goto error;
 		}
 	}
 
@@ -168,8 +253,7 @@ jas_image_t *bmp_decode(jas_stream_t *in, char *optstr)
 	/* Create image object. */
 	if (!(image = jas_image_create(numcmpts, cmptparms,
 	  JAS_CLRSPC_UNKNOWN))) {
-		bmp_info_destroy(info);
-		return 0;
+		goto error;
 	}
 
 	if (numcmpts == 3) {
@@ -188,21 +272,28 @@ jas_image_t *bmp_decode(jas_stream_t *in, char *optstr)
 
 	/* Read the bitmap data. */
 	if (bmp_getdata(in, info, image)) {
-		bmp_info_destroy(info);
-		jas_image_destroy(image);
-		return 0;
+		goto error;
 	}
 
 	bmp_info_destroy(info);
 
 	return image;
+
+error:
+	if (info) {
+		bmp_info_destroy(info);
+	}
+	if (image) {
+		jas_image_destroy(image);
+	}
+	return 0;
 }
 
 int bmp_validate(jas_stream_t *in)
 {
 	int n;
 	int i;
-	uchar buf[2];
+	jas_uchar buf[2];
 
 	assert(JAS_STREAM_MAXPUTBACK >= 2);
 
@@ -283,7 +374,7 @@ static bmp_info_t *bmp_getinfo(jas_stream_t *in)
 	}
 
 	if (info->numcolors > 0) {
-		if (!(info->palents = jas_malloc(info->numcolors *
+		if (!(info->palents = jas_alloc2(info->numcolors,
 		  sizeof(bmp_palent_t)))) {
 			bmp_info_destroy(info);
 			return 0;
@@ -440,7 +531,7 @@ static int bmp_getint32(jas_stream_t *in, int_fast32_t *val)
 		if ((c = jas_stream_getc(in)) == EOF) {
 			return -1;
 		}
-		v |= (c << 24);
+		v |= (JAS_CAST(uint_fast32_t, c) << 24);
 		if (--n <= 0) {
 			break;
 		}

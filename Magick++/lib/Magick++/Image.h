@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2020
+// Copyright Bob Friesenhahn, 1999 - 2022
 //
 // Definition of Image, the representation of a single image in Magick++
 //
@@ -905,7 +905,8 @@ namespace Magick
 
     // Colormap size (number of colormap entries)
     void            colorMapSize ( const unsigned int entries_ );
-    unsigned int    colorMapSize ( void );
+    unsigned int    colorMapSize ( void ) const;
+    unsigned int    colorMapSize ( void ); // Deprecate?
 
     // Image Color Space
     void            colorSpace( const ColorspaceType colorSpace_ );
@@ -1305,21 +1306,24 @@ namespace Magick
 
 
     // Transfers read-only pixels from the image to the pixel cache as
-    // defined by the specified region
+    // defined by the specified region.
     const PixelPacket* getConstPixels ( const int x_, const int y_,
                                         const unsigned int columns_,
                                         const unsigned int rows_ ) const;
 
-    // Obtain mutable image pixel indexes (valid for PseudoClass images)
+    // Obtain mutable image pixel indexes (valid for PseudoClass
+    // images).  The selected region is defined by the prior
+    // getPixels(), getConstPixels(), or setPixels() call.
     IndexPacket* getIndexes ( void );
 
-    // Obtain immutable image pixel indexes (valid for PseudoClass images)
+    // Obtain immutable image pixel indexes (valid for PseudoClass
+    // images). The selected region is defined by a prior getPixels(),
+    // getConstPixels(), or setPixels() call.
     const IndexPacket* getConstIndexes ( void ) const;
 
     // Transfers pixels from the image to the pixel cache as defined
     // by the specified region. Modified pixels may be subsequently
-    // transferred back to the image via syncPixels.  This method is
-    // valid for DirectClass images.
+    // transferred back to the image via syncPixels.
     PixelPacket* getPixels ( const int x_, const int y_,
                              const unsigned int columns_,
                              const unsigned int rows_ );

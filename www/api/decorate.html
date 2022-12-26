@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>decorate</title>
-<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>decorate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-api.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,26 +35,24 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="decorate">
 <h1 class="title">decorate</h1>
-<h2 class="subtitle" id="add-decorative-frames-and-borders">Add decorative frames and borders</h2>
-
+<p class="subtitle" id="add-decorative-frames-and-borders">Add decorative frames and borders</p>
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#borderimage" id="id5">BorderImage</a></li>
-<li><a class="reference internal" href="#frameimage" id="id6">FrameImage</a></li>
-<li><a class="reference internal" href="#raiseimage" id="id7">RaiseImage</a></li>
+<li><p><a class="reference internal" href="#borderimage" id="id5">BorderImage</a></p></li>
+<li><p><a class="reference internal" href="#frameimage" id="id6">FrameImage</a></p></li>
+<li><p><a class="reference internal" href="#raiseimage" id="id7">RaiseImage</a></p></li>
 </ul>
 </div>
 <div class="section" id="borderimage">
 <h1><a class="toc-backref" href="#id5">BorderImage</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *BorderImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *border_info,
-                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *BorderImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *border_info,
+                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
@@ -60,17 +61,18 @@ the bordercolor member of the image structure.  The width and height
 of the border are defined by the corresponding members of the border_info
 structure.</p>
 <p>The format of the BorderImage method is:</p>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *BorderImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *border_info,
-                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *BorderImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *border_info,
+                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>border_info:</dt>
-<dd>Define the width and height of the border.</dd>
+<dd><p>Define the width and height of the border.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -78,10 +80,8 @@ structure.</p>
 <h1><a class="toc-backref" href="#id6">FrameImage</a></h1>
 <div class="section" id="id1">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *FrameImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#frameinfo">FrameInfo</a> *frame_info,
-                   <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *FrameImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#frameinfo">FrameInfo</a> *frame_info,
+                   <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id2">
 <h2>Description</h2>
@@ -91,17 +91,18 @@ Members width and height of frame_info specify the border width of the
 vertical and horizontal sides of the frame.  Members inner and outer
 indicate the width of the inner and outer shadows of the frame.</p>
 <p>The format of the FrameImage method is:</p>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *FrameImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#frameinfo">FrameInfo</a> *frame_info,
-                   <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *FrameImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#frameinfo">FrameInfo</a> *frame_info,
+                   <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>frame_info:</dt>
-<dd>Define the width and height of the frame and its bevels.</dd>
+<dd><p>Define the width and height of the frame and its bevels.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -109,10 +110,8 @@ indicate the width of the inner and outer shadows of the frame.</p>
 <h1><a class="toc-backref" href="#id7">RaiseImage</a></h1>
 <div class="section" id="id3">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int RaiseImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *raise_info,
-                         const int raise_flag );
-</pre>
+<pre class="literal-block">unsigned int RaiseImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *raise_info,
+                         const int raise_flag );</pre>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
@@ -121,26 +120,30 @@ by lightening and darkening the edges of the image.  Members width and
 height of raise_info define the width of the vertical and horizontal
 edge of the effect.</p>
 <p>The format of the RaiseImage method is:</p>
-<pre class="literal-block">
-unsigned int RaiseImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *raise_info,
-                         const int raise_flag );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">unsigned int RaiseImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *raise_info,
+                         const int raise_flag );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>raise_info:</dt>
-<dd>Define the width and height of the raise area.</dd>
+<dd><p>Define the width and height of the raise area.</p>
+</dd>
 <dt>raise_flag:</dt>
-<dd>A value other than zero creates a 3-D raise effect,
-otherwise it has a lowered effect.</dd>
+<dd><p>A value other than zero creates a 3-D raise effect,
+otherwise it has a lowered effect.</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

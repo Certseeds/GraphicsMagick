@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>Magick++ API for GraphicsMagick</title>
-<link rel="stylesheet" href="../docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>Magick++ API for GraphicsMagick</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,21 +35,21 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="magick-api-for-graphicsmagick">
 <h1 class="title">Magick++ API for GraphicsMagick</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#introduction" id="id1">Introduction</a></li>
-<li><a class="reference internal" href="#api" id="id2">API</a></li>
-<li><a class="reference internal" href="#obtaining-magick" id="id3">Obtaining Magick++</a></li>
-<li><a class="reference internal" href="#installation" id="id4">Installation</a></li>
-<li><a class="reference internal" href="#usage" id="id5">Usage</a></li>
-<li><a class="reference internal" href="#reporting-bugs" id="id6">Reporting Bugs</a></li>
+<li><p><a class="reference internal" href="#introduction" id="id1">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#api" id="id2">API</a></p></li>
+<li><p><a class="reference internal" href="#obtaining-magick" id="id3">Obtaining Magick++</a></p></li>
+<li><p><a class="reference internal" href="#installation" id="id4">Installation</a></p></li>
+<li><p><a class="reference internal" href="#usage" id="id5">Usage</a></p></li>
+<li><p><a class="reference internal" href="#reporting-bugs" id="id6">Reporting Bugs</a></p></li>
 </ul>
 </div>
 <div class="section" id="introduction">
@@ -137,48 +140,48 @@ unreferenced images on the stack are automatically cleaned up, avoiding
 the potential for memory leaks.</p>
 <p>For ease of access, the documentation for the available user-level
 classes is available via the following table:</p>
-<table border="1" class="docutils">
+<table>
 <caption><em>Magick++</em> User-Level Classes</caption>
 <colgroup>
-<col width="18%" />
-<col width="82%" />
+<col style="width: 18%" />
+<col style="width: 82%" />
 </colgroup>
-<tbody valign="top">
-<tr><td><a class="reference external" href="Blob.html">Blob</a></td>
-<td>Binary Large OBject container.</td>
+<tbody>
+<tr><td><p><a class="reference external" href="Blob.html">Blob</a></p></td>
+<td><p>Binary Large OBject container.</p></td>
 </tr>
-<tr><td><a class="reference external" href="CoderInfo.html">CoderInfo</a></td>
-<td>Report information about supported image formats (use with
-<a class="reference external" href="STL.html#coderInfoList">coderInfoList</a>())</td>
+<tr><td><p><a class="reference external" href="CoderInfo.html">CoderInfo</a></p></td>
+<td><p>Report information about supported image formats (use with
+<a class="reference external" href="STL.html#coderInfoList">coderInfoList</a>())</p></td>
 </tr>
-<tr><td><a class="reference external" href="Color.html">Color</a></td>
-<td>Color specification.</td>
+<tr><td><p><a class="reference external" href="Color.html">Color</a></p></td>
+<td><p>Color specification.</p></td>
 </tr>
-<tr><td><a class="reference external" href="Drawable.html">Drawable</a></td>
-<td>Drawable shape (for input to 'draw').</td>
+<tr><td><p><a class="reference external" href="Drawable.html">Drawable</a></p></td>
+<td><p>Drawable shape (for input to 'draw').</p></td>
 </tr>
-<tr><td><a class="reference external" href="Exception.html">Exception</a></td>
-<td>C++ exception objects.</td>
+<tr><td><p><a class="reference external" href="Exception.html">Exception</a></p></td>
+<td><p>C++ exception objects.</p></td>
 </tr>
-<tr><td><a class="reference external" href="Geometry.html">Geometry</a></td>
-<td>Geometry specification.</td>
+<tr><td><p><a class="reference external" href="Geometry.html">Geometry</a></p></td>
+<td><p>Geometry specification.</p></td>
 </tr>
-<tr><td><a class="reference external" href="Image.html">Image</a></td>
-<td>Image frame.  This is the primary object in <em>Magick++</em>.</td>
+<tr><td><p><a class="reference external" href="Image.html">Image</a></p></td>
+<td><p>Image frame.  This is the primary object in <em>Magick++</em>.</p></td>
 </tr>
-<tr><td><a class="reference external" href="Montage.html">Montage</a></td>
-<td>Montage options for montageImages().</td>
+<tr><td><p><a class="reference external" href="Montage.html">Montage</a></p></td>
+<td><p>Montage options for montageImages().</p></td>
 </tr>
-<tr><td><a class="reference external" href="Pixels.html">Pixels</a></td>
-<td>Low-level access to image pixels.</td>
+<tr><td><p><a class="reference external" href="Pixels.html">Pixels</a></p></td>
+<td><p>Low-level access to image pixels.</p></td>
 </tr>
-<tr><td><a class="reference external" href="STL.html">STL</a></td>
-<td>STL algorithms and function objects for operating on
-containers of image frames.</td>
+<tr><td><p><a class="reference external" href="STL.html">STL</a></p></td>
+<td><p>STL algorithms and function objects for operating on
+containers of image frames.</p></td>
 </tr>
-<tr><td><a class="reference external" href="TypeMetric.html">TypeMetric</a></td>
-<td>Container for font type metrics (use with
-<a class="reference external" href="Image.html#fonttypemetrics">Image::fontTypeMetrics</a>).</td>
+<tr><td><p><a class="reference external" href="TypeMetric.html">TypeMetric</a></p></td>
+<td><p>Container for font type metrics (use with
+<a class="reference external" href="Image.html#fonttypemetrics">Image::fontTypeMetrics</a>).</p></td>
 </tr>
 </tbody>
 </table>
@@ -202,10 +205,8 @@ with recalling compilation options required to compile and link programs
 which depend on <em>Magick++</em>. For example, the following command will
 compile and link the source file example.cpp to produce the executable
 example (notice that quotes are backward quotes):</p>
-<pre class="literal-block">
-c++ -o example example.cpp `GraphicsMagick++-config --cppflags --cxxflags
-  --ldflags --libs`
-</pre>
+<pre class="literal-block">c++ -o example example.cpp `GraphicsMagick++-config --cppflags --cxxflags
+  --ldflags --libs`</pre>
 <p>Windows users may get started by manually editing a project file for one
 of the <em>Magick++</em> demo programs.</p>
 <p>It is necessary to initialize the GraphicsMagick library prior to
@@ -214,11 +215,9 @@ passing the path to the GraphicsMagick DLLs (assumed to be in the same
 directory as your program) to the InitializeMagick() function
 call. This is commonly performed by providing the path to your program
 (argv[0]) as shown in the following example:</p>
-<pre class="literal-block">
-int main( int /*argc*/, char ** argv)
+<pre class="literal-block">int main( int /*argc*/, char ** argv)
 {
-  InitializeMagick(*argv);
-</pre>
+  InitializeMagick(*argv);</pre>
 <p>If you don't have the path to your executable, then pass NULL and
 usually the library will be found anyway. Besides helping to find the
 GraphicsMagick DLL/library and configuration files, InitializeMagick()
@@ -235,9 +234,12 @@ regarding usage should be directed to <a class="reference external" href="mailto
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

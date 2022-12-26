@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>import</title>
-<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>import</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-api.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,29 +35,27 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="import">
 <h1 class="title">import</h1>
-<h2 class="subtitle" id="import-image-pixels-from-common-representations">Import image pixels from common representations</h2>
-
+<p class="subtitle" id="import-image-pixels-from-common-representations">Import image pixels from common representations</p>
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#importimagepixelarea" id="id5">ImportImagePixelArea</a></li>
-<li><a class="reference internal" href="#importviewpixelarea" id="id6">ImportViewPixelArea</a></li>
-<li><a class="reference internal" href="#importpixelareaoptionsinit" id="id7">ImportPixelAreaOptionsInit</a></li>
+<li><p><a class="reference internal" href="#importimagepixelarea" id="id5">ImportImagePixelArea</a></p></li>
+<li><p><a class="reference internal" href="#importviewpixelarea" id="id6">ImportViewPixelArea</a></p></li>
+<li><p><a class="reference internal" href="#importpixelareaoptionsinit" id="id7">ImportPixelAreaOptionsInit</a></p></li>
 </ul>
 </div>
 <div class="section" id="importimagepixelarea">
 <h1><a class="toc-backref" href="#id5">ImportImagePixelArea</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail ImportImagePixelArea( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
+<pre class="literal-block">MagickPassFail ImportImagePixelArea( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
                                      const unsigned int quantum_size,
                                      const unsigned char *source,
                                      const ImportPixelAreaOptions *options,
-                                     ImportPixelAreaInfo *import_info );
-</pre>
+                                     ImportPixelAreaInfo *import_info );</pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
@@ -69,34 +70,39 @@ depth from 1 to 32 (e.g. 13), 64-bits, as well as 32 and 64-bit float.</p>
 <p>MagickPass is returned if the pixels are successfully transferred,
 otherwise MagickFail.</p>
 <p>The format of the ImportImagePixelArea method is:</p>
-<pre class="literal-block">
-MagickPassFail ImportImagePixelArea( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
+<pre class="literal-block">MagickPassFail ImportImagePixelArea( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
                                      const unsigned int quantum_size,
                                      const unsigned char *source,
                                      const ImportPixelAreaOptions *options,
-                                     ImportPixelAreaInfo *import_info );
-</pre>
-<dl class="docutils">
+                                     ImportPixelAreaInfo *import_info );</pre>
+<dl class="simple">
 <dt>status:</dt>
-<dd>Method PushImagePixels returns MagickPass if the pixels are
-successfully transferred, otherwise MagickFail.</dd>
+<dd><p>Method PushImagePixels returns MagickPass if the pixels are
+successfully transferred, otherwise MagickFail.</p>
+</dd>
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>quantum_type:</dt>
-<dd>Declare which pixel components to transfer (AlphaQuantum,
+<dd><p>Declare which pixel components to transfer (AlphaQuantum,
 BlackQuantum, BlueQuantum, CMYKAQuantum, CMYKQuantum, CyanQuantum,
 GrayAlphaQuantum, GrayQuantum, GreenQuantum, IndexAlphaQuantum,
 IndexQuantum, MagentaQuantum, RGBAQuantum, RGBQuantum,
-RedQuantum, YellowQuantum)</dd>
+RedQuantum, YellowQuantum)</p>
+</dd>
 <dt>quantum_size:</dt>
-<dd>Bits per quantum sample (range 1-32, and 64).</dd>
+<dd><p>Bits per quantum sample (range 1-32, and 64).</p>
+</dd>
 <dt>source:</dt>
-<dd>The pixel components are transferred from this buffer.</dd>
+<dd><p>The pixel components are transferred from this buffer.</p>
+</dd>
 <dt>options:</dt>
-<dd>Additional options specific to quantum_type (may be NULL).</dd>
+<dd><p>Additional options specific to quantum_type (may be NULL).</p>
+</dd>
 <dt>import_info :</dt>
-<dd>Populated with information regarding the pixels
-imported (may be NULL)</dd>
+<dd><p>Populated with information regarding the pixels
+imported (may be NULL)</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -104,13 +110,11 @@ imported (may be NULL)</dd>
 <h1><a class="toc-backref" href="#id6">ImportViewPixelArea</a></h1>
 <div class="section" id="id1">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail ImportViewPixelArea( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
+<pre class="literal-block">MagickPassFail ImportViewPixelArea( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
                                     const unsigned int quantum_size,
                                     const unsigned char *source,
                                     const ImportPixelAreaOptions *options,
-                                    ImportPixelAreaInfo *import_info );
-</pre>
+                                    ImportPixelAreaInfo *import_info );</pre>
 </div>
 <div class="section" id="id2">
 <h2>Description</h2>
@@ -125,34 +129,39 @@ depth from 1 to 32 (e.g. 13), 64-bits, as well as 32 and 64-bit float.</p>
 <p>MagickPass is returned if the pixels are successfully transferred,
 otherwise MagickFail.</p>
 <p>The format of the ImportViewPixelArea method is:</p>
-<pre class="literal-block">
-MagickPassFail ImportViewPixelArea( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
+<pre class="literal-block">MagickPassFail ImportViewPixelArea( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
                                     const unsigned int quantum_size,
                                     const unsigned char *source,
                                     const ImportPixelAreaOptions *options,
-                                    ImportPixelAreaInfo *import_info );
-</pre>
-<dl class="docutils">
+                                    ImportPixelAreaInfo *import_info );</pre>
+<dl class="simple">
 <dt>status:</dt>
-<dd>Method PushImagePixels returns MagickPass if the pixels are
-successfully transferred, otherwise MagickFail.</dd>
+<dd><p>Method PushImagePixels returns MagickPass if the pixels are
+successfully transferred, otherwise MagickFail.</p>
+</dd>
 <dt>view:</dt>
-<dd>The pixel view to import pixels into.</dd>
+<dd><p>The pixel view to import pixels into.</p>
+</dd>
 <dt>quantum_type:</dt>
-<dd>Declare which pixel components to transfer (AlphaQuantum,
+<dd><p>Declare which pixel components to transfer (AlphaQuantum,
 BlackQuantum, BlueQuantum, CMYKAQuantum, CMYKQuantum, CyanQuantum,
 GrayAlphaQuantum, GrayQuantum, GreenQuantum, IndexAlphaQuantum,
 IndexQuantum, MagentaQuantum, RGBAQuantum, RGBQuantum,
-RedQuantum, YellowQuantum)</dd>
+RedQuantum, YellowQuantum)</p>
+</dd>
 <dt>quantum_size:</dt>
-<dd>Bits per quantum sample (range 1-32, and 64).</dd>
+<dd><p>Bits per quantum sample (range 1-32, and 64).</p>
+</dd>
 <dt>source:</dt>
-<dd>The pixel components are transferred from this buffer.</dd>
+<dd><p>The pixel components are transferred from this buffer.</p>
+</dd>
 <dt>options:</dt>
-<dd>Additional options specific to quantum_type (may be NULL).</dd>
+<dd><p>Additional options specific to quantum_type (may be NULL).</p>
+</dd>
 <dt>import_info :</dt>
-<dd>Populated with information regarding the pixels
-imported (may be NULL)</dd>
+<dd><p>Populated with information regarding the pixels
+imported (may be NULL)</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -160,30 +169,30 @@ imported (may be NULL)</dd>
 <h1><a class="toc-backref" href="#id7">ImportPixelAreaOptionsInit</a></h1>
 <div class="section" id="id3">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-void ImportPixelAreaOptionsInit( ImportPixelAreaOptions *options );
-</pre>
+<pre class="literal-block">void ImportPixelAreaOptionsInit( ImportPixelAreaOptions *options );</pre>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
 <p>ImportPixelAreaOptionsInit() initializes the options structure which is
 optionally passed to ImportPixelArea()</p>
 <p>The format of the ImportPixelAreaOptionsInit method is:</p>
-<pre class="literal-block">
-void ImportPixelAreaOptionsInit( ImportPixelAreaOptions *options );
-</pre>
+<pre class="literal-block">void ImportPixelAreaOptionsInit( ImportPixelAreaOptions *options );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>options:</dt>
-<dd>Options structure to initialize.</dd>
+<dd><p>Options structure to initialize.</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

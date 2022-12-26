@@ -205,6 +205,7 @@ MAGICK_CODER_MODULE_PATH="${builddir}/coders"
 MAGICK_CONFIGURE_SRC_PATH="${srcdirfull}/config"
 MAGICK_CONFIGURE_BUILD_PATH="${builddir}/config"
 MAGICK_FILTER_MODULE_PATH="${builddir}/filters"
+top_srcdir_native=${srcdirfull}
 DIRSEP=':'
 case "${build_os}" in
   mingw* )
@@ -212,6 +213,7 @@ case "${build_os}" in
     MAGICK_CONFIGURE_SRC_PATH=`$WinPathScript "${MAGICK_CONFIGURE_SRC_PATH}" 0`
     MAGICK_CONFIGURE_BUILD_PATH=`$WinPathScript "${MAGICK_CONFIGURE_BUILD_PATH}" 0`
     MAGICK_FILTER_MODULE_PATH=`$WinPathScript "${MAGICK_FILTER_MODULE_PATH}" 0`
+    top_srcdir_native=`$WinPathScript "${srcdirfull}"`
     ;;
 esac
 case "${host_os}" in
@@ -224,6 +226,7 @@ AC_SUBST([MAGICK_CONFIGURE_SRC_PATH])
 AC_SUBST([MAGICK_CONFIGURE_BUILD_PATH])
 AC_SUBST([MAGICK_FILTER_MODULE_PATH])
 AC_SUBST([DIRSEP])
+AC_SUBST([top_srcdir_native])
 
 # Check for programs
 AC_PROG_CC
@@ -1084,26 +1087,31 @@ fi
 # with Windows builds which don't use configure.
 #
 
+# int8_t
 AC_MSG_CHECKING([for signed 8-bit type])
 INT8_T='signed char'
 AC_MSG_RESULT([$INT8_T])
 AC_SUBST([INT8_T])
 
+# uint8_t
 AC_MSG_CHECKING([for unsigned 8-bit type])
 UINT8_T='unsigned char'
 AC_MSG_RESULT([$UINT8_T])
 AC_SUBST([UINT8_T])
 
+# int16_t
 AC_MSG_CHECKING([for signed 16-bit type])
 INT16_T='signed short'
 AC_MSG_RESULT([$INT16_T])
 AC_SUBST([INT16_T])
 
+# uint16_t
 AC_MSG_CHECKING([for unsigned 16-bit type])
 UINT16_T='unsigned short'
 AC_MSG_RESULT([$UINT16_T])
 AC_SUBST([UINT16_T])
 
+# int32_t
 AC_MSG_CHECKING([for signed 32-bit type])
 INT32_T='none'
 INT32_F='none'
@@ -1120,6 +1128,7 @@ AC_MSG_RESULT([$INT32_T])
 AC_SUBST([INT32_T])
 AC_SUBST([INT32_F])
 
+# uint32_t
 AC_MSG_CHECKING([for unsigned 32-bit type])
 UINT32_T='none'
 UINT32_F='none'
@@ -1136,6 +1145,7 @@ AC_MSG_RESULT([$UINT32_T])
 AC_SUBST([UINT32_T])
 AC_SUBST([UINT32_F])
 
+# int64_t
 AC_MSG_CHECKING([for signed 64-bit type])
 INT64_T='none'
 INT64_F='none'
@@ -1157,6 +1167,7 @@ AC_MSG_RESULT([$INT64_T])
 AC_SUBST([INT64_T])
 AC_SUBST([INT64_F])
 
+# uint64_t
 AC_MSG_CHECKING([for unsigned 64-bit type])
 UINT64_T='none'
 UINT64_F='none'
@@ -1178,6 +1189,7 @@ AC_MSG_RESULT([$UINT64_T])
 AC_SUBST([UINT64_T])
 AC_SUBST([UINT64_F])
 
+# uintmax_t
 AC_MSG_CHECKING([for unsigned maximum type])
 UINTMAX_T='none'
 UINTMAX_F='none'
@@ -1194,7 +1206,8 @@ AC_MSG_RESULT([$UINTMAX_T])
 AC_SUBST([UINTMAX_T])
 AC_SUBST([UINTMAX_F])
 
-AC_MSG_CHECKING([for pointer difference type])
+# uintptr_t
+AC_MSG_CHECKING([for unsigned pointer storage type])
 UINTPTR_T='none'
 UINTPTR_F='none'
 if test $ac_cv_sizeof_unsigned_long -eq $ac_cv_sizeof_unsigned_intp
@@ -1209,6 +1222,23 @@ fi
 AC_MSG_RESULT([$UINTPTR_T])
 AC_SUBST([UINTPTR_T])
 AC_SUBST([UINTPTR_F])
+
+# ptrdiff_t
+AC_MSG_CHECKING([for signed pointer difference type])
+PTRDIFF_T='none'
+PTRDDIFF_F='none'
+if test $ac_cv_sizeof_unsigned_long -eq $ac_cv_sizeof_unsigned_intp
+then
+  PTRDIFF_T='signed long'
+  PTRDIFF_F='"l"'
+elif test $ac_cv_sizeof_unsigned_long_long -eq $ac_cv_sizeof_unsigned_intp
+then
+  PTRDIFF_T='long long'
+  PTRDIFF_F='"ll"'
+fi
+AC_MSG_RESULT([$PTRDIFF_T])
+AC_SUBST([PTRDIFF_T])
+AC_SUBST([PTRDIFF_F])
 
 MAGICK_SIZE_T='none'
 MAGICK_SIZE_T_F='none'
@@ -2302,6 +2332,10 @@ AC_SUBST([LIB_JP2])
 #
 # Check for TTF
 #
+# Use pkg-config if available.  If pkg-config is not available, then
+# try legacy freetype-config script.  If neither is available, then go
+# with defaults.
+#
 have_ttf='no'
 LIB_TTF=''
 if test "$with_ttf" != 'no'
@@ -2581,6 +2615,7 @@ then
     AC_CHECK_HEADER([webp/encode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
     AC_CHECK_LIB([webp],[WebPDecodeRGB],[passed=`expr $passed + 1`; LIB_WEBP='-lwebp'],[failed=`expr $failed + 1`],[])
     AC_CHECK_LIB([webpmux],[WebPMuxSetImage],[LIB_WEBP="$LIB_WEBP -lwebpmux"],[],[-lwebp])
+    AC_CHECK_LIB([sharpyuv],[SharpYuvConvert],[LIB_WEBP="$LIB_WEBP -lsharpyuv"],[],[])
     AC_MSG_CHECKING([if WEBP package is complete])
     if test $passed -gt 0
     then
@@ -3144,7 +3179,10 @@ have_ralcgm='no'  ; if test "$CGMDecodeDelegate" != "$CGMDecodeDelegateDefault" 
 AM_CONDITIONAL([HasPSDelegate],[test "$have_gs" = 'yes'])
 
 # Tests for programs only used while in maintainer mode
-if test "$MAINT" == '' ; then
+if test "$MAINT" = '' ; then
+   # Search for a usable Python
+   AC_CHECK_PROGS([PYTHON],[python3 python python2])
+
    # Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
    AC_CHECK_PROGS([RST2HTML],[rst2html.py rst2html])
 

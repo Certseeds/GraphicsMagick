@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -364,6 +364,9 @@ static long parse8BIM(Image *ifile, Image *ofile)
     {
       if (state == 0)
         {
+          size_t
+            name_alloc;
+
           int
             state,
             next;
@@ -389,10 +392,11 @@ static long parse8BIM(Image *ifile, Image *ofile)
                 recnum = MagickAtoI(newstr);
                 break;
               case 2:
-                name = MagickAllocateResourceLimitedMemory(char *,strlen(newstr)+1);
+                name_alloc = strlen(newstr)+1;
+                name = MagickAllocateResourceLimitedMemory(char *,name_alloc);
                 if (name == (char *) NULL)
                   goto parse8BIM_failure;
-                (void) strcpy(name,newstr);
+                (void) strlcpy(name,newstr,name_alloc);
                 break;
             }
             state++;
@@ -664,6 +668,9 @@ static long parse8BIMW(Image *ifile, Image *ofile)
     {
       if (state == 0)
         {
+          size_t
+            name_alloc;
+
           int
             state,
             next;
@@ -689,10 +696,11 @@ static long parse8BIMW(Image *ifile, Image *ofile)
                 recnum = MagickAtoI(newstr);
                 break;
               case 2:
-                name = MagickAllocateResourceLimitedMemory(char *,strlen(newstr)+1);
+                name_alloc = strlen(newstr)+1;
+                name = MagickAllocateResourceLimitedMemory(char *,name_alloc);
                 if (name == (char *) NULL)
                   goto parse8BIMW_failure;
-                (void) strcpy(name,newstr);
+                (void) strlcpy(name,newstr,name_alloc);
                 break;
             }
             state++;
@@ -1665,12 +1673,12 @@ static size_t GetIPTCStream(const unsigned char *blob, size_t blob_length, size_
     tag_length,
     blob_remaining;
 
+  *offset=0;
   p=blob;
   blob_remaining=blob_length;
   if ((*p == 0x1c) && (*(p+1) == 0x02))
     {
       /* This looks like a plain IPTC record 2 block so drop through */
-      *offset=0;
       return blob_length;
     }
 
@@ -2384,11 +2392,9 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
         ThrowWriterException(CoderError,NoIPTCProfileAvailable,image);
       status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
       length=GetIPTCStream(profile,profile_length,&iptc_offset);
-      info=profile+iptc_offset;
       if (length == 0)
-        {
-          ThrowWriterException(CoderError,NoIPTCInfoWasFound,image);
-        }
+        ThrowWriterException(CoderError,NoIPTCInfoWasFound,image);
+      info=profile+iptc_offset;
       (void) WriteBlob(image,length,info);
       CloseBlob(image);
       return MagickPass;

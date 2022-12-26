@@ -86,7 +86,7 @@
 \******************************************************************************/
 
 static int ras_puthdr(jas_stream_t *out, ras_hdr_t *hdr);
-static int ras_putint(jas_stream_t *out, int val);
+static int ras_putint(jas_stream_t *out, int_fast32_t val);
 
 static int ras_putdata(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image, int numcmpts, int *cmpts);
 static int ras_putdatastd(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image, int numcmpts, int *cmpts);
@@ -95,20 +95,20 @@ static int ras_putdatastd(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image,
 * Code.
 \******************************************************************************/
 
-int ras_encode(jas_image_t *image, jas_stream_t *out, char *optstr)
+int ras_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 {
 	int_fast32_t width;
 	int_fast32_t height;
 	int_fast32_t depth;
 	int cmptno;
-#if 0
-	uint_fast16_t numcmpts;
-#endif
 	int i;
 	ras_hdr_t hdr;
 	int rowsize;
 	ras_enc_t encbuf;
 	ras_enc_t *enc = &encbuf;
+
+	JAS_DBGLOG(10, ("ras_encode(%p, %p, \"%s\"\n", image, out,
+	  optstr ? optstr : ""));
 
 	if (optstr) {
 		jas_eprintf("warning: ignoring RAS encoder options\n");
@@ -230,9 +230,17 @@ static int ras_putdatastd(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image,
 	jas_matrix_t *data[3];
 	int i;
 
+	assert(numcmpts <= 3);
+
+	for (i = 0; i < 3; ++i) {
+		data[i] = 0;
+	}
+
 	for (i = 0; i < numcmpts; ++i) {
-		data[i] = jas_matrix_create(jas_image_height(image), jas_image_width(image));
-		assert(data[i]);
+		if (!(data[i] = jas_matrix_create(jas_image_height(image),
+		  jas_image_width(image)))) {
+			goto error;
+		}
 	}
 
 	rowsize = RAS_ROWSIZE(hdr);
@@ -242,8 +250,10 @@ static int ras_putdatastd(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image,
 
 	for (y = 0; y < hdr->height; y++) {
 		for (i = 0; i < numcmpts; ++i) {
-			jas_image_readcmpt(image, cmpts[i], 0, y, jas_image_width(image),
-			  1, data[i]);
+			if (jas_image_readcmpt(image, cmpts[i], 0, y,
+					jas_image_width(image), 1, data[i])) {
+				goto error;
+			}
 		}
 		z = 0;
 		nz = 0;
@@ -261,7 +271,7 @@ static int ras_putdatastd(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image,
 			while (nz >= 8) {
 				c = (z >> (nz - 8)) & 0xff;
 				if (jas_stream_putc(out, c) == EOF) {
-					return -1;
+					goto error;
 				}
 				nz -= 8;
 				z &= RAS_ONES(nz);
@@ -270,21 +280,30 @@ static int ras_putdatastd(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image,
 		if (nz > 0) {
 			c = (z >> (8 - nz)) & RAS_ONES(nz);
 			if (jas_stream_putc(out, c) == EOF) {
-				return -1;
+				goto error;
 			}
 		}
 		if (pad % 2) {
 			if (jas_stream_putc(out, 0) == EOF) {
-				return -1;
+				goto error;
 			}
 		}
 	}
 
 	for (i = 0; i < numcmpts; ++i) {
 		jas_matrix_destroy(data[i]);
+		data[i] = 0;
 	}
 
 	return 0;
+
+error:
+	for (i = 0; i < numcmpts; ++i) {
+		if (data[i]) {
+			jas_matrix_destroy(data[i]);
+		}
+	}
+	return -1;
 }
 
 static int ras_puthdr(jas_stream_t *out, ras_hdr_t *hdr)
@@ -299,19 +318,19 @@ static int ras_puthdr(jas_stream_t *out, ras_hdr_t *hdr)
 	return 0;
 }
 
-static int ras_putint(jas_stream_t *out, int val)
+static int ras_putint(jas_stream_t *out, int_fast32_t val)
 {
-	int x;
+	int_fast32_t x;
 	int i;
 	int c;
 
+	assert(val >= 0);
 	x = val;
 	for (i = 0; i < 4; i++) {
-		c = (x >> 24) & 0xff;
+		c = (x >> (8 * (3 - i))) & 0xff;
 		if (jas_stream_putc(out, c) == EOF) {
 			return -1;
 		}
-		x <<= 8;
 	}
 
 	return 0;

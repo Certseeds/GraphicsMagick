@@ -39,7 +39,7 @@ testReadCompare('input_plane.jpg', '../reference/jpeg/read_plane_interlaced.miff
 #
 print("Seattle FilmWorks image file ...\n");
 ++$test;
-testReadCompare('input.sfw', '../reference/jpeg/read_sfw.miff', q//, 0.003, 0.1);
+testReadCompare('input.sfw', '../reference/jpeg/read_sfw.jpg', q//, 0.02, 0.15);
 
 #
 # 4) Test JNX file ...\n");

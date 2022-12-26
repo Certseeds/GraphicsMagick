@@ -18,6 +18,17 @@ url_sourceforge = "https://sourceforge.net/projects/graphicsmagick/"
 
 banner_logo = 'images/gm-107x76.png' # relative to top directory
 
+html_head_template = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="{url_screen_css}" type="text/css" rel="stylesheet">
+{metas}
+</head>
+"""
 
 # banner_template and nav_template contain chunk which has to be created at
 # runtime: the path to the image directory, and the path to the top directory.
@@ -66,6 +77,9 @@ footer_template = u"""
     <p><a href="%(url_prefix)sCopyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022%(sponsor_logo_html)s</p>
 </div>
 """
+
+def make_html_head(url_screen_css, title, metas):
+    return html_head_template.format(url_screen_css=url_screen_css, title=title, metas=metas)
 
 def make_footer():
     return footer_template % { 'url_prefix' : url_prefix,

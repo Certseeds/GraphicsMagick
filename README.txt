@@ -378,10 +378,10 @@ building under Microsoft Windows:
 
     https://github.com/strukturag/libde265
 
-  to read HEIF/h.265 files. Libheif makes use of libde265 for
-  h.265/HEVC decoding and libx265 for encoding.  GraphicsMagick does
-  not itself provide any h.265/HEVC algoriths and it does not
-  currently support encoding.
+  to read HEIF/h.265 files and HEIF/AVIF files. Libheif makes use of
+  libde265 for h.265/HEVC decoding and libx265 for encoding.
+  GraphicsMagick does not itself provide any h.265/HEVC algoriths and
+  it does not currently support encoding.
 
   The HEVC codec is covered by a huge number of patents (the MPEG LA
   HEVC patent list is 164 pages long!).  While GraphicsMagick is

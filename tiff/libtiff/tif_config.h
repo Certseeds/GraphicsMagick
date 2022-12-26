@@ -104,8 +104,8 @@
 /* Set the native cpu bit order */
 #define HOST_FILLORDER FILLORDER_LSB2MSB
 
-/* Visual Studio 2015 / VC 14 / MSVC 19.00 finally has snprintf() */
 #if defined(_MSC_VER)
+/* Visual Studio 2015 / VC 14 / MSVC 19.00 finally has snprintf() */
 #  if _MSC_VER < 1900
 #    define snprintf _snprintf
 #  else
@@ -126,6 +126,8 @@
 #endif
 
 #define lfind _lfind
+
+#include "../../src/webp/types.h"
 
 #pragma warning(disable : 4996) /* function deprecation warnings */
 

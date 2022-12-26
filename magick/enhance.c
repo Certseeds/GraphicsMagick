@@ -169,7 +169,7 @@ ContrastImagePixels(void *mutable_data,         /* User provided mutable data */
     sign = *((const double *) immutable_data);
 
   static const double
-    alpha=0.5+MagickEpsilon;
+    alpha=0.50000000000099997787827987849595956504344940185546875; /* 0.5+MagickEpsilon */
 
   register long
     i;

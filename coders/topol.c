@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -350,7 +350,7 @@ static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * excep
 
   unsigned char
     *BImgBuff = NULL,
-    MEZ[256];
+    MEZ[256] = { 0 };
   ImportPixelAreaOptions import_options;
 
 

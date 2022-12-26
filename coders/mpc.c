@@ -1233,11 +1233,11 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
         /*
           Set image resolution.
         */
-        (void) strcpy(units,"undefined");
+        (void) strlcpy(units,"undefined",sizeof(units));
         if (image->units == PixelsPerInchResolution)
-          (void) strcpy(units,"pixels-per-inch");
+          (void) strlcpy(units,"pixels-per-inch",sizeof(units));
         if (image->units == PixelsPerCentimeterResolution)
-          (void) strcpy(units,"pixels-per-centimeter");
+          (void) strlcpy(units,"pixels-per-centimeter",sizeof(units));
         FormatString(buffer,"Resolution=%gx%g  units=%.1024s\n",
           image->x_resolution,image->y_resolution,units);
         (void) WriteBlobString(image,buffer);
@@ -1279,12 +1279,12 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
     if (image->dispose != UndefinedDispose)
       {
         if (image->dispose == BackgroundDispose)
-          (void) strcpy(buffer,"dispose=background\n");
+          (void) strlcpy(buffer,"dispose=background\n",sizeof(buffer));
         else
           if (image->dispose == NoneDispose)
-            (void) strcpy(buffer,"dispose=none\n");
+            (void) strlcpy(buffer,"dispose=none\n",sizeof(buffer));
           else
-            (void) strcpy(buffer,"dispose=previous\n");
+            (void) strlcpy(buffer,"dispose=previous\n",sizeof(buffer));
         (void) WriteBlobString(image,buffer);
       }
     if (image->error.mean_error_per_pixel != 0.0)

@@ -189,7 +189,13 @@ MagickExport MagickPassFail GradientImage(Image *restrict image,
     ThrowBinaryException(ResourceLimitError,MemoryAllocationFailed,
                          image->filename);
   if (span <= MaxColormapSize)
-    AllocateImageColormap(image,(unsigned long) span);
+    if (!AllocateImageColormap(image,(unsigned long) span))
+      {
+        MagickFreeMemory(pixel_packets);
+        ThrowException3(&image->exception, ResourceLimitError,MemoryAllocationFailed,
+                        UnableToConstituteImage);
+        return MagickFail;
+      }
 
   /*
     Generate gradient pixels using alpha blending

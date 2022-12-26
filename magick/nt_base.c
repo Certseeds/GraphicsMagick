@@ -2794,4 +2794,62 @@ MagickExport long NTtelldir(DIR *entry)
   assert(entry != (DIR *) NULL);
   return(0);
 }
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   N T s n p r i n t f                                                         %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Method NTsnprintf emulates C'99 snprintf for MSVC older than Visual
+%   studio 2015
+%
+%  The format of the NTsnprintf method is:
+%
+%      int NTsnprintf(char* str, size_t size, const char* format, ...)
+%
+%  A description of each parameter follows:
+%
+%    o str: buffer to write into
+%
+%    o size: str buffer size
+%
+%    o format: printf style format string
+%
+*/
+#if defined(_VISUALC_) && (_MSC_VER < 1900)
+static int _NTvsnprintf(char* str, size_t size, const char* format, va_list ap)
+{
+  int count = -1;
+
+  if (size != 0)
+#if _MSC_VER <= 1310
+    count = _vsnprintf(str, size, format, ap);
+#else
+    count = _vsnprintf_s(str, size, _TRUNCATE, format, ap);
+#endif
+  if (count == -1)
+    count = _vscprintf(format, ap);
+
+  return count;
+}
+#define vsnprintf _NTvsnprintf
+MagickExport int NTsnprintf(char* str, size_t size, const char* format, ...)
+{
+  int count;
+  va_list ap;
+
+  va_start(ap, format);
+  count = vsnprintf(str, size, format, ap);
+  va_end(ap);
+
+  return count;
+}
+#endif
+
 #endif

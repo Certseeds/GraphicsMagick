@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>GraphicsMagick Security</title>
-<link rel="stylesheet" href="docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>GraphicsMagick Security</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,9 +35,9 @@
   <li><a href="reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="graphicsmagick-security">
 <h1 class="title">GraphicsMagick Security</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
@@ -104,30 +107,25 @@ ftp, or email, then you should take steps to assure that a problem
 with opening/processing the file does not place the whole server at
 risk.  These are steps which can be taken:</p>
 <ol class="arabic">
-<li><p class="first">Subscribe to the <a class="reference external" href="https://lists.sourceforge.net/lists/listinfo/graphicsmagick-announce">graphicsmagick-announce</a> mailing list so that
+<li><p>Subscribe to the <a class="reference external" href="https://lists.sourceforge.net/lists/listinfo/graphicsmagick-announce">graphicsmagick-announce</a> mailing list so that
 you are informed about new GraphicsMagick releases or special
-security bulletins.</p>
-</li>
-<li><p class="first">Make sure that GraphicsMagick is up to date as reported on the
+security bulletins.</p></li>
+<li><p>Make sure that GraphicsMagick is up to date as reported on the
 GraphicsMagick web site.  Don't simply trust that packages from
 your operating system vendor are kept up to date or are updated to
 include security fixes.  Keeping GraphicsMagick up to date might
-require that you compile GraphicsMagick yourself from source code.</p>
-</li>
-<li><p class="first">Execute the software in a <a class="reference external" href="https://en.wikipedia.org/wiki/Operating-system-level_virtualization">Container</a>, <a class="reference external" href="https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/jails.html">FreeBSD Jail</a>, <a class="reference external" href="https://illumos.org/man/5/zones">Solaris
+require that you compile GraphicsMagick yourself from source code.</p></li>
+<li><p>Execute the software in a <a class="reference external" href="https://en.wikipedia.org/wiki/Operating-system-level_virtualization">Container</a>, <a class="reference external" href="https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/jails.html">FreeBSD Jail</a>, <a class="reference external" href="https://illumos.org/man/5/zones">Solaris
 Zone</a>, or <a class="reference external" href="https://en.wikipedia.org/wiki/Chroot">chrooted</a> environment such that it can not cause harm
-to the system running it.</p>
-</li>
-<li><p class="first">Execute the software as a least-privileged user (e.g. 'nobody').</p>
-</li>
-<li><p class="first">Normalize input file names or any other external inputs so that
+to the system running it.</p></li>
+<li><p>Execute the software as a least-privileged user (e.g. 'nobody').</p></li>
+<li><p>Normalize input file names or any other external inputs so that
 they are under your control and not controlled by an untrusted
 party.  This should include any file name specifications, which may
 include arbitrary 'glob' patterns (wildcards) (requiring hours or
 days to complete if sufficiently close long file names exist), and
-options supporting a <cite>&#64;filename</cite> syntax.</p>
-</li>
-<li><p class="first">Enforce that uploaded files are passed to the expected reader.  For
+options supporting a <cite>&#64;filename</cite> syntax.</p></li>
+<li><p>Enforce that uploaded files are passed to the expected reader.  For
 example, the uploaded file &quot;file.jpg&quot; is forced to be read by the
 JPEG reader (rather than a reader selected based on header magic
 testing) by using the file name &quot;jpg:file.jpg&quot;.  If the file is not
@@ -141,20 +139,18 @@ construct valid files with a header which appears to be several
 different types, but the first type which matches while testing the
 header will be selected.</p>
 </li>
-<li><p class="first">Apply resource limits via the <cite>-limit</cite> option or the
+<li><p>Apply resource limits via the <cite>-limit</cite> option or the
 <cite>MAGICK_LIMIT_*</cite> environment variables (e.g. <cite>export
 MAGICK_LIMIT_PIXELS=30Mp</cite>, <cite>export MAGICK_LIMIT_MEMORY=500Mb</cite>).
-Also consider setting resource limits using the <cite>ulimit</cite> command.</p>
-</li>
-<li><p class="first">Consider using the <cite>MAGICK_CODER_STABILITY</cite> environment variable to
+Also consider setting resource limits using the <cite>ulimit</cite> command.</p></li>
+<li><p>Consider using the <cite>MAGICK_CODER_STABILITY</cite> environment variable to
 constrain the supported file formats to the subsets selected by
 <cite>PRIMARY</cite> or <cite>STABLE</cite>.  After setting this environment variable
 (e.g. <cite>export MAGICK_CODER_STABILITY=PRIMARY</cite>), use <cite>gm
 convert -list format</cite> and verify that the format support you need
 is enabled.  Selecting the <cite>PRIMARY</cite> or <cite>STABLE</cite> options blocks
 access of http and ftp URLs (<a class="reference external" href="https://cwe.mitre.org/data/definitions/918.html">SSRF</a> vulnerability), but does not
-block SVG renderer access to read local image files.</p>
-</li>
+block SVG renderer access to read local image files.</p></li>
 </ol>
 </div>
 <div class="section" id="pgp-public-key">
@@ -162,8 +158,7 @@ block SVG renderer access to read local image files.</p>
 <p>The following PGP public key (belonging to Bob Friesenhahn) is used to
 sign release files (there is an associated .sig file) and may be used
 for private correspondence:</p>
-<pre class="literal-block">
------BEGIN PGP PUBLIC KEY BLOCK-----
+<pre class="literal-block">-----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mQMuBFvWDmMRCACvO+aWyRPlp7jezY8m4t8q+MkLQXczLCoC8sUVQ5qd5T28HsfD
 rUVzrFYY6pWT1K3AgTTKZnVcBO5lyZtLLS6HQI41FESp1Gp/FtyisYbOlQAeOvfG
@@ -320,14 +315,16 @@ sCDuj9FRqI3jAQR94RmJdQUCW9YOYwIbDAUJEswDAAAKCRDjAQR94RmJdRzqAQCZ
 KJFm7j0Zug7NN+IPTqnIrPCioJkt1iGbec6SbBHh5AEAy5JEbI2ugQEePaIMGWVV
 akWaTz0WKIOiD9Lm2ylI9J0=
 =UAq2
------END PGP PUBLIC KEY BLOCK-----
-</pre>
+-----END PGP PUBLIC KEY BLOCK-----</pre>
 </div>
 </div>
+
 
 <hr class="docutils">
 <div class="document">
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

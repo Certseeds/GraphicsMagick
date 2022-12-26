@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -536,7 +536,7 @@ static void ipa_bmp_read(wmfAPI * API, wmfBMP_Read_t * bmp_read) {
   GetExceptionInfo(&exception);
 
   image_info = CloneImageInfo((ImageInfo *) 0);
-  (void) strcpy(image_info->magick, "DIB");
+  (void) strlcpy(image_info->magick,"DIB",sizeof(image_info->magick));
   if(bmp_read->width || bmp_read->height)
     {
       char
@@ -2276,7 +2276,7 @@ static void lite_font_map( wmfAPI* API, wmfFont* font)
                                        strstr(wmf_font_name,"Oblique"))) )
         want_italic = True;
 
-      (void) strcpy(target,"Times");
+      (void) strlcpy(target,"Times",sizeof(target));
       for( i=0; i < ArraySize(SubFontMap); i++ )
         {
           if(LocaleCompare(wmf_font_name, SubFontMap[i].name) == 0)

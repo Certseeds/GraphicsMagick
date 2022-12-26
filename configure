@@ -689,6 +689,7 @@ GPG
 GRAPHICSMAGICK_SNAPSHOT_COPY
 TXT2HTML
 RST2HTML
+PYTHON
 HasPSDelegate_FALSE
 HasPSDelegate_TRUE
 PrintDelegate
@@ -820,6 +821,8 @@ MAGICK_SSIZE_T_F
 MAGICK_SSIZE_T
 MAGICK_SIZE_T_F
 MAGICK_SIZE_T
+PTRDIFF_F
+PTRDIFF_T
 UINTPTR_F
 UINTPTR_T
 UINTMAX_F
@@ -895,6 +898,7 @@ LN_S
 LD
 FGREP
 SED
+top_srcdir_native
 DIRSEP
 MAGICK_FILTER_MODULE_PATH
 MAGICK_CONFIGURE_BUILD_PATH
@@ -5516,6 +5520,7 @@ MAGICK_CODER_MODULE_PATH="${builddir}/coders"
 MAGICK_CONFIGURE_SRC_PATH="${srcdirfull}/config"
 MAGICK_CONFIGURE_BUILD_PATH="${builddir}/config"
 MAGICK_FILTER_MODULE_PATH="${builddir}/filters"
+top_srcdir_native=${srcdirfull}
 DIRSEP=':'
 case "${build_os}" in
   mingw* )
@@ -5523,6 +5528,7 @@ case "${build_os}" in
     MAGICK_CONFIGURE_SRC_PATH=`$WinPathScript "${MAGICK_CONFIGURE_SRC_PATH}" 0`
     MAGICK_CONFIGURE_BUILD_PATH=`$WinPathScript "${MAGICK_CONFIGURE_BUILD_PATH}" 0`
     MAGICK_FILTER_MODULE_PATH=`$WinPathScript "${MAGICK_FILTER_MODULE_PATH}" 0`
+    top_srcdir_native=`$WinPathScript "${srcdirfull}"`
     ;;
 esac
 case "${host_os}" in
@@ -5530,6 +5536,7 @@ case "${host_os}" in
     DIRSEP=';'
     ;;
 esac
+
 
 
 
@@ -21036,6 +21043,7 @@ fi
 # with Windows builds which don't use configure.
 #
 
+# int8_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for signed 8-bit type" >&5
 $as_echo_n "checking for signed 8-bit type... " >&6; }
 INT8_T='signed char'
@@ -21043,6 +21051,7 @@ INT8_T='signed char'
 $as_echo "$INT8_T" >&6; }
 
 
+# uint8_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsigned 8-bit type" >&5
 $as_echo_n "checking for unsigned 8-bit type... " >&6; }
 UINT8_T='unsigned char'
@@ -21050,6 +21059,7 @@ UINT8_T='unsigned char'
 $as_echo "$UINT8_T" >&6; }
 
 
+# int16_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for signed 16-bit type" >&5
 $as_echo_n "checking for signed 16-bit type... " >&6; }
 INT16_T='signed short'
@@ -21057,6 +21067,7 @@ INT16_T='signed short'
 $as_echo "$INT16_T" >&6; }
 
 
+# uint16_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsigned 16-bit type" >&5
 $as_echo_n "checking for unsigned 16-bit type... " >&6; }
 UINT16_T='unsigned short'
@@ -21064,6 +21075,7 @@ UINT16_T='unsigned short'
 $as_echo "$UINT16_T" >&6; }
 
 
+# int32_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for signed 32-bit type" >&5
 $as_echo_n "checking for signed 32-bit type... " >&6; }
 INT32_T='none'
@@ -21082,6 +21094,7 @@ $as_echo "$INT32_T" >&6; }
 
 
 
+# uint32_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsigned 32-bit type" >&5
 $as_echo_n "checking for unsigned 32-bit type... " >&6; }
 UINT32_T='none'
@@ -21100,6 +21113,7 @@ $as_echo "$UINT32_T" >&6; }
 
 
 
+# int64_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for signed 64-bit type" >&5
 $as_echo_n "checking for signed 64-bit type... " >&6; }
 INT64_T='none'
@@ -21123,6 +21137,7 @@ $as_echo "$INT64_T" >&6; }
 
 
 
+# uint64_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsigned 64-bit type" >&5
 $as_echo_n "checking for unsigned 64-bit type... " >&6; }
 UINT64_T='none'
@@ -21146,6 +21161,7 @@ $as_echo "$UINT64_T" >&6; }
 
 
 
+# uintmax_t
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsigned maximum type" >&5
 $as_echo_n "checking for unsigned maximum type... " >&6; }
 UINTMAX_T='none'
@@ -21164,8 +21180,9 @@ $as_echo "$UINTMAX_T" >&6; }
 
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pointer difference type" >&5
-$as_echo_n "checking for pointer difference type... " >&6; }
+# uintptr_t
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for unsigned pointer storage type" >&5
+$as_echo_n "checking for unsigned pointer storage type... " >&6; }
 UINTPTR_T='none'
 UINTPTR_F='none'
 if test $ac_cv_sizeof_unsigned_long -eq $ac_cv_sizeof_unsigned_intp
@@ -21179,6 +21196,25 @@ then
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $UINTPTR_T" >&5
 $as_echo "$UINTPTR_T" >&6; }
+
+
+
+# ptrdiff_t
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for signed pointer difference type" >&5
+$as_echo_n "checking for signed pointer difference type... " >&6; }
+PTRDIFF_T='none'
+PTRDDIFF_F='none'
+if test $ac_cv_sizeof_unsigned_long -eq $ac_cv_sizeof_unsigned_intp
+then
+  PTRDIFF_T='signed long'
+  PTRDIFF_F='"l"'
+elif test $ac_cv_sizeof_unsigned_long_long -eq $ac_cv_sizeof_unsigned_intp
+then
+  PTRDIFF_T='long long'
+  PTRDIFF_F='"ll"'
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PTRDIFF_T" >&5
+$as_echo "$PTRDIFF_T" >&6; }
 
 
 
@@ -26325,6 +26361,10 @@ fi
 #
 # Check for TTF
 #
+# Use pkg-config if available.  If pkg-config is not available, then
+# try legacy freetype-config script.  If neither is available, then go
+# with defaults.
+#
 have_ttf='no'
 LIB_TTF=''
 if test "$with_ttf" != 'no'
@@ -27474,6 +27514,46 @@ fi
 $as_echo "$ac_cv_lib_webpmux_WebPMuxSetImage" >&6; }
 if test "x$ac_cv_lib_webpmux_WebPMuxSetImage" = xyes; then :
   LIB_WEBP="$LIB_WEBP -lwebpmux"
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SharpYuvConvert in -lsharpyuv" >&5
+$as_echo_n "checking for SharpYuvConvert in -lsharpyuv... " >&6; }
+if ${ac_cv_lib_sharpyuv_SharpYuvConvert+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsharpyuv  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char SharpYuvConvert ();
+int
+main ()
+{
+return SharpYuvConvert ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_sharpyuv_SharpYuvConvert=yes
+else
+  ac_cv_lib_sharpyuv_SharpYuvConvert=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_sharpyuv_SharpYuvConvert" >&5
+$as_echo "$ac_cv_lib_sharpyuv_SharpYuvConvert" >&6; }
+if test "x$ac_cv_lib_sharpyuv_SharpYuvConvert" = xyes; then :
+  LIB_WEBP="$LIB_WEBP -lsharpyuv"
 fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking if WEBP package is complete" >&5
@@ -29489,7 +29569,51 @@ fi
 
 
 # Tests for programs only used while in maintainer mode
-if test "$MAINT" == '' ; then
+if test "$MAINT" = '' ; then
+   # Search for a usable Python
+   for ac_prog in python3 python python2
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_PYTHON+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$PYTHON"; then
+  ac_cv_prog_PYTHON="$PYTHON" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PYTHON="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+PYTHON=$ac_cv_prog_PYTHON
+if test -n "$PYTHON"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON" >&5
+$as_echo "$PYTHON" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$PYTHON" && break
+done
+
+
    # Test for optional rst2html.py utility and define automake conditional HasRST2HTML if found.
    for ac_prog in rst2html.py rst2html
 do

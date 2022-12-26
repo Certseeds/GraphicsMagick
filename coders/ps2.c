@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -66,7 +66,7 @@ static unsigned int
 #endif
 #include "tiffio.h"
 
-#if defined(HAVE_STDINT_H) && (TIFFLIB_VERSION >= 20201219)
+#if (TIFFLIB_VERSION >= 20201219)
 #  undef uint16
 #  define uint16 uint16_t
 #  undef uint32
@@ -523,9 +523,9 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
         char time_buf[26];
 #endif /* defined(HAVE_CTIME_R) */
        if (LocaleCompare(image_info->magick,"PS2") == 0)
-          (void) strcpy(buffer,"%!PS-Adobe-3.0\n");
+         (void) strlcpy(buffer,"%!PS-Adobe-3.0\n",sizeof(buffer));
         else
-          (void) strcpy(buffer,"%!PS-Adobe-3.0 EPSF-3.0\n");
+          (void) strlcpy(buffer,"%!PS-Adobe-3.0 EPSF-3.0\n",sizeof(buffer));
         (void) WriteBlobString(image,buffer);
         (void) WriteBlobString(image,"%%Creator: (GraphicsMagick)\n");
         FormatString(buffer,"%%%%Title: (%.1024s)\n",image->filename);
@@ -544,7 +544,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
         bounds.x2=geometry.x+(size_t) geometry.width;
         bounds.y2=geometry.y+(size_t) geometry.height+text_size;
         if (image_info->adjoin && (image->next != (Image *) NULL))
-          (void) strcpy(buffer,"%%BoundingBox: (atend)\n");
+          (void) strlcpy(buffer,"%%BoundingBox: (atend)\n",sizeof(buffer));
         else
           FormatString(buffer,"%%%%BoundingBox: %g %g %g %g\n",
             floor(bounds.x1+0.5),floor(bounds.y1+0.5),ceil(bounds.x2-0.5),
@@ -562,7 +562,7 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
             (void) WriteBlobString(image,"%%Orientation: Portrait\n");
             (void) WriteBlobString(image,"%%PageOrder: Ascend\n");
             if (!image_info->adjoin)
-              (void) strcpy(buffer,"%%Pages: 1\n");
+              (void) strlcpy(buffer,"%%Pages: 1\n",sizeof(buffer));
             else
               FormatString(buffer,"%%%%Pages: %lu\n",(unsigned long)
                 image_list_length);

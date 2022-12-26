@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -139,9 +139,9 @@ static Image *ReadGRADIENTImage(const ImageInfo *image_info,
       DestroyImage(image);
       return((Image *) NULL);
     }
-  (void) strcpy(colorname,"white");
+  (void) strlcpy(colorname,"white",sizeof(colorname));
   if (PixelIntensityToQuantum(&start_color) > (0.5*MaxRGB))
-    (void) strcpy(colorname,"black");
+    (void) strlcpy(colorname,"black",sizeof(colorname));
   (void) sscanf(image_info->filename,"%*[^-]-%s",colorname);
   if (!QueryColorDatabase(colorname,&stop_color,exception))
     {

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1030,15 +1030,24 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
       if (reason)
         {
           if (description)
-            (void) LogMagickEvent(severity,module,function,line,"Ignored: %.1024s (%.1024s)",
+            (void) LogMagickEvent(severity,
+                                  module != NULL ? module : "",
+                                  function != NULL ? function : "",
+                                  line,"Ignored: %.1024s (%.1024s)",
                                   reason,description);
           else
-            (void) LogMagickEvent(severity,module,function,line,"Ignored: %.1024s",
+            (void) LogMagickEvent(severity,
+                                  module != NULL ? module : "",
+                                  function != NULL ? function : "",
+                                  line,"Ignored: %.1024s",
                                   reason);
         }
       else
         {
-          (void) LogMagickEvent(severity,module,function,line,
+          (void) LogMagickEvent(severity,
+                                module != NULL ? module : "",
+                                function != NULL ? function : "",
+                                line,
                                 "Ignored: exception contains no reason!");
         }
       ignore=MagickTrue;
@@ -1085,15 +1094,24 @@ MagickExport void ThrowLoggedException(ExceptionInfo *exception,
       if (exception->reason)
         {
           if (exception->description)
-            (void) LogMagickEvent(severity,module,function,line,"%.1024s (%.1024s)",
+            (void) LogMagickEvent(severity,
+                                  module != NULL ? module : "",
+                                  function != NULL ? function : "",
+                                  line,"%.1024s (%.1024s)",
                                   exception->reason,exception->description );
           else
-            (void) LogMagickEvent(severity,module,function,line,"%.1024s",
+            (void) LogMagickEvent(severity,
+                                  module != NULL ? module : "",
+                                  function != NULL ? function : "",
+                                  line,"%.1024s",
                                   exception->reason);
         }
       else
         {
-          (void) LogMagickEvent(severity,module,function,line,
+          (void) LogMagickEvent(severity,
+                                module != NULL ? module : "",
+                                function != NULL ? function : "",
+                                line,
                                 "exception contains no reason!");
         }
     }

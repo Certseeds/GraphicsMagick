@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -503,7 +503,7 @@ Classify(Image * restrict image,short **extrema,
           else
             last_cluster->next=next_cluster;
 
-          if (image->logging)
+          if (IsEventLogged(TransformEvent))
             (void) LogMagickEvent
               (TransformEvent,GetMagickModule(),
                "Removing Cluster (usage count %lu, %.5f%%) %d-%d  %d-%d  %d-%d",

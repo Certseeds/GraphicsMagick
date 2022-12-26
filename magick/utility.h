@@ -79,7 +79,7 @@ extern MagickExport char
 
 extern MagickExport const char
   *GetClientFilename(void) MAGICK_FUNC_CONST,
-  *GetClientName(void) MAGICK_FUNC_CONST,
+  *GetClientName(void) MAGICK_FUNC_PURE,
   *GetClientPath(void) MAGICK_FUNC_CONST,
   *SetClientFilename(const char *),
   *SetClientName(const char *),

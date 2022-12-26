@@ -11,7 +11,7 @@ rwfile=./rwfile
 check_types='truecolor10 truecolor12 truecolor16'
 
 # Number of tests we plan to run
-test_plan_fn 42
+test_plan_fn 48
 
 # CIN format
 for type in ${check_types}
@@ -35,6 +35,13 @@ done
 for type in ${check_types}
 do
   test_command_fn "JP2 ${type}" -F JP2 ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.dpx" JP2
+done
+
+# JXL format
+for type in ${check_types}
+do
+  test_command_fn "JXL ${type}" -F JXL ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.dpx" JXL
+  test_command_fn "JXL ${type} (stdio)" -F JXL ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.dpx" JXL
 done
 
 # MAT format

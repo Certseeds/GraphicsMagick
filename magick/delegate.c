@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1194,8 +1194,8 @@ MagickExport unsigned int ListDelegateInfo(FILE *file,ExceptionInfo *exception)
       continue;
     *delegate='\0';
     if (p->encode != (char *) NULL)
-      (void) strlcpy(delegate,p->encode,MaxTextExtent);
-    (void) strcat(delegate,"        ");
+      (void) strlcpy(delegate,p->encode,sizeof(delegate));
+    (void) strlcat(delegate,"        ",sizeof(delegate));
     delegate[8]='\0';
     commands=StringToList(p->commands);
     if (commands == (char **) NULL)
@@ -1287,12 +1287,12 @@ static void CatDelegatePath(char *path,
                             const char *binpath,
                             const char *command)
 {
-  strcpy(path,binpath);
-  strcat(path,command);
+  strlcpy(path,binpath,MaxTextExtent);
+  strlcat(path,command,MaxTextExtent);
   if (IsAccessibleNoLogging(path))
     return;
 
-  strcpy(path,command);
+  strlcpy(path,command,MaxTextExtent);
   return;
 }
 #endif /* defined(MSWINDOWS) */
@@ -1459,7 +1459,7 @@ static unsigned int ReadConfigureFile(const char *basename,
 # endif /* defined(UseInstalledMagick) */
                     if ((BinPath[0] != 0) &&
                         (BinPath[strlen(BinPath)-1] != *DirectorySeparator))
-                      strcat(BinPath,DirectorySeparator);
+                      strlcat(BinPath,DirectorySeparator,sizeof(BinPath));
 
                     /* Substitute @GMDelegate@ with path to gm.exe */
                     CatDelegatePath(path,BinPath,"gm.exe");

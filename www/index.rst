@@ -28,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.38 (Released March 26, 2022) `download release`__
+Current Release              1.3.39 (Released December 26, 2022) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -64,13 +64,14 @@ version of this page.
 .. _`ASan` : https://github.com/google/sanitizers/wiki/AddressSanitizer
 .. _`UBSan` : https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 .. _`oss-fuzz` : https://github.com/google/oss-fuzz
+.. _`Coverity Analysis Metrics` : https://scan.coverity.com/projects/graphicsmagick
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
 of 279K physical lines (according to David A. Wheeler's `SLOCCount`_)
 of source code in the base package (or 1,275K including 3rd party
 libraries) it provides a robust and efficient collection of tools and
 libraries which support reading, writing, and manipulating an image in
-over 89 major formats including important formats like DPX, GIF, JPEG,
+over 92 major formats including important formats like DPX, GIF, JPEG,
 JPEG-2000, PNG, PDF, PNM, TIFF, and WebP.
 
 Image processing is multi-threaded using OpenMP_ (`read about OpenMP
@@ -111,8 +112,8 @@ other popular software:
   * GM is much smaller and lighter than ImageMagick (3-5X smaller
     installation footprint).
 
-  * GM is used to process billions of files at the world's largest photo
-    sites (e.g. `Flickr`_ and `Etsy`_).
+  * GM has been used to process billions of files at the world's
+    largest photo sites (e.g. `Flickr`_ and `Etsy`_).
 
   * GM does not conflict with other installed software.
 
@@ -145,8 +146,9 @@ other popular software:
     control management tool which supports management of local
     changes.  The repository history goes back to 1998.
 
-  * GM has 0.00 (zero) defects per 1000 lines of code (293,341 total
-    lines included) according to Coverity analysis on May 25, 2015.
+  * GM has 0.00 (zero) defects per 1000 lines of code (332,315 total
+    lines included) according to `Coverity Analysis Metrics`_ on April
+    16, 2022.
 
   * GM developers contribute to other free projects for the public good.
 

@@ -22,5 +22,5 @@ require 't/subroutines.pl';
 
 chdir 't/rad' || die 'Cd failed';
 
-testRead( 'RAD:input.rad',
+testRead( 'RAD:input.rad', q//,
   '1277e217f62ef66d77b8afb79ff0b9e4204a47ccd7663057f27a5255ebb0640c');

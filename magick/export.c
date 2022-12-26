@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2018 GraphicsMagick Group
+  Copyright (C) 2003 - 2022 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -3085,7 +3085,6 @@ ExportViewPixelArea(const ViewInfo *view,
     sample_type = UnsignedQuantumSampleType;
 
   unsigned int
-    unsigned_maxvalue=MaxRGB,
     sample_bits;
 
   unsigned long
@@ -3156,9 +3155,6 @@ ExportViewPixelArea(const ViewInfo *view,
   double_scale=(double) (double_maxvalue-double_minvalue)/MaxRGB;
   if ((sample_type != FloatQuantumSampleType) && (sample_bits <= 32U))
     {
-      /* Maximum value which may be represented by a sample */
-      unsigned_maxvalue=MaxValueGivenBits(sample_bits);
-
       if (QuantumDepth == sample_bits)
         {
         }
@@ -3167,11 +3163,16 @@ ExportViewPixelArea(const ViewInfo *view,
           /* Divide to scale down */
           unsigned_scale=(MaxRGB / (MaxRGB >> (QuantumDepth-sample_bits)));
         }
+#if QuantumDepth < 32
       else if (QuantumDepth < sample_bits)
         {
+          /* Maximum value which may be represented by a sample */
+          const unsigned int unsigned_maxvalue=MaxValueGivenBits(sample_bits);
+
           /* Multiply to scale up */
           unsigned_scale=(unsigned_maxvalue/MaxRGB);
         }
+#endif /* #if QuantumDepth < 32 */
     }
 
   image=GetCacheViewImage(view);

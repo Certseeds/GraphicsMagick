@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>Magick::Color Class</title>
-<link rel="stylesheet" href="../docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>Magick::Color Class</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,9 +35,9 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="magick-color-class">
 <h1 class="title">Magick::Color Class</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
@@ -72,31 +75,31 @@ resource consumption. If additional color precision or range is
 desired, then GraphicsMagick may be compiled with QuantumDepth=16 or
 QuantumDepth=32. The following table shows the relationship between
 QuantumDepth, the type of Quantum, and the overall PixelPacket size:</p>
-<table border="1" class="docutils">
+<table>
 <caption>Effect Of QuantumDepth Values</caption>
 <colgroup>
-<col width="28%" />
-<col width="35%" />
-<col width="37%" />
+<col style="width: 28%" />
+<col style="width: 35%" />
+<col style="width: 37%" />
 </colgroup>
-<thead valign="bottom">
-<tr><th class="head">QuantumDepth</th>
-<th class="head">Quantum Typedef</th>
-<th class="head">PixelPacket Size</th>
+<thead>
+<tr><th class="head"><p>QuantumDepth</p></th>
+<th class="head"><p>Quantum Typedef</p></th>
+<th class="head"><p>PixelPacket Size</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr><td>8</td>
-<td>unsigned char</td>
-<td>32 bits</td>
+<tbody>
+<tr><td><p>8</p></td>
+<td><p>unsigned char</p></td>
+<td><p>32 bits</p></td>
 </tr>
-<tr><td>16</td>
-<td>unsigned short</td>
-<td>64 bits</td>
+<tr><td><p>16</p></td>
+<td><p>unsigned short</p></td>
+<td><p>64 bits</p></td>
 </tr>
-<tr><td>32</td>
-<td>unsigned int</td>
-<td>128 bits</td>
+<tr><td><p>32</p></td>
+<td><p>unsigned int</p></td>
+<td><p>128 bits</p></td>
 </tr>
 </tbody>
 </table>
@@ -117,8 +120,7 @@ reference to Color. Color may also be converted to a std::string for
 convenience in user interfaces, and for saving settings to a text
 file.</p>
 <p>The following is the definition of the Color class:</p>
-<pre class="literal-block">
-// Compare two Color objects regardless of LHS/RHS
+<pre class="literal-block">// Compare two Color objects regardless of LHS/RHS
 int MagickDLLDecl operator == ( const Magick::Color&amp; left_, const Magick::Color&amp; right_ );
 int MagickDLLDecl operator != ( const Magick::Color&amp; left_, const Magick::Color&amp; right_ );
 int MagickDLLDecl operator &gt;  ( const Magick::Color&amp; left_, const Magick::Color&amp; right_ );
@@ -187,41 +189,40 @@ public:
   // Set color via ImageMagick PixelPacket
   const Color&amp; operator= ( const PixelPacket &amp;color_ );
 
-};
-</pre>
+};</pre>
 </div>
 <div class="section" id="color-derived-classes">
 <h1>Color Derived Classes</h1>
 <p>Available derived color specification classes are shown in the following table:</p>
-<table border="1" class="docutils">
+<table>
 <caption>Color Derived Classes</caption>
 <colgroup>
-<col width="14%" />
-<col width="86%" />
+<col style="width: 14%" />
+<col style="width: 86%" />
 </colgroup>
-<thead valign="bottom">
-<tr><th class="head">Class</th>
-<th class="head">Description</th>
+<thead>
+<tr><th class="head"><p>Class</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr><td><a class="reference internal" href="#colorrgb">ColorRGB</a></td>
-<td>Representation of RGB color with red, green, and blue specified
-as ratios (0 to 1)</td>
+<tbody>
+<tr><td><p><a class="reference internal" href="#colorrgb">ColorRGB</a></p></td>
+<td><p>Representation of RGB color with red, green, and blue specified
+as ratios (0 to 1)</p></td>
 </tr>
-<tr><td><a class="reference internal" href="#colorgray">ColorGray</a></td>
-<td>Representation of grayscale RGB color (equal parts red, green,
-and blue) specified as a ratio (0 to 1)</td>
+<tr><td><p><a class="reference internal" href="#colorgray">ColorGray</a></p></td>
+<td><p>Representation of grayscale RGB color (equal parts red, green,
+and blue) specified as a ratio (0 to 1)</p></td>
 </tr>
-<tr><td><a class="reference internal" href="#colormono">ColorMono</a></td>
-<td>Representation of a black/white color (true/false)</td>
+<tr><td><p><a class="reference internal" href="#colormono">ColorMono</a></p></td>
+<td><p>Representation of a black/white color (true/false)</p></td>
 </tr>
-<tr><td><a class="reference internal" href="#colorhsl">ColorHSL</a></td>
-<td>Representation of a color in Hue/Saturation/Luminosity (HSL)
-colorspace</td>
+<tr><td><p><a class="reference internal" href="#colorhsl">ColorHSL</a></p></td>
+<td><p>Representation of a color in Hue/Saturation/Luminosity (HSL)
+colorspace</p></td>
 </tr>
-<tr><td><a class="reference internal" href="#coloryuv">ColorYUV</a></td>
-<td>Representation of a color in the YUV colorspace</td>
+<tr><td><p><a class="reference internal" href="#coloryuv">ColorYUV</a></p></td>
+<td><p>Representation of a color in the YUV colorspace</p></td>
 </tr>
 </tbody>
 </table>
@@ -231,8 +232,7 @@ colorspace</td>
 <p>Representation of an RGB color in floating point. All color arguments
 have a valid range of 0.0 - 1.0. Note that floating point alpha may be
 set via the alpha() method in the Color base class:</p>
-<pre class="literal-block">
-class ColorRGB : public Color
+<pre class="literal-block">class ColorRGB : public Color
 {
 public:
   ColorRGB ( double red_, double green_, double blue_ );
@@ -255,16 +255,14 @@ public:
 protected:
   // Constructor to construct with PixelPacket*
   ColorRGB ( PixelPacket* rep_, PixelType pixelType_ );
-};
-</pre>
+};</pre>
 </div>
 <div class="section" id="colorgray">
 <h1>ColorGray</h1>
 <p>Representation of a floating point grayscale color (in RGB
 colorspace). Grayscale is simply RGB with equal parts of red, green,
 and blue. All double arguments have a valid range of 0.0 - 1.0:</p>
-<pre class="literal-block">
-class ColorGray : public Color
+<pre class="literal-block">class ColorGray : public Color
 {
 public:
   ColorGray ( double shade_ );
@@ -278,16 +276,14 @@ public:
   // Assignment operator from base class
   ColorGray&amp; operator= ( const Color&amp; color_ );
 
-};
-</pre>
+};</pre>
 </div>
 <div class="section" id="colormono">
 <h1>ColorMono</h1>
 <p>Representation of a black/white pixel (in RGB colorspace). Color
 arguments are constrained to 'false' (black pixel) and 'true' (white
 pixel):</p>
-<pre class="literal-block">
-class ColorMono : public Color
+<pre class="literal-block">class ColorMono : public Color
 {
 public:
   ColorMono ( bool mono_ );
@@ -301,14 +297,12 @@ public:
   // Assignment operator from base class
   ColorMono&amp; operator= ( const Color&amp; color_ );
 
-};
-</pre>
+};</pre>
 </div>
 <div class="section" id="colorhsl">
 <h1>ColorHSL</h1>
 <p>Representation of a color in Hue/Saturation/Luminosity (HSL) colorspace:</p>
-<pre class="literal-block">
-class MagickDLLDecl ColorHSL : public Color
+<pre class="literal-block">class MagickDLLDecl ColorHSL : public Color
 {
 public:
   ColorHSL ( double hue_, double saturation_, double luminosity_ );
@@ -328,34 +322,32 @@ public:
   // Assignment operator from base class
   ColorHSL&amp; operator= ( const Color&amp; color_ );
 
-};
-</pre>
+};</pre>
 </div>
 <div class="section" id="coloryuv">
 <h1>ColorYUV</h1>
 <p>Representation of a color in YUV colorspace (used to encode color for
 television transmission).  Argument ranges are</p>
 <blockquote>
-<table border="1" class="docutils">
+<table>
 <colgroup>
-<col width="11%" />
-<col width="89%" />
+<col style="width: 11%" />
+<col style="width: 89%" />
 </colgroup>
-<tbody valign="top">
-<tr><td>Y</td>
-<td>0.0 through 1.0</td>
+<tbody>
+<tr><td><p>Y</p></td>
+<td><p>0.0 through 1.0</p></td>
 </tr>
-<tr><td>U</td>
-<td>-0.5 through 0.5</td>
+<tr><td><p>U</p></td>
+<td><p>-0.5 through 0.5</p></td>
 </tr>
-<tr><td>V</td>
-<td>-0.5 through 0.5</td>
+<tr><td><p>V</p></td>
+<td><p>-0.5 through 0.5</p></td>
 </tr>
 </tbody>
 </table>
 </blockquote>
-<pre class="literal-block">
-class ColorYUV : public Color
+<pre class="literal-block">class ColorYUV : public Color
 {
 public:
   ColorYUV ( double y_, double u_, double v_ );
@@ -375,15 +367,17 @@ public:
   // Assignment operator from base class
   ColorYUV&amp; operator= ( const Color&amp; color_ );
 
-};
-</pre>
+};</pre>
 <p>Copyright © Bob Friesenhahn 1999 - 2022</p>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

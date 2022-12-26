@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>Magick::Pixels</title>
-<link rel="stylesheet" href="../docutils-articles.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>Magick::Pixels</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-articles.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,9 +35,9 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="magick-pixels">
 <h1 class="title">Magick::Pixels</h1>
-
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
@@ -74,8 +77,7 @@ the pointer should never be passed to delete() or free().</p>
 addressed, and updated, as shown in the following example, which
 produces an image similar to the one on the right (minus lines and
 text):</p>
-<pre class="literal-block">
-// Create base image
+<pre class="literal-block">// Create base image
 Image image(Geometry(254,218), &quot;white&quot;);
 
 // Set the image type to TrueColor DirectClass representation.
@@ -112,11 +114,9 @@ view.sync();
 *(view.get(108,94,1,1)) = Color(&quot;red&quot;);
 
 // Save changes to image.
-view.sync();
-</pre>
+view.sync();</pre>
 <p>The following is the definition of the Magick::Pixels class:</p>
-<pre class="literal-block">
-class Pixels
+<pre class="literal-block">class Pixels
 {
 public:
 
@@ -162,14 +162,16 @@ public:
   // Height of view
   unsigned int rows ( void ) const;
 
-};
-</pre>
+};</pre>
 <p>Copyright © Bob Friesenhahn 1999 - 2022</p>
 </div>
+
 
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2019 GraphicsMagick Group
+% Copyright (C) 2003-2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -133,7 +133,7 @@ CloneImageAttributes(Image* clone_image,
           status = MagickFail;
           break;
         }
-      strcpy(cloned_attribute->value,attribute->value);
+      (void) strlcpy(cloned_attribute->value,attribute->value,cloned_attribute->length+1);
 
       if (cloned_attributes == (ImageAttribute *) NULL)
         {
@@ -947,7 +947,7 @@ Generate8BIMAttribute(Image *image,const char *key)
   if ((count != 2) && (count != 3) && (count != 4))
     return(False);
   if (count < 4)
-    (void)strcpy(format,"SVG");
+    (void)strlcpy(format,"SVG",sizeof(format));
   if (count < 3)
     *name='\0';
   sub_number=1;
@@ -1621,7 +1621,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
     debug=MagickFalse;
 
   assert((ArraySize(format_bytes)-1) == EXIF_NUM_FORMATS);
-  logging=IsEventLogging();
+  logging=IsEventLogged(TransformEvent);
   {
     const char *
       env_value;
@@ -2231,7 +2231,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                               }
                             else
                               {
-                                i += sprintf(&value[i],"\\%03o",
+                                i += snprintf(&value[i],(allocation_size-i),"\\%03o",
                                              (unsigned int) pval[a]);
                                 binary |= MagickTrue;
                               }
@@ -3301,7 +3301,7 @@ SetImageAttribute(Image *image,const char *key,const char *value)
                     { /* nada */};
               MagickReallocMemory(char *,p->value,realloc_l);
               if (p->value != (char *) NULL)
-                (void) strcat(p->value+p->length,attribute->value);
+                (void) strlcat(p->value+p->length,attribute->value,min_l);
               p->length += attribute->length;
               DestroyImageAttribute(attribute);
             }

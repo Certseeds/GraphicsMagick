@@ -631,6 +631,10 @@ img.align-left {
 img.align-right {
 }
 
+p:first-child { margin-top: 0; }
+/* (:last-child is new in CSS 3) */
+p:last-child  { margin-bottom: 0; }
+
 /* Try to hide the page banner on portable devices */
 @media handheld
 {

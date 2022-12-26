@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2022 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -137,7 +137,7 @@ AcquireCacheView(ViewInfo *view,
 */
 MagickExport void *AcquireMemory(const size_t size)
 {
-  if (IsEventLogging())
+  if (IsEventLogged(DeprecateEvent))
     (void) LogMagickEvent(DeprecateEvent,GetMagickModule(),
                           "Method has been deprecated");
 
@@ -172,7 +172,7 @@ MagickExport void *AcquireMemory(const size_t size)
 MagickExport void *CloneMemory(void *destination,const void *source,
   const size_t size)
 {
-  if (IsEventLogging())
+  if (IsEventLogged(DeprecateEvent))
     (void) LogMagickEvent(DeprecateEvent,GetMagickModule(),
                           "Method has been deprecated");
 
@@ -247,7 +247,7 @@ MagickExport void LiberateMemory(void **memory)
 {
   assert(memory != (void **) NULL);
 
-  if (IsEventLogging())
+  if (IsEventLogged(DeprecateEvent))
     (void) LogMagickEvent(DeprecateEvent,GetMagickModule(),
                           "Method has been deprecated");
 
@@ -312,7 +312,7 @@ MagickExport unsigned int PopImagePixels(const Image *image,
       quantum_size=32;
   }
 
-  if (image->logging)
+  if (IsEventLogged(DeprecateEvent))
     (void) LogMagickEvent(DeprecateEvent,GetMagickModule(),
                           "Method has been deprecated");
 
@@ -378,7 +378,7 @@ MagickExport unsigned int PushImagePixels(Image *image,
       quantum_size=32;
   }
 
-  if (image->logging)
+  if (IsEventLogged(DeprecateEvent))
     (void) LogMagickEvent(DeprecateEvent,GetMagickModule(),
                           "Method has been deprecated");
 
@@ -417,7 +417,7 @@ MagickExport void ReacquireMemory(void **memory,const size_t size)
 {
   assert(memory != (void **) NULL);
 
-  if (IsEventLogging())
+  if (IsEventLogged(DeprecateEvent))
     (void) LogMagickEvent(DeprecateEvent,GetMagickModule(),
                           "Method has been deprecated");
 

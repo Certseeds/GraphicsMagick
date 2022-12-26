@@ -1,12 +1,14 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.16: http://docutils.sourceforge.net/" />
-<title>constitute</title>
-<link rel="stylesheet" href="../docutils-api.css" type="text/css" />
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>constitute</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="../docutils-api.css" type="text/css" rel="stylesheet">
+
 </head>
+
 <body>
 
 <div class="banner">
@@ -18,6 +20,7 @@
 <span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
 </form>
 </div>
+
 
 <div class="navmenu">
 <ul>
@@ -32,32 +35,30 @@
   <li><a href="../reference.html">Reference</a></li>
 </ul>
 </div>
+
 <div class="document" id="constitute">
 <h1 class="title">constitute</h1>
-<h2 class="subtitle" id="read-or-write-an-image">Read or write an image</h2>
-
+<p class="subtitle" id="read-or-write-an-image">Read or write an image</p>
 <div class="contents topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#constituteimage" id="id15">ConstituteImage</a></li>
-<li><a class="reference internal" href="#dispatchimage" id="id16">DispatchImage</a></li>
-<li><a class="reference internal" href="#pingimage" id="id17">PingImage</a></li>
-<li><a class="reference internal" href="#readimage" id="id18">ReadImage</a></li>
-<li><a class="reference internal" href="#readinlineimage" id="id19">ReadInlineImage</a></li>
-<li><a class="reference internal" href="#writeimage" id="id20">WriteImage</a></li>
-<li><a class="reference internal" href="#writeimages" id="id21">WriteImages</a></li>
-<li><a class="reference internal" href="#writeimagesfile" id="id22">WriteImagesFile</a></li>
+<li><p><a class="reference internal" href="#constituteimage" id="id15">ConstituteImage</a></p></li>
+<li><p><a class="reference internal" href="#dispatchimage" id="id16">DispatchImage</a></p></li>
+<li><p><a class="reference internal" href="#pingimage" id="id17">PingImage</a></p></li>
+<li><p><a class="reference internal" href="#readimage" id="id18">ReadImage</a></p></li>
+<li><p><a class="reference internal" href="#readinlineimage" id="id19">ReadInlineImage</a></p></li>
+<li><p><a class="reference internal" href="#writeimage" id="id20">WriteImage</a></p></li>
+<li><p><a class="reference internal" href="#writeimages" id="id21">WriteImages</a></p></li>
+<li><p><a class="reference internal" href="#writeimagesfile" id="id22">WriteImagesFile</a></p></li>
 </ul>
 </div>
 <div class="section" id="constituteimage">
 <h1><a class="toc-backref" href="#id15">ConstituteImage</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *ConstituteImage( const unsigned long width, const unsigned long height,
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ConstituteImage( const unsigned long width, const unsigned long height,
                         const char *map, const <a class="reference external" href="../api/types.html#storagetype">StorageType</a> type, const void *pixels,
-                        <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+                        <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="description">
 <h2>Description</h2>
@@ -76,35 +77,39 @@ described as &quot;Integer&quot; or &quot;Long&quot;.</p>
 character data, use</p>
 <p>image=ConstituteImage(640,480,&quot;RGB&quot;,CharPixel,pixels,&amp;exception);</p>
 <p>The format of the Constitute method is:</p>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *ConstituteImage( const unsigned long width, const unsigned long height,
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ConstituteImage( const unsigned long width, const unsigned long height,
                         const char *map, const <a class="reference external" href="../api/types.html#storagetype">StorageType</a> type, const void *pixels,
-                        <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+                        <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>width:</dt>
-<dd>width in pixels of the image.</dd>
+<dd><p>width in pixels of the image.</p>
+</dd>
 <dt>height:</dt>
-<dd>height in pixels of the image.</dd>
+<dd><p>height in pixels of the image.</p>
+</dd>
 <dt>map:</dt>
-<dd>This string reflects the expected ordering of the pixel array.
+<dd><p>This string reflects the expected ordering of the pixel array.
 It can be any combination or order of R = red, G = green, B = blue,
 A = alpha (same as Transparency), O = Opacity, T = Transparency,
 C = cyan, Y = yellow, M = magenta, K = black, or I = intensity
 (for grayscale). Specify &quot;P&quot; = pad, to skip over a quantum which is
 intentionally ignored. Creation of an alpha channel for CMYK images
-is currently not supported.</dd>
+is currently not supported.</p>
+</dd>
 <dt>type:</dt>
-<dd>Define the data type of the pixels.  Float and double types are
+<dd><p>Define the data type of the pixels.  Float and double types are
 expected to be normalized [0..1] otherwise [0..MaxRGB].  Choose from
 these types: CharPixel, ShortPixel, IntegerPixel, LongPixel, FloatPixel,
-or DoublePixel.</dd>
+or DoublePixel.</p>
+</dd>
 <dt>pixels:</dt>
-<dd>This array of values contain the pixel components as defined by
+<dd><p>This array of values contain the pixel components as defined by
 map and type.  You must preallocate this array where the expected
-length varies depending on the values of width, height, map, and type.</dd>
+length varies depending on the values of width, height, map, and type.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -112,12 +117,10 @@ length varies depending on the values of width, height, map, and type.</dd>
 <h1><a class="toc-backref" href="#id16">DispatchImage</a></h1>
 <div class="section" id="id1">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail DispatchImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const long x_offset, const long y_offset,
+<pre class="literal-block">MagickPassFail DispatchImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const long x_offset, const long y_offset,
                               const unsigned long columns, const unsigned long rows,
                               const char *map, const <a class="reference external" href="../api/types.html#storagetype">StorageType</a> type, void *pixels,
-                              <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+                              <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id2">
 <h2>Description</h2>
@@ -135,36 +138,40 @@ encountered.</p>
 character data in red-green-blue order:</p>
 <p>DispatchImage(image,0,0,640,1,&quot;RGB&quot;,0,pixels,exception);</p>
 <p>The format of the DispatchImage method is:</p>
-<pre class="literal-block">
-MagickPassFail DispatchImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const long x_offset, const long y_offset,
+<pre class="literal-block">MagickPassFail DispatchImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const long x_offset, const long y_offset,
                               const unsigned long columns, const unsigned long rows,
                               const char *map, const <a class="reference external" href="../api/types.html#storagetype">StorageType</a> type, void *pixels,
-                              <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+                              <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 <dt>x_offset, y_offset, columns, rows:</dt>
-<dd>These values define the perimeter
-of a region of pixels you want to extract.</dd>
+<dd><p>These values define the perimeter
+of a region of pixels you want to extract.</p>
+</dd>
 <dt>map:</dt>
-<dd>This string reflects the expected ordering of the pixel array.
+<dd><p>This string reflects the expected ordering of the pixel array.
 It can be any combination or order of R = red, G = green, B = blue,
 A = alpha  (same as Transparency), O = Opacity, T = Transparency,
 C = cyan, Y = yellow, M = magenta, K = black, I = intensity (for
 grayscale). Specify &quot;P&quot; = pad, to output a pad quantum. Pad quantums
-are zero-value.</dd>
+are zero-value.</p>
+</dd>
 <dt>type:</dt>
-<dd>Define the data type of the pixels.  Float and double types are
+<dd><p>Define the data type of the pixels.  Float and double types are
 expected to be normalized [0..1] otherwise [0..MaxRGB].  Choose from
 these types: CharPixel, ShortPixel, IntegerPixel, LongPixel, FloatPixel,
-or DoublePixel.</dd>
+or DoublePixel.</p>
+</dd>
 <dt>pixels:</dt>
-<dd>This array of values contain the pixel components as defined by
+<dd><p>This array of values contain the pixel components as defined by
 map and type.  You must preallocate this array where the expected
-length varies depending on the values of width, height, map, and type.</dd>
+length varies depending on the values of width, height, map, and type.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -172,9 +179,7 @@ length varies depending on the values of width, height, map, and type.</dd>
 <h1><a class="toc-backref" href="#id17">PingImage</a></h1>
 <div class="section" id="id3">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *PingImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *PingImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
@@ -183,16 +188,16 @@ except for the pixels.  It is much faster and consumes far less memory
 than ReadImage().  On failure, a NULL image is returned and exception
 describes the reason for the failure.</p>
 <p>The format of the PingImage method is:</p>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *PingImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *PingImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image_info:</dt>
-<dd>Ping the image defined by the file or filename members of
-this structure.</dd>
+<dd><p>Ping the image defined by the file or filename members of
+this structure.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -200,9 +205,7 @@ this structure.</dd>
 <h1><a class="toc-backref" href="#id18">ReadImage</a></h1>
 <div class="section" id="id5">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *ReadImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ReadImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id6">
 <h2>Description</h2>
@@ -211,16 +214,16 @@ The method returns a NULL if there is a memory shortage or if the image
 cannot be read.  On failure, a NULL image is returned and exception
 describes the reason for the failure.</p>
 <p>The format of the ReadImage method is:</p>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *ReadImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ReadImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image_info:</dt>
-<dd>Read the image defined by the file or filename members of
-this structure.</dd>
+<dd><p>Read the image defined by the file or filename members of
+this structure.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -228,10 +231,8 @@ this structure.</dd>
 <h1><a class="toc-backref" href="#id19">ReadInlineImage</a></h1>
 <div class="section" id="id7">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *ReadInlineImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *content,
-                        <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ReadInlineImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *content,
+                        <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id8">
 <h2>Description</h2>
@@ -240,17 +241,18 @@ The method returns a NULL if there is a memory shortage or if the image
 cannot be read.  On failure, a NULL image is returned and exception
 describes the reason for the failure.</p>
 <p>The format of the ReadInlineImage method is:</p>
-<pre class="literal-block">
-<a class="reference external" href="../api/types.html#image">Image</a> *ReadInlineImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *content,
-                        <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+<pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ReadInlineImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *content,
+                        <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>image_info:</dt>
-<dd>The image info.</dd>
+<dd><p>The image info.</p>
+</dd>
 <dt>content:</dt>
-<dd>The image encoded in Base64.</dd>
+<dd><p>The image encoded in Base64.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -258,9 +260,7 @@ describes the reason for the failure.</p>
 <h1><a class="toc-backref" href="#id20">WriteImage</a></h1>
 <div class="section" id="id9">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail WriteImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
-</pre>
+<pre class="literal-block">MagickPassFail WriteImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 </div>
 <div class="section" id="id10">
 <h2>Description</h2>
@@ -271,15 +271,15 @@ MagickFailure is there is a memory shortage or if the image cannot be
 written.  Check the exception member of image to determine the cause
 for any failure.</p>
 <p>The format of the WriteImage method is:</p>
-<pre class="literal-block">
-MagickPassFail WriteImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );
-</pre>
+<pre class="literal-block">MagickPassFail WriteImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 <p>A description of each parameter follows:</p>
-<dl class="docutils">
+<dl class="simple">
 <dt>image_info:</dt>
-<dd>The image info.</dd>
+<dd><p>The image info.</p>
+</dd>
 <dt>image:</dt>
-<dd>The image.</dd>
+<dd><p>The image.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -287,10 +287,8 @@ MagickPassFail WriteImage( const <a class="reference external" href="../api/type
 <h1><a class="toc-backref" href="#id21">WriteImages</a></h1>
 <div class="section" id="id11">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-MagickPassFail WriteImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image,
-                            const char *filename, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block">MagickPassFail WriteImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image,
+                            const char *filename, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id12">
 <h2>Description</h2>
@@ -303,19 +301,21 @@ ImageInfo's adjoin flag is set to MagickFalse, the file name is expected
 to include a printf-style formatting string for the frame number (e.g.
 &quot;image%02d.miff&quot;) so that the frames may be written.</p>
 <p>The format of the WriteImages method is:</p>
-<pre class="literal-block">
-MagickPassFail WriteImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image,
-                            const char *filename, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">MagickPassFail WriteImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image,
+                            const char *filename, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>image_info:</dt>
-<dd>The image info.</dd>
+<dd><p>The image info.</p>
+</dd>
 <dt>images:</dt>
-<dd>The image list.</dd>
+<dd><p>The image list.</p>
+</dd>
 <dt>filename:</dt>
-<dd>The image filename.</dd>
+<dd><p>The image filename.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
@@ -323,10 +323,8 @@ MagickPassFail WriteImages( const <a class="reference external" href="../api/typ
 <h1><a class="toc-backref" href="#id22">WriteImagesFile</a></h1>
 <div class="section" id="id13">
 <h2>Synopsis</h2>
-<pre class="literal-block">
-unsigned int WriteImagesFile( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image, FILE *file,
-                              <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
+<pre class="literal-block">unsigned int WriteImagesFile( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image, FILE *file,
+                              <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
 </div>
 <div class="section" id="id14">
 <h2>Description</h2>
@@ -335,27 +333,32 @@ FILE handle.  This may be used to append an encoded image to an already
 existing appended image sequence if the file seek position is at the end
 of an existing file.</p>
 <p>The format of the WriteImagesFile method is:</p>
-<pre class="literal-block">
-unsigned int WriteImagesFile( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image, FILE *file,
-                              <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );
-</pre>
-<dl class="docutils">
+<pre class="literal-block">unsigned int WriteImagesFile( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image, FILE *file,
+                              <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
+<dl class="simple">
 <dt>image_info:</dt>
-<dd>The image info.</dd>
+<dd><p>The image info.</p>
+</dd>
 <dt>images:</dt>
-<dd>The image list.</dd>
+<dd><p>The image list.</p>
+</dd>
 <dt>file:</dt>
-<dd>The open (and positioned) file handle.</dd>
+<dd><p>The open (and positioned) file handle.</p>
+</dd>
 <dt>exception:</dt>
-<dd>Return any errors or warnings in this structure.</dd>
+<dd><p>Return any errors or warnings in this structure.</p>
+</dd>
 </dl>
 </div>
 </div>
 </div>
 
+
 <hr class="docutils">
 <div class="document">
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022<!--SPONSOR_LOGO--></p>
+</div>
+
 </div>
 </body>
 </html>

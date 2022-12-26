@@ -74,6 +74,7 @@
 #include <math.h>
 #include <float.h>
 #include <assert.h>
+//#include <stdint.h>
 
 #include <jasper/jasper.h>
 
@@ -85,7 +86,10 @@ typedef enum {
 	OPT_HELP,
 	OPT_VERSION,
 	OPT_VERBOSE,
-	OPT_INFILE
+	OPT_INFILE,
+	OPT_DEBUG,
+	OPT_MAXSAMPLES,
+	OPT_MAXMEM
 } optid_t;
 
 /******************************************************************************\
@@ -104,6 +108,11 @@ static jas_opt_t opts[] = {
 	{OPT_VERSION, "version", 0},
 	{OPT_VERBOSE, "verbose", 0},
 	{OPT_INFILE, "f", JAS_OPT_HASARG},
+	{OPT_DEBUG, "debug-level", JAS_OPT_HASARG},
+	{OPT_MAXSAMPLES, "max-samples", JAS_OPT_HASARG},
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	{OPT_MAXMEM, "memory-limit", JAS_OPT_HASARG},
+#endif
 	{-1, 0, 0}
 };
 
@@ -126,6 +135,11 @@ int main(int argc, char **argv)
 	int numcmpts;
 	int verbose;
 	char *fmtname;
+	int debug;
+	size_t max_mem;
+	size_t max_samples;
+	bool max_samples_valid;
+	char optstr[32];
 
 	if (jas_init()) {
 		abort();
@@ -133,8 +147,14 @@ int main(int argc, char **argv)
 
 	cmdname = argv[0];
 
+	max_samples = 0;
+	max_samples_valid = false;
 	infile = 0;
 	verbose = 0;
+	debug = 0;
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	max_mem = JAS_DEFAULT_MAX_MEM_USAGE;
+#endif
 
 	/* Parse the command line options. */
 	while ((id = jas_getopt(argc, argv, opts)) >= 0) {
@@ -146,8 +166,18 @@ int main(int argc, char **argv)
 			printf("%s\n", JAS_VERSION);
 			exit(EXIT_SUCCESS);
 			break;
+		case OPT_DEBUG:
+			debug = atoi(jas_optarg);
+			break;
 		case OPT_INFILE:
 			infile = jas_optarg;
+			break;
+		case OPT_MAXSAMPLES:
+			max_samples = strtoull(jas_optarg, 0, 10);
+			max_samples_valid = true;
+			break;
+		case OPT_MAXMEM:
+			max_mem = strtoull(jas_optarg, 0, 10);
 			break;
 		case OPT_HELP:
 		default:
@@ -155,6 +185,11 @@ int main(int argc, char **argv)
 			break;
 		}
 	}
+
+	jas_setdbglevel(debug);
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	jas_set_max_mem_usage(max_mem);
+#endif
 
 	/* Open the image file. */
 	if (infile) {
@@ -175,8 +210,18 @@ int main(int argc, char **argv)
 		fprintf(stderr, "unknown image format\n");
 	}
 
+	optstr[0] = '\0';
+	if (max_samples_valid) {
+#if defined(JAS_HAVE_SNPRINTF)
+		snprintf(optstr, sizeof(optstr), "max_samples=%-zu", max_samples);
+#else
+		sprintf(optstr, "max_samples=%-zu", max_samples);
+#endif
+	}
+
 	/* Decode the image. */
-	if (!(image = jas_image_decode(instream, fmtid, 0))) {
+	if (!(image = jas_image_decode(instream, fmtid, optstr))) {
+		jas_stream_close(instream);
 		fprintf(stderr, "cannot load image\n");
 		return EXIT_FAILURE;
 	}
@@ -184,14 +229,25 @@ int main(int argc, char **argv)
 	/* Close the image file. */
 	jas_stream_close(instream);
 
-	numcmpts = jas_image_numcmpts(image);
-	width = jas_image_cmptwidth(image, 0);
-	height = jas_image_cmptheight(image, 0);
-	depth = jas_image_cmptprec(image, 0);
 	if (!(fmtname = jas_image_fmttostr(fmtid))) {
-		abort();
+		jas_eprintf("format name lookup failed\n");
+		return EXIT_FAILURE;
 	}
-	printf("%s %d %d %d %d %ld\n", fmtname, numcmpts, width, height, depth, (long) jas_image_rawsize(image));
+
+	if (!(numcmpts = jas_image_numcmpts(image))) {
+		fprintf(stderr, "warning: image has no components\n");
+	}
+	if (numcmpts) {
+		width = jas_image_cmptwidth(image, 0);
+		height = jas_image_cmptheight(image, 0);
+		depth = jas_image_cmptprec(image, 0);
+	} else {
+		width = 0;
+		height = 0;
+		depth = 0;
+	}
+	printf("%s %d %d %d %d %ld\n", fmtname, numcmpts, width, height, depth,
+	  JAS_CAST(long, jas_image_rawsize(image)));
 
 	jas_image_destroy(image);
 	jas_image_clearfmts();

@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2021 GraphicsMagick Group
+# Copyright (C) 2004-2022 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -7,6 +7,8 @@
 #  Top-Level Makefile for building GraphicsMagick
 #
 #
+
+.PHONY: www srpm rpm profile scan-build
 
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
@@ -22,6 +24,16 @@ ACLOCAL_AMFLAGS = -I m4
 
 MODULECOMMONFLAGS = -no-undefined -export-symbols-regex ".*" -shared -module -avoid-version
 MODULECOMMONCPPFLAGS = $(AM_CPPFLAGS)
+
+# Coverity parameters
+# FIXME: Could use info from /etc/os-release, or output from
+# lsb_release.
+# New URL is https://scan.coverity.com/projects/graphicsmagick?tab=overview
+COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
+COVERITY_TARBALL=GraphicsMagick.xz
+COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@
+COVERITY_DESCRIPTION='Ubuntu Q@QuantumDepth@'
+COVERITY_COV_INT='cov-int'
 
 # Options to pass when running configure in the distcheck target.
 #
@@ -201,7 +213,6 @@ MAINTAINER_TARGETS = \
 	$(WWWWANDAPI_MAINTAINER_TARGETS)
 
 # Target to build just the web pages.
-.PHONY: www
 www : $(WWW_MAINTAINER_TARGETS) $(WWWAPI_MAINTAINER_TARGETS) $(WWWWANDAPI_MAINTAINER_TARGETS)
 
 endif
@@ -272,6 +283,10 @@ dist-hook:
 	  ) \
 	)
 
+# Special cleaning rules
+clean-local:
+	$(RM) -rf $(COVERITY_COV_INT)
+
 #
 # Additional install rules
 #
@@ -330,7 +345,6 @@ endif # HAS_P7ZIP
 if HAS_RPM
 
 DIST_ARCHIVE_SRPM=$(distdir)-1.src.rpm
-.PHONY: srpm
 $(DIST_ARCHIVE_SRPM) srpm: $(distdir).tar.bz2
 	rm -f $(DIST_ARCHIVE_SRPM)
 	$(RPM) --define="_sourcedir `pwd`" --define="_srcrpmdir `pwd`" --nodeps -bs GraphicsMagick.spec
@@ -348,7 +362,6 @@ DIST_ARCHIVE_RPM= \
 	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-devel-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm \
 	$(RPMDIR)/$(RPMARCH)/$(PACKAGE_NAME)-perl-$(PACKAGE_VERSION)$(PACKAGE_VERSION_ADDENDUM)-1.$(RPMARCH).rpm
 
-.PHONY: rpm
 rpm:
 	rm -rf $(RPMDIR)
 	$(MKDIR_P) $(RPMDIR)
@@ -387,16 +400,18 @@ if HasGRAPHICSMAGICK_SNAPSHOT_COPY
 #
 # The arguments to the script are the original path names of the files to distribute.
 SNAPSHOT_DIST_ARCHIVES=$(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) $(DIST_ARCHIVE_SRPM)
+# FIXME: Can use gpg --enarmor to produce asc files from sig files
 snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-	  rm -f $${file}.sig ; \
+	  rm -f $${file}.asc $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
 	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
-	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.sig " $$f ; done` \
+	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc %s.sig " $$f $$f ; done` \
 	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 
 else
@@ -408,6 +423,7 @@ snapshot: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*.tar.*
@@ -415,22 +431,20 @@ snapshot: distcheck
 	mv $(SNAPSHOT_DIST_ARCHIVES) $(SNAPSHOT_DIRECTORY)/
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
 	  mv $${file}.sig $(SNAPSHOT_DIRECTORY)/ ; \
+	  mv $${file}.asc $(SNAPSHOT_DIRECTORY)/ ; \
 	done
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
 	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
 
 endif # HasGRAPHICSMAGICK_SNAPSHOT_COPY
 
-COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
-COVERITY_TARBALL=GraphicsMagick.xz
-COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@
-COVERITY_DESCRIPTION='Ubuntu Q@QuantumDepth@'
-# New URL is https://brb.synopsys.com/?project=GraphicsMagick
+# Build under Coverity
 coverity:
 	$(MAKE) clean
-	cov-build --dir cov-int $(MAKE)
+	$(RM) -rf $(COVERITY_COV_INT)
+	cov-build --dir $(COVERITY_COV_INT) $(MAKE)
 	tar caf $(COVERITY_TARBALL) cov-int
-	curl --limit-rate 50K \
+	curl --limit-rate 34K \
 	--form token=`cat $$HOME/.coverity_key_gm` \
 	--form email=$(COVERITY_EMAIL) \
 	--form file=@$(COVERITY_TARBALL) \
@@ -440,7 +454,6 @@ coverity:
 	$(RM) $(COVERITY_TARBALL)
 
 # Rules for a profiled build (according to Paolo Bonzini <bonzini@gnu.org>)
-#.PHONY: profile
 #profile:
 #	$(MAKE) clean
 #	$(MAKE) CFLAGS="$(CFLAGS) -fprofile-generate"
@@ -464,7 +477,26 @@ gmsymbols:
 release: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
-	  rm -f $${file}.sig ; \
+	  rm -f $${file}.asc $${file}.sig ; \
 	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
+
+# Run Clang analyzer on the project.
+# In order for this to work, you must have first installed the 'clang'
+# and 'clang-tools' packages on your system.
+# The project should have been configured to use clang.
+#	-enable-checker security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+scan-build:
+	scan-build-12 -k --html-title='GraphicsMagick' \
+	-maxloop 1000 \
+	-disable-checker deadcode.DeadStores \
+	-enable-checker security.insecureAPI.bcmp \
+	-enable-checker security.insecureAPI.bcopy \
+	-enable-checker security.insecureAPI.bzero \
+	-enable-checker security.insecureAPI.strcpy \
+	-enable-checker valist.CopyToSelf \
+	-enable-checker valist.Uninitialized \
+	-enable-checker valist.Unterminated \
+	--use-cc $(CC) $(MAKE)

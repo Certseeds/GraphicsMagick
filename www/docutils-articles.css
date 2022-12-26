@@ -104,7 +104,7 @@ div.navmenu {
 }
 
 div.navmenu ul {
-    max-width : 960px;
+    max-width : 60em;
     padding : 5px;
     margin : 0;
 }
@@ -131,7 +131,7 @@ div.document {
     padding : 1em 1% 1em 1%;
     width : auto;
     background : #FFFFFF;
-    max-width : 960px;
+    max-width : 60em;
     margin : 2ex 3% 1ex 3%;
     line-height : 140%;
     text-align : left;
@@ -166,7 +166,7 @@ div.footer {
     clear : both;
     width : 100%;
     background : #FFFFFF;
-    max-width : 960px;
+    max-width : 60em;
     padding-top : 1ex;
     font-family : sans-serif;
 }
@@ -443,9 +443,19 @@ ul.simple {
     margin-bottom : 1em;
 }
 
+ul.simple li p:first-child {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 ol.simple {
     margin-left : 1.0em;
     margin-bottom : 1em;
+}
+
+ol.simple li p:first-child {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 ol.arabic {
@@ -538,7 +548,7 @@ span.field-argument {
     font-size : 10pt;
 }
 
-table.docutils {
+div.document table {
     /*table-layout:fixed;*/
     font-size : 100%;
     margin-bottom : 1ex;
@@ -549,30 +559,31 @@ table.docutils {
     background-color : #FFFFFF;
 }
 
-table.docutils caption {
+div.document table caption {
     font-weight : bold;
 }
 
-table.docutils th,
-table.docutils td {
+div.document table th,
+div.document table td {
     padding : 6px;
-    border-color : #C8C8C8;
-    border-style : solid;
+    border : 1px solid #C8C8C8;
     vertical-align : top;
 }
 
 
-table.docutils th {
+div.document table th {
     border-top : 1px solid black;
     background-color : #80C6A3;
     border-bottom : 1px solid black;
+    vertical-align : bottom;
 }
 
-table.docutils td {
+div.document table td {
     background-color : #F8F8F8;
+    vertical-align : top;
 }
 
-table.docutils td.decimal {
+div.document table td.decimal {
     background-color : #F8F8F8;
     text-align : right;
 }
@@ -668,6 +679,10 @@ img.align-left {
 
 img.align-right {
 }
+
+p:first-child { margin-top: 0; }
+/* (:last-child is new in CSS 3) */
+p:last-child  { margin-bottom: 0; }
 
 /* Try to hide the page banner on portable devices */
 @media handheld

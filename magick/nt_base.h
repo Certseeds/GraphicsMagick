@@ -193,6 +193,7 @@ extern "C" {
     1900 Visual C++ 2015
     1910 Visual C++ 2017
     1920 Visual C++ 2019
+    1930 Visual C++ 2022
 
   Should look at __CLR_VER ("Defines the version of the common language
   runtime used when the application was compiled.") as well.
@@ -210,6 +211,15 @@ extern "C" {
 #if ((defined(_VISUALC_) && (_MSC_VER >= 1310)) ||              \
      (defined(__MINGW32__) && (__MSVCRT_VERSION__ >= 0x0700)))
 #  define HAVE__ALIGNED_MALLOC 1
+#endif
+
+/*
+  MSVC does not have snprintf (a C'99 feature) until Visual Studio 2015.
+ */
+#if defined(_VISUALC_) && (_MSC_VER < 1900)
+#undef snprintf
+extern MagickExport int NTsnprintf(char* str, size_t size, const char* format, ...);
+#define snprintf(str,size,format,...) NTsnprintf(str,size,format,__VA_ARGS__)
 #endif
 
 /*
@@ -312,6 +322,10 @@ typedef UINT (CALLBACK *LPFNDLLFUNC1)(DWORD,UINT);
   Note that under WIN64 read/write appear to still return 'int' and use
   'unsigned int' rather than 'size_t' to specify the I/O size.  This really
   sucks!
+
+  The Windows <BaseTsd.h> header defines the type SSIZE_T which may be used to
+  typedef ssize_t but it is not known how it behaves.
+
  */
 #if !defined(ssize_t) && !defined(__MINGW32__) && !defined(__MINGW64__)
 #  if defined(WIN64)

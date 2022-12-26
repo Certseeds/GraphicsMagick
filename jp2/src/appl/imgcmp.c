@@ -90,7 +90,8 @@ typedef enum {
 	OPT_METRIC,
 	OPT_MAXONLY,
 	OPT_MINONLY,
-	OPT_DIFFIMAGE
+	OPT_DIFFIMAGE,
+	OPT_MAXMEM
 } optid_t;
 
 typedef enum {
@@ -139,6 +140,9 @@ static jas_opt_t opts[] = {
 	{OPT_MAXONLY, "max", 0},
 	{OPT_MINONLY, "min", 0},
 	{OPT_DIFFIMAGE, "d", JAS_OPT_HASARG},
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	{OPT_MAXMEM, "memory-limit", JAS_OPT_HASARG},
+#endif
 	{-1, 0, 0}
 };
 
@@ -177,6 +181,7 @@ int main(int argc, char **argv)
 	int maxonly;
 	int minonly;
 	int fmtid;
+	size_t max_mem;
 
 	verbose = 0;
 	origpath = 0;
@@ -186,6 +191,9 @@ int main(int argc, char **argv)
 	diffpath = 0;
 	maxonly = 0;
 	minonly = 0;
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	max_mem = JAS_DEFAULT_MAX_MEM_USAGE;
+#endif
 
 	if (jas_init()) {
 		abort();
@@ -221,6 +229,9 @@ int main(int argc, char **argv)
 			printf("%s\n", JAS_VERSION);
 			exit(EXIT_SUCCESS);
 			break;
+		case OPT_MAXMEM:
+			max_mem = strtoull(jas_optarg, 0, 10);
+			break;
 		case OPT_HELP:
 		default:
 			usage();
@@ -245,6 +256,10 @@ int main(int argc, char **argv)
 			usage();
 		}
 	}
+
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
+	jas_set_max_mem_usage(max_mem);
+#endif
 
 	/* Open the original image file. */
 	if (!(origstream = jas_stream_fopen(origpath, "rb"))) {
@@ -279,7 +294,8 @@ int main(int argc, char **argv)
 	/* Ensure that both images have the same number of components. */
 	numcomps = jas_image_numcmpts(origimage);
 	if (jas_image_numcmpts(reconimage) != numcomps) {
-		fprintf(stderr, "number of components differ\n");
+		fprintf(stderr, "number of components differ (%d != %d)\n",
+		  numcomps, jas_image_numcmpts(reconimage));
 		return EXIT_FAILURE;
 	}
 
@@ -424,7 +440,7 @@ double pae(jas_matrix_t *x, jas_matrix_t *y)
 	s = 0.0;
 	for (i = 0; i < jas_matrix_numrows(x); i++) {
 		for (j = 0; j < jas_matrix_numcols(x); j++) {
-			d = abs(jas_matrix_get(y, i, j) - jas_matrix_get(x, i, j));
+			d = JAS_ABS(jas_matrix_get(y, i, j) - jas_matrix_get(x, i, j));
 			if (d > s) {
 				s = d;
 			}
@@ -464,11 +480,13 @@ double msen(jas_matrix_t *x, jas_matrix_t *y, int n)
 
 double psnr(jas_matrix_t *x, jas_matrix_t *y, int depth)
 {
-	double m;
+	double mse;
+	double rmse;
 	double p;
-	m = msen(x, y, 2);
+	mse = msen(x, y, 2);
+	rmse = sqrt(mse);
 	p = ((1 << depth) - 1);
-	return 20.0 * log10(p / sqrt(m));
+	return (rmse != 0) ? (20.0 * log10(p / rmse)) : INFINITY;
 }
 
 /******************************************************************************\
@@ -488,6 +506,7 @@ jas_image_t *makediffimage(jas_matrix_t *origdata, jas_matrix_t *recondata)
 	jas_seqent_t a;
 	jas_seqent_t b;
 
+	diffimage = 0;
 	width = jas_matrix_numcols(origdata);
 	height = jas_matrix_numrows(origdata);
 
@@ -502,13 +521,14 @@ jas_image_t *makediffimage(jas_matrix_t *origdata, jas_matrix_t *recondata)
 		compparms[i].sgnd = false;
 	}
 	if (!(diffimage = jas_image_create(3, compparms, JAS_CLRSPC_SRGB))) {
-		abort();
+		fprintf(stderr, "cannot create image\n");
+		goto error;
 	}
 
 	for (i = 0; i < 3; ++i) {
 		if (!(diffdata[i] = jas_matrix_create(height, width))) {
-			fprintf(stderr, "internal error\n");
-			return 0;
+			fprintf(stderr, "cannot create matrix\n");
+			goto error;
 		}
 	}
 
@@ -534,11 +554,18 @@ jas_image_t *makediffimage(jas_matrix_t *origdata, jas_matrix_t *recondata)
 
 	for (i = 0; i < 3; ++i) {
 		if (jas_image_writecmpt(diffimage, i, 0, 0, width, height, diffdata[i])) {
-			return 0;
+			fprintf(stderr, "cannot write image component\n");
+			goto error;
 		}
 	}
 
 	return diffimage;
+
+error:
+	if (diffimage) {
+		jas_image_destroy(diffimage);
+	}
+	return 0;
 }
 
 /******************************************************************************\
