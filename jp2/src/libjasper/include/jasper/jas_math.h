@@ -83,7 +83,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "stdbool2.h"
-#include <stdint.h>
+//#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
