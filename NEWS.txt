@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to December 10, 2022
+This file was last updated to reflect changes up to December 26, 2022
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.39 (???? ??, 2022)
+1.3.39 (December 26, 2022)
 ==========================
 
 Special Issues:
@@ -50,16 +50,18 @@ Security Fixes:
 
 * ALL: Replace strcpy() with strlcpy(), replace strcat() with
   strlcat(), replace sprintf() with snprintf().  Prefer using bounded
-  string functions.
+  string functions.  This change is made for the purpose of increasing
+  safety than to address any existing demonstrated concern.
 
 Bug fixes:
 
 * Coverity: Several fixes for issues found by Coverity to reduce the
   number of reported issues back down to zero.
 
-* Clang Analyzer: Fix most discovered issues.
+* Clang Analyzer 12: Fix most discovered issues.
 
-* PNG: Fix possible use of uninitialized 'ping_num_trans' value in ReadOnePNGImage().
+* PNG: Fix possible use of uninitialized 'ping_num_trans' value in
+  ReadOnePNGImage().
 
 * MinGW: Eliminate overwrite of existing _MSC_VER value in MinGW compile.
 
@@ -83,7 +85,7 @@ Bug fixes:
   as converted to Image attributes.
 
 * WebP: Add configure.ac updates to check for libsharpyuv so that
-  builds with development version work again.
+  builds with the development version work again.
 
 * Visual Studio Build (VisualMagick): Fix project file generation.
   Improve portability of code for configure.exe.
@@ -107,7 +109,8 @@ New Features:
   performance hit if any logging is enabled at all and logging
   statements are executed which are filtered and produce no output.
 
-* FITS: Support storing multiple scenes in one file (non-standard extension).
+* FITS: Support storing multiple scenes in one file (non-standard
+  extension).
 
 * JPEG: Optionally enable arithmetic coder in JPG images using
   '-define jpeg:arithmetic-coding=true'.
@@ -142,8 +145,8 @@ Feature improvements:
 
 * JXL: The JXL coder is updated to compile with what will likely
   become JXL 0.8.0.  Support for 16-bit 'short' samples, 16-bit
-  'float' samples, and 32-bit float samples added.  Suppor for reading
-  and writing ICC, EXIF, and XMP profiles added.
+  'float' samples, and 32-bit float samples added.  Support for
+  reading and writing ICC, EXIF, and XMP profiles added.
 
 * MIME: GM "magick" to MIME mappings have been added for apng, avif,
   bmp, ico, and webp (regardless of if they are supported).
@@ -157,15 +160,22 @@ Feature improvements:
 
 Windows Delegate Updates/Additions:
 
-* Update bundled libjasper to version 1.900.26.
+* Update bundled libjasper to version 1.900.26. Please note that 4.0.0
+  is the latest version at this time and fixes a great many security
+  and stability issues which are present in 1.900.26.
 
 * Update bundled libjpeg to version 9e.
 
-* Update bundled libtiff to version 4.5.0 (but still compilable using MSVC2008!).
+* Update bundled libtiff to version 4.5.0.
 
 Build Changes:
 
-* MSVC: Added porting function to emulate C'99 snprintf for MSVC older than 2015.
+* MSVC: Added porting function to emulate C'99 snprintf for MSVC older
+  than 2015.
+
+* MSVC: Successfully compiles using Visual Studio 2008 and 2019.
+  Compiles successfully using Visual Studio 2022 if optimization is
+  disabled (otherwise there is an internal compiler error in effect.c).
 
 Behavior Changes:
 

@@ -1,6 +1,10 @@
+2022-12-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updated the news.
+
 2022-12-25 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* jp2/src/appl/jasper.c	Link problem with jasper utility fixed.
+	* jp2/src/appl/jasper.c: Link problem with jasper utility fixed.
 
 2022-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
