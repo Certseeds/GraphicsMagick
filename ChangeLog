@@ -1,5 +1,8 @@
 2022-12-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* version.sh: Update shared library versioning in preparation for
+	1.3.39 release.
+
 	* NEWS.txt: Updated the news.
 
 2022-12-25 Fojtik Jaroslav  <JaFojtik@yandex.com>
