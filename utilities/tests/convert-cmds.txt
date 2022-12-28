@@ -1,12 +1,21 @@
 -noop
 -affine 1,0,0.785,1,0,0 -transform
 -asc-cdl 0.9,0.01,0.45:0.9,0.01,0.45:0.9,0.01,0.45:0.01
+-auto-orient
 -black-threshold 20%
 -blur 0x0.5
 -blur 0x1.0
 -blur 0x2.0
--border 6x6
--channel red
+-bordercolor red -border 6x6
+-channel Red
+-channel Green
+-channel Blue
+-matte -channel Opacity
+-colorspace CMYK -channel Cyan
+-colorspace CMYK -channel Magenta
+-colorspace CMYK -channel Yellow
+-colorspace CMYK -channel Black
+-matte -colorspace CMYK -channel Opacity
 -charcoal 0x1
 -chop 800x600+200+300
 -colors 16
@@ -30,6 +39,9 @@
 -colorize 30%/20%/50%
 -crop 600x700+100+100
 -cycle 200
+-depth 7
+-depth 16
+-depth 32
 -despeckle
 -fill green -stroke gold -draw 'point 800,500'
 -fill green -stroke gold -draw 'line 800,500 1100,800'
