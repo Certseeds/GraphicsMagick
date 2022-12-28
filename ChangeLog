@@ -1,5 +1,8 @@
 2022-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/image.c (AllocateImage): Initialize colors directly.
+	(GetImageInfo): Initialize colors directly.
+
 	* utilities/tests/convert-cmds.txt: Add more convert command
 	permutations.
 

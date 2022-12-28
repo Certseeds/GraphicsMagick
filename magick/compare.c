@@ -990,10 +990,13 @@ InitializeDifferenceImageOptions(DifferenceImageOptions *options,
                                  ExceptionInfo *exception)
 {
   assert(options != (DifferenceImageOptions *) NULL);
+  ARG_NOT_USED(exception);
+
   memset(options,0,sizeof(DifferenceImageOptions));
   options->channel=AllChannels;
   options->highlight_style=TintHighlightStyle;
-  (void) QueryColorDatabase(HighlightColor,&options->highlight_color,exception);
+  /* (void) QueryColorDatabase(HighlightColor,&options->highlight_color,exception); */
+  HighlightColorInit(&options->highlight_color);
 }
 
 
