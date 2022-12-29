@@ -1,3 +1,16 @@
+2022-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news.
+
+	* magick/command.c: Add use of GetFirstImageInList() where needed
+	to assure that the list pointer is to the first image.
+
+	* magick/constitute.c (ReadImage): Only perform subimage
+	processing when required.
+
+	* magick/command.c (MogrifyImages): Restore mogrify_images as
+	first image in list since the rest of the code expects that.
+
 2022-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mat.c (ReadMATImageV4): Use ReplaceImageInList().
