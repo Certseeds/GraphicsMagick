@@ -1,5 +1,9 @@
 2022-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcx.c (WritePCXImage): Fix heap overflow when writing
+	more than 1023 scenes, and also eliminate use of uninitialized
+	memory.
+
 	* coders/pnm.c (ReadPNMImage): Compute the number of threads to
 	use.
 

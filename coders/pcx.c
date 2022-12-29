@@ -1029,6 +1029,9 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
   unsigned long
     scene;
 
+  const unsigned long
+    max_scenes = 1024UL;
+
   ImageCharacteristics
     characteristics;
 
@@ -1057,11 +1060,12 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       */
       write_dcx=MagickTrue;
       (void) WriteBlobLSBLong(image,0x3ADE68B1L);
-      page_table=MagickAllocateResourceLimitedMemory(ExtendedSignedIntegralType *,
-        1024*sizeof(ExtendedSignedIntegralType));
+      page_table=MagickAllocateResourceLimitedClearedArray(ExtendedSignedIntegralType *,
+                                                           max_scenes+1,
+                                                           sizeof(ExtendedSignedIntegralType));
       if (page_table == (ExtendedSignedIntegralType *) NULL)
         ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-      for (scene=0; scene < 1024; scene++)
+      for (scene=0; scene < max_scenes; scene++)
         (void) WriteBlobLSBLong(image,0x00000000L);
     }
   adjoin=(image_info->adjoin) && (image->next != (const Image *) NULL) && (write_dcx);
@@ -1156,11 +1160,9 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     /*
       Dump colormap to file.
     */
-    pcx_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,3*256);
+    pcx_colormap=MagickAllocateResourceLimitedClearedArray(unsigned char *,3,256);
     if (pcx_colormap == (unsigned char *) NULL)
       ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-    for (i=0; i < (3*256); i++)
-      pcx_colormap[i]=0;
     q=pcx_colormap;
     if (image->storage_class == PseudoClass)
       for (i=0; i < (long) image->colors; i++)
@@ -1177,7 +1179,9 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     for (i=0; i < 58; i++)
       (void) WriteBlobByte(image,'\0');
     /* Allocate memory for one pixel row. */
-    pcx_pixels=MagickAllocateResourceLimitedArray(unsigned char *,bytes_per_line,pcx_info.planes);
+    pcx_pixels=MagickAllocateResourceLimitedClearedArray(unsigned char *,
+                                                         bytes_per_line,
+                                                         pcx_info.planes);
     if (pcx_pixels == (unsigned char *) NULL)
       ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     q=pcx_pixels;
@@ -1329,12 +1333,12 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,image_list_length,
+    status=MagickMonitorFormatted(scene++,Min(max_scenes,image_list_length),
                                   &image->exception,SaveImagesText,
                                   image->filename);
     if (status == False)
       break;
-    if (scene >= 1023)
+    if (scene >= max_scenes-1)
       break;
   } while (adjoin);
   if (adjoin)
@@ -1345,6 +1349,10 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       /*
         Write the DCX page table.
       */
+      if (logging && write_dcx && image_list_length > max_scenes)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "WARNING: DCX truncated to %lu scenes!",
+                              max_scenes-1);
       page_table[scene+1]=0;
       (void) SeekBlob(image,0L,SEEK_SET);
       (void) WriteBlobLSBLong(image,0x3ADE68B1L);
