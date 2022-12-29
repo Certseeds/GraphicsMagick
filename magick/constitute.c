@@ -1842,6 +1842,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
 
       /*
         User specified subimages (e.g. image.miff[1,3-5,7-6,2]).
+        FIXME: Slow!
       */
       subimages=NewImageList();
       p=clone_info->tile;

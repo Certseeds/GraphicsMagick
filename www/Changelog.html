@@ -40,6 +40,11 @@
 <p>2022-12-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/mat.c (ReadMATImageV4): Use ReplaceImageInList().
+(ReadMATImage): Use ReplaceImageInList().</p></li>
+<li><p>magick/command.c (MogrifyImages): Remove band-aid.</p></li>
+<li><p>magick/list.c (AppendImageToList): Image list is updated to be
+new image.</p></li>
 <li><p>magick/image.c (AllocateImage): Initialize colors directly.
 (GetImageInfo): Initialize colors directly.</p></li>
 <li><p>utilities/tests/convert-cmds.txt: Add more convert command

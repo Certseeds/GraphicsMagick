@@ -1,5 +1,13 @@
 2022-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mat.c (ReadMATImageV4): Use ReplaceImageInList().
+	(ReadMATImage): Use ReplaceImageInList().
+
+	* magick/command.c (MogrifyImages): Remove band-aid.
+
+	* magick/list.c (AppendImageToList): Image list is updated to be
+	new image.
+
 	* magick/image.c (AllocateImage): Initialize colors directly.
 	(GetImageInfo): Initialize colors directly.
 
