@@ -51,7 +51,9 @@
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  AppendImageToList() appends an image to the end of the list.
+%  AppendImageToList() appends an image to the end of the list.  Please
+%  note that this API allows the list pointer to be updated and in fact
+%  it now updates the list pointer to be the image which was just added.
 %
 %  The format of the AppendImageToList method is:
 %
