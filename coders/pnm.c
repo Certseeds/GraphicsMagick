@@ -268,10 +268,20 @@ typedef enum
     XV_332_Format /* P7 332 */
   } PNMSubformat;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
+#if defined(HAVE_OPENMP)
 #  define PNMReadUseOpenMP 1
-#  define PNMReadThreads (Min(2,omp_get_max_threads()))
-#endif
+
+static int PNMReadThreads(const Image* image, const size_t bytes_per_row)
+{
+  const int omp_max_threads = omp_get_max_threads();
+  long threads;
+  ARG_NOT_USED(image);
+  threads=(Min(bytes_per_row/4096UL,(unsigned long) omp_max_threads));
+  if (0 == threads)
+    threads=1;
+  return (int) threads;
+}
+#endif /* defined(HAVE_OPENMP) */
 
 static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
@@ -868,9 +878,9 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             unsigned int
               sample_max;
 
-#if defined(HAVE_OPENMP) && !defined(DisableSlowOpenMP)
+#if defined(HAVE_OPENMP)
             int
-              pnm_read_threads = PNMReadThreads;
+              pnm_read_threads;
 #endif
 
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Reading PAM");
@@ -1017,6 +1027,13 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   }
               }
 
+#if defined(HAVE_OPENMP)
+            pnm_read_threads = PNMReadThreads(image,bytes_per_row);
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Using %d thread%s...", pnm_read_threads,
+                                    pnm_read_threads > 1 ? "s" : "");
+#endif
             scanline_set=AllocateThreadViewDataArray(image,exception,bytes_per_row,1);
             if (scanline_set == (ThreadViewDataSet *) NULL)
               ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);

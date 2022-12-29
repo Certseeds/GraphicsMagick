@@ -1,5 +1,8 @@
 2022-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pnm.c (ReadPNMImage): Compute the number of threads to
+	use.
+
 	* NEWS.txt: Update the news.
 
 	* magick/command.c: Add use of GetFirstImageInList() where needed
