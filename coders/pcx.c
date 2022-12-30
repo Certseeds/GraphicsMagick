@@ -924,7 +924,7 @@ ModuleExport void UnregisterPCXImage(void)
 %
 %
 */
-static MagickPassFail WriteRLEPixels(Image *image,
+static MagickPassFail WritePCXPixels(Image *image,
                                      PCXInfo *pcx_info,
                                      const unsigned char *pcx_row_pixels)
 {
@@ -945,16 +945,32 @@ static MagickPassFail WriteRLEPixels(Image *image,
   /* For each color plane ... */
   for (i=0; i < (long) pcx_info->planes; i++)
     {
-      previous=(*q++);
-      count=1;
-      /* For each column ... */
-      for (x=0; x < (long) (pcx_info->bytes_per_line-1); x++)
+      if (pcx_info->encoding == 0)
         {
-          packet=(*q++);
-          if ((packet == previous) && (count < 63))
+          for (x=0; x < (long) pcx_info->bytes_per_line; x++)
+            (void) WriteBlobByte(image,(unsigned char) (*q++));
+        }
+      else
+        {
+          previous=(*q++);
+          count=1;
+          /* For each column ... */
+          for (x=0; x < (long) (pcx_info->bytes_per_line-1); x++)
             {
-              count++;
-              continue;
+              packet=(*q++);
+              if ((packet == previous) && (count < 63))
+                {
+                  count++;
+                  continue;
+                }
+              if ((count > 1) || ((previous & 0xc0) == 0xc0))
+                {
+                  count|=0xc0;
+                  (void) WriteBlobByte(image,count);
+                }
+              (void) WriteBlobByte(image,previous);
+              previous=packet;
+              count=1;
             }
           if ((count > 1) || ((previous & 0xc0) == 0xc0))
             {
@@ -962,15 +978,7 @@ static MagickPassFail WriteRLEPixels(Image *image,
               (void) WriteBlobByte(image,count);
             }
           (void) WriteBlobByte(image,previous);
-          previous=packet;
-          count=1;
         }
-      if ((count > 1) || ((previous & 0xc0) == 0xc0))
-        {
-          count|=0xc0;
-          (void) WriteBlobByte(image,count);
-        }
-      (void) WriteBlobByte(image,previous);
     }
   return (MagickPass);
 }
@@ -1097,7 +1105,10 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     */
     pcx_info.identifier=0x0a;
     pcx_info.version=5;
-    pcx_info.encoding=1;
+    pcx_info.encoding=image->compression == RLECompression ? 1 : 0;
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Using %s compression",
+                          pcx_info.encoding == 1 ? "RLE" : "No");
     pcx_info.bits_per_pixel=8;
     if (characteristics.palette && characteristics.monochrome)
       pcx_info.bits_per_pixel=1;
@@ -1240,7 +1251,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
                 }
               }
           }
-          if (WriteRLEPixels(image,&pcx_info,pcx_pixels) == MagickFail)
+          if (WritePCXPixels(image,&pcx_info,pcx_pixels) == MagickFail)
             break;
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
@@ -1265,7 +1276,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
           /* For each column ... */
           for (x=0; x < (long) image->columns; x++)
             *q++=indexes[x];
-          if (WriteRLEPixels(image,&pcx_info,pcx_pixels) == MagickFail)
+          if (WritePCXPixels(image,&pcx_info,pcx_pixels) == MagickFail)
             break;
           if (image->previous == (Image *) NULL)
             if (QuantumTick(y,image->rows))
@@ -1315,7 +1326,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
             }
             if (bit != 0)
               *q++=byte << (8-bit);
-            if (WriteRLEPixels(image,&pcx_info,pcx_pixels) == MagickFail)
+            if (WritePCXPixels(image,&pcx_info,pcx_pixels) == MagickFail)
             break;
             if (image->previous == (Image *) NULL)
               if (QuantumTick(y,image->rows))

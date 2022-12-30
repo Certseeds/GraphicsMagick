@@ -1,5 +1,8 @@
 2022-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pcx.c (WritePCXImage): Support writing uncompressed PCX
+	by default.  Use -compress RLE to enable RLE compression.
+
 	* coders/sun.c (ReadSUNImage): Sense of monochrome images was
 	inverted.  Fix scanline size calculation.
 	(WriteSUNImage): Sense of monochrome images was inverted.
