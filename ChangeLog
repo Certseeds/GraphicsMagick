@@ -1,3 +1,8 @@
+2022-12-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/pcx.c (WritePCXImage): Meke default RLE compression.
+        Uncompressed PCX is more rare.
+
 2022-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pcx.c (WritePCXImage): Support writing uncompressed PCX
@@ -50,7 +55,7 @@
 
 	* NEWS.txt: Updated the news.
 
-2022-12-25 Fojtik Jaroslav  <JaFojtik@yandex.com>
+2022-12-26 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* jp2/src/appl/jasper.c: Link problem with jasper utility fixed.
 

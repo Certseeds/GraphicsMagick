@@ -1105,7 +1105,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     */
     pcx_info.identifier=0x0a;
     pcx_info.version=5;
-    pcx_info.encoding=image->compression == RLECompression ? 1 : 0;
+    pcx_info.encoding = (image->compression==RLECompression || image->compression==UndefinedCompression) ? 1 : 0;
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Using %s compression",
                           pcx_info.encoding == 1 ? "RLE" : "No");
