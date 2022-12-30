@@ -1105,6 +1105,8 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     */
     pcx_info.identifier=0x0a;
     pcx_info.version=5;
+    /* Please note that uncompressed PCX in quite rare and some applications cannot open it.
+       So the compressed PCX needs to be default. */
     pcx_info.encoding = (image->compression==RLECompression || image->compression==UndefinedCompression) ? 1 : 0;
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Using %s compression",
