@@ -41,7 +41,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to December 29, 2022</p>
+<p>This file was last updated to reflect changes up to December 30, 2022</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -121,8 +121,20 @@ GraphicsMagick ChangeLog file, Mercurial repository commit log, and
 the oss-fuzz issues list for details.</p></li>
 </ul>
 <p>Security Fixes:</p>
+<ul class="simple">
+<li><p>DCX: Fixed heap overflow when writing more than 1023 scenes, and
+also eliminated use of uninitialized memory.</p></li>
+</ul>
 <p>Bug fixes:</p>
+<ul class="simple">
+<li><p>SUN: The sense of monochrome images was inverted.  Fix scanline size
+calculation.</p></li>
+</ul>
 <p>New Features:</p>
+<ul class="simple">
+<li><p>PCX and DCX: Support writing uncompressed format (use -compress rle
+for RLE compression).</p></li>
+</ul>
 <p>API Updates:</p>
 <ul class="simple">
 <li><p>AppendImageToList() now updates the image list pointer to be the
@@ -136,6 +148,8 @@ pointer to the first image in the list is needed.</p></li>
 <li><p>AppendImageToList() now updates the image list pointer to be the
 image which was just added.  Use GetFirstImageInList() when the
 pointer to the first image in the list is needed.</p></li>
+<li><p>PCX and DCX writers now write uncompressed files by default
+(use -compress rle for RLE compression).</p></li>
 </ul>
 </div>
 <div class="section" id="december-26-2022">
