@@ -5,6 +5,8 @@
 
 2022-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Updated the news.
+
 	* coders/pcx.c (WritePCXImage): Support writing uncompressed PCX
 	by default.  Use -compress RLE to enable RLE compression.
 
