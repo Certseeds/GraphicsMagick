@@ -8,7 +8,7 @@
 rwfile=./rwfile
 
 # Types we will test
-check_types='bilevel gray pallette truecolor'
+check_types='bilevel gray pallette truecolor' # truecolor_1x266
 
 # Number of tests we plan to run
 test_plan_fn 656

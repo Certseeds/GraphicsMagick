@@ -2184,6 +2184,10 @@ MagickExport int GetMagickGeometry(const char *geometry,long *x,long *y,
             }
           *width=(unsigned long) floor(scale_factor*former_width+0.5);
           *height=(unsigned long) floor(scale_factor*former_height+0.5);
+
+          /* Width and height can not be zero! */
+          *width=Max(*width,1);
+          *height=Max(*height,1);
         }
       if (flags & GreaterValue) /* > */
         {

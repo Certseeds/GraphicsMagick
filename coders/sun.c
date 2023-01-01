@@ -303,6 +303,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
     bytes_per_image,
     bytes_per_line,
     count,
+    pad,
     sun_data_length;
 
   SUNInfo
@@ -339,422 +340,448 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
   (void) memset(&sun_info,0,sizeof(sun_info));
   sun_info.magic=ReadBlobMSBLong(image);
   do
-  {
-    /*
-      Verify SUN identifier.
-    */
-    if (sun_info.magic != 0x59a66a95)
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-    sun_info.width=ReadBlobMSBLong(image);
-    sun_info.height=ReadBlobMSBLong(image);
-    sun_info.depth=ReadBlobMSBLong(image);
-    sun_info.length=ReadBlobMSBLong(image);
-    sun_info.type=ReadBlobMSBLong(image);
-    sun_info.maptype=ReadBlobMSBLong(image);
-    sun_info.maplength=ReadBlobMSBLong(image);
-    if (logging)
-      LogSUNInfo(&sun_info);
-    if (EOFBlob(image))
-      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-    /*
-      Verify that width, height, depth, and length are not zero
-    */
-    if ((sun_info.width == 0) || (sun_info.height == 0) ||
-        (sun_info.depth == 0) || (sun_info.length == 0))
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-
-    /*
-      Verify that header values are in positive numeric range of a
-      32-bit 'int' even though we store them in an unsigned value.
-    */
-    if ((sun_info.magic | sun_info.width | sun_info.height | sun_info.depth |
-         sun_info.type | sun_info.maptype | sun_info.maplength) & (1U << 31))
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-    /*
-      Verify that we support the image sub-type
-    */
-    if ((sun_info.type != RT_STANDARD) &&
-        (sun_info.type != RT_ENCODED) &&
-        (sun_info.type != RT_FORMAT_RGB))
-      ThrowReaderException(CoderError,DataEncodingSchemeIsNotSupported,image);
-    /*
-      Verify that we support the colormap type
-    */
-    if ((sun_info.maptype != RMT_NONE) &&
-        (sun_info.maptype != RMT_EQUAL_RGB))
-      ThrowReaderException(CoderError,ColormapTypeNotSupported,image);
-    /*
-      Insist that map length is zero if there is no colormap.
-    */
-    if ((sun_info.maptype == RMT_NONE) && (sun_info.maplength != 0))
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-    /*
-      Insist on a supported depth
-    */
-    if ((sun_info.depth != 1) &&
-        (sun_info.depth != 8) &&
-        (sun_info.depth != 24) &&
-        (sun_info.depth != 32))
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-
-    image->columns=sun_info.width;
-    image->rows=sun_info.height;
-    if (((unsigned long) ((long) image->columns) != image->columns) ||
-        ((unsigned long) ((long) image->rows) != image->rows))
-      ThrowReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
-    if (CheckImagePixelLimits(image, exception) != MagickPass)
-        ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
-    image->depth=sun_info.depth <= 8 ? 8 : QuantumDepth;
-    if (sun_info.depth < 24)
-      {
-        image->colors=sun_info.maplength;
-        if (sun_info.maptype == RMT_NONE)
-          image->colors=1U << sun_info.depth;
-        if (sun_info.maptype == RMT_EQUAL_RGB)
-          image->colors=sun_info.maplength/3U;
-      }
-
-    switch (sun_info.maptype)
     {
-      case RMT_NONE:
-      {
-        if (sun_info.depth < 24)
+      /*
+        Verify SUN identifier.
+      */
+      if (sun_info.magic != 0x59a66a95)
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+      sun_info.width=ReadBlobMSBLong(image);
+      sun_info.height=ReadBlobMSBLong(image);
+      sun_info.depth=ReadBlobMSBLong(image);
+      sun_info.length=ReadBlobMSBLong(image);
+      sun_info.type=ReadBlobMSBLong(image);
+      sun_info.maptype=ReadBlobMSBLong(image);
+      sun_info.maplength=ReadBlobMSBLong(image);
+      if (logging)
+        LogSUNInfo(&sun_info);
+      if (EOFBlob(image))
+        ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+      /*
+        Verify that width, height, depth, and length are not zero
+      */
+      if ((sun_info.width == 0) || (sun_info.height == 0) ||
+          (sun_info.depth == 0) || (sun_info.length == 0))
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
+      /*
+        Verify that header values are in positive numeric range of a
+        32-bit 'int' even though we store them in an unsigned value.
+      */
+      if ((sun_info.magic | sun_info.width | sun_info.height | sun_info.depth |
+           sun_info.type | sun_info.maptype | sun_info.maplength) & (1U << 31))
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+      /*
+        Verify that we support the image sub-type
+      */
+      if ((sun_info.type != RT_STANDARD) &&
+          (sun_info.type != RT_ENCODED) &&
+          (sun_info.type != RT_FORMAT_RGB))
+        ThrowReaderException(CoderError,DataEncodingSchemeIsNotSupported,image);
+      /*
+        Verify that we support the colormap type
+      */
+      if ((sun_info.maptype != RMT_NONE) &&
+          (sun_info.maptype != RMT_EQUAL_RGB))
+        ThrowReaderException(CoderError,ColormapTypeNotSupported,image);
+      /*
+        Insist that map length is zero if there is no colormap.
+      */
+      if ((sun_info.maptype == RMT_NONE) && (sun_info.maplength != 0))
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+      /*
+        Insist on a supported depth
+      */
+      if ((sun_info.depth != 1) &&
+          (sun_info.depth != 8) &&
+          (sun_info.depth != 24) &&
+          (sun_info.depth != 32))
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
+      image->columns=sun_info.width;
+      image->rows=sun_info.height;
+      if (((unsigned long) ((long) image->columns) != image->columns) ||
+          ((unsigned long) ((long) image->rows) != image->rows))
+        ThrowReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
+      if (CheckImagePixelLimits(image, exception) != MagickPass)
+        ThrowReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      image->depth=sun_info.depth <= 8 ? 8 : QuantumDepth;
+      if (sun_info.depth < 24)
+        {
+          image->colors=sun_info.maplength;
+          if (sun_info.maptype == RMT_NONE)
+            image->colors=1U << sun_info.depth;
+          if (sun_info.maptype == RMT_EQUAL_RGB)
+            image->colors=sun_info.maplength/3U;
+        }
+
+      switch (sun_info.maptype)
+        {
+        case RMT_NONE:
           {
+            if (sun_info.depth < 24)
+              {
+                /*
+                  Create linear color ramp.
+                */
+                if (!AllocateImageColormap(image,image->colors))
+                  ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                       image);
+                if (logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Allocated colormap with %u colors", image->colors);
+              }
+            break;
+          }
+        case RMT_EQUAL_RGB:
+          {
+            unsigned char
+              *sun_colormap;
+
             /*
-              Create linear color ramp.
+              Read SUN raster colormap.
             */
             if (!AllocateImageColormap(image,image->colors))
               ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                image);
-          }
-        break;
-      }
-      case RMT_EQUAL_RGB:
-      {
-        unsigned char
-          *sun_colormap;
-
-        /*
-          Read SUN raster colormap.
-        */
-        if (!AllocateImageColormap(image,image->colors))
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
-        sun_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,image->colors);
-        if (sun_colormap == (unsigned char *) NULL)
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                               image);
-        do
-          {
-            if (ReadBlob(image,image->colors,(char *) sun_colormap) !=
-                image->colors)
+                                   image);
+            sun_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,image->colors);
+            if (sun_colormap == (unsigned char *) NULL)
+              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                   image);
+            do
               {
-                status = MagickFail;
+                if (ReadBlob(image,image->colors,(char *) sun_colormap) !=
+                    image->colors)
+                  {
+                    status = MagickFail;
+                    break;
+                  }
+                for (i=0; i < (long) image->colors; i++)
+                  image->colormap[i].red=ScaleCharToQuantum(sun_colormap[i]);
+                if (ReadBlob(image,image->colors,(char *) sun_colormap) !=
+                    image->colors)
+                  {
+                    status = MagickFail;
+                    break;
+                  }
+                for (i=0; i < (long) image->colors; i++)
+                  image->colormap[i].green=ScaleCharToQuantum(sun_colormap[i]);
+                if (ReadBlob(image,image->colors,(char *) sun_colormap) !=
+                    image->colors)
+                  {
+                    status = MagickFail;
+                    break;
+                  }
+                for (i=0; i < (long) image->colors; i++)
+                  image->colormap[i].blue=ScaleCharToQuantum(sun_colormap[i]);
                 break;
-              }
-            for (i=0; i < (long) image->colors; i++)
-              image->colormap[i].red=ScaleCharToQuantum(sun_colormap[i]);
-            if (ReadBlob(image,image->colors,(char *) sun_colormap) !=
-                image->colors)
-              {
-                status = MagickFail;
-                break;
-              }
-            for (i=0; i < (long) image->colors; i++)
-              image->colormap[i].green=ScaleCharToQuantum(sun_colormap[i]);
-            if (ReadBlob(image,image->colors,(char *) sun_colormap) !=
-                image->colors)
-              {
-                status = MagickFail;
-                break;
-              }
-            for (i=0; i < (long) image->colors; i++)
-              image->colormap[i].blue=ScaleCharToQuantum(sun_colormap[i]);
-            break;
-          } while (1);
-        MagickFreeResourceLimitedMemory(sun_colormap);
-        if (MagickFail == status)
-          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-        break;
-      }
-      case RMT_RAW:
-      {
-        unsigned char
-          *sun_colormap;
-
-        /*
-          Read SUN raster colormap.
-        */
-        if (!AllocateImageColormap(image,image->colors))
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                               image);
-        sun_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,sun_info.maplength);
-        if (sun_colormap == (unsigned char *) NULL)
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-            image);
-        if (ReadBlob(image,sun_info.maplength,(char *) sun_colormap) !=
-            sun_info.maplength)
-          status = MagickFail;
-        MagickFreeResourceLimitedMemory(sun_colormap);
-        if (MagickFail == status)
-          ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-        break;
-      }
-      default:
-        ThrowReaderException(CoderError,ColormapTypeNotSupported,image)
-    }
-    image->matte=(sun_info.depth == 32);
-    image->columns=sun_info.width;
-    image->rows=sun_info.height;
-    image->depth=8;
-    if (sun_info.depth < 8)
-      image->depth=sun_info.depth;
-
-    if (image_info->ping)
-      {
-        CloseBlob(image);
-        return(image);
-      }
-
-    /*
-      Compute bytes per line and bytes per image for an unencoded
-      image.
-
-      "The width of a scan line is always 16-bits, padded when necessary."
-    */
-    bytes_per_line=MagickArraySize(sun_info.width,sun_info.depth);
-    if (bytes_per_line == 0)
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-
-    bytes_per_line += sun_info.depth == 1 ? 15U : 7U; /* Pad */
-    bytes_per_line /= 8U;
-    if (bytes_per_line == 0)
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-
-    bytes_per_image=MagickArraySize(sun_info.height,bytes_per_line);
-    if (bytes_per_image == 0)
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-
-    if (sun_info.type == RT_ENCODED)
-      sun_data_length=(size_t) sun_info.length;
-    else
-      sun_data_length=bytes_per_image;
-
-    /*
-      Verify that data length claimed by header is supported by file size
-    */
-    if (sun_info.type == RT_ENCODED)
-      {
-        if (sun_data_length < bytes_per_image/255U)
-          ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-      }
-    if (BlobIsSeekable(image))
-      {
-        const magick_off_t file_size = GetBlobSize(image);
-        const magick_off_t current_offset = TellBlob(image);
-        if ((file_size > 0) &&
-            (current_offset > 0) &&
-            (file_size >= current_offset))
-        {
-          const magick_off_t remaining = file_size-current_offset;
-
-          if ((remaining == 0) || (remaining < (magick_off_t) sun_info.length))
-            {
+              } while (1);
+            MagickFreeResourceLimitedMemory(sun_colormap);
+            if (MagickFail == status)
               ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-            }
-        }
-      }
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Read colormap with %u colors", image->colors);
+            break;
+          }
+        case RMT_RAW:
+          {
+            unsigned char
+              *sun_colormap;
 
-    /*
-      Read raster data into allocated buffer.
-    */
-    sun_data=MagickAllocateResourceLimitedMemory(unsigned char *,sun_info.length);
-    if (sun_data == (unsigned char *) NULL)
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    if ((count=ReadBlob(image,sun_info.length,(char *) sun_data))
-        != sun_info.length)
-      {
-        MagickFreeResourceLimitedMemory(sun_data);
-        ThrowReaderException(CorruptImageError,UnableToReadImageData,image);
-      }
-    sun_pixels=sun_data;
-    if (sun_info.type == RT_ENCODED)
-      {
-        /*
-          Read run-length encoded raster pixels (padded to 16-bit boundary).
-        */
-        sun_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,bytes_per_image);
-        if (sun_pixels == (unsigned char *) NULL)
-          {
-            MagickFreeResourceLimitedMemory(sun_data);
-            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                 image);
+            /*
+              Read SUN raster colormap.
+            */
+            if (!AllocateImageColormap(image,image->colors))
+              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                   image);
+            sun_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,sun_info.maplength);
+            if (sun_colormap == (unsigned char *) NULL)
+              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                   image);
+            if (ReadBlob(image,sun_info.maplength,(char *) sun_colormap) !=
+                sun_info.maplength)
+              status = MagickFail;
+            MagickFreeResourceLimitedMemory(sun_colormap);
+            if (MagickFail == status)
+              ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Read colormap with %u colors (length %u)",
+                                    image->colors, sun_info.maplength);
+            break;
           }
-        status &= DecodeImage(sun_data,sun_data_length,sun_pixels,bytes_per_image);
-        MagickFreeResourceLimitedMemory(sun_data);
-        if (status != MagickPass)
-          {
-            MagickFreeResourceLimitedMemory(sun_pixels);
-            ThrowReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
-          }
-      }
-    /*
-      Convert SUN raster image to pixel packets.
-    */
-    p=sun_pixels;
-    if (sun_info.depth == 1)
-      /*
-        Bilevel
-      */
-      for (y=0; y < (long) image->rows; y++)
-      {
-        q=SetImagePixels(image,0,y,image->columns,1);
-        if (q == (PixelPacket *) NULL)
-          break;
-        indexes=AccessMutableIndexes(image);
-        for (x=0; x < ((long) image->columns-7); x+=8)
-        {
-          for (bit=7; bit >= 0; bit--)
-            {
-              index=((*p) & (0x01 << bit) ? 0x00 : 0x01);
-              VerifyColormapIndex(image,index);
-              indexes[x+7-bit]=index;
-              q[x+7-bit]=image->colormap[index];
+        default:
+          ThrowReaderException(CoderError,ColormapTypeNotSupported,image)
             }
-          p++;
+      image->matte=(sun_info.depth == 32);
+      image->columns=sun_info.width;
+      image->rows=sun_info.height;
+      image->depth=8;
+      if (sun_info.depth < 8)
+        image->depth=sun_info.depth;
+
+      if (image_info->ping)
+        {
+          CloseBlob(image);
+          return(image);
         }
-        if ((image->columns % 8) != 0)
-          {
-            for (bit=7; bit >= (long) (8-(image->columns % 8)); bit--)
-              {
-                index=((*p) & (0x01 << bit) ? 0x00 : 0x01);
-                VerifyColormapIndex(image,index);
-                indexes[x+7-bit]=index;
-                q[x+7-bit]=image->colormap[index];
-              }
-            p++;
-          }
-        if ((((image->columns/8)+(image->columns % 8 ? 1 : 0)) % 2) != 0)
-          p++;
-        if (!SyncImagePixels(image))
-          break;
-        if (image->previous == (Image *) NULL)
-          if (QuantumTick(y,image->rows))
-            if (!MagickMonitorFormatted(y,image->rows,exception,
-                                        LoadImageText,image->filename,
-                                        image->columns,image->rows))
-              break;
-      }
-    else
-      if (image->storage_class == PseudoClass)
+
+      /*
+        Compute bytes per line and bytes per image for an unencoded
+        image.
+
+        "The width of a scan line is always 16-bits, padded when necessary."
+      */
+      bytes_per_line=MagickArraySize(sun_info.width,sun_info.depth);
+      if (bytes_per_line == 0)
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
+      pad = sun_info.depth == 1 ? 15U : 7U;  /* Pad */
+      bytes_per_line += pad;
+
+      if (bytes_per_line != ((size_t) sun_info.width*sun_info.depth+pad))
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
+      bytes_per_line /= 8U;
+      if (bytes_per_line == 0)
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
+      bytes_per_image=MagickArraySize(sun_info.height,bytes_per_line);
+      if (bytes_per_image == 0)
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
+      if (sun_info.type == RT_ENCODED)
+        sun_data_length=(size_t) sun_info.length;
+      else
+        sun_data_length=bytes_per_image;
+
+      /*
+        Verify that data length claimed by header is supported by file size
+      */
+      if (sun_info.type == RT_ENCODED)
+        {
+          if (sun_data_length < bytes_per_image/255U)
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if (BlobIsSeekable(image))
+        {
+          const magick_off_t file_size = GetBlobSize(image);
+          const magick_off_t current_offset = TellBlob(image);
+          if ((file_size > 0) &&
+              (current_offset > 0) &&
+              (file_size >= current_offset))
+            {
+              const magick_off_t remaining = file_size-current_offset;
+
+              if ((remaining == 0) || (remaining < (magick_off_t) sun_info.length))
+                {
+                  ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                }
+            }
+        }
+
+      /*
+        Read raster data into allocated buffer.
+      */
+      sun_data=MagickAllocateResourceLimitedMemory(unsigned char *,sun_info.length);
+      if (sun_data == (unsigned char *) NULL)
+        ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      if ((count=ReadBlob(image,sun_info.length,(char *) sun_data))
+          != sun_info.length)
+        {
+          MagickFreeResourceLimitedMemory(sun_data);
+          ThrowReaderException(CorruptImageError,UnableToReadImageData,image);
+        }
+      sun_pixels=sun_data;
+      if (sun_info.type == RT_ENCODED)
+        {
+          /*
+            Read run-length encoded raster pixels (padded to 16-bit boundary).
+          */
+          sun_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,
+                                                         bytes_per_image+image->rows);
+          if (sun_pixels == (unsigned char *) NULL)
+            {
+              MagickFreeResourceLimitedMemory(sun_data);
+              ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
+                                   image);
+            }
+          status &= DecodeImage(sun_data,sun_data_length,sun_pixels,bytes_per_image);
+          MagickFreeResourceLimitedMemory(sun_data);
+          if (status != MagickPass)
+            {
+              MagickFreeResourceLimitedMemory(sun_pixels);
+              ThrowReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
+            }
+        }
+      /*
+        Convert SUN raster image to pixel packets.
+      */
+      p=sun_pixels;
+      if (sun_info.depth == 1)
+        {
+          /*
+            Bilevel
+          */
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Reading bilevel image...");
+          for (y=0; y < (long) image->rows; y++)
+            {
+              q=SetImagePixels(image,0,y,image->columns,1);
+              if (q == (PixelPacket *) NULL)
+                break;
+              indexes=AccessMutableIndexes(image);
+              for (x=0; x < ((long) image->columns-7); x+=8)
+                {
+                  for (bit=7; bit >= 0; bit--)
+                    {
+                      index=((*p) & (0x01 << bit) ? 0x00 : 0x01);
+                      VerifyColormapIndex(image,index);
+                      indexes[x+7-bit]=index;
+                      q[x+7-bit]=image->colormap[index];
+                    }
+                  p++;
+                }
+              if ((image->columns % 8) != 0)
+                {
+                  for (bit=7; bit >= (long) (8-(image->columns % 8)); bit--)
+                    {
+                      index=((*p) & (0x01 << bit) ? 0x00 : 0x01);
+                      VerifyColormapIndex(image,index);
+                      indexes[x+7-bit]=index;
+                      q[x+7-bit]=image->colormap[index];
+                    }
+                  p++;
+                }
+              if ((((image->columns/8)+(image->columns % 8 ? 1 : 0)) % 2) != 0)
+                p++;
+              if (!SyncImagePixels(image))
+                break;
+              if (image->previous == (Image *) NULL)
+                if (QuantumTick(y,image->rows))
+                  if (!MagickMonitorFormatted(y,image->rows,exception,
+                                              LoadImageText,image->filename,
+                                              image->columns,image->rows))
+                    break;
+            }
+        }
+      else if (image->storage_class == PseudoClass)
         {
           /*
             Colormapped
           */
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Reading colormapped image...");
           for (y=0; y < (long) image->rows; y++)
-          {
-            q=SetImagePixels(image,0,y,image->columns,1);
-            if (q == (PixelPacket *) NULL)
-              break;
-            indexes=AccessMutableIndexes(image);
-            for (x=0; x < (long) image->columns; x++)
-              {
-                index=(*p++);
-                VerifyColormapIndex(image,index);
-                indexes[x]=index;
-                q[x]=image->colormap[index];
-              }
-            if ((image->columns % 2) != 0)
-              p++;
-            if (!SyncImagePixels(image))
-              break;
-            if (image->previous == (Image *) NULL)
-              if (QuantumTick(y,image->rows))
-                if (!MagickMonitorFormatted(y,image->rows,exception,
-                                            LoadImageText,image->filename,
-                                            image->columns,image->rows))
-                  break;
-          }
+            {
+              q=SetImagePixels(image,0,y,image->columns,1);
+              if (q == (PixelPacket *) NULL)
+                break;
+              indexes=AccessMutableIndexes(image);
+              for (x=0; x < (long) image->columns; x++)
+                {
+                  index=(*p++);
+                  VerifyColormapIndex(image,index);
+                  indexes[x]=index;
+                  q[x]=image->colormap[index];
+                }
+              if ((image->columns % 2) != 0)
+                p++;
+              if (!SyncImagePixels(image))
+                break;
+              if (image->previous == (Image *) NULL)
+                if (QuantumTick(y,image->rows))
+                  if (!MagickMonitorFormatted(y,image->rows,exception,
+                                              LoadImageText,image->filename,
+                                              image->columns,image->rows))
+                    break;
+            }
         }
       else
         {
           /*
             (A)BGR or (A)RGB
           */
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Reading truecolor image...");
           for (y=0; y < (long) image->rows; y++)
-          {
-            q=SetImagePixels(image,0,y,image->columns,1);
-            if (q == (PixelPacket *) NULL)
-              break;
-            for (x=0; x < (long) image->columns; x++)
             {
-              if (image->matte)
-                q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
-              if (sun_info.type == RT_STANDARD)
+              q=SetImagePixels(image,0,y,image->columns,1);
+              if (q == (PixelPacket *) NULL)
+                break;
+              for (x=0; x < (long) image->columns; x++)
                 {
-                  q->blue=ScaleCharToQuantum(*p++);
-                  q->green=ScaleCharToQuantum(*p++);
-                  q->red=ScaleCharToQuantum(*p++);
+                  if (image->matte)
+                    q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
+                  if (sun_info.type == RT_STANDARD)
+                    {
+                      q->blue=ScaleCharToQuantum(*p++);
+                      q->green=ScaleCharToQuantum(*p++);
+                      q->red=ScaleCharToQuantum(*p++);
+                    }
+                  else
+                    {
+                      q->red=ScaleCharToQuantum(*p++);
+                      q->green=ScaleCharToQuantum(*p++);
+                      q->blue=ScaleCharToQuantum(*p++);
+                    }
+                  if (image->colors != 0)
+                    {
+                      q->red=image->colormap[q->red].red;
+                      q->green=image->colormap[q->green].green;
+                      q->blue=image->colormap[q->blue].blue;
+                    }
+                  q++;
                 }
-              else
-                {
-                  q->red=ScaleCharToQuantum(*p++);
-                  q->green=ScaleCharToQuantum(*p++);
-                  q->blue=ScaleCharToQuantum(*p++);
-                }
-              if (image->colors != 0)
-                {
-                  q->red=image->colormap[q->red].red;
-                  q->green=image->colormap[q->green].green;
-                  q->blue=image->colormap[q->blue].blue;
-                }
-              q++;
+              if (((image->columns % 2) != 0) && (image->matte == False))
+                p++;
+              if (!SyncImagePixels(image))
+                break;
+              if (image->previous == (Image *) NULL)
+                if (QuantumTick(y,image->rows))
+                  if (!MagickMonitorFormatted(y,image->rows,exception,
+                                              LoadImageText,image->filename,
+                                              image->columns,image->rows))
+                    break;
             }
-            if (((image->columns % 2) != 0) && (image->matte == False))
-              p++;
-            if (!SyncImagePixels(image))
-              break;
-            if (image->previous == (Image *) NULL)
-              if (QuantumTick(y,image->rows))
-                if (!MagickMonitorFormatted(y,image->rows,exception,
-                                            LoadImageText,image->filename,
-                                            image->columns,image->rows))
-                  break;
-          }
         }
-    MagickFreeResourceLimitedMemory(sun_pixels);
-    if (EOFBlob(image))
-      {
-        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
-          image->filename);
-        break;
-      }
-    StopTimer(&image->timer);
-    /*
-      Proceed to next image.
-    */
-    if (image_info->subrange != 0)
-      if (image->scene >= (image_info->subimage+image_info->subrange-1))
-        break;
-    sun_info.magic=ReadBlobMSBLong(image);
-    if (sun_info.magic == 0x59a66a95)
-      {
-        /*
-          Allocate next image structure.
-        */
-        AllocateNextImage(image_info,image);
-        if (image->next == (Image *) NULL)
-          {
-            DestroyImageList(image);
-            return((Image *) NULL);
-          }
-        image=SyncNextImageInList(image);
-        if (!MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
-                                    exception,LoadImagesText,
-                                    image->filename))
+      MagickFreeResourceLimitedMemory(sun_pixels);
+      if (EOFBlob(image))
+        {
+          ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,
+                         image->filename);
           break;
-      }
-  } while (sun_info.magic == 0x59a66a95);
+        }
+      StopTimer(&image->timer);
+      /*
+        Proceed to next image.
+      */
+      if (image_info->subrange != 0)
+        if (image->scene >= (image_info->subimage+image_info->subrange-1))
+          break;
+      sun_info.magic=ReadBlobMSBLong(image);
+      if (sun_info.magic == 0x59a66a95)
+        {
+          /*
+            Allocate next image structure.
+          */
+          AllocateNextImage(image_info,image);
+          if (image->next == (Image *) NULL)
+            {
+              DestroyImageList(image);
+              return((Image *) NULL);
+            }
+          image=SyncNextImageInList(image);
+          if (!MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
+                                      exception,LoadImagesText,
+                                      image->filename))
+            break;
+        }
+    } while (sun_info.magic == 0x59a66a95);
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
