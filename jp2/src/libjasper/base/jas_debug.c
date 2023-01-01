@@ -63,11 +63,11 @@
 * Includes.
 \******************************************************************************/
 
+#include "jasper/jas_debug.h"
+#include "jasper/jas_types.h"
+
 #include <stdarg.h>
 #include <stdio.h>
-
-#include "jasper/jas_types.h"
-#include "jasper/jas_debug.h"
 
 /******************************************************************************\
 * Local data.
@@ -118,12 +118,11 @@ int jas_eprintf(const char *fmt, ...)
 }
 
 /* Dump memory to a stream. */
-int jas_memdump(FILE *out, void *data, size_t len)
+int jas_memdump(FILE *out, const void *data, size_t len)
 {
 	size_t i;
 	size_t j;
-	jas_uchar *dp;
-	dp = data;
+	const jas_uchar *dp = data;
 	for (i = 0; i < len; i += 16) {
 		fprintf(out, "%04x:", (unsigned)i);	//JFO "%04zx:"
 		for (j = 0; j < 16; ++j) {
@@ -142,11 +141,11 @@ int jas_memdump(FILE *out, void *data, size_t len)
 
 void jas_deprecated(const char *s)
 {
-	static char message[] =
+	static const char message[] =
 	"WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!!\n"
 	"WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!!\n"
 	"WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!! WARNING!!!\n"
-	"YOUR CODE IS RELYING ON DEPRECATED FUNCTIONALTIY IN THE JASPER LIBRARY.\n"
+	"YOUR CODE IS RELYING ON DEPRECATED FUNCTIONALITY IN THE JASPER LIBRARY.\n"
 	"THIS FUNCTIONALITY WILL BE REMOVED IN THE NEAR FUTURE.\n"
 	"PLEASE FIX THIS PROBLEM BEFORE YOUR CODE STOPS WORKING!\n"
 	;

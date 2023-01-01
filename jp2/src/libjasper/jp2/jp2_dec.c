@@ -71,16 +71,18 @@
 * Includes.
 \******************************************************************************/
 
+#include "jp2_dec.h"
+#include "jp2_cod.h"
+
 #include "jasper/jas_image.h"
 #include "jasper/jas_stream.h"
 #include "jasper/jas_math.h"
 #include "jasper/jas_debug.h"
 #include "jasper/jas_malloc.h"
-#include "jasper/jas_version.h"
 #include "jasper/jas_types.h"
 
-#include "jp2_cod.h"
-#include "jp2_dec.h"
+#include <assert.h>
+#include <stdio.h>
 
 #define	JP2_VALIDATELEN	(JAS_MIN(JP2_JP_LEN + 16, JAS_STREAM_MAXPUTBACK))
 
@@ -105,7 +107,10 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 	unsigned int i;
 	jp2_cmap_t *cmapd;
 	jp2_pclr_t *pclrd;
+#if 0
+	/* The following code appears to no longer be needed. */
 	jp2_cdef_t *cdefd;
+#endif
 	unsigned int channo;
 	int newcmptno;
 	int_fast32_t *lutents;
@@ -230,7 +235,8 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 	  the value specified in the code stream? */
 	if (dec->ihdr->data.ihdr.numcmpts != JAS_CAST(jas_uint,
 	  jas_image_numcmpts(dec->image))) {
-		jas_eprintf("warning: number of components mismatch\n");
+		jas_eprintf("error: number of components mismatch (IHDR)\n");
+		goto error;
 	}
 
 	/* At least one component must be present. */
@@ -253,7 +259,8 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 	  with the data in the code stream? */
 	if ((samedtype && dec->ihdr->data.ihdr.bpc != JP2_DTYPETOBPC(dtype)) ||
 	  (!samedtype && dec->ihdr->data.ihdr.bpc != JP2_IHDR_BPCNULL)) {
-		jas_eprintf("warning: component data type mismatch\n");
+		jas_eprintf("error: component data type mismatch (IHDR)\n");
+		goto error;
 	}
 
 	/* Is the compression type supported? */
@@ -265,9 +272,10 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 	if (dec->bpcc) {
 		/* Is the number of components indicated in the BPCC box
 		  consistent with the code stream data? */
-		if (dec->bpcc->data.bpcc.numcmpts != JAS_CAST(jas_uint, jas_image_numcmpts(
-		  dec->image))) {
-			jas_eprintf("warning: number of components mismatch\n");
+		if (dec->bpcc->data.bpcc.numcmpts !=
+		  JAS_CAST(jas_uint, jas_image_numcmpts(dec->image))) {
+			jas_eprintf("error: number of components mismatch (BPCC)\n");
+			goto error;
 		}
 		/* Is the component data type information indicated in the BPCC
 		  box consistent with the code stream data? */
@@ -276,7 +284,8 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 			  ++i) {
 				if (jas_image_cmptdtype(dec->image, i) !=
 				  JP2_BPCTODTYPE(dec->bpcc->data.bpcc.bpcs[i])) {
-					jas_eprintf("warning: component data type mismatch\n");
+					jas_eprintf("error: component data type mismatch (BPCC)\n");
+						goto error;
 				}
 			}
 		} else {
@@ -305,7 +314,10 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 		jas_eprintf("ICC Profile CS %08x\n", icchdr.colorspc);
 		jas_image_setclrspc(dec->image, fromiccpcs(icchdr.colorspc));
 		dec->image->cmprof_ = jas_cmprof_createfromiccprof(iccprof);
-		assert(dec->image->cmprof_);
+		if (!dec->image->cmprof_) {
+			jas_iccprof_destroy(iccprof);
+			goto error;
+		}
 		jas_iccprof_destroy(iccprof);
 		break;
 	}
@@ -359,25 +371,45 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 			dec->chantocmptlut[i] = i;
 		}
 	} else {
+		/* Check to ensure that CMAP/PCLR were initialized. */
+		if (!dec->cmap || !dec->pclr) {
+			jas_eprintf("missing CMAP/PCLR box\n");
+			goto error;
+		}
+
 		cmapd = &dec->cmap->data.cmap;
 		pclrd = &dec->pclr->data.pclr;
+#if 0
+		/* The following code appears to no longer be needed. */
 		cdefd = &dec->cdef->data.cdef;
+#endif
 		for (channo = 0; channo < cmapd->numchans; ++channo) {
 			cmapent = &cmapd->ents[channo];
 			if (cmapent->map == JP2_CMAP_DIRECT) {
 				dec->chantocmptlut[channo] = channo;
 			} else if (cmapent->map == JP2_CMAP_PALETTE) {
-				lutents = jas_alloc2(pclrd->numlutents, sizeof(int_fast32_t));
+				if (!pclrd->numlutents) {
+					goto error;
+				}
+				if (!(lutents = jas_alloc2(pclrd->numlutents,
+				  sizeof(int_fast32_t)))) {
+					goto error;
+				}
 				for (i = 0; i < pclrd->numlutents; ++i) {
 					lutents[i] = pclrd->lutdata[cmapent->pcol + i * pclrd->numchans];
 				}
 				newcmptno = jas_image_numcmpts(dec->image);
-				jas_image_depalettize(dec->image, cmapent->cmptno,
+				if (jas_image_depalettize(dec->image, cmapent->cmptno,
 				  pclrd->numlutents, lutents,
-				  JP2_BPCTODTYPE(pclrd->bpc[cmapent->pcol]), newcmptno);
+				  JP2_BPCTODTYPE(pclrd->bpc[cmapent->pcol]), newcmptno)) {
+					jas_eprintf("jas_image_depalettize failed\n");
+					jas_free(lutents);
+					goto error;
+				}
 				dec->chantocmptlut[channo] = newcmptno;
 				jas_free(lutents);
 #if 0
+				/* The following code appears to no longer be needed. */
 				if (dec->cdef) {
 					cdefent = jp2_cdef_lookup(cdefd, channo);
 					if (!cdefent) {
@@ -388,9 +420,23 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 				jas_image_setcmpttype(dec->image, newcmptno, jp2_getct(jas_image_clrspc(dec->image), 0, channo + 1));
 				}
 #endif
+			} else {
+				jas_eprintf("error: invalid MTYP in CMAP box\n");
+				goto error;
 			}
 		}
 	}
+
+#if 0
+	/* The following code appears to no longer be needed. */
+	/* Ensure that the number of channels being used by the decoder
+	  matches the number of image components. */
+	if (dec->numchans != jas_image_numcmpts(dec->image)) {
+		jas_eprintf("error: mismatch in number of components (%d != %d)\n",
+		  dec->numchans, jas_image_numcmpts(dec->image));
+		goto error;
+	}
+#endif
 
 	/* Mark all components as being of unknown type. */
 
@@ -400,21 +446,36 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 
 	/* Determine the type of each component. */
 	if (dec->cdef) {
-		for (i = 0; i < dec->numchans; ++i) {
+		for (i = 0; i < dec->cdef->data.cdef.numchans; ++i) {
+			uint_fast16_t channo = dec->cdef->data.cdef.ents[i].channo;
+			unsigned compno;
 			/* Is the channel number reasonable? */
-			if (dec->cdef->data.cdef.ents[i].channo >= dec->numchans) {
-				jas_eprintf("error: invalid channel number in CDEF box\n");
+			if (channo >= dec->numchans) {
+				jas_eprintf("error: invalid channel number in CDEF box (%d)\n",
+				  channo);
 				goto error;
 			}
-			jas_image_setcmpttype(dec->image,
-			  dec->chantocmptlut[dec->cdef->data.cdef.ents[i].channo],
+			compno = dec->chantocmptlut[channo];
+			if (compno >= jas_image_numcmpts(dec->image)) {
+				jas_eprintf(
+				  "error: invalid component reference in CDEF box (%d)\n",
+				  compno);
+				goto error;
+			}
+			jas_image_setcmpttype(dec->image, compno,
 			  jp2_getct(jas_image_clrspc(dec->image),
 			  dec->cdef->data.cdef.ents[i].type,
 			  dec->cdef->data.cdef.ents[i].assoc));
 		}
 	} else {
 		for (i = 0; i < dec->numchans; ++i) {
-			jas_image_setcmpttype(dec->image, dec->chantocmptlut[i],
+			unsigned compno = dec->chantocmptlut[i];
+			if (compno >= jas_image_numcmpts(dec->image)) {
+				jas_eprintf(
+				  "error: invalid component reference (%d)\n", compno);
+				goto error;
+			}
+			jas_image_setcmpttype(dec->image, compno,
 			  jp2_getct(jas_image_clrspc(dec->image), 0, i + 1));
 		}
 	}
@@ -431,9 +492,6 @@ jas_image_t *jp2_decode(jas_stream_t *in, const char *optstr)
 		jas_eprintf("error: no components\n");
 		goto error;
 	}
-#if 0
-jas_eprintf("no of components is %d\n", jas_image_numcmpts(dec->image));
-#endif
 
 	/* Prevent the image from being destroyed later. */
 	image = dec->image;
@@ -444,6 +502,9 @@ jas_eprintf("no of components is %d\n", jas_image_numcmpts(dec->image));
 	return image;
 
 error:
+	if (image) {
+		jas_image_destroy(image);
+	}
 	if (box) {
 		jp2_box_destroy(box);
 	}
@@ -455,9 +516,7 @@ error:
 
 int jp2_validate(jas_stream_t *in)
 {
-	char buf[JP2_VALIDATELEN];
-	int i;
-	int n;
+	unsigned char buf[JP2_VALIDATELEN];
 #if 0
 	jas_stream_t *tmpstream;
 	jp2_box_t *box;
@@ -467,25 +526,11 @@ int jp2_validate(jas_stream_t *in)
 
 	/* Read the validation data (i.e., the data used for detecting
 	  the format). */
-	if ((n = jas_stream_read(in, buf, JP2_VALIDATELEN)) < 0) {
+	if (jas_stream_peek(in, buf, sizeof(buf)) != sizeof(buf))
 		return -1;
-	}
-
-	/* Put the validation data back onto the stream, so that the
-	  stream position will not be changed. */
-	for (i = n - 1; i >= 0; --i) {
-		if (jas_stream_ungetc(in, buf[i]) == EOF) {
-			return -1;
-		}
-	}
-
-	/* Did we read enough data? */
-	if (n < JP2_VALIDATELEN) {
-		return -1;
-	}
 
 	/* Is the box type correct? */
-	if (((buf[4] << 24) | (buf[5] << 16) | (buf[6] << 8) | buf[7]) !=
+	if ((((uint_least32_t)buf[4] << 24) | ((uint_least32_t)buf[5] << 16) | ((uint_least32_t)buf[6] << 8) | (uint_least32_t)buf[7]) !=
 	  JP2_BOX_JP)
 	{
 		return -1;
@@ -552,38 +597,30 @@ static int jp2_getct(int colorspace, int type, int assoc)
 			switch (assoc) {
 			case JP2_CDEF_RGB_R:
 				return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_R);
-				break;
 			case JP2_CDEF_RGB_G:
 				return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_G);
-				break;
 			case JP2_CDEF_RGB_B:
 				return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_B);
-				break;
 			}
 			break;
 		case JAS_CLRSPC_FAM_YCBCR:
 			switch (assoc) {
 			case JP2_CDEF_YCBCR_Y:
 				return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_YCBCR_Y);
-				break;
 			case JP2_CDEF_YCBCR_CB:
 				return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_YCBCR_CB);
-				break;
 			case JP2_CDEF_YCBCR_CR:
 				return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_YCBCR_CR);
-				break;
 			}
 			break;
 		case JAS_CLRSPC_FAM_GRAY:
 			switch (assoc) {
 			case JP2_CDEF_GRAY_Y:
 				return JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_GRAY_Y);
-				break;
 			}
 			break;
 		default:
 			return JAS_IMAGE_CT_COLOR(assoc - 1);
-			break;
 		}
 	}
 	return JAS_IMAGE_CT_UNKNOWN;
@@ -595,13 +632,10 @@ static int jp2_getcs(jp2_colr_t *colr)
 		switch (colr->csid) {
 		case JP2_COLR_SRGB:
 			return JAS_CLRSPC_SRGB;
-			break;
 		case JP2_COLR_SYCC:
 			return JAS_CLRSPC_SYCBCR;
-			break;
 		case JP2_COLR_SGRAY:
 			return JAS_CLRSPC_SGRAY;
-			break;
 		}
 	}
 	return JAS_CLRSPC_UNKNOWN;
@@ -612,13 +646,10 @@ static int fromiccpcs(int cs)
 	switch (cs) {
 	case ICC_CS_RGB:
 		return JAS_CLRSPC_GENRGB;
-		break;
 	case ICC_CS_YCBCR:
 		return JAS_CLRSPC_GENYCBCR;
-		break;
 	case ICC_CS_GRAY:
 		return JAS_CLRSPC_GENGRAY;
-		break;
 	}
 	return JAS_CLRSPC_UNKNOWN;
 }

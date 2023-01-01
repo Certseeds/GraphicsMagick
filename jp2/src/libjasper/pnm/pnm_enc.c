@@ -71,10 +71,8 @@
 * Includes.
 \******************************************************************************/
 
-#include <ctype.h>
-#include <math.h>
-#include <stdlib.h>
-#include <assert.h>
+#include "pnm_enc.h"
+#include "pnm_cod.h"
 
 #include "jasper/jas_types.h"
 #include "jasper/jas_tvp.h"
@@ -82,8 +80,7 @@
 #include "jasper/jas_stream.h"
 #include "jasper/jas_debug.h"
 
-#include "pnm_cod.h"
-#include "pnm_enc.h"
+#include <stdio.h>
 
 /******************************************************************************\
 * Local types.
@@ -97,7 +94,7 @@ typedef enum {
 	OPT_TEXT
 } pnm_optid_t;
 
-static jas_taginfo_t pnm_opttab[] = {
+static const jas_taginfo_t pnm_opttab[] = {
 	{OPT_TEXT, "text"},
 	{-1, 0}
 };
@@ -120,13 +117,9 @@ static int pnm_putuint16(jas_stream_t *out, uint_fast16_t val);
 
 int pnm_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 {
-	int width;
-	int height;
 	int cmptno;
 	pnm_hdr_t hdr;
 	pnm_encopts_t encopts;
-	int prec;
-	int sgnd;
 	pnm_enc_t encbuf;
 	pnm_enc_t *enc = &encbuf;
 	int clrspc_fam;
@@ -169,14 +162,13 @@ int pnm_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 	default:
 		jas_eprintf("error: unsupported color space %d\n", clrspc_fam);
 		return -1;
-		break;
 	}
 
 
-	width = jas_image_cmptwidth(image, enc->cmpts[0]);
-	height = jas_image_cmptheight(image, enc->cmpts[0]);
-	prec = jas_image_cmptprec(image, enc->cmpts[0]);
-	sgnd = jas_image_cmptsgnd(image, enc->cmpts[0]);
+	const uint_least32_t width = jas_image_cmptwidth(image, enc->cmpts[0]);
+	const uint_least32_t height = jas_image_cmptheight(image, enc->cmpts[0]);
+	const unsigned prec = jas_image_cmptprec(image, enc->cmpts[0]);
+	const bool sgnd = jas_image_cmptsgnd(image, enc->cmpts[0]);
 
 	/* The PNM format is quite limited in the set of image geometries
 	  that it can handle.  Here, we check to ensure that the image to

@@ -79,6 +79,8 @@
 
 #include "jpc_mqcod.h"
 
+#include <stdio.h>
+
 /******************************************************************************\
 * Constants.
 \******************************************************************************/
@@ -99,34 +101,34 @@
 typedef struct {
 
 	/* The C register. */
-	uint_fast32_t creg;
+	uint_least32_t creg;
 
 	/* The A register. */
-	uint_fast32_t areg;
+	uint_least32_t areg;
 
 	/* The CT register. */
-	uint_fast32_t ctreg;
+	uint_least32_t ctreg;
 
 	/* The maximum number of contexts. */
-	int maxctxs;
+	unsigned maxctxs;
 
 	/* The per-context information. */
-	jpc_mqstate_t **ctxs;
+	const jpc_mqstate_t **ctxs;
 
 	/* The current context. */
-	jpc_mqstate_t **curctx;
+	const jpc_mqstate_t **curctx;
 
 	/* The stream for encoder output. */
 	jas_stream_t *out;
 
 	/* The byte buffer (i.e., the B variable in the standard). */
-	int_fast16_t outbuf;
+	int_least16_t outbuf;
 
 	/* The last byte output. */
-	int_fast16_t lastbyte;
+	int_least16_t lastbyte;
 
 	/* The error indicator. */
-	int err;
+	bool err;
 	
 } jpc_mqenc_t;
 
@@ -153,7 +155,7 @@ typedef struct {
 \******************************************************************************/
 
 /* Create a MQ encoder. */
-jpc_mqenc_t *jpc_mqenc_create(int maxctxs, jas_stream_t *out);
+jpc_mqenc_t *jpc_mqenc_create(unsigned maxctxs, jas_stream_t *out);
 
 /* Destroy a MQ encoder. */
 void jpc_mqenc_destroy(jpc_mqenc_t *enc);
@@ -170,25 +172,24 @@ void jpc_mqenc_init(jpc_mqenc_t *enc);
 \******************************************************************************/
 
 /* Set the current context. */
-#define	jpc_mqenc_setcurctx(enc, ctxno) \
-        ((enc)->curctx = &(enc)->ctxs[ctxno]);
-
-/* Set the state information for a particular context. */
-void jpc_mqenc_setctx(jpc_mqenc_t *enc, int ctxno, jpc_mqctx_t *ctx);
+static inline void jpc_mqenc_setcurctx(jpc_mqenc_t *enc, unsigned ctxno) {
+	enc->curctx = &enc->ctxs[ctxno];
+}
 
 /* Set the state information for multiple contexts. */
-void jpc_mqenc_setctxs(jpc_mqenc_t *enc, int numctxs, jpc_mqctx_t *ctxs);
+void jpc_mqenc_setctxs(jpc_mqenc_t *enc, unsigned numctxs, const jpc_mqctx_t *ctxs);
 
 /******************************************************************************\
 * Miscellaneous functions/macros.
 \******************************************************************************/
 
 /* Get the error state of a MQ encoder. */
-#define	jpc_mqenc_error(enc) \
-	((enc)->err)
+static inline bool jpc_mqenc_error(const jpc_mqenc_t *enc) {
+	return enc->err;
+}
 
 /* Get the current encoder state. */
-void jpc_mqenc_getstate(jpc_mqenc_t *enc, jpc_mqencstate_t *state);
+void jpc_mqenc_getstate(const jpc_mqenc_t *enc, jpc_mqencstate_t *state);
 
 /* Terminate the code. */
 int jpc_mqenc_flush(jpc_mqenc_t *enc, int termmode);
@@ -197,31 +198,15 @@ int jpc_mqenc_flush(jpc_mqenc_t *enc, int termmode);
 * Functions/macros for encoding bits.
 \******************************************************************************/
 
-/* Encode a bit. */
-#if !defined(DEBUG)
-#define	jpc_mqenc_putbit(enc, bit)	jpc_mqenc_putbit_macro(enc, bit)
-#else
-#define	jpc_mqenc_putbit(enc, bit)	jpc_mqenc_putbit_func(enc, bit)
-#endif
-
 /******************************************************************************\
 * Functions/macros for debugging.
 \******************************************************************************/
 
-int jpc_mqenc_dump(jpc_mqenc_t *mqenc, FILE *out);
+int jpc_mqenc_dump(const jpc_mqenc_t *mqenc, FILE *out);
 
 /******************************************************************************\
 * Implementation-specific details.
 \******************************************************************************/
-
-/* Note: This macro is included only to satisfy the needs of
-  the mqenc_putbit macro. */
-#define	jpc_mqenc_putbit_macro(enc, bit) \
-	(((*((enc)->curctx))->mps == (bit)) ? \
-	  (((enc)->areg -= (*(enc)->curctx)->qeval), \
-	  ((!((enc)->areg & 0x8000)) ? (jpc_mqenc_codemps2(enc)) : \
-	  ((enc)->creg += (*(enc)->curctx)->qeval))) : \
-	  jpc_mqenc_codelps(enc))
 
 /* Note: These function prototypes are included only to satisfy the
   needs of the mqenc_putbit_macro macro.  Do not call any of these
@@ -229,8 +214,6 @@ int jpc_mqenc_dump(jpc_mqenc_t *mqenc, FILE *out);
 int jpc_mqenc_codemps2(jpc_mqenc_t *enc);
 int jpc_mqenc_codelps(jpc_mqenc_t *enc);
 
-/* Note: This function prototype is included only to satisfy the needs of
-  the mqenc_putbit macro. */
-int jpc_mqenc_putbit_func(jpc_mqenc_t *enc, int bit);
+int jpc_mqenc_putbit(jpc_mqenc_t *enc, bool bit);
 
 #endif

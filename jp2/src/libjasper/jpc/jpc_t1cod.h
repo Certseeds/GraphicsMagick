@@ -72,11 +72,10 @@
 * Includes.
 \******************************************************************************/
 
-#include "jasper/jas_fix.h"
-#include "jasper/jas_math.h"
-
+#include "jpc_fix.h"
 #include "jpc_mqcod.h"
 #include "jpc_tsfb.h"
+#include "jasper/jas_math.h"
 
 /******************************************************************************\
 * Constants.
@@ -90,20 +89,26 @@
  * Segment types.
  */
 
-/* Invalid. */
-#define JPC_SEG_INVALID	0
-/* MQ. */
-#define JPC_SEG_MQ		1
-/* Raw. */
-#define JPC_SEG_RAW		2
+enum jpc_segtype {
+	/** Invalid. */
+	JPC_SEG_INVALID,
+
+	/* MQ. */
+	JPC_SEG_MQ,
+
+	/* Raw. */
+	JPC_SEG_RAW,
+};
 
 /* The nominal word size. */
 #define	JPC_PREC	32
 
 /* Tier-1 coding pass types. */
-#define	JPC_SIGPASS	0	/* significance */
-#define	JPC_REFPASS	1	/* refinement */
-#define	JPC_CLNPASS	2	/* cleanup */
+enum jpc_passtype {
+	JPC_SIGPASS, /*< significance */
+	JPC_REFPASS, /*< refinement */
+	JPC_CLNPASS, /*< cleanup */
+};
 
 /*
  * Per-sample state information for tier-1 coding.
@@ -179,10 +184,10 @@
 
 /* These lookup tables are used by various macros/functions. */
 /* Do not access these lookup tables directly. */
-extern int jpc_zcctxnolut[];
-extern int jpc_spblut[];
-extern int jpc_scctxnolut[];
-extern int jpc_magctxnolut[];
+extern uint_least8_t jpc_zcctxnolut[];
+extern bool jpc_spblut[];
+extern uint_least8_t jpc_scctxnolut[];
+extern uint_least8_t jpc_magctxnolut[];
 extern jpc_fix_t jpc_refnmsedec[];
 extern jpc_fix_t jpc_signmsedec[];
 extern jpc_fix_t jpc_refnmsedec0[];
@@ -195,101 +200,120 @@ extern jpc_mqctx_t jpc_mqctxs[];
 * Functions and macros.
 \******************************************************************************/
 
-/* Initialize the MQ contexts. */
-void jpc_initctxs(jpc_mqctx_t *ctxs);
+/* Arithmetic shift right (with ability to shift left also). */
+JAS_ATTRIBUTE_CONST
+static inline jpc_fix_t JPC_ASR(jpc_fix_t x, int n)
+{
+	return n >= 0
+		? x >> n
+		: x << -n;
+}
 
 /* Get the zero coding context. */
-int jpc_getzcctxno(int f, int orient);
-#define	JPC_GETZCCTXNO(f, orient) \
-	(jpc_zcctxnolut[((orient) << 8) | ((f) & JPC_OTHSIGMSK)])
+JAS_ATTRIBUTE_CONST
+static inline uint_least8_t JPC_GETZCCTXNO(unsigned f, enum jpc_tsfb_orient orient)
+{
+	return jpc_zcctxnolut[((unsigned)orient << 8) | (f & JPC_OTHSIGMSK)];
+}
 
 /* Get the sign prediction bit. */
-int jpc_getspb(int f);
-#define	JPC_GETSPB(f) \
-	(jpc_spblut[((f) & (JPC_PRIMSIGMSK | JPC_SGNMSK)) >> 4])
+JAS_ATTRIBUTE_CONST
+static inline bool JPC_GETSPB(unsigned f)
+{
+	return jpc_spblut[(f & (JPC_PRIMSIGMSK | JPC_SGNMSK)) >> 4];
+}
 
 /* Get the sign coding context. */
-int jpc_getscctxno(int f);
-#define	JPC_GETSCCTXNO(f) \
-	(jpc_scctxnolut[((f) & (JPC_PRIMSIGMSK | JPC_SGNMSK)) >> 4])
+JAS_ATTRIBUTE_CONST
+static inline uint_least8_t JPC_GETSCCTXNO(unsigned f)
+{
+	return jpc_scctxnolut[(f & (JPC_PRIMSIGMSK | JPC_SGNMSK)) >> 4];
+}
 
 /* Get the magnitude context. */
-int jpc_getmagctxno(int f);
-#define	JPC_GETMAGCTXNO(f) \
-	(jpc_magctxnolut[((f) & JPC_OTHSIGMSK) | ((((f) & JPC_REFINE) != 0) << 11)])
+JAS_ATTRIBUTE_CONST
+static inline uint_least8_t JPC_GETMAGCTXNO(unsigned f)
+{
+	return jpc_magctxnolut[(f & JPC_OTHSIGMSK) | (((f & JPC_REFINE) != 0) << 11)];
+}
 
 /* Get the normalized MSE reduction for significance passes. */
-#define	JPC_GETSIGNMSEDEC(x, bitpos)	jpc_getsignmsedec_macro(x, bitpos)
-jpc_fix_t jpc_getsignmsedec_func(jpc_fix_t x, int bitpos);
-#define	jpc_getsignmsedec_macro(x, bitpos) \
-	((bitpos > JPC_NMSEDEC_FRACBITS) ? jpc_signmsedec[JPC_ASR(x, bitpos - JPC_NMSEDEC_FRACBITS) & JAS_ONES(JPC_NMSEDEC_BITS)] : \
-	  (jpc_signmsedec0[JPC_ASR(x, bitpos - JPC_NMSEDEC_FRACBITS) & JAS_ONES(JPC_NMSEDEC_BITS)]))
+JAS_ATTRIBUTE_CONST
+static inline jpc_fix_t JPC_GETSIGNMSEDEC(jpc_fix_t x, int bitpos)
+{
+	return bitpos > JPC_NMSEDEC_FRACBITS
+		? jpc_signmsedec[JPC_ASR(x, bitpos - JPC_NMSEDEC_FRACBITS) & JAS_ONES(JPC_NMSEDEC_BITS)]
+		: jpc_signmsedec0[JPC_ASR(x, bitpos - JPC_NMSEDEC_FRACBITS) & JAS_ONES(JPC_NMSEDEC_BITS)];
+}
 
 /* Get the normalized MSE reduction for refinement passes. */
-#define	JPC_GETREFNMSEDEC(x, bitpos)	jpc_getrefnmsedec_macro(x, bitpos)
-jpc_fix_t jpc_refsignmsedec_func(jpc_fix_t x, int bitpos);
-#define	jpc_getrefnmsedec_macro(x, bitpos) \
-	((bitpos > JPC_NMSEDEC_FRACBITS) ? jpc_refnmsedec[JPC_ASR(x, bitpos - JPC_NMSEDEC_FRACBITS) & JAS_ONES(JPC_NMSEDEC_BITS)] : \
-	  (jpc_refnmsedec0[JPC_ASR(x, bitpos - JPC_NMSEDEC_FRACBITS) & JAS_ONES(JPC_NMSEDEC_BITS)]))
-
-/* Arithmetic shift right (with ability to shift left also). */
-#define	JPC_ASR(x, n) \
-	(((n) >= 0) ? ((x) >> (n)) : ((x) << (-(n))))
+JAS_ATTRIBUTE_CONST
+static inline jpc_fix_t JPC_GETREFNMSEDEC(jpc_fix_t x, int bitpos)
+{
+	return bitpos > JPC_NMSEDEC_FRACBITS
+		? jpc_refnmsedec[JPC_ASR(x, bitpos - JPC_NMSEDEC_FRACBITS) & JAS_ONES(JPC_NMSEDEC_BITS)]
+		: jpc_refnmsedec0[JPC_ASR(x, bitpos - JPC_NMSEDEC_FRACBITS) & JAS_ONES(JPC_NMSEDEC_BITS)];
+}
 
 /* Update the per-sample state information. */
-#define	JPC_UPDATEFLAGS4(fp, rowstep, s, vcausalflag) \
-{ \
-	register jpc_fix_t *np = (fp) - (rowstep); \
-	register jpc_fix_t *sp = (fp) + (rowstep); \
-	if ((vcausalflag)) { \
-		sp[-1] |= JPC_NESIG; \
-		sp[1] |= JPC_NWSIG; \
-		if (s) { \
-			*sp |= JPC_NSIG | JPC_NSGN; \
-			(fp)[-1] |= JPC_ESIG | JPC_ESGN; \
-			(fp)[1] |= JPC_WSIG | JPC_WSGN; \
-		} else { \
-			*sp |= JPC_NSIG; \
-			(fp)[-1] |= JPC_ESIG; \
-			(fp)[1] |= JPC_WSIG; \
-		} \
-	} else { \
-		np[-1] |= JPC_SESIG; \
-		np[1] |= JPC_SWSIG; \
-		sp[-1] |= JPC_NESIG; \
-		sp[1] |= JPC_NWSIG; \
-		if (s) { \
-			*np |= JPC_SSIG | JPC_SSGN; \
-			*sp |= JPC_NSIG | JPC_NSGN; \
-			(fp)[-1] |= JPC_ESIG | JPC_ESGN; \
-			(fp)[1] |= JPC_WSIG | JPC_WSGN; \
-		} else { \
-			*np |= JPC_SSIG; \
-			*sp |= JPC_NSIG; \
-			(fp)[-1] |= JPC_ESIG; \
-			(fp)[1] |= JPC_WSIG; \
-		} \
-	} \
+static inline void JPC_UPDATEFLAGS4(jpc_fix_t *fp, unsigned rowstep, bool s, bool vcausalflag)
+{
+	jpc_fix_t *np = fp - rowstep;
+	jpc_fix_t *sp = fp + rowstep;
+	if (vcausalflag) {
+		sp[-1] |= JPC_NESIG;
+		sp[1] |= JPC_NWSIG;
+		if (s) {
+			*sp |= JPC_NSIG | JPC_NSGN;
+			fp[-1] |= JPC_ESIG | JPC_ESGN;
+			fp[1] |= JPC_WSIG | JPC_WSGN;
+		} else {
+			*sp |= JPC_NSIG;
+			fp[-1] |= JPC_ESIG;
+			fp[1] |= JPC_WSIG;
+		}
+	} else {
+		np[-1] |= JPC_SESIG;
+		np[1] |= JPC_SWSIG;
+		sp[-1] |= JPC_NESIG;
+		sp[1] |= JPC_NWSIG;
+		if (s) {
+			*np |= JPC_SSIG | JPC_SSGN;
+			*sp |= JPC_NSIG | JPC_NSGN;
+			fp[-1] |= JPC_ESIG | JPC_ESGN;
+			fp[1] |= JPC_WSIG | JPC_WSGN;
+		} else {
+			*np |= JPC_SSIG;
+			*sp |= JPC_NSIG;
+			fp[-1] |= JPC_ESIG;
+			fp[1] |= JPC_WSIG;
+		}
+	}
 }
 
 /* Initialize the lookup tables used by the codec. */
 void jpc_initluts(void);
 
 /* Get the nominal gain associated with a particular band. */
-int JPC_NOMINALGAIN(int qmfbid, int numlvls, int lvlno, int orient);
+JAS_ATTRIBUTE_CONST
+unsigned JPC_NOMINALGAIN(unsigned qmfbid, unsigned numlvls, unsigned lvlno, enum jpc_tsfb_orient orient);
 
 /* Get the coding pass type. */
-int JPC_PASSTYPE(int passno);
+JAS_ATTRIBUTE_CONST
+enum jpc_passtype JPC_PASSTYPE(unsigned passno);
 
 /* Get the segment type. */
-int JPC_SEGTYPE(int passno, int firstpassno, int bypass);
+JAS_ATTRIBUTE_CONST
+enum jpc_segtype JPC_SEGTYPE(unsigned passno, unsigned firstpassno, bool bypass);
 
 /* Get the number of coding passess in the segment. */
-int JPC_SEGPASSCNT(int passno, int firstpassno, int numpasses, int bypass,
-  int termall);
+JAS_ATTRIBUTE_CONST
+unsigned JPC_SEGPASSCNT(unsigned passno, unsigned firstpassno, unsigned numpasses, bool bypass,
+  bool termall);
 
 /* Is the coding pass terminated? */
-int JPC_ISTERMINATED(int passno, int firstpassno, int numpasses, int termall,
-  int lazy);
+JAS_ATTRIBUTE_CONST
+bool JPC_ISTERMINATED(unsigned passno, unsigned firstpassno, unsigned numpasses, bool termall,
+  bool lazy);
 
 #endif

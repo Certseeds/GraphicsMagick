@@ -74,28 +74,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <time.h>
 //#include <stdint.h>
 
 #include <jasper/jasper.h>
 #include <jasper/jas_debug.h>
-
-
-#ifdef _DLL
- #ifdef _MSC_VER			/* Fix provided by J.Fojtik */
- #if _MSC_VER < 1800
-  unsigned long long __cdecl strtoull (
-    const char *nptr,
-    char **endptr,
-    int ibase
-    )
-{
-    return _strtoui64(nptr, endptr, ibase);
-}
- #endif
-#endif
-#endif
-
 
 /******************************************************************************\
 *
@@ -111,7 +93,7 @@
 
 typedef struct {
 
-	char *infile;
+	const char *infile;
 	/* The input image file. */
 
 	int infmt;
@@ -120,7 +102,7 @@ typedef struct {
 	char *inopts;
 	char inoptsbuf[OPTSMAX + 1];
 
-	char *outfile;
+	const char *outfile;
 	/* The output image file. */
 
 	int outfmt;
@@ -152,13 +134,13 @@ void cmdopts_destroy(cmdopts_t *cmdopts);
 void cmdusage(void);
 void badusage(void);
 void cmdinfo(void);
-int addopt(char *optstr, int maxlen, char *s);
+int addopt(char *optstr, int maxlen, const char *s);
 
 /******************************************************************************\
 * Global data.
 \******************************************************************************/
 
-char *cmdname = "";
+static const char *cmdname = "";
 
 /******************************************************************************\
 * Code.
@@ -323,8 +305,7 @@ int main(int argc, char **argv)
 
 cmdopts_t *cmdopts_parse(int argc, char **argv)
 {
-
-	typedef enum {
+	enum {
 		CMDOPT_HELP = 0,
 		CMDOPT_VERBOSE,
 		CMDOPT_INFILE,
@@ -338,9 +319,9 @@ cmdopts_t *cmdopts_parse(int argc, char **argv)
 		CMDOPT_CMPTNO,
 		CMDOPT_SRGB,
 		CMDOPT_MAXMEM
-	} cmdoptid_t;
+	};
 
-	static jas_opt_t cmdoptions[] = {
+	static const jas_opt_t cmdoptions[] = {
 		{CMDOPT_HELP, "help", 0},
 		{CMDOPT_VERBOSE, "verbose", 0},
 		{CMDOPT_INFILE, "input", JAS_OPT_HASARG},
@@ -479,7 +460,7 @@ void cmdopts_destroy(cmdopts_t *cmdopts)
 	free(cmdopts);
 }
 
-int addopt(char *optstr, int maxlen, char *s)
+int addopt(char *optstr, int maxlen, const char *s)
 {
 	size_t n;
 	size_t m;
@@ -504,7 +485,7 @@ void cmdinfo()
 	fprintf(stderr, "%s\n", JAS_NOTES);
 }
 
-static char *helpinfo[] = {
+static const char *const helpinfo[] = {
 "The following options are supported:\n",
 "    --help                  Print this help information and exit.\n",
 "    --version               Print version information and exit.\n",
@@ -530,8 +511,8 @@ static char *helpinfo[] = {
 void cmdusage()
 {
 	int fmtid;
-	jas_image_fmtinfo_t *fmtinfo;
-	char *s;
+	const jas_image_fmtinfo_t *fmtinfo;
+	const char *s;
 	int i;
 	cmdinfo();
 	fprintf(stderr, "usage: %s [options]\n", cmdname);
@@ -568,7 +549,7 @@ jas_image_t *converttosrgb(jas_image_t *inimage)
 
 	outprof = jas_cmprof_createfromclrspc(JAS_CLRSPC_SRGB);
 	assert(outprof);
-	xform = jas_cmxform_create(jas_image_cmprof(inimage), outprof, 0, JAS_CMXFORM_FWD, JAS_CMXFORM_INTENT_PER, 0);
+	xform = jas_cmxform_create(jas_image_cmprof(inimage), outprof, 0, JAS_CMXFORM_FWD, JAS_CMXFORM_INTENT_PER, JAS_CMXFORM_OPTM_SPEED);
 	assert(xform);
 
 	inpixmap.numcmpts = jas_image_numcmpts(oldimage);

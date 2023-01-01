@@ -61,15 +61,16 @@
  * __END_OF_JASPER_LICENSE__
  */
 
-/*
- * $Id$
+/*!
+ * @file jas_version.h
+ * @brief JasPer Version
  */
 
 #ifndef JAS_VERSION_H
 #define JAS_VERSION_H
 
 /* The configuration header file should be included first. */
-#include <jasper/jas_config.h>
+#include "jas_config.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,6 +110,7 @@ extern "C" {
 * Functions.
 \******************************************************************************/
 
+JAS_ATTRIBUTE_CONST
 JAS_DLLEXPORT const char *jas_getversion(void);
 /* Get the version information for the JasPer library. */
 /* Note:  Since libjasper can be built as a shared library, the version

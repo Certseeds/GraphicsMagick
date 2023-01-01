@@ -1,3 +1,10 @@
+2023-01-02 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* jp2/* Update lib jasper to 2.0.33. Code cleanly compilles, but 
+	there is still some problem. Will be solved later.
+	- jp2/src/lib/jasper/include/jasper/stdbool2.h No longer needed.
+
+
 2023-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/utility.c (GetMagickGeometry): Assure that width and

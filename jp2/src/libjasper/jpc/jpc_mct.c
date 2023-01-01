@@ -71,12 +71,13 @@
 * Includes.
 \******************************************************************************/
 
-#include <assert.h>
+#include "jpc_mct.h"
+#include "jpc_fix.h"
 
 #include "jasper/jas_seq.h"
 
-#include "jpc_fix.h"
-#include "jpc_mct.h"
+#include <assert.h>
+#include <math.h>
 
 /******************************************************************************\
 * Code.
@@ -248,46 +249,4 @@ void jpc_iict(jas_matrix_t *c0, jas_matrix_t *c1, jas_matrix_t *c2)
 			*c2p++ = b;
 		}
 	}
-}
-
-jpc_fix_t jpc_mct_getsynweight(int mctid, int cmptno)
-{
-	jpc_fix_t synweight;
-
-	synweight = JPC_FIX_ONE;
-	switch (mctid) {
-	case JPC_MCT_RCT:
-		switch (cmptno) {
-		case 0:
-			synweight = jpc_dbltofix(sqrt(3.0));
-			break;
-		case 1:
-			synweight = jpc_dbltofix(sqrt(0.6875));
-			break;
-		case 2:
-			synweight = jpc_dbltofix(sqrt(0.6875));
-			break;
-		}
-		break;
-	case JPC_MCT_ICT:
-		switch (cmptno) {
-		case 0:
-			synweight = jpc_dbltofix(sqrt(3.0000));
-			break;
-		case 1:
-			synweight = jpc_dbltofix(sqrt(3.2584));
-			break;
-		case 2:
-			synweight = jpc_dbltofix(sqrt(2.4755));
-			break;
-		}
-		break;
-#if 0
-	default:
-		synweight = JPC_FIX_ONE;
-		break;
-#endif
-	}
-
-	return synweight;
 }

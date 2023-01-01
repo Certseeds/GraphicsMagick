@@ -5,6 +5,7 @@ configure_file(
 
 set(libjasper_headers
 	include/jasper/jas_cm.h
+	include/jasper/jas_compiler.h
 	"${CMAKE_CURRENT_BINARY_DIR}/include/jasper/jas_config.h"
 	include/jasper/jas_debug.h
 	include/jasper/jas_dll.h
@@ -42,75 +43,99 @@ set(libjasper_base_sources
 	base/jas_version.c
 )
 
-set(libjasper_bmp_sources
-	bmp/bmp_cod.c
-	bmp/bmp_dec.c
-	bmp/bmp_enc.c
-)
+if (JAS_INCLUDE_BMP_CODEC)
+	set(libjasper_bmp_sources
+		bmp/bmp_cod.c
+		bmp/bmp_dec.c
+		bmp/bmp_enc.c
+	)
+else()
+	set(libjasper_bmp_sources "")
+endif()
 
-set(libjasper_jp2_sources
-	jp2/jp2_cod.c
-	jp2/jp2_dec.c
-	jp2/jp2_enc.c
-)
+if (JAS_INCLUDE_JP2_CODEC)
+	set(libjasper_jp2_sources
+		jp2/jp2_cod.c
+		jp2/jp2_dec.c
+		jp2/jp2_enc.c
+	)
+else()
+	set(libjasper_jp2_sources "")
+endif()
 
-set(libjasper_jpc_sources
-	jpc/jpc_bs.c
-	jpc/jpc_cs.c
-	jpc/jpc_dec.c
-	jpc/jpc_enc.c
-	jpc/jpc_math.c
-	jpc/jpc_mct.c
-	jpc/jpc_mqcod.c
-	jpc/jpc_mqdec.c
-	jpc/jpc_mqenc.c
-	jpc/jpc_qmfb.c
-	jpc/jpc_t1cod.c
-	jpc/jpc_t1dec.c
-	jpc/jpc_t1enc.c
-	jpc/jpc_t2cod.c
-	jpc/jpc_t2dec.c
-	jpc/jpc_t2enc.c
-	jpc/jpc_tagtree.c
-	jpc/jpc_tsfb.c
-	jpc/jpc_util.c
-)
+if (JAS_INCLUDE_JPC_CODEC)
+	set(libjasper_jpc_sources
+		jpc/jpc_bs.c
+		jpc/jpc_cs.c
+		jpc/jpc_dec.c
+		jpc/jpc_enc.c
+		jpc/jpc_math.c
+		jpc/jpc_mct.c
+		jpc/jpc_mqcod.c
+		jpc/jpc_mqdec.c
+		jpc/jpc_mqenc.c
+		jpc/jpc_qmfb.c
+		jpc/jpc_t1cod.c
+		jpc/jpc_t1dec.c
+		jpc/jpc_t1enc.c
+		jpc/jpc_t2cod.c
+		jpc/jpc_t2dec.c
+		jpc/jpc_t2enc.c
+		jpc/jpc_tagtree.c
+		jpc/jpc_tsfb.c
+		jpc/jpc_util.c
+	)
+else()
+	set(libjasper_jpc_sources "")
+endif()
 
-set(libjasper_jpg_sources
-	jpg/jpg_val.c
-)
-if(JAS_HAVE_LIBJPEG)
-	list(APPEND libjasper_jpg_sources
+if (JAS_INCLUDE_JPG_CODEC)
+	set(libjasper_jpg_sources
+		jpg/jpg_val.c
 		jpg/jpg_dec.c
 		jpg/jpg_enc.c
 	)
 else()
-	list(APPEND libjasper_jpg_sources
-		jpg/jpg_dummy.c
-	)
+	set(libjasper_jpg_sources "")
 endif()
 
-set(libjasper_mif_sources
-	mif/mif_cod.c
-)
+if (JAS_INCLUDE_MIF_CODEC)
+	set(libjasper_mif_sources
+		mif/mif_cod.c
+	)
+else()
+	set(libjasper_mif_sources "")
+endif()
 
-set(libjasper_pgx_sources
-	pgx/pgx_cod.c
-	pgx/pgx_dec.c
-	pgx/pgx_enc.c
-)
+if (JAS_INCLUDE_PGX_CODEC)
+	set(libjasper_pgx_sources
+		pgx/pgx_cod.c
+		pgx/pgx_dec.c
+		pgx/pgx_enc.c
+	)
+else()
+	set(libjasper_pgx_sources "")
+endif()
 
-set(libjasper_pnm_sources
-	pnm/pnm_cod.c
-	pnm/pnm_dec.c
-	pnm/pnm_enc.c
-)
+if (JAS_INCLUDE_PNM_CODEC)
+	set(libjasper_pnm_sources
+		pnm/pnm_cod.c
+		pnm/pnm_dec.c
+		pnm/pnm_enc.c
+	)
+else()
+	set(libjasper_pnm_sources "")
+endif()
 
-set(libjasper_ras_sources
-	ras/ras_cod.c
-	ras/ras_dec.c
-	ras/ras_enc.c
-)
+if (JAS_INCLUDE_RAS_CODEC)
+	set(libjasper_ras_sources
+		ras/ras_cod.c
+		ras/ras_dec.c
+		ras/ras_enc.c
+	)
+else()
+	set(libjasper_ras_sources "")
+endif()
 
 if (JAS_ENABLE_SHARED)
 	set(libjasper_type SHARED)
@@ -131,15 +156,25 @@ add_library(libjasper ${libjasper_type}
 	${libjasper_ras_sources}
 )
 
-target_include_directories(libjasper PUBLIC 
+# The JasPer include directories in the source and build tree must be included
+# before any other directories that may contain the include directory for an
+# already installed version of the JasPer library.
+# The PRIVATE specifier has been used here to force the library user to have
+# to explicitly specify the include directories from the source and build tree
+# so that the BEFORE specifier can also be employed by the library user.
+target_include_directories(libjasper BEFORE PRIVATE
 	"${CMAKE_CURRENT_BINARY_DIR}/include"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-if (UNIX)
-	set_target_properties(libjasper PROPERTIES OUTPUT_NAME jasper)
-endif()
+set_target_properties(libjasper PROPERTIES OUTPUT_NAME jasper)
 set_target_properties(libjasper PROPERTIES LINKER_LANGUAGE C)
+
+if (MSVC)
+	target_compile_definitions(libjasper PRIVATE "-D_CRT_SECURE_NO_WARNINGS")
+	target_compile_definitions(libjasper PRIVATE "-D_CRT_SECURE_NO_DEPRECATE")
+	target_compile_definitions(libjasper PRIVATE "-D_CRT_NONSTDC_NO_DEPRECATE")
+endif()
 
 if (UNIX)
 	set_target_properties(libjasper PROPERTIES
@@ -151,10 +186,21 @@ if (JAS_ENABLE_SHARED)
 	  DEFINE_SYMBOL "JAS_BUILDING_DLL")
 endif()
 
+if (JAS_ENABLE_FUZZER)
+	message("Enabling libFuzzer")
+	set_target_properties(libjasper PROPERTIES COMPILE_FLAGS "-fsanitize=fuzzer")
+endif()
+
 # I am not sure why the following line is needed for building a library, but
 # MacOSX does cannot build a shared library without this line.
 # Also, try adding MATH_LIBRARY to fix a Gentoo problem.
 target_link_libraries(libjasper ${JPEG_LIBRARIES} ${MATH_LIBRARY})
 
-install(TARGETS libjasper DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-install(FILES ${libjasper_headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/jasper")
+install(TARGETS libjasper
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+install(FILES ${libjasper_headers}
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/jasper"
+)

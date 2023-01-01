@@ -69,20 +69,16 @@
 * Includes
 \******************************************************************************/
 
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdarg.h>
+#include "jpc_util.h"
+#include "jpc_fix.h"
 
 #include "jasper/jas_math.h"
 #include "jasper/jas_malloc.h"
 
-#include "jpc_fix.h"
-#include "jpc_cs.h"
-#include "jpc_flt.h"
-#include "jpc_util.h"
+#include <assert.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
 
 /******************************************************************************\
 * Miscellaneous Functions
@@ -90,7 +86,7 @@
 
 int jpc_atoaf(const char *s, int *numvalues, double **values)
 {
-	static char delim[] = ", \t\n";
+	static const char delim[] = ", \t\n";
 	char buf[4096];
 	int n;
 	double *vs;
@@ -102,7 +98,7 @@ int jpc_atoaf(const char *s, int *numvalues, double **values)
 	if ((cp = strtok(buf, delim))) {
 		++n;
 		while ((cp = strtok(0, delim))) {
-			if (cp != '\0') {
+			if (*cp != '\0') {
 				++n;
 			}
 		}
@@ -120,7 +116,7 @@ int jpc_atoaf(const char *s, int *numvalues, double **values)
 			vs[n] = atof(cp);
 			++n;
 			while ((cp = strtok(0, delim))) {
-				if (cp != '\0') {
+				if (*cp != '\0') {
 					vs[n] = atof(cp);
 					++n;
 				}
@@ -136,7 +132,7 @@ int jpc_atoaf(const char *s, int *numvalues, double **values)
 	return 0;
 }
 
-jas_seq_t *jpc_seq_upsample(jas_seq_t *x, int m)
+jas_seq_t *jpc_seq_upsample(const jas_seq_t *x, int m)
 {
 	jas_seq_t *z;
 	int i;
@@ -151,7 +147,7 @@ jas_seq_t *jpc_seq_upsample(jas_seq_t *x, int m)
 	return z;
 }
 
-jpc_fix_t jpc_seq_norm(jas_seq_t *x)
+jpc_fix_t jpc_seq_norm(const jas_seq_t *x)
 {
 	jpc_fix_t s;
 	int i;
@@ -164,7 +160,7 @@ jpc_fix_t jpc_seq_norm(jas_seq_t *x)
 	return jpc_dbltofix(sqrt(jpc_fixtodbl(s)));
 }
 
-jas_seq_t *jpc_seq_conv(jas_seq_t *x, jas_seq_t *y)
+jas_seq_t *jpc_seq_conv(const jas_seq_t *x, const jas_seq_t *y)
 {
 	int i;
 	int j;
@@ -174,8 +170,9 @@ jas_seq_t *jpc_seq_conv(jas_seq_t *x, jas_seq_t *y)
 	jpc_fix_t v;
 
 	z = jas_seq_create(jas_seq_start(x) + jas_seq_start(y),
-	  jas_seq_end(x) + jas_seq_end(y) - 1);
-	assert(z);
+			   jas_seq_end(x) + jas_seq_end(y) - 1);
+	if (!z)
+		return NULL;
 	for (i = jas_seq_start(z); i < jas_seq_end(z); i++) {
 		s = jpc_inttofix(0);
 		for (j = jas_seq_start(y); j < jas_seq_end(y); j++) {

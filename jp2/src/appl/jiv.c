@@ -95,7 +95,7 @@ typedef struct {
 	char **filenames;
 
 	/* The title for the window. */
-	char *title;
+	const char *title;
 
 	/* The time to wait before advancing to the next image (in ms). */
 	int tmout;
@@ -105,7 +105,9 @@ typedef struct {
 
 	int verbose;
 
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
 	size_t max_mem;
+#endif
 
 } cmdopts_t;
 
@@ -147,7 +149,7 @@ typedef struct {
 
 	int monomode;
 
-	int cmptno;
+	unsigned cmptno;
 
 } gs_t;
 
@@ -168,14 +170,13 @@ static void nextcmpt(void);
 static void prevcmpt(void);
 static int loadimage(void);
 static void unloadimage(void);
-static int jas_image_render2(jas_image_t *image, int cmptno, float vtlx, float vtly,
+static int jas_image_render2(jas_image_t *image, unsigned cmptno, float vtlx, float vtly,
   float vsx, float vsy, int vw, int vh, GLshort *vdata);
 static int jas_image_render(jas_image_t *image, float vtlx, float vtly,
   float vsx, float vsy, int vw, int vh, GLshort *vdata);
 
 static void dumpstate(void);
 static int pixmap_resize(pixmap_t *p, int w, int h);
-static void pixmap_clear(pixmap_t *p);
 static void cmdinfo(void);
 
 static void cleanupandexit(int);
@@ -190,7 +191,7 @@ static void render(void);
 *
 \******************************************************************************/
 
-jas_opt_t opts[] = {
+static const jas_opt_t opts[] = {
 	{'V', "version", 0},
 	{'v', "v", 0},
 	{'h', "help", 0},
@@ -263,7 +264,9 @@ int main(int argc, char **argv)
 			cmdopts.verbose = 1;
 			break;
 		case 'm':
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
 			cmdopts.max_mem = strtoull(jas_optarg, 0, 10);
+#endif
 			break;
 		case 'V':
 			printf("%s\n", JAS_VERSION);
@@ -317,7 +320,7 @@ static void cmdinfo()
 	fprintf(stderr, "%s\n", JAS_NOTES);
 }
 
-static char *helpinfo[] = {
+static const char *const helpinfo[] = {
 "The following options are supported:\n",
 "    --help                  Print this help information and exit.\n",
 "    --version               Print version information and exit.\n",
@@ -328,7 +331,7 @@ static char *helpinfo[] = {
 
 static void usage()
 {
-	char *s;
+	const char *s;
 	int i;
 	cmdinfo();
 	fprintf(stderr, "usage: %s [options] [file1 file2 ...]\n", cmdname);
@@ -353,8 +356,6 @@ static void displayfunc()
 	int regbotlefty;
 	int regtoprightx;
 	int regtoprighty;
-	int regtoprightwidth;
-	int regtoprightheight;
 	int regwidth;
 	int regheight;
 	float x;
@@ -381,7 +382,6 @@ static void displayfunc()
 
 	assert(regwidth > 0);
 	assert(regheight > 0);
-	assert(JAS_ABS(((double) regheight / regwidth) - ((double) gs.viewportheight / gs.viewportwidth)) < 1e-5);
 
 	glClear(GL_COLOR_BUFFER_BIT);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, sizeof(GLshort));
@@ -556,8 +556,6 @@ static void pan(float dx, float dy)
 
 static void panzoom(float dx, float dy, float sx, float sy)
 {
-	float w;
-	float h;
 	float cx;
 	float cy;
 	int reginh;
@@ -582,8 +580,8 @@ static void panzoom(float dx, float dy, float sx, float sy)
 	if (sx != 1.0 || sy != 1.0) {
 		cx = (gs.botleftx + gs.toprightx) / 2.0;
 		cy = (gs.botlefty + gs.toprighty) / 2.0;
-		w = gs.toprightx - gs.botleftx;
-		h = gs.toprighty - gs.botlefty;
+		float w = gs.toprightx - gs.botleftx;
+		float h = gs.toprighty - gs.botlefty;
 		gs.botleftx = cx - 0.5 * w / sx;
 		gs.botlefty = cy - 0.5 * h / sy;
 		gs.toprightx = cx + 0.5 * w / sx;
@@ -602,8 +600,7 @@ static void panzoom(float dx, float dy, float sx, float sy)
 		}
 	}
 	if (gs.botleftx < 0 || gs.toprightx > gs.vp.width) {
-		float w;
-		w = gs.toprightx - gs.botleftx;
+		float w = gs.toprightx - gs.botleftx;
 		gs.botleftx = 0.5 * gs.vp.width - 0.5 * w;
 		gs.toprightx = 0.5 * gs.vp.width + 0.5 * w;
 	}
@@ -620,8 +617,7 @@ static void panzoom(float dx, float dy, float sx, float sy)
 		}
 	}
 	if (gs.botlefty < 0 || gs.toprighty > gs.vp.height) {
-		float h;
-		h = gs.toprighty - gs.botlefty;
+		float h = gs.toprighty - gs.botlefty;
 		gs.botlefty = 0.5 * gs.vp.height - 0.5 * h;
 		gs.toprighty = 0.5 * gs.vp.height + 0.5 * h;
 	}
@@ -711,14 +707,11 @@ static void previmage()
 
 static int loadimage()
 {
-	int reshapeflag;
 	jas_stream_t *in;
-	int scrnwidth;
-	int scrnheight;
 	int vh;
 	int vw;
 	char *pathname;
-	jas_cmprof_t *outprof;
+	jas_cmprof_t *outprof = NULL;
 
 	assert(!gs.image);
 	assert(!gs.altimage);
@@ -765,6 +758,9 @@ static int loadimage()
 		goto error;
 	if (!(gs.altimage = jas_image_chclrspc(gs.image, outprof, JAS_CMXFORM_INTENT_PER)))
 		goto error;
+
+	jas_cmprof_destroy(outprof);
+	outprof = NULL;
 
 	vw = jas_image_width(gs.image);
 	vh = jas_image_height(gs.image);
@@ -822,7 +818,9 @@ static int loadimage()
 
 	return 0;
 
-error:
+ error:
+	if (outprof != NULL)
+		jas_cmprof_destroy(outprof);
 	unloadimage();
 	return -1;
 }
@@ -842,11 +840,6 @@ static void unloadimage()
 /******************************************************************************\
 *
 \******************************************************************************/
-
-static void pixmap_clear(pixmap_t *p)
-{
-	memset(p->data, 0, 4 * p->width * p->height * sizeof(GLshort));
-}
 
 static int pixmap_resize(pixmap_t *p, int w, int h)
 {
@@ -935,7 +928,7 @@ error:
 	return -1;
 }
 
-static int jas_image_render2(jas_image_t *image, int cmptno, float vtlx,
+static int jas_image_render2(jas_image_t *image, unsigned cmptno, float vtlx,
   float vtly, float vsx, float vsy, int vw, int vh, GLshort *vdata)
 {
 	int i;
@@ -945,7 +938,7 @@ static int jas_image_render2(jas_image_t *image, int cmptno, float vtlx,
 	int v;
 	GLshort *vdatap;
 
-	if (cmptno < 0 || cmptno >= image->numcmpts_) {
+	if (cmptno >= image->numcmpts_) {
 		fprintf(stderr, "bad parameter\n");
 		goto error;
 	}
@@ -983,6 +976,8 @@ static void render()
 	if (cmdopts.verbose) {
 //		fprintf(stderr, "vtlx=%f, vtly=%f, vsx=%f, vsy=%f\n",
 //		  vtlx, vtly, gs.sx, gs.sy);
+		/* suppress -Wunused-but-set-variable */
+		(void)vtlx; (void)vtly;
 	}
 
 	if (gs.monomode) {

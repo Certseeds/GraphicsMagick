@@ -61,90 +61,37 @@
  * __END_OF_JASPER_LICENSE__
  */
 
-/*
- * Primitive Types
- *
- * $Id$
+/*!
+ * @file jas_types.h
+ * @brief Primitive Types
  */
 
 #ifndef JAS_TYPES_H
 #define JAS_TYPES_H
 
+/* The configuration header file should be included first. */
 #include <jasper/jas_config.h>
 
-#if !defined(JAS_CONFIGURE)
+/* Note: The immediately following header files should eventually be removed. */
+#include <stddef.h> /* IWYU pragma: export */
+//#include <stdint.h> /* IWYU pragma: export */
 
-#if defined(WIN32) || defined(HAVE_WINDOWS_H)
-/*
-   We are dealing with Microsoft Windows and most likely Microsoft
-   Visual C (MSVC).  (Heaven help us.)  Sadly, MSVC does not correctly
-   define some of the standard types specified in ISO/IEC 9899:1999.
-   In particular, it does not define the "long long" and "unsigned long
-   long" types.  So, we work around this problem by using the "INT64"
-   and "UINT64" types that are defined in the header file "windows.h".
- */
-#include <windows.h>
-#undef longlong
-#define	longlong	INT64
-#undef ulonglong
-#define	ulonglong	UINT64
+#if defined(JAS_HAVE_SYS_TYPES_H)
+#include <sys/types.h> /* IWYU pragma: export */
 #endif
 
-#endif
+#define jas_uchar unsigned char
+#define jas_uint unsigned int
+#define jas_ulong unsigned long
+#define jas_longlong long long
+#define jas_ulonglong unsigned long long
 
-#if defined(HAVE_STDLIB_H)
-#undef false
-#undef true
-#include <stdlib.h>
-#endif
-#if defined(HAVE_STDDEF_H)
-#include <stddef.h>
-#endif
-#if defined(HAVE_SYS_TYPES_H)
-#include <sys/types.h>
-#endif
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#define bool  int
+#define false 0
+#define true  1
 
-#ifndef __cplusplus
-#if defined(HAVE_STDBOOL_H)
-/*
- * The C language implementation does correctly provide the standard header
- * file "stdbool.h".
- */
-#include <stdbool.h>
-#else
-
-/*
- * The C language implementation does not provide the standard header file
- * "stdbool.h" as required by ISO/IEC 9899:1999.  Try to compensate for this
- * braindamage below.
- */
-#if !defined(bool)
-  #include "stdbool2.h"
-#endif
-#if !defined(true)
-#define true	1
-#endif
-#if !defined(false)
-#define	false	0
-#endif
-#endif
-
-#endif
-
-#if defined(HAVE_STDINT_H)
-/*
- * The C language implementation does correctly provide the standard header
- * file "stdint.h".
- */
-#include <stdint.h>
-#else
-/*
- * The C language implementation does not provide the standard header file
- * "stdint.h" as required by ISO/IEC 9899:1999.  Try to compensate for this
- * braindamage below.
- */
 #include "../webp/src/webp/types.h"
-
 #ifndef _PFX_PTR
  #ifdef _WIN64
   #define _PFX_PTR  "ll"
@@ -153,39 +100,43 @@
  #endif
 #endif
 
-
-#include <limits.h>
-
-
+#ifndef PRIxFAST32
+ #define PRIxFAST32 "x"
+#endif
+#ifndef PRIxFAST16
+ #define PRIxFAST16 PRIxFAST32
+#endif
+#ifndef PRIuFAST32
+ #define PRIuFAST32 "u"
+#endif
+#ifndef PRIuFAST16
+ #define PRIuFAST16 PRIuFAST32
+#endif
+#ifndef PRIiFAST32
+ #define PRIiFAST32 "i"
+#endif
+#ifndef PRIdPTR
+  #ifdef _WIN64
+    #define PRIdPTR "lld"
+  #else
+    #define PRIdPTR "d"
+  #endif
 #endif
 
-/* Hopefully, these macro definitions will fix more problems than they cause. */
-#if !defined(uchar)
-#define uchar unsigned char
-#endif
-#if !defined(ushort)
-#define ushort unsigned short
-#endif
-#if !defined(uint)
-#define uint unsigned int
-#endif
-#if !defined(ulong)
-#define ulong unsigned long
-#endif
-#if !defined(longlong)
-#define longlong long long
-#endif
-#if !defined(ulonglong)
-#define ulonglong unsigned long long
+#ifndef _HUGE_ENUF
+    #define _HUGE_ENUF 1e+300
 #endif
 
+#ifndef INFINITY
+ #define INFINITY ((float)(_HUGE_ENUF * _HUGE_ENUF))
+#endif
 
-#define jas_uchar unsigned char
-#define jas_uint unsigned int
-#define jas_ulong unsigned long
-#define jas_longlong long long
-#define jas_ulonglong unsigned long long
+#define strtoull _strtoui64
 
+#else
+#include <stdbool.h> /* IWYU pragma: export */
+#include <inttypes.h> /* IWYU pragma: export */
+#endif
 
 /* The below macro is intended to be used for type casts.  By using this
   macro, type casts can be easily located in the source code with

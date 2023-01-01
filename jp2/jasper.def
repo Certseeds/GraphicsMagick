@@ -20,7 +20,7 @@ EXPORTS
 	jas_iccattrval_create
 	jas_iccattrval_destroy
 	jas_iccattrval_dump
-	jas_iccattrvalinfos
+;	jas_iccattrvalinfos
 	jas_iccprof_copy
 	jas_iccprof_createfrombuf
 	jas_iccprof_createfromclrspc
@@ -88,8 +88,8 @@ EXPORTS
 	jas_seq2d_bindsub
 	jas_seq2d_copy
 	jas_seq2d_create
-	jas_seq2d_input
-	jas_seq2d_output
+;	jas_seq2d_input
+;	jas_seq2d_output
 	jas_setdbglevel
 	jas_strdup
 	jas_stream_close

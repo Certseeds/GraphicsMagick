@@ -66,7 +66,9 @@
 * Includes
 \******************************************************************************/
 
-#include	<assert.h>
+#include "jasper/jas_config.h"
+
+#include "jpc_fix.h"
 
 /******************************************************************************\
 * Macros
@@ -90,10 +92,15 @@
 
 /* Calculate the bit position of the first leading one in a nonnegative
   integer. */
-int jpc_firstone(int x);
+JAS_ATTRIBUTE_CONST
+int jpc_int_firstone(int x);
+
+JAS_ATTRIBUTE_CONST
+int jpc_fix_firstone(jpc_fix_t x);
 
 /* Calculate the integer quantity floor(log2(x)), where x is a positive
   integer. */
-int jpc_floorlog2(int x);
+JAS_ATTRIBUTE_CONST
+unsigned jpc_floorlog2(uint_fast32_t x);
 
 #endif

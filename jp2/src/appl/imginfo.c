@@ -104,7 +104,7 @@ static void cmdinfo(void);
 *
 \******************************************************************************/
 
-static jas_opt_t opts[] = {
+static const jas_opt_t opts[] = {
 	{OPT_HELP, "help", 0},
 	{OPT_VERSION, "version", 0},
 	{OPT_VERBOSE, "verbose", 0},
@@ -129,17 +129,15 @@ int main(int argc, char **argv)
 {
 	int fmtid;
 	int id;
-	char *infile;
+	const char *infile;
 	jas_stream_t *instream;
 	jas_image_t *image;
 	int width;
 	int height;
 	int depth;
 	int numcmpts;
-	int verbose;
-	char *fmtname;
+	const char *fmtname;
 	int debug;
-	size_t max_mem;
 	size_t max_samples;
 	bool max_samples_valid;
 	char optstr[32];
@@ -154,10 +152,9 @@ int main(int argc, char **argv)
 	max_samples = 0;
 	max_samples_valid = false;
 	infile = 0;
-	verbose = 0;
 	debug = 0;
 #if defined(JAS_DEFAULT_MAX_MEM_USAGE)
-	max_mem = JAS_DEFAULT_MAX_MEM_USAGE;
+	size_t max_mem = JAS_DEFAULT_MAX_MEM_USAGE;
 #endif
 	dec_opt_spec[0] = '\0';
 
@@ -165,7 +162,7 @@ int main(int argc, char **argv)
 	while ((id = jas_getopt(argc, argv, opts)) >= 0) {
 		switch (id) {
 		case OPT_VERBOSE:
-			verbose = 1;
+			/* not used - can we remove this option? */
 			break;
 		case OPT_VERSION:
 			printf("%s\n", JAS_VERSION);
@@ -182,7 +179,9 @@ int main(int argc, char **argv)
 			max_samples_valid = true;
 			break;
 		case OPT_MAXMEM:
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
 			max_mem = strtoull(jas_optarg, 0, 10);
+#endif
 			break;
 		case OPT_DECOPT:
 			if (dec_opt_spec[0] != '\0') {

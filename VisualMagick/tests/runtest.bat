@@ -1,7 +1,7 @@
 @echo off
 set TESTS=0
 set TYPE=NONE
-set exedir=..\binmt\
+set exedir=..\bin\
 
 if exist %exedir%rwblob.exe goto _binaryexists
 @echo Missing rwblob in a directory %exedir%

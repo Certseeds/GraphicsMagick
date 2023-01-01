@@ -85,11 +85,11 @@
 typedef struct {
 
 	/* The number of progression changes. */
-	int numpchgs;
+	unsigned numpchgs;
 
 	/* The maximum number of progression changes that can be accomodated
 	  without growing the progression change array. */
-	int maxpchgs;
+	unsigned maxpchgs;
 
 	/* The progression changes. */
 	jpc_pchg_t **pchgs;
@@ -101,20 +101,20 @@ typedef struct {
 typedef struct {
 
 	/* The number of precincts. */
-	int numprcs;
+	unsigned numprcs;
 
 	/* The last layer processed for each precinct. */
-	int *prclyrnos;
+	unsigned *prclyrnos;
 
 	/* The precinct width exponent. */
-	int prcwidthexpn;
+	unsigned prcwidthexpn;
 
 	/* The precinct height exponent. */
-	int prcheightexpn;
+	unsigned prcheightexpn;
 
 	/* The number of precincts spanning the resolution level in the horizontal
 	  direction. */
-	int numhprcs;
+	unsigned numhprcs;
 
 } jpc_pirlvl_t;
 
@@ -123,7 +123,7 @@ typedef struct {
 typedef struct {
 
 	/* The number of resolution levels. */
-	int numrlvls;
+	unsigned numrlvls;
 
 	/* The per-resolution-level information. */
 	jpc_pirlvl_t *pirlvls;
@@ -141,13 +141,13 @@ typedef struct {
 typedef struct {
 
 	/* The number of layers. */
-	int numlyrs;
+	unsigned numlyrs;
 
 	/* The number of resolution levels. */
-	int maxrlvls;
+	unsigned maxrlvls;
 
 	/* The number of components. */
-	int numcomps;
+	unsigned numcomps;
 
 	/* The per-component information. */
 	jpc_picomp_t *picomps;
@@ -159,16 +159,16 @@ typedef struct {
 	jpc_pirlvl_t *pirlvl;
 
 	/* The number of the current component. */
-	int compno;
+	unsigned compno;
 
 	/* The number of the current resolution level. */
-	int rlvlno;
+	unsigned rlvlno;
 
 	/* The number of the current precinct. */
-	int prcno;
+	unsigned prcno;
 
 	/* The number of the current layer. */
-	int lyrno;
+	unsigned lyrno;
 
 	/* The x-coordinate of the current position. */
 	uint_fast32_t x;
@@ -199,7 +199,7 @@ typedef struct {
 	uint_fast32_t yend;
 
 	/* The current progression change. */
-	jpc_pchg_t *pchg;
+	const jpc_pchg_t *pchg;
 
 	/* The progression change list. */
 	jpc_pchglist_t *pchglist;
@@ -275,16 +275,18 @@ void jpc_pchglist_destroy(jpc_pchglist_t *pchglist);
 int jpc_pchglist_insert(jpc_pchglist_t *pchglist, int pchgno, jpc_pchg_t *pchg);
 
 /* Remove an element from a progression change list. */
-jpc_pchg_t *jpc_pchglist_remove(jpc_pchglist_t *pchglist, int pchgno);
+jpc_pchg_t *jpc_pchglist_remove(jpc_pchglist_t *pchglist, unsigned pchgno);
 
 /* Get an element from a progression change list. */
-jpc_pchg_t *jpc_pchglist_get(jpc_pchglist_t *pchglist, int pchgno);
+JAS_ATTRIBUTE_PURE
+const jpc_pchg_t *jpc_pchglist_get(const jpc_pchglist_t *pchglist, unsigned pchgno);
 
 /* Copy a progression change list. */
-jpc_pchglist_t *jpc_pchglist_copy(jpc_pchglist_t *pchglist);
+jpc_pchglist_t *jpc_pchglist_copy(const jpc_pchglist_t *pchglist);
 
 /* Get the number of elements in a progression change list. */
-int jpc_pchglist_numpchgs(jpc_pchglist_t *pchglist);
+JAS_ATTRIBUTE_PURE
+unsigned jpc_pchglist_numpchgs(const jpc_pchglist_t *pchglist);
 
 /******************************************************************************\
 * Functions/macros for progression changes.
@@ -294,6 +296,6 @@ int jpc_pchglist_numpchgs(jpc_pchglist_t *pchglist);
 void jpc_pchg_destroy(jpc_pchg_t *pchg);
 
 /* Copy a progression change. */
-jpc_pchg_t *jpc_pchg_copy(jpc_pchg_t *pchg);
+jpc_pchg_t *jpc_pchg_copy(const jpc_pchg_t *pchg);
 
 #endif

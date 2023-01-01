@@ -71,8 +71,11 @@
 * Includes.
 \******************************************************************************/
 
-/* The configuration header file should be included first. */
-#include "jasper/jas_config.h"
+#include "jasper/jas_stream.h"
+#include "jasper/jas_debug.h"
+#include "jasper/jas_types.h"
+#include "jasper/jas_malloc.h"
+#include "jasper/jas_math.h"
 
 #include <assert.h>
 #if defined(JAS_HAVE_FCNTL_H)
@@ -81,6 +84,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
 #if defined(JAS_HAVE_UNISTD_H)
 #include <unistd.h>
@@ -88,12 +92,17 @@
 #if defined(WIN32) || defined(JAS_HAVE_IO_H)
 #include <io.h>
 #endif
+#ifdef _WIN32
+#include <windows.h> // for GetTempPathA()
+#endif
 
-#include "jasper/jas_debug.h"
-#include "jasper/jas_types.h"
-#include "jasper/jas_stream.h"
-#include "jasper/jas_malloc.h"
-#include "jasper/jas_math.h"
+/* O_CLOEXEC is a Linux-specific flag which helps avoid leaking file
+   descriptors to child processes created by another thread; for
+   simplicity, we always specify it, and this definition is a fallback
+   for systems where this feature is not available */
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
+#endif
 
 /******************************************************************************\
 * Local function prototypes.
@@ -105,18 +114,18 @@ static jas_stream_t *jas_stream_create(void);
 static void jas_stream_initbuf(jas_stream_t *stream, int bufmode, char *buf,
   int bufsize);
 
-static int mem_read(jas_stream_obj_t *obj, char *buf, int cnt);
-static int mem_write(jas_stream_obj_t *obj, char *buf, int cnt);
+static int mem_read(jas_stream_obj_t *obj, char *buf, unsigned cnt);
+static int mem_write(jas_stream_obj_t *obj, const char *buf, unsigned cnt);
 static long mem_seek(jas_stream_obj_t *obj, long offset, int origin);
 static int mem_close(jas_stream_obj_t *obj);
 
-static int sfile_read(jas_stream_obj_t *obj, char *buf, int cnt);
-static int sfile_write(jas_stream_obj_t *obj, char *buf, int cnt);
+static int sfile_read(jas_stream_obj_t *obj, char *buf, unsigned cnt);
+static int sfile_write(jas_stream_obj_t *obj, const char *buf, unsigned cnt);
 static long sfile_seek(jas_stream_obj_t *obj, long offset, int origin);
 static int sfile_close(jas_stream_obj_t *obj);
 
-static int file_read(jas_stream_obj_t *obj, char *buf, int cnt);
-static int file_write(jas_stream_obj_t *obj, char *buf, int cnt);
+static int file_read(jas_stream_obj_t *obj, char *buf, unsigned cnt);
+static int file_write(jas_stream_obj_t *obj, const char *buf, unsigned cnt);
 static long file_seek(jas_stream_obj_t *obj, long offset, int origin);
 static int file_close(jas_stream_obj_t *obj);
 
@@ -124,21 +133,21 @@ static int file_close(jas_stream_obj_t *obj);
 * Local data.
 \******************************************************************************/
 
-static jas_stream_ops_t jas_stream_fileops = {
+static const jas_stream_ops_t jas_stream_fileops = {
 	file_read,
 	file_write,
 	file_seek,
 	file_close
 };
 
-static jas_stream_ops_t jas_stream_sfileops = {
+static const jas_stream_ops_t jas_stream_sfileops = {
 	sfile_read,
 	sfile_write,
 	sfile_seek,
 	sfile_close
 };
 
-static jas_stream_ops_t jas_stream_memops = {
+static const jas_stream_ops_t jas_stream_memops = {
 	mem_read,
 	mem_write,
 	mem_seek,
@@ -172,92 +181,9 @@ static jas_stream_t *jas_stream_create()
 	return stream;
 }
 
-#if 0
-
-/* Obsolete code. */
-
-jas_stream_t *jas_stream_memopen(char *buf, int bufsize)
-{
-	jas_stream_t *stream;
-	jas_stream_memobj_t *obj;
-
-	JAS_DBGLOG(100, ("jas_stream_memopen(%p, %d)\n", buf, bufsize));
-
-	if (!(stream = jas_stream_create())) {
-		return 0;
-	}
-
-	/* A stream associated with a memory buffer is always opened
-	for both reading and writing in binary mode. */
-	stream->openmode_ = JAS_STREAM_READ | JAS_STREAM_WRITE | JAS_STREAM_BINARY;
-
-	/* Since the stream data is already resident in memory, buffering
-	is not necessary. */
-	/* But... It still may be faster to use buffering anyways. */
-	jas_stream_initbuf(stream, JAS_STREAM_FULLBUF, 0, 0);
-
-	/* Select the operations for a memory stream. */
-	stream->ops_ = &jas_stream_memops;
-
-	/* Allocate memory for the underlying memory stream object. */
-	if (!(obj = jas_malloc(sizeof(jas_stream_memobj_t)))) {
-		jas_stream_destroy(stream);
-		return 0;
-	}
-	stream->obj_ = (void *) obj;
-
-	/* Initialize a few important members of the memory stream object. */
-	obj->myalloc_ = 0;
-	obj->buf_ = 0;
-
-	/* If the buffer size specified is nonpositive, then the buffer
-	is allocated internally and automatically grown as needed. */
-	if (bufsize <= 0) {
-		obj->bufsize_ = 1024;
-		obj->growable_ = 1;
-	} else {
-		obj->bufsize_ = bufsize;
-		obj->growable_ = 0;
-	}
-	if (buf) {
-		obj->buf_ = (unsigned char *) buf;
-	} else {
-		obj->buf_ = jas_malloc(obj->bufsize_);
-		obj->myalloc_ = 1;
-	}
-	if (!obj->buf_) {
-		jas_stream_close(stream);
-		return 0;
-	}
-	JAS_DBGLOG(100, ("jas_stream_memopen buffer buf=%p myalloc=%d\n",
-	  obj->buf_, obj->myalloc_));
-
-	if (bufsize > 0 && buf) {
-		/* If a buffer was supplied by the caller and its length is positive,
-		  make the associated buffer data appear in the stream initially. */
-		obj->len_ = bufsize;
-	} else {
-		/* The stream is initially empty. */
-		obj->len_ = 0;
-	}
-	obj->pos_ = 0;
-	
-	return stream;
-}
-
-#else
-
 /*
 This function will eventually replace jas_stream_memopen.
-If buf is 0 and bufsize > 0:
-	a buffer is dynamically allocated with size bufsize and this buffer is
-	not growable.
-If buf is 0 and bufsize is 0:
-	a buffer is dynamically allocated whose size will automatically grow to
-	accommodate the amount of data written.
-If buf is not 0:
-	bufsize (which, in this case, is not currently allowed to be zero) is
-	the size of the (nongrowable) buffer pointed to by buf.
+For documentation of the interface for this function, see jas_stream.h.
 */
 
 jas_stream_t *jas_stream_memopen2(char *buf, size_t bufsize)
@@ -279,8 +205,7 @@ jas_stream_t *jas_stream_memopen2(char *buf, size_t bufsize)
 
 	/* Since the stream data is already resident in memory, buffering
 	is not necessary. */
-	/* But... It still may be faster to use buffering anyways. */
-	jas_stream_initbuf(stream, JAS_STREAM_FULLBUF, 0, 0);
+	jas_stream_initbuf(stream, JAS_STREAM_UNBUF, 0, 0);
 
 	/* Select the operations for a memory stream. */
 	stream->ops_ = &jas_stream_memops;
@@ -373,8 +298,6 @@ jas_stream_t *jas_stream_memopen(char *buf, int bufsize)
 	return jas_stream_memopen2(new_buf, new_bufsize);
 }
 
-#endif
-
 jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
 {
 	jas_stream_t *stream;
@@ -412,6 +335,8 @@ jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
 		openflags |= O_CREAT | O_TRUNC;
 	}
 
+	openflags |= O_CLOEXEC;
+
 	/* Allocate space for the underlying file stream object. */
 	if (!(obj = jas_malloc(sizeof(jas_stream_fileobj_t)))) {
 		jas_stream_destroy(stream);
@@ -443,13 +368,12 @@ jas_stream_t *jas_stream_fopen(const char *filename, const char *mode)
 jas_stream_t *jas_stream_freopen(const char *path, const char *mode, FILE *fp)
 {
 	jas_stream_t *stream;
-	int openflags;
 
 	JAS_DBGLOG(100, ("jas_stream_freopen(\"%s\", \"%s\", %p)\n", path, mode,
 	  fp));
 
 	/* Eliminate compiler warning about unused variable. */
-	path = 0;
+	(void)path;
 
 	/* Allocate a stream object. */
 	if (!(stream = jas_stream_create())) {
@@ -458,27 +382,6 @@ jas_stream_t *jas_stream_freopen(const char *path, const char *mode, FILE *fp)
 
 	/* Parse the mode string. */
 	stream->openmode_ = jas_strtoopenmode(mode);
-
-	/* Determine the correct flags to use for opening the file. */
-	if ((stream->openmode_ & JAS_STREAM_READ) &&
-	  (stream->openmode_ & JAS_STREAM_WRITE)) {
-		openflags = O_RDWR;
-	} else if (stream->openmode_ & JAS_STREAM_READ) {
-		openflags = O_RDONLY;
-	} else if (stream->openmode_ & JAS_STREAM_WRITE) {
-		openflags = O_WRONLY;
-	} else {
-		openflags = 0;
-	}
-	if (stream->openmode_ & JAS_STREAM_APPEND) {
-		openflags |= O_APPEND;
-	}
-	if (stream->openmode_ & JAS_STREAM_BINARY) {
-		openflags |= O_BINARY;
-	}
-	if (stream->openmode_ & JAS_STREAM_CREATE) {
-		openflags |= O_CREAT | O_TRUNC;
-	}
 
 	stream->obj_ = JAS_CAST(void *, fp);
 
@@ -489,6 +392,99 @@ jas_stream_t *jas_stream_freopen(const char *path, const char *mode, FILE *fp)
 	jas_stream_initbuf(stream, JAS_STREAM_FULLBUF, 0, 0);
 
 	return stream;
+}
+
+#ifndef _WIN32
+
+/**
+ * Copy the absolute path of the directory for temporary files to the
+ * given buffer (without a null terminator), including a trailing path
+ * separator.
+ *
+ * @return the number of characters copied to the buffer or 0 on error
+ */
+static size_t get_temp_directory(char *buffer, size_t size)
+{
+	const char *tmpdir = getenv("TMPDIR");
+	if (tmpdir == NULL)
+		tmpdir = "/tmp";
+
+	size_t length = strlen(tmpdir);
+	if (length + 1 > size)
+		return 0;
+
+	memcpy(buffer, tmpdir, length);
+	buffer[length++] = '/';
+	return length;
+}
+
+#endif /* !_WIN32 */
+
+/**
+ * Generate a template for mkstemp().
+ *
+ * @return 0 on success, -1 on error
+ */
+static int make_mkstemp_template(char *buffer, size_t size)
+{
+#ifdef _WIN32
+	char temp_directory[MAX_PATH];
+	if (GetTempPathA(sizeof(temp_directory), temp_directory) == 0)
+		return -1;
+
+	(void)size;
+
+	return GetTempFileNameA(temp_directory, "jasper", 0, buffer) > 0
+		? 0 : -1;
+#else
+	static const char base[] = "jasper.XXXXXX";
+
+	size_t length = get_temp_directory(buffer, size);
+	if (length == 0 || length + sizeof(base) >= size)
+		return -1;
+
+	memcpy(buffer + length, base, sizeof(base));
+	return 0;
+#endif
+}
+
+/**
+ * A wrapper for mkstemp() which generates a template for mkstemp()
+ * before calling the function.
+ *
+ * @return a non-negative file descriptor on success, -1 on error
+ */
+static int easy_mkstemp(char *buffer, size_t size)
+{
+#if defined(__linux__) && defined(O_TMPFILE)
+	/* try to use O_TMPFILE, which is a Linux-specific feature to
+	   create a temporary file without a name, not linked to any
+	   directory; this is even more secure than mkstemp() */
+	const char *tmpdir = getenv("TMPDIR");
+	if (tmpdir == NULL)
+		tmpdir = "/tmp";
+
+	int fd = open(tmpdir, O_TMPFILE|O_RDWR, JAS_STREAM_PERMS);
+	if (fd >= 0) {
+		*buffer = 0;
+		return fd;
+	}
+#endif
+
+	if (make_mkstemp_template(buffer, size))
+		return -1;
+
+#ifdef _WIN32
+	return open(buffer,
+		    O_CREAT | O_EXCL | O_RDWR | O_TRUNC | O_BINARY | O_CLOEXEC,
+		    JAS_STREAM_PERMS);
+#else
+#ifdef JAS_HAVE_MKOSTEMP
+	return mkostemp(buffer, O_CLOEXEC);
+#else
+	return mkstemp(buffer);
+#endif
+#endif
 }
 
 jas_stream_t *jas_stream_tmpfile()
@@ -516,12 +512,8 @@ jas_stream_t *jas_stream_tmpfile()
 	obj->pathname[0] = '\0';
 	stream->obj_ = obj;
 
-	/* Choose a file name. */
-	tmpnam(obj->pathname);
-
-	/* Open the underlying file. */
-	if ((obj->fd = open(obj->pathname, O_CREAT | O_EXCL | O_RDWR | O_TRUNC | O_BINARY,
-	  JAS_STREAM_PERMS)) < 0) {
+	/* Create the temporary file. */
+	if ((obj->fd = easy_mkstemp(obj->pathname, sizeof(obj->pathname))) < 0) {
 		jas_stream_destroy(stream);
 		return 0;
 	}
@@ -532,7 +524,7 @@ jas_stream_t *jas_stream_tmpfile()
 	on it.  Not all operating systems support this functionality, however.
 	For example, under Microsoft Windows the unlink operation will fail,
 	since the file is open. */
-	if (unlink(obj->pathname)) {
+	if (*obj->pathname != 0 && unlink(obj->pathname) < 0) {
 		/* We will try unlinking the file again after it is closed. */
 		obj->flags |= JAS_STREAM_FILEOBJ_DELONCLOSE;
 	}
@@ -560,7 +552,7 @@ jas_stream_t *jas_stream_fdopen(int fd, const char *mode)
 	/* Parse the mode string. */
 	stream->openmode_ = jas_strtoopenmode(mode);
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(JAS_HAVE_IO_H)
 	/* Argh!!!  Someone ought to banish text mode (i.e., O_TEXT) to the
 	  greatest depths of purgatory! */
 	/* Ensure that the file descriptor is in binary mode, if the caller
@@ -630,6 +622,16 @@ int jas_stream_close(jas_stream_t *stream)
 	return 0;
 }
 
+static bool jas_stream_is_unbuffered(const jas_stream_t *stream)
+{
+	return stream->bufsize_ <= 1;
+}
+
+static bool jas_stream_is_input_buffer_empty(const jas_stream_t *stream)
+{
+	return stream->cnt_ == 0;
+}
+
 /******************************************************************************\
 * Code for reading and writing streams.
 \******************************************************************************/
@@ -664,19 +666,46 @@ int jas_stream_ungetc(jas_stream_t *stream, int c)
 	return 0;
 }
 
-int jas_stream_read(jas_stream_t *stream, void *buf, int cnt)
+/* FIXME integral type */
+unsigned jas_stream_read(jas_stream_t *stream, void *buf, unsigned cnt)
 {
-	int n;
 	int c;
 	char *bufptr;
+	unsigned n;
 
-	JAS_DBGLOG(100, ("jas_stream_read(%p, %p, %d)\n", stream, buf, cnt));
+	JAS_DBGLOG(100, ("jas_stream_read(%p, %p, %u)\n", stream, buf, cnt));
 
-	if (cnt < 0) {
-		jas_deprecated("negative count for jas_stream_read");
-	}
+	if (cnt == 0)
+		return 0;
 
 	bufptr = buf;
+
+	if (jas_stream_is_unbuffered(stream) && stream->rwlimit_ < 0 &&
+	    jas_stream_is_input_buffer_empty(stream)) {
+		int nbytes;
+		/* fast path for unbuffered streams */
+
+		if ((stream->flags_ & JAS_STREAM_ERRMASK) != 0)
+			return 0;
+
+		if ((stream->openmode_ & JAS_STREAM_READ) == 0)
+			return 0;
+
+		assert((stream->bufmode_ & JAS_STREAM_WRBUF) == 0);
+
+		stream->bufmode_ |= JAS_STREAM_RDBUF;
+
+		nbytes = stream->ops_->read_(stream->obj_, bufptr, cnt);
+		if (nbytes <= 0) {
+			stream->flags_ |= nbytes < 0
+				? JAS_STREAM_ERR
+				: JAS_STREAM_EOF;
+			return 0;
+		}
+
+		stream->rwcnt_ += nbytes;
+		return nbytes;
+	}
 
 	n = 0;
 	while (n < cnt) {
@@ -690,18 +719,54 @@ int jas_stream_read(jas_stream_t *stream, void *buf, int cnt)
 	return n;
 }
 
-int jas_stream_write(jas_stream_t *stream, const void *buf, int cnt)
+unsigned jas_stream_peek(jas_stream_t *stream, void *buf, size_t cnt)
 {
-	int n;
+	char *bufptr = buf;
+	unsigned i;
+
+	const unsigned n = jas_stream_read(stream, bufptr, cnt);
+
+	/* Put the characters read back onto the stream. */
+	for (i = n; i-- > 0;)
+		if (jas_stream_ungetc(stream, bufptr[i]) == EOF)
+			return 0;
+
+	return n;
+}
+
+/* FIXME integral type */
+unsigned jas_stream_write(jas_stream_t *stream, const void *buf, unsigned cnt)
+{
 	const char *bufptr;
+	unsigned n;
 
 	JAS_DBGLOG(100, ("jas_stream_write(%p, %p, %d)\n", stream, buf, cnt));
 
-	if (cnt < 0) {
-		jas_deprecated("negative count for jas_stream_write");
-	}
+	if (cnt == 0)
+		return 0;
 
 	bufptr = buf;
+
+	if (jas_stream_is_unbuffered(stream) && stream->rwlimit_ < 0) {
+		int nbytes;
+		/* fast path for unbuffered streams */
+
+		/* need to flush the output buffer before we do a raw
+		   write */
+		if (jas_stream_flushbuf(stream, EOF))
+			return 0;
+
+		stream->bufmode_ |= JAS_STREAM_WRBUF;
+
+		nbytes = stream->ops_->write_(stream->obj_, bufptr, cnt);
+		if (nbytes != (int)cnt) {
+			stream->flags_ |= JAS_STREAM_ERR;
+			return 0;
+		}
+
+		stream->rwcnt_ += nbytes;
+		return nbytes;
+	}
 
 	n = 0;
 	while (n < cnt) {
@@ -742,6 +807,8 @@ int jas_stream_puts(jas_stream_t *stream, const char *s)
 	return 0;
 }
 
+/* TODO/FIXME: this function should return null upon error (buffer overrun or I/O error */
+/* FIXME integral type */
 char *jas_stream_gets(jas_stream_t *stream, char *buf, int bufsize)
 {
 	int c;
@@ -765,6 +832,7 @@ char *jas_stream_gets(jas_stream_t *stream, char *buf, int bufsize)
 	return buf;
 }
 
+/* FIXME integral type */
 int jas_stream_gobble(jas_stream_t *stream, int n)
 {
 	int m;
@@ -783,6 +851,7 @@ int jas_stream_gobble(jas_stream_t *stream, int n)
 	return n;
 }
 
+/* FIXME integral type */
 int jas_stream_pad(jas_stream_t *stream, int n, int c)
 {
 	int m;
@@ -885,6 +954,7 @@ long jas_stream_tell(jas_stream_t *stream)
 * Buffer initialization code.
 \******************************************************************************/
 
+/* FIXME integral type */
 static void jas_stream_initbuf(jas_stream_t *stream, int bufmode, char *buf,
   int bufsize)
 {
@@ -1060,31 +1130,32 @@ static int jas_strtoopenmode(const char *s)
 	return openmode;
 }
 
+/* FIXME integral type */
 int jas_stream_copy(jas_stream_t *out, jas_stream_t *in, int n)
 {
-	int all;
-	int c;
 	int m;
 
-	all = (n < 0) ? 1 : 0;
+	const bool all = n < 0;
+
+	char buffer[JAS_STREAM_BUFSIZE];
 
 	m = n;
 	while (all || m > 0) {
-		if ((c = jas_stream_getc_macro(in)) == EOF) {
-			/* The next character of input could not be read. */
-			/* Return with an error if an I/O error occured
-			  (not including EOF) or if an explicit copy count
-			  was specified. */
-			return (!all || jas_stream_error(in)) ? (-1) : 0;
-		}
-		if (jas_stream_putc_macro(out, c) == EOF) {
+		unsigned nbytes = jas_stream_read(in, buffer,
+						  JAS_MIN((size_t)m, sizeof(buffer)));
+		if (nbytes == 0)
+			return !all || jas_stream_error(in) ? -1 : 0;
+
+		if (jas_stream_write(out, buffer, nbytes) != nbytes)
 			return -1;
-		}
-		--m;
+
+		m -= nbytes;
 	}
+
 	return 0;
 }
 
+/* FIXME integral type */
 long jas_stream_setrwcount(jas_stream_t *stream, long rwcnt)
 {
 	int old;
@@ -1094,6 +1165,17 @@ long jas_stream_setrwcount(jas_stream_t *stream, long rwcnt)
 	return old;
 }
 
+JAS_DLLEXPORT
+long jas_stream_setrwlimit(jas_stream_t *stream, long rwlimit)
+{
+	long old;
+
+	old = stream->rwlimit_;
+	stream->rwlimit_ = rwlimit;
+	return old;
+}
+
+/* FIXME integral type */
 int jas_stream_display(jas_stream_t *stream, FILE *fp, int n)
 {
 	unsigned char buf[16];
@@ -1168,14 +1250,15 @@ long jas_stream_length(jas_stream_t *stream)
 * Memory stream object.
 \******************************************************************************/
 
-static int mem_read(jas_stream_obj_t *obj, char *buf, int cnt)
+/* FIXME integral type */
+static int mem_read(jas_stream_obj_t *obj, char *buf, unsigned cnt)
 {
 	jas_stream_memobj_t *m;
-	ssize_t n;
-	assert(cnt >= 0);
+	size_t n;
+
 	assert(buf);
 
-	JAS_DBGLOG(100, ("mem_read(%p, %p, %d)\n", obj, buf, cnt));
+	JAS_DBGLOG(100, ("mem_read(%p, %p, %u)\n", obj, buf, cnt));
 	m = (jas_stream_memobj_t *)obj;
 	n = m->len_ - m->pos_;
 	cnt = JAS_MIN(n, cnt);
@@ -1189,7 +1272,6 @@ static int mem_resize(jas_stream_memobj_t *m, size_t bufsize)
 	unsigned char *buf;
 
 	//assert(m->buf_);
-	//assert(bufsize >= 0);
 
 	JAS_DBGLOG(100, ("mem_resize(%p, %"_PFX_PTR"u)\n", m, bufsize));
 	if (!bufsize) {
@@ -1210,18 +1292,17 @@ static int mem_resize(jas_stream_memobj_t *m, size_t bufsize)
 	return 0;
 }
 
-static int mem_write(jas_stream_obj_t *obj, char *buf, int cnt)
+/* FIXME integral type */
+static int mem_write(jas_stream_obj_t *obj, const char *buf, unsigned cnt)
 {
 	size_t n;
-	int ret;
 	jas_stream_memobj_t *m = (jas_stream_memobj_t *)obj;
 	size_t newbufsize;
 	size_t newpos;
 
 	assert(buf);
-	assert(cnt >= 0);
 
-	JAS_DBGLOG(100, ("mem_write(%p, %p, %d)\n", obj, buf, cnt));
+	JAS_DBGLOG(100, ("mem_write(%p, %p, %u)\n", obj, buf, cnt));
 	newpos = m->pos_ + cnt;
 	if (newpos > m->bufsize_ && m->growable_) {
 		newbufsize = m->bufsize_;
@@ -1253,22 +1334,25 @@ static int mem_write(jas_stream_obj_t *obj, char *buf, int cnt)
 		}
 	}
 	n = m->bufsize_ - m->pos_;
-	ret = JAS_MIN(n, cnt);
-	if (ret > 0) {
+	{
+	  unsigned ret = JAS_MIN(n, cnt);
+	  if (ret > 0) {
 		memcpy(&m->buf_[m->pos_], buf, ret);
 		m->pos_ += ret;
-	}
-	if (m->pos_ > m->len_) {
+	  }
+	  if (m->pos_ > m->len_) {
 		m->len_ = m->pos_;
+	  }
+	  assert(ret == cnt);
+	  return ret;
 	}
-	assert(ret == cnt);
-	return ret;
 }
 
+/* FIXME integral type */
 static long mem_seek(jas_stream_obj_t *obj, long offset, int origin)
 {
 	jas_stream_memobj_t *m = (jas_stream_memobj_t *)obj;
-	size_t newpos;
+	long newpos;
 
 	JAS_DBGLOG(100, ("mem_seek(%p, %ld, %d)\n", obj, offset, origin));
 	switch (origin) {
@@ -1282,8 +1366,7 @@ static long mem_seek(jas_stream_obj_t *obj, long offset, int origin)
 		newpos = m->pos_ + offset;
 		break;
 	default:
-		abort();
-		break;
+		return -1;
 	}
 	if (newpos < 0) {
 		return -1;
@@ -1296,6 +1379,7 @@ static long mem_seek(jas_stream_obj_t *obj, long offset, int origin)
 static int mem_close(jas_stream_obj_t *obj)
 {
 	jas_stream_memobj_t *m;
+
 	JAS_DBGLOG(100, ("mem_close(%p)\n", obj));
 	m = (jas_stream_memobj_t *)obj;
 	JAS_DBGLOG(100, ("mem_close myalloc=%d\n", m->myalloc_));
@@ -1312,22 +1396,25 @@ static int mem_close(jas_stream_obj_t *obj)
 * File stream object.
 \******************************************************************************/
 
-static int file_read(jas_stream_obj_t *obj, char *buf, int cnt)
+/* FIXME integral type */
+static int file_read(jas_stream_obj_t *obj, char *buf, unsigned cnt)
 {
 	jas_stream_fileobj_t *fileobj;
-	JAS_DBGLOG(100, ("file_read(%p, %p, %d)\n", obj, buf, cnt));
+	JAS_DBGLOG(100, ("file_read(%p, %p, %u)\n", obj, buf, cnt));
 	fileobj = JAS_CAST(jas_stream_fileobj_t *, obj);
 	return read(fileobj->fd, buf, cnt);
 }
 
-static int file_write(jas_stream_obj_t *obj, char *buf, int cnt)
+/* FIXME integral type */
+static int file_write(jas_stream_obj_t *obj, const char *buf, unsigned cnt)
 {
 	jas_stream_fileobj_t *fileobj;
-	JAS_DBGLOG(100, ("file_write(%p, %p, %d)\n", obj, buf, cnt));
+	JAS_DBGLOG(100, ("file_write(%p, %p, %u)\n", obj, buf, cnt));
 	fileobj = JAS_CAST(jas_stream_fileobj_t *, obj);
 	return write(fileobj->fd, buf, cnt);
 }
 
+/* FIXME integral type */
 static long file_seek(jas_stream_obj_t *obj, long offset, int origin)
 {
 	jas_stream_fileobj_t *fileobj;
@@ -1342,9 +1429,11 @@ static int file_close(jas_stream_obj_t *obj)
 	jas_stream_fileobj_t *fileobj;
 	JAS_DBGLOG(100, ("file_close(%p)\n", obj));
 	fileobj = JAS_CAST(jas_stream_fileobj_t *, obj);
-	ret = close(fileobj->fd);
-	if (fileobj->flags & JAS_STREAM_FILEOBJ_DELONCLOSE) {
-		unlink(fileobj->pathname);
+	if (!(fileobj->flags & JAS_STREAM_FILEOBJ_NOCLOSE)) {
+		ret = close(fileobj->fd);
+		if (fileobj->flags & JAS_STREAM_FILEOBJ_DELONCLOSE) {
+			unlink(fileobj->pathname);
+		}
 	}
 	jas_free(fileobj);
 	return ret;
@@ -1354,12 +1443,13 @@ static int file_close(jas_stream_obj_t *obj)
 * Stdio file stream object.
 \******************************************************************************/
 
-static int sfile_read(jas_stream_obj_t *obj, char *buf, int cnt)
+/* FIXME integral type */
+static int sfile_read(jas_stream_obj_t *obj, char *buf, unsigned cnt)
 {
 	FILE *fp;
 	size_t n;
 	int result;
-	JAS_DBGLOG(100, ("sfile_read(%p, %p, %d)\n", obj, buf, cnt));
+	JAS_DBGLOG(100, ("sfile_read(%p, %p, %u)\n", obj, buf, cnt));
 	fp = JAS_CAST(FILE *, obj);
 	n = fread(buf, 1, cnt, fp);
 	if (n != cnt) {
@@ -1369,16 +1459,18 @@ static int sfile_read(jas_stream_obj_t *obj, char *buf, int cnt)
 	return result;
 }
 
-static int sfile_write(jas_stream_obj_t *obj, char *buf, int cnt)
+/* FIXME integral type */
+static int sfile_write(jas_stream_obj_t *obj, const char *buf, unsigned cnt)
 {
 	FILE *fp;
 	size_t n;
 	JAS_DBGLOG(100, ("sfile_write(%p, %p, %d)\n", obj, buf, cnt));
 	fp = JAS_CAST(FILE *, obj);
 	n = fwrite(buf, 1, cnt, fp);
-	return (n != JAS_CAST(size_t, cnt)) ? (-1) : cnt;
+	return (n != cnt) ? (-1) : (int)cnt;
 }
 
+/* FIXME integral type */
 static long sfile_seek(jas_stream_obj_t *obj, long offset, int origin)
 {
 	FILE *fp;

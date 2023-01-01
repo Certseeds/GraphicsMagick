@@ -63,18 +63,17 @@
 * Includes.
 \******************************************************************************/
 
-#include <stdio.h>
-#include <assert.h>
-#include <ctype.h>
+#include "jpg_jpeglib.h"
 
 #include "jasper/jas_tvp.h"
 #include "jasper/jas_stream.h"
 #include "jasper/jas_image.h"
-#include "jasper/jas_string.h"
 #include "jasper/jas_debug.h"
+#include "jasper/jas_math.h"
 
-#include "jpg_jpeglib.h"
-#include "jpg_cod.h"
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /******************************************************************************\
 * Types.
@@ -151,7 +150,7 @@ static const char jas_libjpeg_turbo_version[] = JAS_LIBJPEG_TURBO_VERSION;
 * Option parsing.
 \******************************************************************************/
 
-static jas_taginfo_t decopts[] = {
+static const jas_taginfo_t decopts[] = {
 	{OPT_VERSION, "version"},
 	{OPT_MAXSIZE, "max_samples"},
 	{-1, 0}
@@ -265,6 +264,10 @@ jas_image_t *jpg_decode(jas_stream_t *in, const char *optstr)
 	  cinfo.image_width, cinfo.image_height, cinfo.num_components)
 	  );
 
+	if (!cinfo.image_width || !cinfo.image_height || !cinfo.num_components) {
+		jas_eprintf("image has no samples");
+		goto error;
+	}
 	if (opts.max_samples > 0) {
 		if (!jas_safe_size_mul3(cinfo.image_width, cinfo.image_height,
 		  cinfo.num_components, &num_samples)) {
@@ -358,6 +361,20 @@ error:
 *
 \******************************************************************************/
 
+#ifdef __clang__
+/* suppress clang warning "result of comparison of constant
+   9223372036854775807 with expression of type 'JDIMENSION' (aka
+   'unsigned int') is always false" which happens on 64 bit targets
+   where int_fast32_t (64 bit) is larger than JDIMENSION (= unsigned
+   int, 32 bit) */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+/* on GCC, it's this warning: */
+#pragma GCC diagnostic ignored "-Wtype-limits"
+#endif
+
 static jas_image_t *jpg_mkimage(j_decompress_ptr cinfo)
 {
 	jas_image_t *image;
@@ -413,6 +430,10 @@ error:
 	return 0;
 }
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
 /******************************************************************************\
 * Data source code.
 \******************************************************************************/
@@ -439,7 +460,7 @@ static int jpg_copystreamtofile(FILE *out, jas_stream_t *in)
 static void jpg_start_output(j_decompress_ptr cinfo, jpg_dest_t *dinfo)
 {
 	/* Avoid compiler warnings about unused parameters. */
-	cinfo = 0;
+	(void)cinfo;
 
 	JAS_DBGLOG(10, ("jpg_start_output(%p, %p)\n", cinfo, dinfo));
 
@@ -460,7 +481,7 @@ static void jpg_put_pixel_rows(j_decompress_ptr cinfo, jpg_dest_t *dinfo,
 		return;
 	}
 
-	assert(cinfo->output_components == jas_image_numcmpts(dinfo->image));
+	assert(cinfo->output_components == (int)jas_image_numcmpts(dinfo->image));
 
 	for (cmptno = 0; cmptno < cinfo->output_components; ++cmptno) {
 		width = jas_image_cmptwidth(dinfo->image, cmptno);
@@ -485,6 +506,6 @@ static void jpg_finish_output(j_decompress_ptr cinfo, jpg_dest_t *dinfo)
 	JAS_DBGLOG(10, ("jpg_finish_output(%p, %p)\n", cinfo, dinfo));
 
 	/* Avoid compiler warnings about unused parameters. */
-	cinfo = 0;
-	dinfo = 0;
+	(void)cinfo;
+	(void)dinfo;
 }

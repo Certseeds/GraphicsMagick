@@ -63,23 +63,27 @@
 * Includes.
 \******************************************************************************/
 
-#include "jasper/jas_types.h"
-#include "jasper/jas_image.h"
 #include "jasper/jas_init.h"
+#include "jasper/jas_image.h"
+
+#include <stdlib.h>
 
 /******************************************************************************\
 * Code.
 \******************************************************************************/
 
 /* Initialize the image format table. */
+JAS_DLLEXPORT
 int jas_init()
 {
+#if defined(JAS_INCLUDE_MIF_CODEC) && defined(JAS_ENABLE_MIF_CODEC)
 	jas_image_fmtops_t fmtops;
+#endif
 	int fmtid;
 
 	fmtid = 0;
 
-#if !defined(EXCLUDE_MIF_SUPPORT)
+#if defined(JAS_INCLUDE_MIF_CODEC) && defined(JAS_ENABLE_MIF_CODEC)
 	fmtops.decode = mif_decode;
 	fmtops.encode = mif_encode;
 	fmtops.validate = mif_validate;
@@ -87,7 +91,7 @@ int jas_init()
 	++fmtid;
 #endif
 
-#if !defined(EXCLUDE_PNM_SUPPORT)
+#if defined(JAS_INCLUDE_PNM_CODEC)
 	fmtops.decode = pnm_decode;
 	fmtops.encode = pnm_encode;
 	fmtops.validate = pnm_validate;
@@ -100,7 +104,7 @@ int jas_init()
 	++fmtid;
 #endif
 
-#if !defined(EXCLUDE_BMP_SUPPORT)
+#if defined(JAS_INCLUDE_BMP_CODEC)
 	fmtops.decode = bmp_decode;
 	fmtops.encode = bmp_encode;
 	fmtops.validate = bmp_validate;
@@ -108,7 +112,7 @@ int jas_init()
 	++fmtid;
 #endif
 
-#if !defined(EXCLUDE_RAS_SUPPORT)
+#if defined(JAS_INCLUDE_RAS_CODEC)
 	fmtops.decode = ras_decode;
 	fmtops.encode = ras_encode;
 	fmtops.validate = ras_validate;
@@ -116,13 +120,15 @@ int jas_init()
 	++fmtid;
 #endif
 
-#if !defined(EXCLUDE_JP2_SUPPORT)
+#if defined(JAS_INCLUDE_JP2_CODEC)
 	fmtops.decode = jp2_decode;
 	fmtops.encode = jp2_encode;
 	fmtops.validate = jp2_validate;
 	jas_image_addfmt(fmtid, "jp2", "jp2",
 	  "JPEG-2000 JP2 File Format Syntax (ISO/IEC 15444-1)", &fmtops);
 	++fmtid;
+#endif
+#if defined(JAS_INCLUDE_JPC_CODEC) || defined(JAS_INCLUDE_JP2_CODEC)
 	fmtops.decode = jpc_decode;
 	fmtops.encode = jpc_encode;
 	fmtops.validate = jpc_validate;
@@ -131,7 +137,7 @@ int jas_init()
 	++fmtid;
 #endif
 
-#if !defined(EXCLUDE_JPG_SUPPORT)
+#if defined(JAS_INCLUDE_JPG_CODEC)
 	fmtops.decode = jpg_decode;
 	fmtops.encode = jpg_encode;
 	fmtops.validate = jpg_validate;
@@ -139,7 +145,7 @@ int jas_init()
 	++fmtid;
 #endif
 
-#if !defined(EXCLUDE_PGX_SUPPORT)
+#if defined(JAS_INCLUDE_PGX_CODEC)
 	fmtops.decode = pgx_decode;
 	fmtops.encode = pgx_encode;
 	fmtops.validate = pgx_validate;
@@ -156,6 +162,7 @@ int jas_init()
 	return 0;
 }
 
+JAS_DLLEXPORT
 void jas_cleanup()
 {
 	jas_image_clearfmts();

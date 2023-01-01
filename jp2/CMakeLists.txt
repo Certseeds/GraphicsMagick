@@ -1,12 +1,14 @@
 cmake_minimum_required (VERSION 2.8.11)
 
-project(JasPer)
+project(JasPer C)
 
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/build/cmake/modules/")
 
 # This include should be placed as early as possible.
 include(InSourceBuild)
+
+include(CheckCCompilerFlag)
 
 ################################################################################
 # Version information.
@@ -15,14 +17,13 @@ include(InSourceBuild)
 # The major, minor, and micro version numbers of the project.
 set(JAS_VERSION_MAJOR 2)
 set(JAS_VERSION_MINOR 0)
-set(JAS_VERSION_PATCH 6)
+set(JAS_VERSION_PATCH 33)
 
 # The project version.
 set(JAS_VERSION
 	"${JAS_VERSION_MAJOR}.${JAS_VERSION_MINOR}.${JAS_VERSION_PATCH}")
 
-# The RPM version information.
-set(JAS_RPM_RELEASE 1)
+message("Software version: ${JAS_VERSION}")
 
 # The shared library versioning information, which is specified by the
 # following variables: JAS_SO_VERSION, JAS_SO_MINOR, and JAS_SO_RELEASE.
@@ -43,10 +44,27 @@ set(JAS_RPM_RELEASE 1)
 # History of shared library versioning information:
 # JasPer 2.0.0: 4.0.0
 
+if (APPLE AND CMAKE_SYSTEM_NAME MATCHES "Darwin")
+	set(MACOSX true)
+else()
+	set(MACOSX false)
+endif()
+
+# To fix a problem with OSX, increase JAS_SO_VERSION to 6 (instead of 5)
+# when it is next increased.
 set(JAS_SO_VERSION 4)
 set(JAS_SO_MINOR 0)
 set(JAS_SO_RELEASE 0)
+# This is a temporary hack for OSX that should be removed when JAS_SO_VERSION
+# is next incremented.
+if (MACOSX)
+set(JAS_SO_NAME "5.${JAS_SO_MINOR}.${JAS_SO_RELEASE}")
+else()
 set(JAS_SO_NAME "${JAS_SO_VERSION}.${JAS_SO_MINOR}.${JAS_SO_RELEASE}")
+endif()
+
+message("Shared library ABI version: ${JAS_SO_VERSION}")
+message("Shared library build version: ${JAS_SO_NAME}")
 
 ################################################################################
 # Include modules and set policies.
@@ -68,18 +86,43 @@ cmake_policy(SET CMP0012 NEW)
 ################################################################################
 
 option(JAS_ENABLE_SHARED "Enable building of shared library" true)
+option(JAS_ENABLE_HIDDEN "Hide internal symbols" false)
+option(JAS_ENABLE_32BIT "Use 32 bit integers on 64 bit CPUs" false)
 option(JAS_ENABLE_LIBJPEG "Enable the use of the JPEG Library" true)
 option(JAS_ENABLE_OPENGL "Enable the use of the OpenGL/GLUT Library" true)
-option(JAS_ENABLE_STRICT "Enable pedantic error checking" false)
 option(JAS_ENABLE_AUTOMATIC_DEPENDENCIES "Enable automatic dependencies" true)
-option(JAS_LOCAL "Enable local hacks for developers (do not enable)" false)
+option(JAS_ENABLE_DOC "Enable building of the documentation" true)
+option(JAS_ENABLE_PROGRAMS "Enable building of the programs" true)
+
+option(JAS_INCLUDE_PNM_CODEC "Include PNM codec support" true)
+option(JAS_INCLUDE_BMP_CODEC "Include BMP codec support" true)
+option(JAS_INCLUDE_RAS_CODEC "Include RAS codec support" true)
+option(JAS_INCLUDE_JP2_CODEC "Include JP2 codec support" true)
+option(JAS_INCLUDE_JPC_CODEC "Include JPC codec support" true)
+option(JAS_INCLUDE_JPG_CODEC "Include JPG codec support" true)
+option(JAS_INCLUDE_PGX_CODEC "Include PGX codec support" true)
+option(JAS_INCLUDE_MIF_CODEC "Include MIF codec support" true)
+
+# WARNING: THE FOLLOWING OPTION SHOULD ONLY BE ENABLED BY THE JASPER SOFTWARE
+# DEVELOPMENT TEAM.  IT IS NECESSARY FOR INTERNAL TESTING PURPOSES AND POSES
+# SIGNIFICANT SECURITY RISKS IF ENABLED.
+option(JAS_ENABLE_DANGEROUS_INTERNAL_TESTING_MODE
+  "DO NOT ENABLE FOR SECURITY REASONS! (For internal use by JasPer development team only"
+  false)
 
 ################################################################################
 #
 ################################################################################
 
-#set(CMAKE_VERBOSE_MAKEFILE on)
 set(CMAKE_C_STANDARD 11)
+
+if ((CMAKE_GENERATOR MATCHES Xcode) OR
+  (CMAKE_GENERATOR MATCHES "Visual Studio"))
+	set(JAS_MULTICONFIGURATION_GENERATOR 1)
+else()
+	set(JAS_MULTICONFIGURATION_GENERATOR 0)
+endif()
+message("JAS_MULTICONFIGURATION_GENERATOR ${JAS_MULTICONFIGURATION_GENERATOR}")
 
 if (JAS_ENABLE_AUTOMATIC_DEPENDENCIES)
 	message(WARNING
@@ -90,23 +133,6 @@ else()
 	set(JAS_REQUIRED "REQUIRED")
 endif()
 
-if (APPLE AND CMAKE_SYSTEM_NAME MATCHES "Darwin")
-	set(MACOSX true)
-endif()
-
-if (UNIX)
-	if (MACOSX)
-		set(JAS_PLATFORM "UNIX (OSX)")
-	else()
-		set(JAS_PLATFORM "UNIX (Not OSX)")
-	endif()
-elseif (WIN32)
-	set(JAS_PLATFORM "Microsoft Windows")
-else()
-	set(JAS_PLATFORM "Unknown")
-endif()
-message("Platform ${JAS_PLATFORM}")
-
 if (JAS_ENABLE_SHARED AND MACOSX)
 	set(CMAKE_MACOSX_RPATH true)
 endif()
@@ -115,16 +141,19 @@ if (JAS_ENABLE_SHARED)
 	set(JAS_DLL 1)
 endif()
 
-message("JAS_LOCAL ${JAS_LOCAL}")
-message("CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE}")
-message("CMAKE_C_COMPILER_ID ${CMAKE_C_COMPILER_ID}")
-message("CMAKE_C_COMPILER ${CMAKE_C_COMPILER}")
-message("CMAKE_C_FLAGS ${CMAKE_C_FLAGS}")
-if (JAS_LOCAL AND (CMAKE_BUILD_TYPE MATCHES "Debug"))
-	if (CMAKE_C_COMPILER_ID MATCHES "GNU" OR
-	  CMAKE_C_COMPILER_ID MATCHES "Clang")
-		add_definitions("-O0")
-	endif()
+# If a multiconfiguration generator is used, ensure that various output
+# files are not placed in subdirectories (such as Debug and Release)
+# as this will cause the CTest test suite to fail.
+if (JAS_MULTICONFIGURATION_GENERATOR)
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY .)
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY .)
+	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY .)
+	foreach (config ${CMAKE_CONFIGURATION_TYPES})
+		string(TOUPPER "${config}" config)
+		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${config} .)
+		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${config} .)
+		set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${config} .)
+	endforeach()
 endif()
 
 include(InstallRequiredSystemLibraries)
@@ -144,46 +173,68 @@ set(CPACK_PACKAGE_FILE_NAME
 set(CPACK_GENERATOR "TGZ")
 include(CPack)
 
-if (JAS_STRICT)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wno-unused")
+if (NOT MSVC)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W -Wformat -Wmissing-prototypes -Wstrict-prototypes")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wmissing-declarations -Wredundant-decls")
+endif()
+
+if (JAS_ENABLE_HIDDEN AND NOT WIN32)
+	# don't export internal symbols
+	check_c_compiler_flag("-fvisibility=hidden" JAS_HAVE_VISIBILITY)
+	if (JAS_HAVE_VISIBILITY)
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden -DJAS_HAVE_VISIBILITY")
+	endif()
+
+	if (NOT (CMAKE_BUILD_TYPE MATCHES "Debug"))
+		# remove unused internal symbols
+		check_c_compiler_flag("-ffunction-sections" HAVE_FUNCTION_SECTIONS)
+		check_c_compiler_flag("-fdata-sections" HAVE_DATA_SECTIONS)
+		check_c_compiler_flag("-Wl,--gc-sections" HAVE_GC_SECTIONS)
+
+		if (HAVE_FUNCTION_SECTIONS AND HAVE_DATA_SECTIONS AND HAVE_GC_SECTIONS)
+			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections -Wl,--gc-sections")
+		endif()
+	endif()
 endif()
 
 ################################################################################
 # Perform plaform checks.
 ################################################################################
 
-find_package(Doxygen)
-find_package(LATEX COMPONENTS PDFLATEX)
-find_program(BASH_PROGRAM bash)
+include(JasOpenGL)
 
-# On some (or maybe all?) systems, LATEX_FOUND is not set by FindLATEX.
-# So, instead, rely on LATEX_PDFLATEX_FOUND.
-message("PDFLATEX_COMPILER: ${PDFLATEX_COMPILER}")
-if ((NOT LATEX_FOUND) AND PDFLATEX_COMPILER)
-	message(WARNING "Setting LATEX_FOUND to true.")
-	message(WARNING "Your version of CMake may be buggy.")
-	set(LATEX_FOUND true)
-endif()
-message("LATEX_FOUND ${LATEX_FOUND}")
+find_program(BASH_PROGRAM bash)
 
 check_include_files(fcntl.h JAS_HAVE_FCNTL_H)
 check_include_files(io.h JAS_HAVE_IO_H)
 check_include_files(unistd.h JAS_HAVE_UNISTD_H)
-check_include_files(windows.h JAS_HAVE_WINDOWS_H)
 check_include_files(sys/time.h JAS_HAVE_SYS_TIME_H)
 check_include_files(sys/types.h JAS_HAVE_SYS_TYPES_H)
 
 check_function_exists(gettimeofday JAS_HAVE_GETTIMEOFDAY)
 check_function_exists(getrusage JAS_HAVE_GETRUSAGE)
+check_function_exists(mkostemp JAS_HAVE_MKOSTEMP)
+
+################################################################################
+# Check for invalid codec combinations.
+################################################################################
+
+if (JAS_INCLUDE_JP2_CODEC AND NOT JAS_INCLUDE_JPC_CODEC)
+	message(FATAL_ERROR "The JPC codec must be included in order to include the JP2 codec.")
+endif()
 
 ################################################################################
 # Check for the JPEG library.
 ################################################################################
 
-find_package(JPEG ${JAS_LIBJPEG_REQUIRED})
-message("JPEG library found: ${JPEG_FOUND}")
+if (JAS_ENABLE_LIBJPEG)
+	find_package(JPEG ${JAS_LIBJPEG_REQUIRED})
+	message("JPEG library found: ${JPEG_FOUND}")
+else()
+	set(JPEG_FOUND false)
+endif()
 if (JAS_ENABLE_LIBJPEG AND JPEG_FOUND)
 	set(JAS_HAVE_LIBJPEG 0)
 	message("JPEG include directory: ${JPEG_INCLUDE_DIR}")
@@ -199,7 +250,6 @@ if (JAS_ENABLE_LIBJPEG AND JPEG_FOUND)
 		#include <jpeglib.h>
 		int main() {}
 	" JAS_HAVE_JPEGLIB_H)
-	message("JAS_HAVE_JPEGLIB_H: ${JAS_HAVE_JPEGLIB_H}")
 	if(JAS_HAVE_JPEGLIB_H)
 		set(JAS_HAVE_LIBJPEG 1)
 		include_directories(${JPEG_INCLUDE_DIR})
@@ -216,61 +266,9 @@ else()
 	set(JPEG_INCLUDE_DIR "")
 	set(JPEG_LIBRARIES "")
 endif()
-message("JAS_HAVE_LIBJPEG: ${JAS_HAVE_LIBJPEG}")
-
-################################################################################
-# Check for the OpenGL and GLUT libraries.
-################################################################################
-
-find_package(OpenGL ${JAS_REQUIRED})
-message("JAS_ENABLE_OPENGL: ${JAS_ENABLE_OPENGL}")
-message("OpenGL library found: ${OPENGL_FOUND}")
-if (JAS_ENABLE_OPENGL AND OPENGL_FOUND)
-	set(JAS_HAVE_OPENGL 0)
-	message("OpenGL include directory: ${OPENGL_INCLUDE_DIR}")
-	message("OpenGL libraries: ${OPENGL_LIBRARIES}")
-	find_package(GLUT ${JAS_REQUIRED})
-	message("GLUT library found: ${GLUT_FOUND}")
-	if (GLUT_FOUND)
-		message("GLUT include directory: ${GLUT_INCLUDE_DIR}")
-		message("GLUT libraries: ${GLUT_LIBRARIES}")
-		set(CMAKE_REQUIRED_INCLUDES ${GLUT_INCLUDE_DIR})
-		check_include_files(GL/glut.h JAS_HAVE_GL_GLUT_H)
-		check_include_files(glut.h JAS_HAVE_GLUT_H)
-		message("JAS_HAVE_GLUT_H: ${JAS_HAVE_GLUT_H}")
-		message("JAS_HAVE_GL_GLUT_H: ${JAS_HAVE_GL_GLUT_H}")
-		if (JAS_HAVE_GL_GLUT_H OR JAS_HAVE_GLUT_H)
-			set(JAS_HAVE_OPENGL 1)
-			include_directories(${GLUT_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR})
-		else()
-			message(WARNING "The header files GL/glut.h and glut.h both appear to be missing.")
-			message(WARNING "Disabling OpenGL.")
-		endif()
-	endif()
-	# On some systems (e.g., Fedora 21), there is a bug in the cmake code
-	# that detects GLUT libraries.  The following ugliness is a workaround for 
-	# this problem.
-	if (NOT GLUT_Xmu_LIBRARY OR NOT GLUT_Xmi_LIBRARY)
-		if (NOT GLUT_Xmu_LIBRARY)
-			set(GLUT_Xmu_LIBRARY "")
-			message(WARNING "Clearing bogus value for GLUT_Xmu_LIBRARY.")
-			message(WARNING "Your version of CMake may be buggy.")
-		endif()
-		if (NOT GLUT_Xmi_LIBRARY)
-			set(GLUT_Xmi_LIBRARY "")
-			message(WARNING "Clearing bogus value for GLUT_Xmi_LIBRARY.")
-			message(WARNING "Your version of CMake may be buggy.")
-		endif()
-		set(GLUT_LIBRARIES "${GLUT_glut_LIBRARY}")
-	endif()
-else()
-	set(JAS_HAVE_OPENGL 0)
-	set(OPENGL_INCLUDE_DIR "")
-	set(OPENGL_LIBRARIES "")
-	set(GLUT_INCLUDE_DIR "")
-	set(GLUT_LIBRARIES "")
+if (NOT JAS_HAVE_LIBJPEG)
+	set(JAS_INCLUDE_JPG_CODEC 0)
 endif()
-message("JAS_HAVE_OPENGL: ${JAS_HAVE_OPENGL}")
 
 ################################################################################
 # Check for the Math library.
@@ -285,9 +283,7 @@ endif()
 #
 ################################################################################
 
-if (JAS_MEMORY_LIMIT)
-	add_definitions("-DJAS_MEMORY_LIMIT=${JAS_MEMORY_LIMIT}")
-endif()
+add_definitions("-D_GNU_SOURCE")
 
 ################################################################################
 #
@@ -324,8 +320,12 @@ endif()
 ################################################################################
 
 add_subdirectory(src/libjasper)
-add_subdirectory(src/appl)
-add_subdirectory(doc)
+if (JAS_ENABLE_PROGRAMS)
+    add_subdirectory(src/appl)
+endif ()
+if (JAS_ENABLE_DOC)
+	add_subdirectory(doc)
+endif ()
 
 # The package configuation (pc) file should be installed in
 # ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig.

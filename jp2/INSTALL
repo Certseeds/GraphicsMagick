@@ -1,11 +1,14 @@
 Installation
+============
 
 The process required to install JasPer is described below.
 
 Installation on Systems Running Unix
+------------------------------------
 
 In what follows, let $SOURCE_DIR denote the top-level directory of the
-JasPer software source tree and let $INSTALL_DIR denote the target
+JasPer software source tree (i.e., the directory containing the files
+named LICENSE and INSTALL) and let $INSTALL_DIR denote the target
 directory for installation.
 
 1) Select an empty directory to use for building the software.
@@ -43,10 +46,23 @@ assist in diagnosing a problem), instead use the command:
 
     make install
 
+Additional Remarks:
+
+When building the JasPer software under Mac OSX, only the use of the
+native framework for OpenGL is officially supported.  If the Freeglut
+library is installed on your system, you will need to ensure that the
+native GLUT library (as opposed to the Freeglut library) is used by the
+build process.  This can be accomplished by adding an extra option to
+the cmake command line that resembles the following:
+
+    -DGLUT_glut_LIBRARY=/System/Library/Frameworks/GLUT.framework
+
 Installation on Systems Running Microsoft Windows
+-------------------------------------------------
 
 In what follows, let %SOURCE_DIR% denote the top-level directory of the
-JasPer software source tree and let %INSTALL_DIR% denote the target
+JasPer software source tree (i.e., the directory containing the files
+named LICENSE and INSTALL) and let %INSTALL_DIR% denote the target
 directory for installation.
 
 1) Select an empty directory to use for building the software.
@@ -67,6 +83,7 @@ above denotes line continuation.)
     msbuild %build_dir%\INSTALL.vcxproj
 
 Cmake Options
+-------------
 
 The option OPTION can be set to the value VALUE with a command-line option
 of the form -DOPTION=VALUE
@@ -74,47 +91,51 @@ The following options are supported:
 
 CMAKE_INSTALL_PREFIX
     Specify the installation directory.
-	Value: A directory name.
+    Value: A directory name.
 
 CMAKE_BUILD_TYPE
     Specify the build type (i.e., release or debug).
     Valid values: Debug or Release
+
+JAS_ENABLE_DOC
+    Enable the building of the documentation (which requires LaTeX).
+    Valid values: true and false
 
 JAS_ENABLE_LIBJPEG
     Enable the use of the JPEG library
     Valid values: true and false
 
 JAS_ENABLE_OPENGL
-	Enable the use of the OpenGL and GLUT libraries.
-	Valid values: true and false
-
-JAS_ENABLE_STRICT
-	Enable pedantic errors for building the code.
-	Valid values: true or false
+    Enable the use of the OpenGL and GLUT libraries.
+    Valid values: true and false
 
 JAS_ENABLE_SHARED
-	Enable the building of shared libraries.
-	Valid values: true or false
+    Enable the building of shared libraries.
+    Valid values: true or false
+
+JAS_ENABLE_HIDDEN
+    Hide internal symbols?  Enabling this results in a smaller binary.
+    Valid values: true or false
+
+JAS_ENABLE_32BIT
+    Force the use of 32 bit integers?  On 64 bit CPUs, JasPer
+    historically used 64 bit integers which consumes more memory, is
+    slower and has no advantages.  This produces a different ABI, so
+    the resulting library is not compatible with other builds.
+    Valid values: true or false
 
 JAS_ENABLE_ASAN
-	Enable the Address Sanitizer.
-	Valid values: true or false
+    Enable the Address Sanitizer.
+    Valid values: true or false
 
 JAS_ENABLE_USAN
-	Enable the Undefined-Behavior Sanitizer.
-	Valid values: true or false
+    Enable the Undefined-Behavior Sanitizer.
+    Valid values: true or false
 
 JAS_ENABLE_LSAN
-	Enable the Leak Sanitizer.
-	Valid values: true or false
+    Enable the Leak Sanitizer.
+    Valid values: true or false
 
 JAS_ENABLE_MSAN
-	Enable the Memory Sanitizer.
-	Valid values: true or false
-
-JAS_MEMORY_LIMIT
-	DO NOT RELY ON THIS OPTION, AS IT IS LIKELY TO BE REMOVED IN THE FUTURE.
-	Set the maximum amount of memory that can be allocated with jas_malloc
-	and friends.
-	Value: a value of unsigned integral type (e.g., 10000000 or SIZE_MAX).
-
+    Enable the Memory Sanitizer.
+    Valid values: true or false
