@@ -132,8 +132,8 @@ calculation.</p></li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
-<li><p>PCX and DCX: Support writing uncompressed format (use -compress rle
-for RLE compression).</p></li>
+<li><p>PCX and DCX: Support writing uncompressed format (use -compress none
+for no compression).</p></li>
 </ul>
 <p>API Updates:</p>
 <ul class="simple">
@@ -148,8 +148,6 @@ pointer to the first image in the list is needed.</p></li>
 <li><p>AppendImageToList() now updates the image list pointer to be the
 image which was just added.  Use GetFirstImageInList() when the
 pointer to the first image in the list is needed.</p></li>
-<li><p>PCX and DCX writers now write uncompressed files by default
-(use -compress rle for RLE compression).</p></li>
 </ul>
 </div>
 <div class="section" id="december-26-2022">

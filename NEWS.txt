@@ -56,8 +56,8 @@ Bug fixes:
 
 New Features:
 
-* PCX and DCX: Support writing uncompressed format (use -compress rle
-  for RLE compression).
+* PCX and DCX: Support writing uncompressed format (use -compress none
+  for no compression).
 
 API Updates:
 
@@ -74,9 +74,6 @@ Behavior Changes:
 * AppendImageToList() now updates the image list pointer to be the
   image which was just added.  Use GetFirstImageInList() when the
   pointer to the first image in the list is needed.
-
-* PCX and DCX writers now write uncompressed files by default
-  (use -compress rle for RLE compression).
 
 
 1.3.39 (December 26, 2022)
