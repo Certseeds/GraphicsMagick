@@ -67,7 +67,7 @@
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <math.h>
-#include <inttypes.h>
+//#include <inttypes.h>
 
 /******************************************************************************\
 *

@@ -1,6 +1,1246 @@
+commit 58b2bc12f377e64fca99ea7f3517d7fff1c39ac9
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:   Sat Nov 26 22:42:31 2016 -0800
+
+    Made further revisions to the reference manual.
+
+M	doc/src/mainpage.dox.in
+
+commit ce9f63084e13e759442884c4cd913b68096660ac
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 22:19:12 2016 -0800
+
+    Added more functionality to the make_dist script.
+
+M	build/make_dist
+
+commit c8ba13c4fef0478ab5e778d14bcce2e6477fd2cd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 21:59:26 2016 -0800
+
+    Modify CMakeLists.txt to install man pages.
+
+M	src/appl/CMakeLists.txt
+
+commit 2f5f0893cde9c790b1a45c71a193405e3f20de49
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 21:23:40 2016 -0800
+
+    Made some editorial changes to the Appveyor build script.
+
+M	build/appveyor/build.bat
+
+commit 431f67de63be9c1268806c7604f27aeb97951334
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 21:21:55 2016 -0800
+
+    Improved the installation instructions.
+
+M	INSTALL
+
+commit f25486c3d4aa472fec79150f2c41ed4333395d3d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 20:54:24 2016 -0800
+
+    Fixed a bug in the packet iterator code.
+    Added a new regression test case.
+
+A	data/test/good/PoC2.jpc
+M	src/libjasper/jpc/jpc_t2cod.c
+
+commit da11593fc485dd3c47af0f3118f11a102e1aa3d9
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 20:46:31 2016 -0800
+
+    Fixed the incorrect placement of a test file.
+
+R100	data/test/bad/PoC1.jpc	data/test/good/PoC1.jpc
+
+commit 4a59cfaf9ab3d48fca4a15c0d2674bf7138e3d1a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 20:23:23 2016 -0800
+
+    Fixed a buffer overrun problem in the QMFB code in the JPC codec
+    that was caused by a buffer being allocated with a size that was
+    too small
+    in some cases.
+    Added a new regression test case.
+
+A	data/test/bad/PoC1.jpc
+M	src/libjasper/jpc/jpc_qmfb.c
+
+commit ed355a69d1884d4cb9e13a8b885914601853b604
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 18:41:49 2016 -0800
+
+    Made some changes to build scripts/files.
+
+M	CMakeLists.txt
+M	INSTALL
+M	build/my_build
+
+commit aa0b0f79ade5eef8b0e7a214c03f5af54b36ba7d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 17:14:09 2016 -0800
+
+    Fixed numerous integer overflow problems in the code for packet
+    iterators
+    in the JPC decoder.
+
+M	src/libjasper/include/jasper/jas_types.h
+M	src/libjasper/jpc/jpc_t2cod.c
+M	src/libjasper/jpc/jpc_t2dec.c
+
+commit f4a6b95d721901320f228a382b07b85e37d842c7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 17:08:48 2016 -0800
+
+    Reduced the verbosity of some test scripts.
+
+M	test/bin/utilities
+M	test/bin/wrapper
+
+commit dcf27b2c5beaaae333df30cf25bde66ffab5c728
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 16:39:03 2016 -0800
+
+    Modified some build/package-related scripts.
+
+M	build/make_dist
+A	build/my_build
+
+commit 9ae142347c1342667329f31e66146cda2039bd2e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 10:44:59 2016 -0800
+
+    Remove some of the autotools cruft from .gitignore
+
+M	.gitignore
+
+commit 082a41a616dc87e4b4bebf266752563f308302fb
+Merge: 142c8e0 71cbb49
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 10:19:53 2016 -0800
+
+    Merge branch 'cmake' of https://github.com/mdadams/jasper
+
+    Merge all of the changes necessary to convert from an autotools-based
+    build to a cmake-based build.
+
+commit 71cbb49e72f01a06396e99abc20ceac918bd8765
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 10:08:56 2016 -0800
+
+    Updated the documentation and the make_dist script.
+
+M	INSTALL
+M	README
+M	build/make_dist
+
+commit c367738eb8678ba989d05c9e95f45c7791bcaf8a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 09:26:19 2016 -0800
+
+    Added new script for making release tarballs.
+
+A	build/make_dist
+
+commit a934e70036efdc6dbe08a96acd0fead41a7b6c40
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 03:16:22 2016 -0800
+
+    The pkgconfig file is now correctly generated and installed.
+
+M	CMakeLists.txt
+M	build/jasper.pc.in
+
+commit 2baa2f1bd65e54141e15f370f4624f08a20bdc20
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 03:00:42 2016 -0800
+
+    Reorganized numerous files used for building.
+
+M	.travis.yml
+M	CMakeLists.txt
+D	NEWS
+M	appveyor.yml
+R100	ci/appveyor/build.bat	build/appveyor/build.bat
+R100	cmake/modules/FindMakeDist.cmake
+build/cmake/modules/FindMakeDist.cmake
+R100	cmake/modules/InSourceBuild.cmake
+build/cmake/modules/InSourceBuild.cmake
+R100	cmake/modules/Sanitizers.cmake
+build/cmake/modules/Sanitizers.cmake
+R100	pkgconfig/jasper.pc.in	build/jasper.pc.in
+R100	jasper.spec.in	build/jasper.spec.in
+R100	ci/travis/build build/travis/build
+D	pkgconfig/Makefile.am
+
+commit ff88ab26c45de8970b374cc3bfe3c0beca0dcb61
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 02:25:37 2016 -0800
+
+    More CI changes.
+    Improved installation instructions.
+
+M	INSTALL
+M	ci/travis/build
+
+commit 6441dd978840d4601884cf3e545df3d9e017959d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:45:02 2016 -0800
+
+    Some Appveyor changes
+
+M	appveyor.yml
+
+commit 14f43917bd807d570fb5907bdcaf52fdf051db3e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:39:22 2016 -0800
+
+    Some Appveyor changes
+
+M	ci/appveyor/build.bat
+
+commit c0e480a18973614d61ca3bb78935c282281ef437
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:37:10 2016 -0800
+
+    Some Appveyor changes
+
+M	appveyor.yml
+M	ci/appveyor/build.bat
+
+commit 565e69e9021c1dfee27b91da28c55c4c6bf6fa09
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:31:30 2016 -0800
+
+    Some Appveyor changes
+
+M	ci/appveyor/build.bat
+
+commit baefddd659c62811b6092cbb806865c7bdb8c291
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:29:22 2016 -0800
+
+    Some Appveyor changes
+
+M	ci/appveyor/build.bat
+
+commit 005899716117c2a33e00a4e3211f6b0dfcf3e812
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:27:24 2016 -0800
+
+    Some Appveyor changes
+
+M	ci/appveyor/build.bat
+
+commit 45d69cdbf2f9eb7be01789de72b8e1473252f1a5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:24:47 2016 -0800
+
+    Some Appveyor changes
+
+M	ci/appveyor/build.bat
+
+commit 414ac77fd383acb9a97de77d9edcb3e9d6bfe27f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:20:33 2016 -0800
+
+    Some Appveyor changes
+
+M	ci/appveyor/build.bat
+
+commit 85a71b69981c8fb522b72c5b1eac0373e3aae3e9
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:16:20 2016 -0800
+
+    Some Appveyor changes
+
+M	ci/appveyor/build.bat
+
+commit 46e8fa22e7f8e7b9fa8a2c0f6e7c1b8955fdc1ba
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:11:58 2016 -0800
+
+    Some Appveyor changes
+
+M	ci/appveyor/build.bat
+
+commit 7fdf118c745d701a8c01d12af230b9e063714650
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:09:23 2016 -0800
+
+    Some Appveyor changes
+
+M	appveyor.yml
+
+commit 26536f488f179c39eb40d0b4feb97a9ef9ca425f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:04:59 2016 -0800
+
+    Some Appveyor changes
+
+M	appveyor.yml
+R100	ci/appveyor/build	ci/appveyor/build.bat
+
+commit f23c6adbc4ae45fe039824a64b5f7570f07eaca4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:03:22 2016 -0800
+
+    Some Appveyor changes
+
+M	appveyor.yml
+
+commit ee1510f981c809db7e00399d58417ed75e5642e9
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:02:12 2016 -0800
+
+    Some Appveyor changes
+
+M	appveyor.yml
+
+commit a9548cb874a6b7772b7447e3a1dcafe3900b27b5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 01:00:49 2016 -0800
+
+    Some Appveyor changes
+
+M	appveyor.yml
+
+commit 620d9d170e8461e3bdde2cf5c9a6656c101d43d2
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 00:56:01 2016 -0800
+
+    Some Appveyor changes
+
+M	appveyor.yml
+A	ci/appveyor/build
+
+commit 1933d9bc6ff9e424641209e595e8fa7a98fd56e0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 00:35:09 2016 -0800
+
+    The empty ChangeLog file has been removed.
+    It probably does not make much sense for this file to be under
+    version control.
+
+D	ChangeLog
+
+commit 76066e7eaf4691d2ef1233e2d1e6934d43517f56
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sat Nov 26 00:19:18 2016 -0800
+
+    Created initial skeleton for Doxygen-based manual
+
+M	CMakeLists.txt
+A	doc/CMakeLists.txt
+A	doc/Doxyfile.in
+A	doc/src/bugs.dox
+A	doc/src/faq.dox
+A	doc/src/getting_started.dox.in
+A	doc/src/mainpage.dox.in
+A	doc/src/modules.dox
+
+commit 0329907256094df7f4efec3ca6b749aa059d05b2
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 19:12:16 2016 -0800
+
+    More CI changes
+
+M	appveyor.yml
+
+commit 0f2e8ffd1fc1399ff79dbe46e8ad2d81f6f953e4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 19:09:08 2016 -0800
+
+    More cmake changes
+
+M	src/libjasper/CMakeLists.txt
+
+commit 2a85cf3ee93341e8f6b9da24becdd537a0262c60
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 19:02:45 2016 -0800
+
+    More cmake changes
+
+M	ci/travis/build
+M	src/libjasper/CMakeLists.txt
+
+commit 5bcbb69dbfa06adcad5c734368e1e9117ee338ef
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 18:46:32 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 17fd90e0fc6fa40fbd6ea7c0974c720c40e6e5a7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 18:13:33 2016 -0800
+
+    More CI changes
+
+M	ci/travis/build
+
+commit 54d690b8535495864a2e76dfdc15a0451307d7dd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 18:04:07 2016 -0800
+
+    More CI changes
+
+M	ci/travis/build
+
+commit d769c6413fc5d26bc1042f9d193b0dcc477ecbea
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 17:53:16 2016 -0800
+
+    More CI changes
+
+M	.travis.yml
+A	ci/travis/build
+
+commit b36f7d6d2c8ad34e9e22ac53d41d1e2fccc44898
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 09:29:18 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit f62bc9117a55cd566e46296e86540dc10357fe2b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 09:19:25 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit a6e83638c46a6b957d28022cb922793c4f032daa
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 09:10:33 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 36e9edbfd87e787e7fcfbefd835eae567c504484
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 09:02:49 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit ec875e94eab173edaaa93789ccf9ca4144df941a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 08:55:08 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 21dfc44c89b92b79c6639adcc21fcd176fa1df93
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 08:50:27 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit c26b11ba12916280da7f216f2d6a07a775192e27
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 08:42:16 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit a709452decff8333f6bdb956871daa1d9f3330a0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 08:38:15 2016 -0800
+
+    More cmake changes
+
+M	.travis.yml
+M	CMakeLists.txt
+
+commit dcc91c1f5e2bdfac73782d02ce914d2412460c83
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 08:31:36 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+M	INSTALL
+
+commit 055568d29d67afd58a313831e0955b2aca4aa05e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 08:15:15 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+D	configure.ac
+M	test/bin/run_codec_test
+M	test/bin/run_test_1
+M	test/bin/run_test_2
+M	test/bin/run_test_3
+A	test/bin/wrapper
+
+commit d5d849a890314d158475f4eaf5dbe0d2a692d51c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 07:11:24 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 1138e371836a27f19cd9d3832019211cb46bc779
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 07:03:12 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit a287f5f35a5ac1a753e4ee4ddfba5f065b3ae311
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 06:56:19 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 88caa7e7f668517b6491fc4930bdeb181cc5c8fa
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 06:48:58 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit f6ac92d19d15ece038b3820a1e41c9a101d2d6c1
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 06:44:09 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit aa91254edb9b587202ad72cbe2e66b79063d6a14
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 06:37:42 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 5720f0fa1795dc3c569449dc8b2887de714f9d2a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 06:35:52 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 259b2b3f9cbebf6ee9732cb6c8c41fc0d94bc62d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 05:54:55 2016 -0800
+
+    More cmake changes
+
+M	src/libjasper/CMakeLists.txt
+
+commit 15fc210ea944db74ba79e16325ce4c054ec6afa5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 25 05:51:50 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 8e0d0f62f123ba000f627f0163785d59d2f70dd0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 20:20:17 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit f986b190984f58934211fb5914ffacb678848fd9
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 20:11:21 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 24f814fb8806779da02ba285f60e75a0ab96dc78
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 20:08:47 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 16c241fee2278823b2c2c11e5fa8bdfc13444c85
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 20:07:58 2016 -0800
+
+    Added a missing "const" in a few of places.
+
+M	src/libjasper/jpg/jpg_dummy.c
+
+commit 9a018b8f0e294a2afafb0638ed1c34c47d10de09
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 19:17:52 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+M	src/libjasper/CMakeLists.txt
+
+commit c2604b35712776a386c8a8ca18aa1c6e35236d8f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 09:20:45 2016 -0800
+
+    More cmake changes
+
+M	src/libjasper/CMakeLists.txt
+
+commit 774b2cc6a07d2415a79d4863aa4a2fd726883d6e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 09:05:06 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+D	Makefile.am
+M	src/libjasper/CMakeLists.txt
+
+commit d039963bebfd8381f4bbe5805ccfbda49036ab91
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 08:45:00 2016 -0800
+
+    More cmake changes
+
+D	src/libjasper/include/jasper/CMakeLists.txt
+
+commit 5b8ff8260436d5bfb9d953470fcbd96f45ae277e
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 08:43:20 2016 -0800
+
+    More cmake changes
+
+M	src/libjasper/CMakeLists.txt
+D	src/libjasper/dummy.c
+
+commit bcac8d32abbe902a5b0229b0fe4ffc1dfaf4cb12
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 08:37:38 2016 -0800
+
+    More cmake changes
+
+M	src/libjasper/CMakeLists.txt
+D	src/libjasper/base/CMakeLists.txt
+D	src/libjasper/bmp/CMakeLists.txt
+D	src/libjasper/jp2/CMakeLists.txt
+D	src/libjasper/jpc/CMakeLists.txt
+D	src/libjasper/jpg/CMakeLists.txt
+D	src/libjasper/mif/CMakeLists.txt
+D	src/libjasper/pgx/CMakeLists.txt
+D	src/libjasper/pnm/CMakeLists.txt
+D	src/libjasper/ras/CMakeLists.txt
+
+commit fe5fca52f5f6beda5a0ad9968d49e1301b85ad43
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 08:18:38 2016 -0800
+
+    More cmake changes
+
+M	cmake/modules/InSourceBuild.cmake
+
+commit 4ec3b1293ada343bfaa954490413633e94c3ade1
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 08:17:33 2016 -0800
+
+    More cmake changes
+
+M	cmake/modules/InSourceBuild.cmake
+
+commit 9bf4210758f1dd65bc2eec3a6d020b14a257b72a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 08:15:36 2016 -0800
+
+    More cmake changes
+
+M	cmake/modules/InSourceBuild.cmake
+
+commit 9889f4da8d6fa47cf21e3ec7e79504996904b5c4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Nov 24 08:07:30 2016 -0800
+
+    More cmake changes
+
+M	.travis.yml
+M	CMakeLists.txt
+M	appveyor.yml
+A	cmake/modules/InSourceBuild.cmake
+M	src/appl/CMakeLists.txt
+
+commit 2401049eba603131db2f9b8c2723c0f7691de7c5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 22:06:26 2016 -0800
+
+    More changes for cmake
+
+M	CMakeLists.txt
+M	cmake/modules/FindMakeDist.cmake
+
+commit 1dfec33972f121395d0203d7290bd7cc63066735
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 21:56:24 2016 -0800
+
+    More changes for cmake
+
+A	cmake/modules/FindMakeDist.cmake
+
+commit d7b07859967a247ce57a38e82ae078d290df7d7a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 21:44:37 2016 -0800
+
+    More changes for cmake
+
+M	CMakeLists.txt
+M	src/libjasper/include/jasper/CMakeLists.txt
+
+commit 1cc8f3a451d5fbfc7ea2edd1ea0a5bf9447b2db6
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 19:56:53 2016 -0800
+
+    More changes for cmake
+
+M	CMakeLists.txt
+
+commit b70f6de2f59cc7e144937d063958adccecfbec18
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 19:32:07 2016 -0800
+
+    More changes for cmake
+
+M	CMakeLists.txt
+A	cmake/modules/Sanitizers.cmake
+
+commit 142c8e07c2a929ddbf8cd89e56bf3deecb62b53b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 10:14:07 2016 -0800
+
+    More CI changes
+
+M	.travis.yml
+
+commit 09ed278cb062359c1be2202b37ce16165e440b42
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 10:09:37 2016 -0800
+
+    More CI changes
+
+M	.travis.yml
+
+commit 9b2a294c8ba43f42a73028d3603d97f37a6c6344
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 10:07:51 2016 -0800
+
+    More CI changes
+
+M	.travis.yml
+
+commit af1733f879ef940678b510086a67c73ccfd4b460
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 10:05:10 2016 -0800
+
+    More CI changes
+
+M	test/bin/run_codec_test
+M	test/bin/run_test_3
+
+commit 74ce0b45562d17a0314bb6eba9453cb8016c3e09
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 10:02:01 2016 -0800
+
+    More CI changes
+
+M	.travis.yml
+
+commit b9c191f8f4e177c88855f2b0caea74e07acd8505
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:59:33 2016 -0800
+
+    More CI changes
+
+M	test/bin/run_test_3
+
+commit 1e560d85f8e3fd56d5d4a528a88fb64104457ced
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:56:44 2016 -0800
+
+    More CI changes
+
+M	test/bin/run_codec_test
+
+commit e9216fd68db595c7e9d61ab27f1fdf6f884270bf
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:52:01 2016 -0800
+
+    More CI changes
+
+M	test/bin/run_codec_test
+M	test/bin/run_test_3
+
+commit 143186f6ed639c7b91bac5d5cd73880070b0071a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:48:18 2016 -0800
+
+    Remove dependency on realpath
+
+M	test/bin/jpcod
+
+commit c58883ba6e224851e221c2dd1c0a0108bf84817c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:41:27 2016 -0800
+
+    More CI changes
+
+M	.travis.yml
+M	test/bin/utilities
+
+commit 1e1f6914dc9c293584f82f012f239d272114ff9b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:36:48 2016 -0800
+
+    More CI changes
+
+M	.travis.yml
+
+commit bac5bb83e23d8ed6557dee66d3ebd99938b165ee
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:28:29 2016 -0800
+
+    More CI changes
+
+M	.travis.yml
+
+commit 0046b3bd9e6d78ec321280c60b8da4c8e75e21c8
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:22:21 2016 -0800
+
+    Add debugging message in test scripts
+
+M	.travis.yml
+
+commit 2904d567f8b8b8ce87c411b587a1039af5902407
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:20:45 2016 -0800
+
+    Add debugging message in test scripts
+
+M	.travis.yml
+
+commit a9666e949f556db4a2e1d0f41d9be98f07db73e0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:16:19 2016 -0800
+
+    Add debugging message in test scripts
+
+M	test/bin/utilities
+
+commit 8f276e683910e0377278defb5aede1a5bdb7d725
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:15:37 2016 -0800
+
+    Add debugging message in test scripts
+
+M	test/bin/utilities
+
+commit 926e233383fec0a05d664708fbaa37e50a1d34ae
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:06:01 2016 -0800
+
+    Removed extra blank line.
+
+M	src/libjasper/jpc/jpc_t2cod.c
+
+commit a3460c75d4de622f751ded338ad28942e7b59c19
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 09:03:00 2016 -0800
+
+    More changes for cmake and CI
+
+M	.travis.yml
+
+commit 6f25982ee8d109036f98227e841291f587b04b5f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 08:56:23 2016 -0800
+
+    More changes for cmake
+
+M	.travis.yml
+
+commit 92f5259cfa6f1d30c5a4aa1cbbc4ab8934db70cb
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 08:53:17 2016 -0800
+
+    More changes for cmake
+
+M	.travis.yml
+
+commit 5a7f6f9901f7492ec1dc805d0cc6d585ff5d3bcc
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 08:50:15 2016 -0800
+
+    More changes for cmake
+
+M	.travis.yml
+
+commit 7b3095b89a31ff12e0961f436fbd9e3858007c93
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 08:46:03 2016 -0800
+
+    More changes for cmake
+
+M	.travis.yml
+M	CMakeLists.txt
+
+commit d0019ff1ecea960f0e8e1921ef5cae3061c93b10
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 01:44:51 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+M	src/appl/CMakeLists.txt
+M	src/libjasper/jpg/CMakeLists.txt
+
+commit eaf539d9ff0f0b8232b1a7bd6220e6d85cabfe2f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 01:37:04 2016 -0800
+
+    More cmake changes
+
+M	CMakeLists.txt
+
+commit 90ac76042faf2659ff51645a1ac876df9fa3b587
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 01:27:47 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+D	ac_m4/m4_ax_append_flag.m4
+D	ac_m4/m4_ax_c99_inline.m4
+D	ac_m4/m4_ax_c_arithmetic_rshift.m4
+D	ac_m4/m4_ax_cflags_gcc_option.m4
+D	ac_m4/m4_ax_cflags_strict_prototypes.m4
+D	ac_m4/m4_ax_cflags_warn_all.m4
+D	ac_m4/m4_ax_check_compile_flag.m4
+D	ac_m4/m4_ax_compiler_flags_cflags.m4
+D	ac_m4/m4_ax_generate_changelog.m4
+D	src/Makefile.am
+D	src/appl/Makefile.am
+D	src/libjasper/Makefile.am
+D	src/libjasper/base/Makefile.am
+D	src/libjasper/bmp/Makefile.am
+D	src/libjasper/include/Makefile.am
+D	src/libjasper/include/jasper/Makefile.am
+D	src/libjasper/jp2/Makefile.am
+D	src/libjasper/jpc/Makefile.am
+D	src/libjasper/jpg/Makefile.am
+D	src/libjasper/mif/Makefile.am
+D	src/libjasper/pgx/Makefile.am
+D	src/libjasper/pnm/Makefile.am
+D	src/libjasper/ras/Makefile.am
+D	src/msvc/Makefile.am
+D	src/msvc/README
+D	src/msvc/imgcmp.vcxproj
+D	src/msvc/imginfo.vcxproj
+D	src/msvc/jasper.sln
+D	src/msvc/jasper.vcxproj
+D	src/msvc/jiv.vcxproj
+D	src/msvc/libjasper.vcxproj
+D	test/Makefile.am
+D	test/bin/Makefile.am
+
+commit 6c3e8a6f1cb6b218cef763a184ab379a421e9dae
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 01:14:36 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	CMakeLists.txt
+M	src/appl/CMakeLists.txt
+
+commit 13744404c6e12bae11642d7ef0b7d66016827f86
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 01:05:28 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	CMakeLists.txt
+
+commit abc2a077c0bd684436f59b8e5b20857230903db2
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:56:19 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	.travis.yml
+
+commit 91bd821439fb05fc5737c5028f791102457f0caa
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:53:54 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	appveyor.yml
+
+commit 70cddeb157a9108adeefbd75652b205ba725d068
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:52:42 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	appveyor.yml
+
+commit a7f6e4557ac8988dbdf0cbb6567ce3928390b116
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:45:20 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	.travis.yml
+
+commit 859ce383efcd28cbb4d8e8ccb735849d5f4e96a7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:41:49 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	.travis.yml
+
+commit c0c3c913930981e022be90556f6f1d12870a8e51
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:40:15 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	.travis.yml
+
+commit 1a7853075ca421bc5ddcb067db5b9e1f1f54648f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:37:46 2016 -0800
+
+    Changes for Appveyor/Travis CI
+
+M	src/appl/CMakeLists.txt
+
+commit eceb0dde114a8a06f14f85a392a26a1a0bf52197
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:34:25 2016 -0800
+
+    Changes for Appveyor CI
+
+M	CMakeLists.txt
+M	src/appl/CMakeLists.txt
+
+commit 391a156c5ebf35f10bc0f6422c08bc741e140c90
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:29:41 2016 -0800
+
+    Changes for Appveyor CI
+
+M	src/libjasper/jpg/CMakeLists.txt
+
+commit 4bdda5cc2a182572f7a4c78505c4fabcee0ed2a3
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:19:32 2016 -0800
+
+    Changes for Appveyor CI
+
+M	appveyor.yml
+
+commit c39d0547929b5bc0d84312ee7a1973cda8378670
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:16:59 2016 -0800
+
+    Changes for Appveyor CI
+
+M	appveyor.yml
+
+commit bd742e41f2d8cc60b1c56e4eadae435a5d0b9dea
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:08:33 2016 -0800
+
+    Changes for Travis CI
+
+M	.travis.yml
+
+commit b7c1ed4a377031de197e47b2160c3b28ac3d0094
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 23 00:03:32 2016 -0800
+
+    Add preliminary support for a cmake-based build.
+
+A	CMakeLists.txt
+A	src/appl/CMakeLists.txt
+A	src/libjasper/CMakeLists.txt
+A	src/libjasper/base/CMakeLists.txt
+A	src/libjasper/bmp/CMakeLists.txt
+A	src/libjasper/include/jasper/CMakeLists.txt
+M	src/libjasper/include/jasper/jas_config.h.in
+A	src/libjasper/jp2/CMakeLists.txt
+A	src/libjasper/jpc/CMakeLists.txt
+A	src/libjasper/jpg/CMakeLists.txt
+A	src/libjasper/mif/CMakeLists.txt
+A	src/libjasper/pgx/CMakeLists.txt
+A	src/libjasper/pnm/CMakeLists.txt
+A	src/libjasper/ras/CMakeLists.txt
+
+commit 6c6c123465d8299b60cc527c1c2983c29368e8d6
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 22 05:42:51 2016 -0800
+
+    Fixed a minor const correctness issue in the JPC codec.
+
+M	src/libjasper/jpc/jpc_util.c
+M	src/libjasper/jpc/jpc_util.h
+
+commit d24be06ab27b5182094b5c6acce631e5346342f5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 21 06:57:52 2016 -0800
+
+    Bump the version number
+
+M	configure.ac
+
+commit 80ed6228a260eee49d51af8b6a6fb3721b70b180
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 21 06:50:09 2016 -0800
+
+    Added a command line option to imginfo to allow for arbitrary decoder
+    options to be specified.
+
+    Adjusted the debug level associated with some log messages.
+
+    Added an option to the JPEG decoder that makes it print the JPEG
+    library
+    version to standard output and return without decoding
+    (i.e., return with an error).
+    Also, added a debug log message that includes the JPEG library
+    version.
+
+    Fixed a possible use of uninitialized data in the JPEG decoder.
+
+    Modified the run_test_1 script to try to better accommodate different
+    versions of the JPEG library (which have different behaviors for some
+    of the decoding tests).
+
+M	src/appl/imginfo.c
+M	src/libjasper/base/jas_image.c
+M	src/libjasper/include/jasper/jas_debug.h
+M	src/libjasper/jpg/jpg_dec.c
+M	test/bin/run_test_1
+
+commit 06bccbd6b8755073e3b3c60e9c82db309b721afa
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 20 22:44:02 2016 -0800
+
+    Bump the version number.
+
+M	configure.ac
+
+commit e257ca252982c86632f9a3c079a7bd228f9ce2cd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 20 06:16:43 2016 -0800
+
+    Added some more samity checks in the BMP decoder.
+    Also, fixed a problem that could cause some valid BMP files to
+    be rejected.
+
+M	src/libjasper/bmp/bmp_dec.c
+
+commit 8ed97b434d25e9e7895627b0eea7c3efc5404fd2
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 20 05:48:16 2016 -0800
+
+    Attempt to fix Travis CI issue.
+
+M	.travis.yml
+
+commit 695cb182a25af946ca1102817b7a2b7af1d81a05
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 20 05:41:15 2016 -0800
+
+    Added another regression test case.
+
+A	data/test/bad/00052-jasper-misalignedaddress.jp2
+
+commit c76341412ea7924c554955f21d2e564f9133a1e5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 20 05:32:18 2016 -0800
+
+    Modified the run_test_1 script to remove the limit on max_samples,
+    except
+    for tests where this limit is truely needed (e.g., to prevent
+    excessive virtual memory consumption).
+
+    Modified the BMP decoder to refuse to read the header of a BMP data
+    stream if the palette size exceeds the number of pixels in the image.
+
+M	src/libjasper/bmp/bmp_dec.c
+M	test/bin/run_test_1
+
+commit 98f58d85d6b2d2f69e45777f91cf99fa4e1298be
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 20 04:46:02 2016 -0800
+
+    Add another regression test case.
+
+A	data/test/bad/00047-jasper-stackoverflow-jpc_tsfb_getbands2.jpc
+
+commit 1abc2e5a401a4bf1d5ca4df91358ce5df111f495
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 20 04:43:00 2016 -0800
+
+    Fixed an array overflow problem in the JPC decoder.
+
+M	src/libjasper/jpc/jpc_dec.c
+
+commit 71bbf4192bc94d5f5dcb5ad34fd675cabb6aecef
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Nov 18 10:42:39 2016 -0800
+
+    Remove the old dsp/dsw files for MSVC build support.
+    These files have been replaced by the newer sln/vcxproj files.
+
+M	src/msvc/Makefile.am
+D	src/msvc/imgcmp.dsp
+D	src/msvc/imginfo.dsp
+D	src/msvc/jasper.dsp
+D	src/msvc/jasper.dsw
+D	src/msvc/jiv.dsp
+D	src/msvc/libjasper.dsp
+
+commit 0a8e401b087bb0098f843433738250c3774ebe5b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 15 23:40:36 2016 -0800
+
+    More CI changes.
+
+M	.travis.yml
+
 commit d9d95a0504bb0cd2857029ef3c5968762294b614
 Author: Michael Adams <mdadams@ece.uvic.ca>
-Date:   Tue Nov 15 23:23:26 2016 -0800
+Date:	Tue Nov 15 23:23:26 2016 -0800
 
     Bump the version number
 

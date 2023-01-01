@@ -488,7 +488,7 @@ int jas_image_readcmpt(jas_image_t *image, int cmptno, jas_image_coord_t x,
 	jas_seqent_t *d;
 	int drs;
 
-	JAS_DBGLOG(10, ("jas_image_readcmpt(%p, %d, %ld, %ld, %ld, %ld, %p)\n",
+	JAS_DBGLOG(100, ("jas_image_readcmpt(%p, %d, %ld, %ld, %ld, %ld, %p)\n",
 	  image, cmptno, JAS_CAST(long, x), JAS_CAST(long, y),
 	  JAS_CAST(long, width), JAS_CAST(long, height), data));
 
@@ -550,7 +550,7 @@ int jas_image_writecmpt(jas_image_t *image, int cmptno, jas_image_coord_t x,
 	int k;
 	int c;
 
-	JAS_DBGLOG(10, ("jas_image_writecmpt(%p, %d, %ld, %ld, %ld, %ld, %p)\n",
+	JAS_DBGLOG(100, ("jas_image_writecmpt(%p, %d, %ld, %ld, %ld, %ld, %p)\n",
 	  image, cmptno, JAS_CAST(long, x), JAS_CAST(long, y),
 	  JAS_CAST(long, width), JAS_CAST(long, height), data));
 
@@ -1364,6 +1364,8 @@ static int putint(jas_stream_t *out, int sgnd, int prec, long val)
 {
 	int n;
 	int c;
+	bool s;
+	jas_ulong tmp;
 	assert((!sgnd && prec >= 1) || (sgnd && prec >= 2));
 	if (sgnd) {
 		val = encode_twos_comp(val, prec);

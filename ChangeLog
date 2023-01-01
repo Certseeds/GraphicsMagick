@@ -1,3 +1,7 @@
+2023-01-01 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* jp2/* Update lib jasper to 2.0.0.
+
 2022-12-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/pcx.c (WritePCXImage): Meke default RLE compression.

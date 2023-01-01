@@ -96,6 +96,7 @@
 #endif
 #endif
 
+
 /******************************************************************************\
 *
 \******************************************************************************/
@@ -438,11 +439,7 @@ cmdopts_t *cmdopts_parse(int argc, char **argv)
 			cmdopts->srgb = 1;
 			break;
 		case CMDOPT_MAXMEM:
-#if defined(_MSC_VER) && _MSC_VER < 1900
-			cmdopts->max_mem = strtoul(jas_optarg, 0, 10);
-#else
 			cmdopts->max_mem = strtoull(jas_optarg, 0, 10);
-#endif
 			break;
 		default:
 			badusage();

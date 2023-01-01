@@ -63,7 +63,7 @@
 * Includes.
 \******************************************************************************/
 
-#include <inttypes.h>
+//#include <inttypes.h>
 
 #include "pgx_cod.h"
 
