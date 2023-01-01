@@ -4,6 +4,7 @@ var files =
     [ "bmp_enc.h", "bmp__enc_8h_source.html", null ],
     [ "jas_cm.h", "jas__cm_8h_source.html", null ],
     [ "jas_debug.h", "jas__debug_8h_source.html", null ],
+    [ "jas_dll.h", "jas__dll_8h_source.html", null ],
     [ "jas_fix.h", "jas__fix_8h_source.html", null ],
     [ "jas_getopt.h", "jas__getopt_8h_source.html", null ],
     [ "jas_icc.h", "jas__icc_8h_source.html", null ],

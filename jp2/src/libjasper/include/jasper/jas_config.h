@@ -194,4 +194,11 @@
 #endif
 
 
+
+#ifdef _DLL
+ //#define JAS_DLL		// I do not understand how this could help.
+#endif
+#include "jas_dll.h"
+
+
 #endif

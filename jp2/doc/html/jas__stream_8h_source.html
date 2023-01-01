@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.9.1"/>
-<title>JasPer: jas_stream.h Source File</title>
+<title>jas_stream.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -30,11 +30,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td style="padding-left: 0.5em;">
-   <div id="projectname">JasPer
-   &#160;<span id="projectnumber">2.0.0</span>
-   </div>
-  </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.png"
@@ -384,26 +379,26 @@ $(document).ready(function(){initNavTree('jas__stream_8h_source.html','');});
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment">\******************************************************************************/</span></div>
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
 <div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment">/* Open a file as a stream. */</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;jas_stream_t *jas_stream_fopen(<span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keyword">const</span> <span class="keywordtype">char</span> *mode);</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;JAS_DLLEXPORT jas_stream_t *jas_stream_fopen(<span class="keyword">const</span> <span class="keywordtype">char</span> *filename, <span class="keyword">const</span> <span class="keywordtype">char</span> *mode);</div>
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="comment">/* Open a memory buffer as a stream. */</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;jas_stream_t *jas_stream_memopen(<span class="keywordtype">char</span> *buf, <span class="keywordtype">int</span> bufsize);</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;JAS_DLLEXPORT jas_stream_t *jas_stream_memopen(<span class="keywordtype">char</span> *buf, <span class="keywordtype">int</span> bufsize);</div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="comment">/* Do not use this function.</span></div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="comment">It will eventually replace jas_stream_memopen. */</span></div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;jas_stream_t *jas_stream_memopen2(<span class="keywordtype">char</span> *buf, <span class="keywordtype">size_t</span> bufsize);</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;JAS_DLLEXPORT jas_stream_t *jas_stream_memopen2(<span class="keywordtype">char</span> *buf, <span class="keywordtype">size_t</span> bufsize);</div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="comment">/* Open a file descriptor as a stream. */</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;jas_stream_t *jas_stream_fdopen(<span class="keywordtype">int</span> fd, <span class="keyword">const</span> <span class="keywordtype">char</span> *mode);</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;JAS_DLLEXPORT jas_stream_t *jas_stream_fdopen(<span class="keywordtype">int</span> fd, <span class="keyword">const</span> <span class="keywordtype">char</span> *mode);</div>
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="comment">/* Open a stdio stream as a stream. */</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;jas_stream_t *jas_stream_freopen(<span class="keyword">const</span> <span class="keywordtype">char</span> *path, <span class="keyword">const</span> <span class="keywordtype">char</span> *mode, FILE *fp);</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;JAS_DLLEXPORT jas_stream_t *jas_stream_freopen(<span class="keyword">const</span> <span class="keywordtype">char</span> *path, <span class="keyword">const</span> <span class="keywordtype">char</span> *mode, FILE *fp);</div>
 <div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;</div>
 <div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="comment">/* Open a temporary file as a stream. */</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;jas_stream_t *jas_stream_tmpfile(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;JAS_DLLEXPORT jas_stream_t *jas_stream_tmpfile(<span class="keywordtype">void</span>);</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;<span class="comment">/* Close a stream. */</span></div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="keywordtype">int</span> jas_stream_close(jas_stream_t *stream);</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_close(jas_stream_t *stream);</div>
 <div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;</div>
 <div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="comment">/******************************************************************************\</span></div>
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="comment">* Macros/functions for getting/setting the stream state.</span></div>
@@ -426,14 +421,14 @@ $(document).ready(function(){initNavTree('jas__stream_8h_source.html','');});
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="preprocessor">        (((const jas_stream_t *)(stream))-&gt;rwlimit_)</span></div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="comment">/* Set the read/write limit for a stream. */</span></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;<span class="keywordtype">int</span> jas_stream_setrwlimit(jas_stream_t *stream, <span class="keywordtype">long</span> rwlimit);</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_setrwlimit(jas_stream_t *stream, <span class="keywordtype">long</span> rwlimit);</div>
 <div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;</div>
 <div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<span class="comment">/* Get the read/write count for a stream. */</span></div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;<span class="preprocessor">#define jas_stream_getrwcount(stream) \</span></div>
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="preprocessor">        (((const jas_stream_t *)(stream))-&gt;rwcnt_)</span></div>
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;<span class="comment">/* Set the read/write count for a stream. */</span></div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="keywordtype">long</span> jas_stream_setrwcount(jas_stream_t *stream, <span class="keywordtype">long</span> rwcnt);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;JAS_DLLEXPORT <span class="keywordtype">long</span> jas_stream_setrwcount(jas_stream_t *stream, <span class="keywordtype">long</span> rwcnt);</div>
 <div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;</div>
 <div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;<span class="comment">/******************************************************************************\</span></div>
 <div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;<span class="comment">* Macros/functions for I/O.</span></div>
@@ -454,19 +449,19 @@ $(document).ready(function(){initNavTree('jas__stream_8h_source.html','');});
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
 <div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;<span class="comment">/* Read characters from a stream into a buffer. */</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;<span class="keywordtype">int</span> jas_stream_read(jas_stream_t *stream, <span class="keywordtype">void</span> *buf, <span class="keywordtype">int</span> cnt);</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_read(jas_stream_t *stream, <span class="keywordtype">void</span> *buf, <span class="keywordtype">int</span> cnt);</div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;<span class="comment">/* Write characters from a buffer to a stream. */</span></div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;<span class="keywordtype">int</span> jas_stream_write(jas_stream_t *stream, <span class="keyword">const</span> <span class="keywordtype">void</span> *buf, <span class="keywordtype">int</span> cnt);</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_write(jas_stream_t *stream, <span class="keyword">const</span> <span class="keywordtype">void</span> *buf, <span class="keywordtype">int</span> cnt);</div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="comment">/* Write formatted output to a stream. */</span></div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;<span class="keywordtype">int</span> jas_stream_printf(jas_stream_t *stream, <span class="keyword">const</span> <span class="keywordtype">char</span> *fmt, ...);</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_printf(jas_stream_t *stream, <span class="keyword">const</span> <span class="keywordtype">char</span> *fmt, ...);</div>
 <div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;</div>
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;<span class="comment">/* Write a string to a stream. */</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="keywordtype">int</span> jas_stream_puts(jas_stream_t *stream, <span class="keyword">const</span> <span class="keywordtype">char</span> *s);</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_puts(jas_stream_t *stream, <span class="keyword">const</span> <span class="keywordtype">char</span> *s);</div>
 <div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;</div>
 <div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;<span class="comment">/* Read a line of input from a stream. */</span></div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;<span class="keywordtype">char</span> *jas_stream_gets(jas_stream_t *stream, <span class="keywordtype">char</span> *buf, <span class="keywordtype">int</span> bufsize);</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;JAS_DLLEXPORT <span class="keywordtype">char</span> *jas_stream_gets(jas_stream_t *stream, <span class="keywordtype">char</span> *buf, <span class="keywordtype">int</span> bufsize);</div>
 <div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;<span class="comment">/* Look at the next character to be read from a stream without actually</span></div>
 <div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="comment">  removing it from the stream. */</span></div>
@@ -475,50 +470,50 @@ $(document).ready(function(){initNavTree('jas__stream_8h_source.html','');});
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;<span class="preprocessor">          ((int)(*(stream)-&gt;ptr_)))</span></div>
 <div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;</div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="comment">/* Put a character back on a stream. */</span></div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="keywordtype">int</span> jas_stream_ungetc(jas_stream_t *stream, <span class="keywordtype">int</span> c);</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_ungetc(jas_stream_t *stream, <span class="keywordtype">int</span> c);</div>
 <div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;</div>
 <div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="comment">/******************************************************************************\</span></div>
 <div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;<span class="comment">* Macros/functions for getting/setting the stream position.</span></div>
 <div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;<span class="comment">\******************************************************************************/</span></div>
 <div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;</div>
 <div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="comment">/* Is it possible to seek on this stream? */</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;<span class="keywordtype">int</span> jas_stream_isseekable(jas_stream_t *stream);</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_isseekable(jas_stream_t *stream);</div>
 <div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;</div>
 <div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;<span class="comment">/* Set the current position within the stream. */</span></div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;<span class="keywordtype">long</span> jas_stream_seek(jas_stream_t *stream, <span class="keywordtype">long</span> offset, <span class="keywordtype">int</span> origin);</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;JAS_DLLEXPORT <span class="keywordtype">long</span> jas_stream_seek(jas_stream_t *stream, <span class="keywordtype">long</span> offset, <span class="keywordtype">int</span> origin);</div>
 <div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;</div>
 <div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;<span class="comment">/* Get the current position within the stream. */</span></div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;<span class="keywordtype">long</span> jas_stream_tell(jas_stream_t *stream);</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;JAS_DLLEXPORT <span class="keywordtype">long</span> jas_stream_tell(jas_stream_t *stream);</div>
 <div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;</div>
 <div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;<span class="comment">/* Seek to the beginning of a stream. */</span></div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;<span class="keywordtype">int</span> jas_stream_rewind(jas_stream_t *stream);</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_rewind(jas_stream_t *stream);</div>
 <div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;</div>
 <div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;<span class="comment">/******************************************************************************\</span></div>
 <div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;<span class="comment">* Macros/functions for flushing.</span></div>
 <div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;<span class="comment">\******************************************************************************/</span></div>
 <div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;</div>
 <div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;<span class="comment">/* Flush any pending output to a stream. */</span></div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;<span class="keywordtype">int</span> jas_stream_flush(jas_stream_t *stream);</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_flush(jas_stream_t *stream);</div>
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;</div>
 <div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;<span class="comment">/******************************************************************************\</span></div>
 <div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="comment">* Miscellaneous macros/functions.</span></div>
 <div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;<span class="comment">\******************************************************************************/</span></div>
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;</div>
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;<span class="comment">/* Copy data from one stream to another. */</span></div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;<span class="keywordtype">int</span> jas_stream_copy(jas_stream_t *dst, jas_stream_t *src, <span class="keywordtype">int</span> n);</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_copy(jas_stream_t *dst, jas_stream_t *src, <span class="keywordtype">int</span> n);</div>
 <div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;<span class="comment">/* Display stream contents (for debugging purposes). */</span></div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;<span class="keywordtype">int</span> jas_stream_display(jas_stream_t *stream, FILE *fp, <span class="keywordtype">int</span> n);</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_display(jas_stream_t *stream, FILE *fp, <span class="keywordtype">int</span> n);</div>
 <div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
 <div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;<span class="comment">/* Consume (i.e., discard) characters from stream. */</span></div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;<span class="keywordtype">int</span> jas_stream_gobble(jas_stream_t *stream, <span class="keywordtype">int</span> n);</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_gobble(jas_stream_t *stream, <span class="keywordtype">int</span> n);</div>
 <div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;</div>
 <div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;<span class="comment">/* Write a character multiple times to a stream. */</span></div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;<span class="keywordtype">int</span> jas_stream_pad(jas_stream_t *stream, <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> c);</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_pad(jas_stream_t *stream, <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> c);</div>
 <div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
 <div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;<span class="comment">/* Get the size of the file associated with the specified stream.</span></div>
 <div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;<span class="comment">  The specified stream must be seekable. */</span></div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;<span class="keywordtype">long</span> jas_stream_length(jas_stream_t *stream);</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;JAS_DLLEXPORT <span class="keywordtype">long</span> jas_stream_length(jas_stream_t *stream);</div>
 <div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
 <div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;<span class="comment">/******************************************************************************\</span></div>
 <div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;<span class="comment">* Internal functions.</span></div>
@@ -552,10 +547,10 @@ $(document).ready(function(){initNavTree('jas__stream_8h_source.html','');});
 <div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;</div>
 <div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;<span class="comment">/* These prototypes need to be here for the sake of the stream_getc and</span></div>
 <div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;<span class="comment">stream_putc macros. */</span></div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;<span class="keywordtype">int</span> jas_stream_fillbuf(jas_stream_t *stream, <span class="keywordtype">int</span> getflag);</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;<span class="keywordtype">int</span> jas_stream_flushbuf(jas_stream_t *stream, <span class="keywordtype">int</span> c);</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;<span class="keywordtype">int</span> jas_stream_getc_func(jas_stream_t *stream);</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;<span class="keywordtype">int</span> jas_stream_putc_func(jas_stream_t *stream, <span class="keywordtype">int</span> c);</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_fillbuf(jas_stream_t *stream, <span class="keywordtype">int</span> getflag);</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_flushbuf(jas_stream_t *stream, <span class="keywordtype">int</span> c);</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_getc_func(jas_stream_t *stream);</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_stream_putc_func(jas_stream_t *stream, <span class="keywordtype">int</span> c);</div>
 <div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;</div>
 <div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
 <div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;}</div>
@@ -567,7 +562,7 @@ $(document).ready(function(){initNavTree('jas__stream_8h_source.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_a8d89ff3798d339732e1396510c4b3c0.html">jasper-2.0.0</a></li><li class="navelem"><a class="el" href="dir_29762712327dae1c325573027ed44f50.html">src</a></li><li class="navelem"><a class="el" href="dir_355cf9e37591c428e55f8d720ff2e3f9.html">libjasper</a></li><li class="navelem"><a class="el" href="dir_eae9862bfeebbfa87c946295a16425e9.html">include</a></li><li class="navelem"><a class="el" href="dir_4e3ad3b29458a04166c2dfc7f820c9fd.html">jasper</a></li><li class="navelem"><b>jas_stream.h</b></li>
+    <li class="navelem"><a class="el" href="dir_0ae4d01e0214b3b16f510bdb0a43da97.html">jasper-2.0.6</a></li><li class="navelem"><a class="el" href="dir_cb52bb4f2fb56fbea96d6b81b24d0ad7.html">src</a></li><li class="navelem"><a class="el" href="dir_423062511bee2d6ca434c4712632ac70.html">libjasper</a></li><li class="navelem"><a class="el" href="dir_d5cd1de484bb3f95af01723a0e2791b6.html">include</a></li><li class="navelem"><a class="el" href="dir_43dadee5b59cae5a554d5cdab2dced57.html">jasper</a></li><li class="navelem"><b>jas_stream.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>

@@ -5,8 +5,9 @@ configure_file(
 
 set(libjasper_headers
 	include/jasper/jas_cm.h
-	${CMAKE_CURRENT_BINARY_DIR}/include/jasper/jas_config.h
+	"${CMAKE_CURRENT_BINARY_DIR}/include/jasper/jas_config.h"
 	include/jasper/jas_debug.h
+	include/jasper/jas_dll.h
 	include/jasper/jas_fix.h
 	include/jasper/jas_getopt.h
 	include/jasper/jas_icc.h
@@ -78,7 +79,7 @@ set(libjasper_jpc_sources
 set(libjasper_jpg_sources
 	jpg/jpg_val.c
 )
-if(JPEG_FOUND)
+if(JAS_HAVE_LIBJPEG)
 	list(APPEND libjasper_jpg_sources
 		jpg/jpg_dec.c
 		jpg/jpg_enc.c
@@ -141,15 +142,19 @@ endif()
 set_target_properties(libjasper PROPERTIES LINKER_LANGUAGE C)
 
 if (UNIX)
-set_target_properties(libjasper PROPERTIES
-	VERSION ${JAS_SO_NAME}
-	SOVERSION ${JAS_SO_VERSION}
-)
+	set_target_properties(libjasper PROPERTIES
+	  VERSION ${JAS_SO_NAME} SOVERSION ${JAS_SO_VERSION})
+endif()
+
+if (JAS_ENABLE_SHARED)
+	set_target_properties(libjasper PROPERTIES
+	  DEFINE_SYMBOL "JAS_BUILDING_DLL")
 endif()
 
 # I am not sure why the following line is needed for building a library, but
 # MacOSX does cannot build a shared library without this line.
-target_link_libraries(libjasper ${JPEG_LIBRARIES})
+# Also, try adding MATH_LIBRARY to fix a Gentoo problem.
+target_link_libraries(libjasper ${JPEG_LIBRARIES} ${MATH_LIBRARY})
 
-install(TARGETS libjasper DESTINATION lib)
-install(FILES ${libjasper_headers} DESTINATION include/jasper)
+install(TARGETS libjasper DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+install(FILES ${libjasper_headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/jasper")

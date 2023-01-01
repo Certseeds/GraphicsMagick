@@ -1,7 +1,7 @@
 var indexSectionsWithContent =
 {
-  0: "fgijko",
-  1: "fgijko"
+  0: "fgikor",
+  1: "fgikor"
 };
 
 var indexSectionNames =

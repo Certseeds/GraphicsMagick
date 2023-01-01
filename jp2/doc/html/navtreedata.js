@@ -1,11 +1,9 @@
 var NAVTREE =
 [
-  [ "JasPer", "index.html", [
-    [ "JasPer Reference Manual (Version 2.0.0)", "index.html", [
-      [ "Introduction", "index.html#intro", null ],
-      [ "License", "index.html#license", null ],
-      [ "Reporting Bugs", "index.html#bugs", null ]
-    ] ],
+  [ "Reference Manual (Version 2.0.6)", "index.html", [
+    [ "Introduction", "index.html#intro", null ],
+    [ "License", "index.html#license", null ],
+    [ "Reporting Bugs", "index.html#bugs", null ],
     [ "Getting Started", "getting_started.html", "getting_started" ],
     [ "Frequently Asked Questions (FAQ)", "faq.html", null ],
     [ "Known Bugs", "known_bugs.html", null ],

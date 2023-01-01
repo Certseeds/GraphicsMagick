@@ -110,20 +110,20 @@ typedef struct {
 \******************************************************************************/
 
 /* The current option index. */
-extern int jas_optind;
+JAS_DLLEXPORT extern int jas_optind;
 
 /* The current option argument. */
-extern char *jas_optarg;
+JAS_DLLEXPORT extern char *jas_optarg;
 
 /* The debug level. */
-extern int jas_opterr;
+JAS_DLLEXPORT extern int jas_opterr;
 
 /******************************************************************************\
 * Prototypes.
 \******************************************************************************/
 
 /* Get the next option. */
-int jas_getopt(int argc, char **argv, jas_opt_t *opts);
+JAS_DLLEXPORT int jas_getopt(int argc, char **argv, jas_opt_t *opts);
 
 #ifdef __cplusplus
 }

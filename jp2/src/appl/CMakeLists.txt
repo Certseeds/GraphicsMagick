@@ -20,9 +20,12 @@ set(programs "${programs}" imgcmp)
 set(man_pages "${man_pages}" imgcmp.1)
 
 # The jiv program (which requires GLUT)
-if(GLUT_FOUND)
+if(JAS_HAVE_OPENGL)
 	add_executable(jiv jiv.c)
-	target_link_libraries(jiv libjasper ${JPEG_LIBRARIES} ${GLUT_LIBRARIES} ${MATH_LIBRARY})
+	target_include_directories(jiv PUBLIC
+	  ${GLUT_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR})
+	target_link_libraries(jiv libjasper ${JPEG_LIBRARIES} ${GLUT_LIBRARIES}
+	  ${OPENGL_LIBRARIES} ${MATH_LIBRARY})
 	set(programs "${programs}" jiv)
 	set(man_pages "${man_pages}" jiv.1)
 else()
@@ -30,7 +33,7 @@ else()
 endif()
 
 # Install of the the programs that were built.
-install(TARGETS ${programs} DESTINATION bin)
+install(TARGETS ${programs} DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 # Install the manual pages for the programs that were built.
-install(FILES ${man_pages} DESTINATION man)
+install(FILES ${man_pages} DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")

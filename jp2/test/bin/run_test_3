@@ -57,7 +57,14 @@ for codec_selector in "${codec_selectors[@]}"; do
 	echo "############################################################"
 	echo "START OF TESTS FOR ENCODER=$enc DECODER=$dec"
 	echo "############################################################"
-	"$run_test" -v -B -E ignore -e "$enc" -d "$dec" "$@"
+	opts=()
+	opts+=(-v)
+	opts+=(-e "$enc")
+	opts+=(-d "$dec")
+	opts+=(-E ignore)
+	#opts+=(-B)
+	opts+=("$@")
+	"$run_test" "${opts[@]}"
 	status=$?
 	if [ $status -ne 0 ]; then
 		num_errors=$((num_errors + 1))

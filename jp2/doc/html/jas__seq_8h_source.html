@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.9.1"/>
-<title>JasPer: jas_seq.h Source File</title>
+<title>jas_seq.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -30,11 +30,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td style="padding-left: 0.5em;">
-   <div id="projectname">JasPer
-   &#160;<span id="projectnumber">2.0.0</span>
-   </div>
-  </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="search/mag_sel.png"
@@ -287,18 +282,18 @@ $(document).ready(function(){initNavTree('jas__seq_8h_source.html','');});
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="preprocessor">        (max((matrix)-&gt;numrows_, (matrix)-&gt;numcols_))</span></div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="comment">/* Create a matrix with the specified dimensions. */</span></div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;jas_matrix_t *jas_matrix_create(jas_matind_t numrows, jas_matind_t numcols);</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;JAS_DLLEXPORT jas_matrix_t *jas_matrix_create(jas_matind_t numrows, jas_matind_t numcols);</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="comment">/* Destroy a matrix. */</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="keywordtype">void</span> jas_matrix_destroy(jas_matrix_t *matrix);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;JAS_DLLEXPORT <span class="keywordtype">void</span> jas_matrix_destroy(jas_matrix_t *matrix);</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="comment">/* Resize a matrix.  The previous contents of the matrix are lost. */</span></div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<span class="keywordtype">int</span> jas_matrix_resize(jas_matrix_t *matrix, jas_matind_t numrows, jas_matind_t numcols);</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_matrix_resize(jas_matrix_t *matrix, jas_matind_t numrows, jas_matind_t numcols);</div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="keywordtype">int</span> jas_matrix_output(jas_matrix_t *matrix, FILE *out);</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_matrix_output(jas_matrix_t *matrix, FILE *out);</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;<span class="comment">/* Create a matrix that references part of another matrix. */</span></div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;<span class="keywordtype">void</span> jas_matrix_bindsub(jas_matrix_t *mat0, jas_matrix_t *mat1, jas_matind_t r0,</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;JAS_DLLEXPORT <span class="keywordtype">void</span> jas_matrix_bindsub(jas_matrix_t *mat0, jas_matrix_t *mat1, jas_matind_t r0,</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  jas_matind_t c0, jas_matind_t r1, jas_matind_t c1);</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;<span class="comment">/* Create a matrix that is a reference to a row of another matrix. */</span></div>
@@ -310,20 +305,20 @@ $(document).ready(function(){initNavTree('jas__seq_8h_source.html','');});
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="preprocessor">  (jas_matrix_bindsub((mat0), (mat1), 0, (c), (mat1)-&gt;numrows_ - 1, (c)))</span></div>
 <div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;</div>
 <div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="comment">/* Clip the values of matrix elements to the specified range. */</span></div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;<span class="keywordtype">void</span> jas_matrix_clip(jas_matrix_t *matrix, jas_seqent_t minval,</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;JAS_DLLEXPORT <span class="keywordtype">void</span> jas_matrix_clip(jas_matrix_t *matrix, jas_seqent_t minval,</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  jas_seqent_t maxval);</div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;</div>
 <div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment">/* Arithmetic shift left of all elements in a matrix. */</span></div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="keywordtype">void</span> jas_matrix_asl(jas_matrix_t *matrix, <span class="keywordtype">int</span> n);</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;JAS_DLLEXPORT <span class="keywordtype">void</span> jas_matrix_asl(jas_matrix_t *matrix, <span class="keywordtype">int</span> n);</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="comment">/* Arithmetic shift right of all elements in a matrix. */</span></div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="keywordtype">void</span> jas_matrix_asr(jas_matrix_t *matrix, <span class="keywordtype">int</span> n);</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;JAS_DLLEXPORT <span class="keywordtype">void</span> jas_matrix_asr(jas_matrix_t *matrix, <span class="keywordtype">int</span> n);</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment">/* Almost-but-not-quite arithmetic shift right of all elements in a matrix. */</span></div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="keywordtype">void</span> jas_matrix_divpow2(jas_matrix_t *matrix, <span class="keywordtype">int</span> n);</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;JAS_DLLEXPORT <span class="keywordtype">void</span> jas_matrix_divpow2(jas_matrix_t *matrix, <span class="keywordtype">int</span> n);</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment">/* Set all elements of a matrix to the specified value. */</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="keywordtype">void</span> jas_matrix_setall(jas_matrix_t *matrix, jas_seqent_t val);</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;JAS_DLLEXPORT <span class="keywordtype">void</span> jas_matrix_setall(jas_matrix_t *matrix, jas_seqent_t val);</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment">/* The spacing between rows of a matrix. */</span></div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="preprocessor">#define jas_matrix_rowstep(matrix) \</span></div>
@@ -334,11 +329,11 @@ $(document).ready(function(){initNavTree('jas__seq_8h_source.html','');});
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="preprocessor">        (((matrix)-&gt;numrows_ &gt; 1) ? (jas_matrix_rowstep(matrix)) : (1))</span></div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="comment">/* Compare two matrices for equality. */</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="keywordtype">int</span> jas_matrix_cmp(jas_matrix_t *mat0, jas_matrix_t *mat1);</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;JAS_DLLEXPORT <span class="keywordtype">int</span> jas_matrix_cmp(jas_matrix_t *mat0, jas_matrix_t *mat1);</div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;jas_matrix_t *jas_matrix_copy(jas_matrix_t *x);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;JAS_DLLEXPORT jas_matrix_t *jas_matrix_copy(jas_matrix_t *x);</div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;jas_matrix_t *jas_matrix_input(FILE *);</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;JAS_DLLEXPORT jas_matrix_t *jas_matrix_input(FILE *);</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="preprocessor">#define jas_seqent_asl jas_fast32_asl</span></div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="preprocessor">#define jas_seqent_asr jas_fast32_asr</span></div>
@@ -347,9 +342,9 @@ $(document).ready(function(){initNavTree('jas__seq_8h_source.html','');});
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment">* Functions/macros for 2-D sequence class.</span></div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="comment">\******************************************************************************/</span></div>
 <div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;jas_seq2d_t *jas_seq2d_copy(jas_seq2d_t *x);</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;JAS_DLLEXPORT jas_seq2d_t *jas_seq2d_copy(jas_seq2d_t *x);</div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;jas_matrix_t *jas_seq2d_create(jas_matind_t xstart, jas_matind_t ystart,</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;JAS_DLLEXPORT jas_matrix_t *jas_seq2d_create(jas_matind_t xstart, jas_matind_t ystart,</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  jas_matind_t xend, jas_matind_t yend);</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="preprocessor">#define jas_seq2d_destroy(s) \</span></div>
@@ -380,7 +375,7 @@ $(document).ready(function(){initNavTree('jas__seq_8h_source.html','');});
 <div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="preprocessor">#define jas_seq2d_size(s) \</span></div>
 <div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="preprocessor">        (jas_seq2d_width(s) * jas_seq2d_height(s))</span></div>
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="keywordtype">void</span> jas_seq2d_bindsub(jas_matrix_t *s, jas_matrix_t *s1, jas_matind_t xstart,</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;JAS_DLLEXPORT <span class="keywordtype">void</span> jas_seq2d_bindsub(jas_matrix_t *s, jas_matrix_t *s1, jas_matind_t xstart,</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  jas_matind_t ystart, jas_matind_t xend, jas_matind_t yend);</div>
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
 <div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment">/******************************************************************************\</span></div>
@@ -414,7 +409,7 @@ $(document).ready(function(){initNavTree('jas__seq_8h_source.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_a8d89ff3798d339732e1396510c4b3c0.html">jasper-2.0.0</a></li><li class="navelem"><a class="el" href="dir_29762712327dae1c325573027ed44f50.html">src</a></li><li class="navelem"><a class="el" href="dir_355cf9e37591c428e55f8d720ff2e3f9.html">libjasper</a></li><li class="navelem"><a class="el" href="dir_eae9862bfeebbfa87c946295a16425e9.html">include</a></li><li class="navelem"><a class="el" href="dir_4e3ad3b29458a04166c2dfc7f820c9fd.html">jasper</a></li><li class="navelem"><b>jas_seq.h</b></li>
+    <li class="navelem"><a class="el" href="dir_0ae4d01e0214b3b16f510bdb0a43da97.html">jasper-2.0.6</a></li><li class="navelem"><a class="el" href="dir_cb52bb4f2fb56fbea96d6b81b24d0ad7.html">src</a></li><li class="navelem"><a class="el" href="dir_423062511bee2d6ca434c4712632ac70.html">libjasper</a></li><li class="navelem"><a class="el" href="dir_d5cd1de484bb3f95af01723a0e2791b6.html">include</a></li><li class="navelem"><a class="el" href="dir_43dadee5b59cae5a554d5cdab2dced57.html">jasper</a></li><li class="navelem"><b>jas_seq.h</b></li>
     <li class="footer">Generated by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.9.1 </li>

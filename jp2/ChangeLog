@@ -1,6 +1,757 @@
+commit be67b65abd0b4727b8b98cc12b59218561aefbba
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:   Fri Dec 9 06:03:04 2016 -0800
+
+    Bumped the version number
+
+M	CMakeLists.txt
+
+commit db17951211b0a56359c37a53348ec81cd958cecf
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Dec 9 05:58:50 2016 -0800
+
+    Made some further changes to a private build script.
+
+M	build/my_build
+
+commit 0e38d23e342ef2181fa4d7d56d9cc576cc3fbcdc
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Dec 9 05:57:36 2016 -0800
+
+    Added two new regression test cases.
+
+A	data/test/bad/heap-out-of-bound-read-due-to-off-by-1-poc.jp2
+A	data/test/bad/null-pointer-dereference-poc.jp2
+
+commit 99a50593254d1b53002719bbecfc946c84b23d27
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Dec 9 05:42:39 2016 -0800
+
+    Apply a patch for the following bug report:
+	https://github.com/mdadams/jasper/issues/103
+	Heap-Buffer-Overflow or Null-pointer-dereference vulnerability due
+	to a programming mistake (off-by-1)
+
+M	src/libjasper/jpc/jpc_t2cod.c
+
+commit 95a3cae1a3906b69ea3ee4205a0fa6b914a26f66
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 8 09:02:04 2016 -0800
+
+    Removed the spec file, since it is apparently not needed.
+
+M	CMakeLists.txt
+D	build/jasper.spec.in
+
+commit 31e11d695b50deee3043ca7132be19cb685590e5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 8 08:42:00 2016 -0800
+
+    Made some changes to a private build script.
+
+M	build/my_build
+
+commit 8820f0020884ec56f1f751837b6d46be1968b056
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 8 08:41:16 2016 -0800
+
+    Fix the pkgconfig file to use the correct library and include
+    directories.
+
+M	build/jasper.pc.in
+
+commit 980197e5f27f832d7bf1d76584af8fe14868308f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Dec 7 17:13:40 2016 -0800
+
+    Changed the build process to use LaTeX (if available) to generate
+    the PDF
+    version of the manual.
+
+M	CMakeLists.txt
+M	doc/CMakeLists.txt
+
+commit ec6c834748a639953a14a9ac79a1529edea1704f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Dec 7 07:47:18 2016 -0800
+
+    Bump the version number.
+
+M	CMakeLists.txt
+
+commit 637f1dee7b9c8a62727f8f976007c2b4a2f08d45
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Dec 7 07:30:18 2016 -0800
+
+    Prevent installation of HTML manual when Doxygen not available.
+
+M	doc/CMakeLists.txt
+
+commit fa4e675c0054c582270818fbde4454ba8f239e27
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Dec 7 07:23:31 2016 -0800
+
+    Fixed a typo in one of the CMakeLists.txt files.
+
+M	doc/CMakeLists.txt
+
+commit 9bb8df72893445a0393a6d055e88f28c7ce311af
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Dec 7 07:12:53 2016 -0800
+
+    Manually merged some changes from David Seifert for various
+    CMakeLists.txt
+    files.  These changes were taken from:
+
+	https://github.com/mdadams/jasper/pull/101
+
+    Made some additional changes to various CMakeLists.txt files mainly to
+    allow the disabling of automagic dependencies.
+
+M	CMakeLists.txt
+M	doc/CMakeLists.txt
+M	src/appl/CMakeLists.txt
+M	src/libjasper/CMakeLists.txt
+
+commit 8056f66ef44189027f9ec76030c042ef2332f850
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Dec 4 09:38:47 2016 -0800
+
+    Bump the version number.
+
+M	CMakeLists.txt
+
+commit a85a1ce8426757e9f356469ce96ca6fd66d77417
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Dec 4 07:48:17 2016 -0800
+
+    Try a slightly different strategy for finding the math library if
+    it is
+    available.
+
+M	CMakeLists.txt
+
+commit 2bb792c4103752d6c2d7b1cd8aaf03c1f608e056
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Dec 4 07:41:55 2016 -0800
+
+    Use find_library to find the math library instead of using a set
+    command.
+
+M	CMakeLists.txt
+
+commit 9f3dc0797b4001af36aed401f33be9d5fb62a967
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Dec 2 15:12:28 2016 -0800
+
+    Made a few cosmetic changes to some CMakeLists.txt files.
+
+M	CMakeLists.txt
+M	src/libjasper/CMakeLists.txt
+
+commit 959da533d51797b624d7923c306e4b9e79f820c6
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Dec 2 12:56:16 2016 -0800
+
+    Bump the version number,
+
+M	CMakeLists.txt
+
+commit 1ec754661f7b7b3449b6413d9663753d41083216
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Dec 2 08:30:09 2016 -0800
+
+    More Travis CI changes.
+
+M	build/travis/build
+
+commit ab26f6fae85ee0f4b52dcd75d7430cf47187a27c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Dec 2 03:04:20 2016 -0800
+
+    Another attempt at having GLUT work more reliably with OSX.
+
+M	CMakeLists.txt
+M	src/appl/jiv.c
+M	src/libjasper/include/jasper/jas_config.h.in
+
+commit 3e987f36d67fce8a65567d19345bf4e662d39f13
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Fri Dec 2 02:48:41 2016 -0800
+
+    More CMake build changes.
+
+M	CMakeLists.txt
+M	build/cmake/modules/Sanitizers.cmake
+M	build/my_build
+M	build/travis/CMakeLists.txt
+M	doc/CMakeLists.txt
+M	src/appl/CMakeLists.txt
+M	src/libjasper/CMakeLists.txt
+
+commit 4c06c6d67c1b7ccb09e575870b75ab2d95a7072f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 1 23:03:38 2016 -0800
+
+    More changes to the CMake build.
+
+M	CMakeLists.txt
+M	build/travis/CMakeLists.txt
+M	build/travis/prebuild
+
+commit 1f31f7768be468814d07dfe87d475f3e88ec6696
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 1 17:34:48 2016 -0800
+
+    More Travis CI changes.
+
+M	build/travis/prebuild
+
+commit 14cc3aa91bd86ba5d349cb5032191f92f4e7045a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 1 08:37:38 2016 -0800
+
+    Back out the changes for OSX that break the Travis CI testing.
+
+M	CMakeLists.txt
+
+commit a2966a9e092937876543f57a38d0debc2f20fc99
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 1 08:34:45 2016 -0800
+
+    Fixed some problems in the test scripts.
+    Some tests were being run that should not have been.
+    Also, test failures were not always being reported correctly.
+
+M	test/bin/codec_tests
+M	test/bin/run_codec_test
+M	test/bin/run_test_3
+
+commit 270217d2f4890d548531accf5da7ba8c15a91f23
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 1 07:07:16 2016 -0800
+
+    The wrapper test script is now generated by cmake.
+    Also, disabled the broken glut.h handling for OSX in jiv.c.
+
+M	CMakeLists.txt
+M	build/my_build
+M	src/appl/jiv.c
+M	test/bin/run_codec_test
+M	test/bin/run_test_3
+R072	test/bin/wrapper	test/bin/wrapper.in
+
+commit 4e911af31d74b08a3d3855837282c4e870efe297
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 1 06:03:34 2016 -0800
+
+    Changed the test for OSX in jiv.c, which was incorrect.
+
+M	src/appl/jiv.c
+
+commit cf90616e29998f5345b78f770f05c03b25877d8f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Thu Dec 1 05:35:06 2016 -0800
+
+    Removed the explicit check for the header file GL/glut.h during
+    the build process.	Apparently, this will not work correctly
+    under OSX, since (under OSX) the header file glut.h may be in
+    the top-level include directory rather than the GL subdirectory.
+    Also, changed the source code to handle the inclusion of glut.h
+    differently in the OSX case.
+
+M	CMakeLists.txt
+M	build/my_build
+M	src/appl/jiv.c
+
+commit 75eca9a2449ecedebb5b17ae7321d467434be633
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 19:04:07 2016 -0800
+
+    Bump the version number.
+
+M	CMakeLists.txt
+
+commit f40d301c8947546c147d5349a9800ad828ecff58
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 18:52:04 2016 -0800
+
+    More CMake build changes.
+
+M	CMakeLists.txt
+
+commit c1667420cac1df09b857d38bc047879ce6d607b7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 18:47:22 2016 -0800
+
+    More CMake build changes.
+
+M	CMakeLists.txt
+
+commit 000b3a7a38074336a7598a41a4dd58824f5fb0c7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 18:40:42 2016 -0800
+
+    More Travis CI changes.
+
+M	build/travis/prebuild
+
+commit d05e7096363eebf115ceb4c92f9826667c2b19c5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 18:29:29 2016 -0800
+
+    Added an attempted workaround for what appears to be a CMake bug
+    (related to
+    detecting GLUT).
+
+M	CMakeLists.txt
+
+commit f82d1f17e0fd3b0038d88bfacf9888ce23c25d93
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 18:04:17 2016 -0800
+
+    Let's try this one more time...
+
+M	build/travis/CMakeLists.txt
+
+commit f5d42c5cf3ed29003de945da41e1c8483b76b0db
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 17:58:04 2016 -0800
+
+    I will get this right yet. ;)
+
+M	CMakeLists.txt
+M	build/travis/CMakeLists.txt
+
+commit 354076bc97bfc1eea8794a481842c37284a816e4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 17:53:15 2016 -0800
+
+    Include a missing CMake module.
+
+M	build/travis/CMakeLists.txt
+
+commit 6d57d5b98cf1b7f58021ad737f9efff3fa1cc3ac
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 17:47:58 2016 -0800
+
+    Fix the problem with the jpeglib.h include file not being detected
+    in some cases.
+
+M	CMakeLists.txt
+M	build/my_build
+M	build/travis/CMakeLists.txt
+
+commit 02395963abab0dfc2d76fe6bf27b1ac1f8fc7dfc
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 17:06:08 2016 -0800
+
+    More CMake build changes.
+
+M	build/travis/CMakeLists.txt
+
+commit 0e4df4ae1b9d4f53924e2ff955711655b05221df
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 17:02:57 2016 -0800
+
+    More CMake build changes.
+
+M	CMakeLists.txt
+M	build/travis/CMakeLists.txt
+
+commit 41a80de01898f9a0273f16be59a2421bd6b29bf9
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 16:58:42 2016 -0800
+
+    More CMake build changes.
+
+M	CMakeLists.txt
+M	build/travis/CMakeLists.txt
+
+commit 7a181a7f42c03d8b34146b9e8bb1a6c4ed070cce
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 16:41:12 2016 -0800
+
+    More CMake build changes
+
+M	build/travis/CMakeLists.txt
+
+commit c1d1200d60bb7119d3f3fc7e1da15eaccebcb7b4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 16:36:24 2016 -0800
+
+    More CMake build changes.
+
+M	build/travis/CMakeLists.txt
+
+commit dc0414349fdb47a92e0e47337b265265f7194e28
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 16:31:20 2016 -0800
+
+    More changes for Cmake builds.
+
+M	CMakeLists.txt
+M	build/travis/CMakeLists.txt
+
+commit a0a3d1401bc4e7b434ba097319a710f85941aa4d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 16:15:56 2016 -0800
+
+    More Travis CI changes
+
+M	.travis.yml
+M	build/travis/prebuild
+
+commit 0f8f8a02fc34ad3197f0238ed7f2a93f1d16589d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 16:08:50 2016 -0800
+
+    Some build changes for GLUT
+
+M	CMakeLists.txt
+
+commit 71c8ae88d4b1208436d879779508da849c4d13ab
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 15:51:20 2016 -0800
+
+    Some Travis CI changes
+
+M	.travis.yml
+
+commit 9b6c633fca99c874f725ae1e3b3ff30f145d4d24
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 15:46:56 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/build
+
+commit ea0cbf178c831b1f934bdf6b5314faee18f7598d
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 15:40:34 2016 -0800
+
+    More Travis CI changes.
+
+M	.travis.yml
+A	build/travis/prebuild
+
+commit 88ce9eed2f51fcd2972995d5e055febf85dde58b
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 14:14:14 2016 -0800
+
+    Add a CMAKE_INSTALL_LIBDIR variable to accommodate different names for
+    the library directory (e.g., lib or lib64).
+    Change the installation directory for man pages to share/man/man1
+    (from man).
+
+M	CMakeLists.txt
+M	src/appl/CMakeLists.txt
+M	src/libjasper/CMakeLists.txt
+
+commit ef5c7bc0f4ad9a88a55d559dd4c72bb7b797fb7c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 12:14:02 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/build
+
+commit c5e6973caffdadd3fc17a444edfd085563be9dd0
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 12:06:00 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/CMakeLists.txt
+
+commit 0ae30c956776e23d28862fb2724aedba92857410
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 12:04:20 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/CMakeLists.txt
+
+commit 187ee549540b9cb55b7f22dbaac9dd33ed7613eb
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 11:59:01 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/CMakeLists.txt
+
+commit ac385dbce2083ff847cdfa927120a6cfe4c4a947
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 11:57:03 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/CMakeLists.txt
+
+commit 05530df3926eb8fcbce0c961414265d44c76adbf
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 11:54:04 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/CMakeLists.txt
+
+commit 5e7e22ab0ada58389efcb2b1b5a54f0384e02653
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 11:49:59 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/CMakeLists.txt
+
+commit f10eac7a54055b9b7471145cffb85824d94016c5
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 11:48:23 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/build
+
+commit 039ddf76657bdd62d44f46653ebdd44f7f1dcbc4
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 11:44:49 2016 -0800
+
+    Some Travis CI changes
+
+M	build/travis/build
+
+commit 4fc85f01333aef1d94a96f75beba67d0b6226f8f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 11:42:19 2016 -0800
+
+    Some Travis CI changes.
+
+A	build/travis/CMakeLists.txt
+M	build/travis/build
+
+commit 8bdcbe042cc722f19a71a12010e1efadacc690a8
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 09:50:06 2016 -0800
+
+    Added jas_dll.h to the list of header files in
+    src/libjasper/CMakeLists.txt.
+
+M	src/libjasper/CMakeLists.txt
+
+commit 2e27248f9dab59b8be2dd20f5cc2e402b0e5c1a6
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Wed Nov 30 06:14:55 2016 -0800
+
+    A find of the package OpenGL has been added to the top-level
+    CMakeLists.txt
+    file and the other CMakeLists.txt files have been updated accordingly.
+
+M	CMakeLists.txt
+M	build/my_build
+M	src/appl/CMakeLists.txt
+
+commit 3754abcbe79fafc56f8fe7e349c2e3baf69ef540
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 11:54:53 2016 -0800
+
+    Add the math library for linking to see if this fixes a problem
+    on Gentoo Linux.
+
+M	src/libjasper/CMakeLists.txt
+
+commit f7dc046b0e0c30fec684234164ee962e8918417a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 09:25:15 2016 -0800
+
+    Bump the version number
+
+M	CMakeLists.txt
+
+commit 86d93442fbbaeaab1962d311f2c35f88483602c7
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 09:19:28 2016 -0800
+
+    Change build script to build both static and shared libraries under
+    Windows.
+
+M	build/appveyor/build.bat
+
+commit 4904e5e82ff9e2f4920f5cbb70c55c55ab180cda
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 09:08:35 2016 -0800
+
+    Export more functions to DLL.
+
+M	src/libjasper/include/jasper/jas_image.h
+
+commit fbbc1de5aab0b96976f2df6a26e2d480047a49f6
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 09:05:29 2016 -0800
+
+    Export more functions to DLL.
+
+M	src/libjasper/include/jasper/jas_cm.h
+M	src/libjasper/include/jasper/jas_debug.h
+
+commit 7451ec879bc55b51e06faeb72f066fc7e52c681f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 08:59:31 2016 -0800
+
+    Export a few more functions/variables for the DLL.
+
+M	src/libjasper/include/jasper/jas_getopt.h
+M	src/libjasper/include/jasper/jas_image.h
+
+commit f97fabde644eb6eeb40828da5587d2f5e6e65338
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 08:54:19 2016 -0800
+
+    Export jas_init.
+
+M	src/libjasper/include/jasper/jas_init.h
+
+commit 1a70198b79e28c37fe3f58fcc89dc04bfee54b32
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 08:51:19 2016 -0800
+
+    Enable building DLL in Windows.
+
+M	CMakeLists.txt
+M	build/appveyor/build.bat
+
+commit 7e452109a3e7eb52685d48c0b293a551c1535ea6
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Tue Nov 29 08:45:42 2016 -0800
+
+    Some preliminary changes for moving towards DLL support for Windows.
+
+M	CMakeLists.txt
+M	build/my_build
+M	src/libjasper/CMakeLists.txt
+M	src/libjasper/include/jasper/jas_config.h.in
+M	src/libjasper/include/jasper/jas_debug.h
+A	src/libjasper/include/jasper/jas_dll.h
+M	src/libjasper/include/jasper/jas_getopt.h
+M	src/libjasper/include/jasper/jas_image.h
+M	src/libjasper/include/jasper/jas_init.h
+M	src/libjasper/include/jasper/jas_malloc.h
+M	src/libjasper/include/jasper/jas_seq.h
+M	src/libjasper/include/jasper/jas_stream.h
+M	src/libjasper/include/jasper/jas_string.h
+M	src/libjasper/include/jasper/jas_tmr.h
+M	src/libjasper/include/jasper/jas_tvp.h
+M	src/libjasper/include/jasper/jas_version.h
+
+commit 78dd2ff20a28ce456edb84403e944dfb11d4eb02
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 28 23:55:17 2016 -0800
+
+    Replace deprecated subdirs command with add_subdirectory in
+    CMakeLists.txt.
+
+M	CMakeLists.txt
+M	build/my_build
+
+commit df62154878048a4c19745dcdf35e267080a2921a
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 28 14:31:10 2016 -0800
+
+    Fix the lie in the new (under construction) JasPer manual that
+    incorrectly
+    claims that there are no known bugs in JasPer.  Replace this lie with
+    the truth that known bugs can be found from the issue-tracker
+    on GitHub.
+
+M	doc/src/bugs.dox
+
+commit d6d1638fc0b372e586ae4edf2cd3597beb3983fd
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 28 14:18:51 2016 -0800
+
+    Added data/test/bad/1_crash.jpg to the list of files dropped when
+    making a tarball.
+    Symantec Antivirus reports this file as being a threat, although
+    this appears to be a false positive.
+
+M	build/make_dist
+
+commit e36e46c739ccd1b6a4a30593f8165bdf729b8678
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 28 08:20:05 2016 -0800
+
+    Added VERBOSE=1 to various make invocations in the Travis CI build
+    script.
+
+M	build/travis/build
+
+commit 54158ce67fea534391f53a814d8345078fb61f7c
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 28 08:13:25 2016 -0800
+
+    Print additional information in the Travis CI build script.
+
+M	build/travis/build
+
+commit 05a7c4caff4ae12a6511359f1de89e3c37529cf8
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 28 06:59:26 2016 -0800
+
+    When testing with Travis CI, try building and installing for both the
+    shared library case and static library case.
+
+M	build/travis/build
+
+commit eb7e01dc45b5f831e50560f0cd0d05bf72777caf
+Merge: 08f9ef4 ca9db2f
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Mon Nov 28 06:50:23 2016 -0800
+
+    Merge branch 'vriera-master'
+    Fix a problem that occurs when building static libraries.
+
+commit ca9db2fa64adbbbff53c994f5f7d783c9ee5bf76
+Author: Vicente Olivert Riera <Vincent.Riera@imgtec.com>
+Date:	Mon Nov 28 12:49:27 2016 +0000
+
+    CMakeLists.txt: only change RPATH when building for shared
+
+    When doing static-only builds (-DJAS_ENABLE_SHARED=OFF) the install
+    process fails due to an invalid RPATH:
+
+    ...............................................................
+    CMake Error at src/appl/cmake_install.cmake:45 (file):
+      file RPATH_CHANGE could not write new RPATH:
+
+	/usr/lib
+
+      to the file:
+
+	/br/output/host/usr/xtensa-buildroot-linux-uclibc/sysroot/usr/bin/jasper
+
+      No valid ELF RPATH or RUNPATH entry exists in the file;
+    Call Stack (most recent call first):
+      cmake_install.cmake:42 (include)
+    ...............................................................
+
+    RPATH shouldn't be changed when doing static-only builds.
+
+    Signed-off-by: Vicente Olivert Riera <Vincent.Riera@imgtec.com>
+
+M	CMakeLists.txt
+
+commit 08f9ef4371785b84c7d6153aba60fb1e757dcafb
+Author: Michael Adams <mdadams@ece.uvic.ca>
+Date:	Sun Nov 27 09:41:51 2016 -0800
+
+    Cleaned up the top-level CMakeLists.txt file and also removed the
+    stray git
+    command in the file that should not be there.
+
+M	CMakeLists.txt
+
 commit 58b2bc12f377e64fca99ea7f3517d7fff1c39ac9
 Author: Michael Adams <mdadams@ece.uvic.ca>
-Date:   Sat Nov 26 22:42:31 2016 -0800
+Date:	Sat Nov 26 22:42:31 2016 -0800
 
     Made further revisions to the reference manual.
 

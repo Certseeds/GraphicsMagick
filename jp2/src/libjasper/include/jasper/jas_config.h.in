@@ -1,6 +1,10 @@
 #ifndef JAS_CONFIG_H
 #define JAS_CONFIG_H
 
+#cmakedefine JAS_DLL 1
+
+#include <jasper/jas_dll.h>
+
 #define JAS_CONFIGURE
 
 #if defined(_MSC_VER)
@@ -21,6 +25,9 @@
 
 #cmakedefine JAS_HAVE_GETTIMEOFDAY 1
 #cmakedefine JAS_HAVE_GETRUSAGE 1
+
+#cmakedefine JAS_HAVE_GL_GLUT_H 1
+#cmakedefine JAS_HAVE_GLUT_H 1
 
 #define JAS_HAVE_SNPRINTF	1
 

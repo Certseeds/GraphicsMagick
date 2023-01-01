@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['known_20bugs',['Known Bugs',['../known_bugs.html',1,'']]]
+  ['organization_20of_20the_20manual',['Organization of the Manual',['../organization.html',1,'getting_started']]]
 ];
