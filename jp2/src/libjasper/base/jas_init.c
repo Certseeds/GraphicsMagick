@@ -76,9 +76,9 @@
 JAS_DLLEXPORT
 int jas_init()
 {
-#if defined(JAS_INCLUDE_MIF_CODEC) && defined(JAS_ENABLE_MIF_CODEC)
+//#if defined(JAS_INCLUDE_MIF_CODEC) && defined(JAS_ENABLE_MIF_CODEC)
 	jas_image_fmtops_t fmtops;
-#endif
+//#endif
 	int fmtid;
 
 	fmtid = 0;
