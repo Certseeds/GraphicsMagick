@@ -100,9 +100,9 @@
 #define TraceRectangle(image,rectangle)                         \
   do                                                            \
     {                                                           \
-      if (image->logging)                                       \
+      if (IsEventLogged(CoderEvent))                            \
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),     \
-                              "%sRectangle: top %+d, bottom %+d, "        \
+                              "%sRectangle: top %+d, bottom %+d, " \
                               "left %+d, right %+d",            \
                               EOFBlob(image) ? "EOF! " : "",    \
                               (int) frame.top,                  \
@@ -111,11 +111,46 @@
                               (int) frame.right);               \
     } while(0)
 
+/*
+  Issue a trace message with pixmap details
+ */
+#define TracePixMap(image,pixmap) \
+  do \
+    { \
+      if (IsEventLogged(CoderEvent))                                    \
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),             \
+                              "PixMap:\n"                               \
+                              "    version:                %u\n"        \
+                              "    pack_type:              %u\n"    \
+                              "    pack_size:              %u\n"        \
+                              "    horizontal_resolution:  %u\n"        \
+                              "    vertical_resolution:    %u\n"        \
+                              "    pixel_type:             %u\n"        \
+                              "    bits_per_pixel:         %u\n"        \
+                              "    component_count:        %u\n"        \
+                              "    component_size:         %u\n"        \
+                              "    plane_bytes:            %u\n"        \
+                              "    table:                  %u\n"        \
+                              "    reserved:               %u",         \
+                              (unsigned) pixmap.version,                \
+                              (unsigned) pixmap.pack_type,              \
+                              pixmap.pack_size,                         \
+                              pixmap.horizontal_resolution,             \
+                              pixmap.vertical_resolution,               \
+                              (unsigned) pixmap.pixel_type,             \
+                              (unsigned) pixmap.bits_per_pixel,         \
+                              (unsigned) pixmap.component_count,        \
+                              (unsigned) pixmap.component_size,         \
+                              pixmap.plane_bytes,                       \
+                              pixmap.table,                             \
+                              pixmap.reserved);                         \
+    } while(0)
+
 typedef struct _PICTPixmap
 {
   magick_uint16_t
     version,
-    pack_type;
+    pack_type; /* 0: default, 1: no packing, 2: 24-bit data, 3: RLE (16 bit) 4: RLE (32-bit) */
 
   magick_uint32_t
     pack_size,
@@ -143,6 +178,7 @@ typedef struct _PICTRectangle
     right;
 } PICTRectangle;
 
+/* From https://developer.apple.com/library/archive/documentation/mac/QuickDraw/QuickDraw-461.html */
 
 /* Code Lengths */
 static const magick_int8_t code_lengths[]=
@@ -314,7 +350,7 @@ static const magick_int8_t code_lengths[]=
 /* Code names */
 static const char code_names[] =
   /* 0x00 */ "NOP\0"
-  /* 0x01 */ "Clip\0"
+  /* 0x01 */ "ClipRgn\0"
   /* 0x02 */ "BkPat\0"
   /* 0x03 */ "TxFont\0"
   /* 0x04 */ "TxFace\0"
@@ -804,13 +840,6 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
 
   ARG_NOT_USED(image_info);
 
-  if (image->logging)
-    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                          "DecodeImage: %lux%lu, bytes_per_line=%lu,"
-                          " bits_per_pixel=%u",
-                          image->columns, image->rows, bytes_per_line,
-                          bits_per_pixel);
-
   /*
     Determine pixel buffer size.
   */
@@ -831,7 +860,7 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
   row_bytes=(size_t) (image->columns | 0x8000);
   if (image->storage_class == DirectClass)
     row_bytes=(size_t) ((4*image->columns) | 0x8000);
-  if (image->logging)
+  if (IsEventLogged(CoderEvent))
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "DecodeImage: Using %lu bytes per line, %"
                           MAGICK_SIZE_T_F "u bytes per row",
@@ -860,16 +889,18 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
 
           ratio = (((double) image->rows*bytes_per_line)/remaining);
 
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "Remaining: %" MAGICK_OFF_F "d, Ratio: %g",
-                                remaining, ratio);
+          if (IsEventLogged(CoderEvent))
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Remaining: %" MAGICK_OFF_F "d, Ratio: %g",
+                                  remaining, ratio);
 
           if (ratio > (bytes_per_line < 8 ? 1.0 : 255.0))
             {
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Unreasonable file size "
-                                    "(ratio of pixels to remaining file size %g)",
-                                    ratio);
+              if (IsEventLogged(CoderEvent))
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Unreasonable file size "
+                                      "(ratio of pixels to remaining file size %g)",
+                                      ratio);
               ThrowException(&image->exception,CorruptImageError,InsufficientImageDataInFile,
                              image->filename);
               goto decode_error_exit;
@@ -935,24 +966,28 @@ static unsigned char *DecodeImage(const ImageInfo *image_info,
         scanline_length=ReadBlobMSBShort(blob);
       else
         scanline_length=ReadBlobByte(blob);
-      if (image->logging)
+#if 0
+      if (IsEventLogged(CoderEvent))
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "scanline_length = %u, "
                               "scanline_alloc = %"MAGICK_SIZE_T_F"u",
                               scanline_length, (MAGICK_SIZE_T)scanline_alloc);
+#endif
       if (scanline_length < 2)
         {
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "Scanline length %u < 2!",scanline_length);
+          if (IsEventLogged(CoderEvent))
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Scanline length %u < 2!",scanline_length);
           ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
                          image->filename);
           goto decode_error_exit;
         }
       if (scanline_length > scanline_alloc)
         {
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "Scanline length %u exceeds allocation %"MAGICK_SIZE_T_F"u",
-                                scanline_length, (MAGICK_SIZE_T)scanline_alloc);
+          if (IsEventLogged(CoderEvent))
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Scanline length %u exceeds allocation %"MAGICK_SIZE_T_F"u",
+                                  scanline_length, (MAGICK_SIZE_T)scanline_alloc);
           ThrowException(&image->exception,CorruptImageError,UnableToUncompressImage,
                          image->filename);
           goto decode_error_exit;
@@ -1078,6 +1113,14 @@ static size_t EncodeImage(Image *image,const unsigned char *scanline,
   assert(image->signature == MagickSignature);
   assert(scanline != (unsigned char *) NULL);
   assert(pixels != (unsigned char *) NULL);
+#if 0
+  if (IsEventLogged(CoderEvent))
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "EncodeImage: %lux%lu, matte=%s bytes_per_line=%lu",
+                          image->columns, image->rows,
+                          image->matte ? "True" : "False",
+                          bytes_per_line);
+#endif
   count=0;
   runlength=0;
   p=scanline+(bytes_per_line-1);
@@ -1281,8 +1324,6 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
   if (status == False)
     ThrowPICTReaderException(FileOpenError,UnableToOpenFile,image);
   file_size=GetBlobSize(image);
-  pixmap.bits_per_pixel=0;
-  pixmap.component_count=0;
   /*
     Read PICT header.
   */
@@ -1312,6 +1353,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
     Create black canvas.
   */
   flags=0;
+  image->depth=8;
   image->columns=frame.right-frame.left;
   image->rows=frame.bottom-frame.top;
 
@@ -1353,12 +1395,18 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
     if (code > 0xa1)
       {
         if (IsEventLogged(CoderEvent))
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Code %04X:",code);
+          {
+            if (0xff == code)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Code 0x%04X %.1024s: %.1024s",code,
+                                    "EndOfPicture","End of picture");
+            else /* Unknown code */
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Code 0x%04X:",code);
+          }
       }
     else
       {
         if (IsEventLogged(CoderEvent))
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Code  %04X %.1024s: %.1024s",code,
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Code 0x%04X %.1024s: %.1024s",code,
                                 lookup_string(code_names,sizeof(code_names),code),
                                 lookup_string(code_descriptions,sizeof(code_descriptions),code));
         switch (code)
@@ -1421,8 +1469,18 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             if (!ValidateRectangle(frame))
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
             ReadPixmap(pixmap);
+            TracePixMap(image,pixmap);
             if (!ValidatePixmap(pixmap))
               ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
+            image->depth=pixmap.component_size;
+            image->x_resolution=1.0*pixmap.horizontal_resolution;
+            image->y_resolution=1.0*pixmap.vertical_resolution;
+            if (IsEventLogged(CoderEvent))
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Depth %u, X resolution %g, Y resolution %g",
+                                    image->depth,
+                                    image->x_resolution, image->y_resolution);
+            image->units=PixelsPerInchResolution;
             (void) ReadBlobMSBLong(image);
             flags=ReadBlobMSBShort(image);
             length=ReadBlobMSBShort(image);
@@ -1430,9 +1488,11 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               (void) ReadBlobMSBLong(image);
             width=frame.bottom-frame.top;
             height=frame.right-frame.left;
+#if 0
             image->depth=pixmap.bits_per_pixel <= 8 ? 8 : QuantumDepth;
             if (pixmap.bits_per_pixel < 8)
               image->depth=8;
+#endif
             if (pixmap.bits_per_pixel <= 8)
               length&=0x7fff;
             if (pixmap.bits_per_pixel == 16)
@@ -1552,6 +1612,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
             if ((code == 0x9a) || (code == 0x9b) || (bytes_per_line & 0x8000))
               {
                 ReadPixmap(pixmap);
+                TracePixMap(image,pixmap);
                 if (!ValidatePixmap(pixmap))
                   ThrowPICTReaderException(CorruptImageError,ImproperImageHeader,image);
                 tile_image->matte=pixmap.component_count == 4;
@@ -1569,8 +1630,9 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                     tile_image->colors=ReadBlobMSBShort(image)+1;
                   }
                 if (!AllocateImageColormap(tile_image,tile_image->colors))
-                  ThrowPICTReaderException(ResourceLimitError,MemoryAllocationFailed,image)
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                  ThrowPICTReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                if (IsEventLogged(CoderEvent))
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                   "Allocated tile image colormap with %u colors",tile_image->colors);
                 if (bytes_per_line & 0x8000)
                   {
@@ -1669,22 +1731,24 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
                         q->blue=ScaleCharToQuantum((j & 0x1f) << 3);
                       }
                     else
-                      if (!tile_image->matte)
-                        {
-                          q->red=ScaleCharToQuantum(*p);
-                          q->green=
-                            ScaleCharToQuantum(*(p+tile_image->columns));
-                          q->blue=ScaleCharToQuantum(*(p+ (size_t)2*tile_image->columns));
-                        }
-                      else
-                        {
-                          q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p));
-                          q->red=ScaleCharToQuantum(*(p+tile_image->columns));
-                          q->green=(Quantum)
-                            ScaleCharToQuantum(*(p+ (size_t)2*tile_image->columns));
-                          q->blue=
-                           ScaleCharToQuantum(*(p+ (size_t)3*tile_image->columns));
-                        }
+                      {
+                        if (!tile_image->matte)
+                          {
+                            q->red=ScaleCharToQuantum(*p);
+                            q->green=
+                              ScaleCharToQuantum(*(p+tile_image->columns));
+                            q->blue=ScaleCharToQuantum(*(p+ (size_t)2*tile_image->columns));
+                          }
+                        else
+                          {
+                            q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p));
+                            q->red=ScaleCharToQuantum(*(p+tile_image->columns));
+                            q->green=(Quantum)
+                              ScaleCharToQuantum(*(p+ (size_t)2*tile_image->columns));
+                            q->blue=
+                              ScaleCharToQuantum(*(p+ (size_t)3*tile_image->columns));
+                          }
+                      }
                   }
                 p++;
                 q++;
@@ -1708,10 +1772,11 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               if ((code == 0x9a) || (code == 0x9b) ||
                   (bytes_per_line & 0x8000))
                 {
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "Composite tile: %lux%lu%+d%+d",
-                                        tile_image->columns, tile_image->rows,
-                                        destination.left, destination.top);
+                  if (IsEventLogged(CoderEvent))
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Composite tile: %lux%lu%+d%+d",
+                                            tile_image->columns, tile_image->rows,
+                                            destination.left, destination.top);
                   (void) CompositeImage(image,CopyCompositeOp,tile_image,
                                         destination.left,destination.top);
                 }
@@ -1839,7 +1904,7 @@ static Image *ReadPICTImage(const ImageInfo *image_info,
               }
             if (blob != blob_alloc)
               {
-                if (image->logging)
+                if (IsEventLogged(CoderEvent))
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                         "Tile Zero copy read.");
               }
@@ -2143,6 +2208,8 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   pixmap.version=0;
   pixmap.pack_type=0;
   pixmap.pack_size=0;
+  pixmap.horizontal_resolution=(unsigned int) x_resolution;
+  pixmap.vertical_resolution=(unsigned int) y_resolution;
   pixmap.pixel_type=0;
   pixmap.bits_per_pixel=8;
   pixmap.component_count=1;
@@ -2162,7 +2229,9 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
           y_resolution *= 2.54;
         }
       x_resolution=ConstrainToRange(0.0,(double) 0xffff,x_resolution);
+      pixmap.horizontal_resolution=(unsigned int) x_resolution;
       y_resolution=ConstrainToRange(0.0,(double) 0xffff,y_resolution);
+      pixmap.vertical_resolution=(unsigned int) y_resolution;
     }
   storage_class=image->storage_class;
   if (image->compression == JPEGCompression)
@@ -2174,16 +2243,20 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
       pixmap.bits_per_pixel=32;
       pixmap.pack_type=0x04;
       transfer_mode=0x40;
-      row_bytes=MagickArraySize(4,(size_t) image->columns);
-      if (row_bytes == 0)
-        ThrowPICTWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      row_bytes=(size_t) 4*image->columns;
     }
+  TracePixMap(image,pixmap);
+
   /*
     Allocate memory.
   */
   bytes_per_line=(size_t) image->columns;
   if (storage_class == DirectClass)
     bytes_per_line = MagickArraySize(bytes_per_line, image->matte ? 4 : 3);
+  if (IsEventLogged(CoderEvent))
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Bytes per line: %" MAGICK_SIZE_T_F "u bytes,"
+                          " Row bytes: %" MAGICK_SIZE_T_F "u bytes", bytes_per_line, row_bytes);
   if ((row_bytes >= (size_t) SIZE_MAX/2) || (bytes_per_line == 0) ||
       (bytes_per_line > 0x7FFFU) || ((row_bytes+MaxCount*2U) >= 0x7FFFU))
     ThrowPICTWriterException(CoderError,UnsupportedNumberOfColumns,image);
@@ -2211,9 +2284,11 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   /*
     Write full size of the file, resolution, frame bounding box, and reserved.
   */
-  (void) WriteBlobMSBShort(image,(unsigned short) x_resolution);
+  /* (void) WriteBlobMSBLong(image,pixmap.horizontal_resolution); */
+  (void) WriteBlobMSBShort(image,pixmap.horizontal_resolution && 0xFFFF);
   (void) WriteBlobMSBShort(image,0x0000);
-  (void) WriteBlobMSBShort(image,(unsigned short) y_resolution);
+  /* (void) WriteBlobMSBLong(image,pixmap.vertical_resolution); */
+  (void) WriteBlobMSBShort(image,pixmap.vertical_resolution && 0xFFFF);
   (void) WriteBlobMSBShort(image,0x0000);
   (void) WriteBlobMSBShort(image,frame_rectangle.top);
   (void) WriteBlobMSBShort(image,frame_rectangle.left);
