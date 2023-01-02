@@ -1,6 +1,6 @@
 #!/bin/sh
 # -*- shell-script -*-
-# Copyright (C) 2004-2017 GraphicsMagick Group
+# Copyright (C) 2004-2023 GraphicsMagick Group
 . ./common.shi
 . ${top_srcdir}/tests/common.shi
 
@@ -8,10 +8,11 @@
 rwfile=./rwfile
 
 # Types we will test
-check_types='bilevel gray pallette truecolor' # truecolor_1x266
+check_types='bilevel gray pallette truecolor truecolor_1x266'
+check_types_noone='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 656
+test_plan_fn 818 # 820
 
 # ART format
 for type in ${check_types}
@@ -331,7 +332,7 @@ do
 done
 
 # PICT format
-for type in ${check_types}
+for type in ${check_types_noone}
 do
   test_command_fn "PICT ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" PICT
   test_command_fn "PICT ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" PICT
