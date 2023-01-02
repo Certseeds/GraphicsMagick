@@ -12,6 +12,11 @@
   at this point in the configuration header file. */
 
 
+#define JAS_INCLUDE_JP2_CODEC 1
+#define JAS_INCLUDE_JPC_CODEC 1
+/* #define JAS_INCLUDE_JPG_CODEC 1 */
+/* #define JAS_INCLUDE_PGX_CODEC 1 */
+
 
 /* The preprocessor symbol JAS_WIN_MSVC_BUILD should not be defined
   unless the JasPer software is being built under Microsoft Windows
