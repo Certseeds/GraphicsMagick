@@ -1,3 +1,9 @@
+2023-01-03 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	+ VisualMagick/jp2/src/libjasper/pgx/LIBRARY.txt
+	* jp2/src/libjasper/include/jasper/jas_config.h
+	PGX codec was not compilled into gm, now added.
+
 2023-01-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/pict.c: Add more tracing.

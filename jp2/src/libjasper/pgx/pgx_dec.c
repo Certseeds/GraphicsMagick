@@ -344,13 +344,13 @@ error:
 
 static int_fast32_t pgx_getword(jas_stream_t *in, bool bigendian, int prec)
 {
-	assert(prec <= 32);
-
 	uint_fast32_t val;
 	int i;
 	int j;
 	int c;
 	int wordsize;
+
+	assert(prec <= 32);
 
 	wordsize = (prec + 7) / 8;
 
