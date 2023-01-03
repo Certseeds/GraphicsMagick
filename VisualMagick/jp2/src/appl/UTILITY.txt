@@ -7,3 +7,4 @@ EXCLUDE = dummy2.c
 EXCLUDE = imgcmp.c
 EXCLUDE = imginfo.c
 EXCLUDE = tmrdemo.c
+EXCLUDE = fuzz.c
