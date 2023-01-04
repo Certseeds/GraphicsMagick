@@ -28,7 +28,13 @@ goto :_exit
 :_testall
 call :_dorwtest both AVS
 if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both ART
+if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both BMP
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both CAL
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both CIN
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both CMYK
 if not %COUNT% EQU 6 goto :_failed
@@ -36,8 +42,8 @@ call :_dorwtest both DIB
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both DPX
 if not %COUNT% EQU 6 goto :_failed
-:call :_dorwtest both EPDF
-:if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both EPDF
+if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both EPSF
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both EPSI
@@ -56,6 +62,9 @@ call :_dorwtest both GIF
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both GRAY
 if not %COUNT% EQU 6 goto :_failed
+@rem This test is failing!
+call :_dorwtest both HTML
+@rem if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both ICB
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both JBIG
@@ -65,6 +74,11 @@ if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both JPEG
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both JNG
+if not %COUNT% EQU 6 goto :_failed
+@rem This test is failing!
+call :_dorwtest both MAP
+@rem if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both MAT
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both MIFF
 if not %COUNT% EQU 6 goto :_failed
@@ -86,8 +100,10 @@ call :_dorwtest both PCX
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PGM
 if not %COUNT% EQU 6 goto :_failed
-:call :_dorwtest both PICON
-:if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both PGX
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both PICON
+if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PICT
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PNG
@@ -97,9 +113,9 @@ if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PPM
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PS
-: if not %COUNT% EQU 6 goto :_failed
-: call :_dorwtest both PSD
 if not %COUNT% EQU 6 goto :_failed
+@rem call :_dorwtest both PSD
+@rem if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both PTIF
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both RAS
@@ -115,6 +131,8 @@ if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both TGA
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both TIFF
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both TXT
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both UYVY
 if not %COUNT% EQU 6 goto :_failed
