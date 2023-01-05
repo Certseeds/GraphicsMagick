@@ -115,6 +115,7 @@
 
 [Code]
 
+
 #IFDEF UNICODE
   #DEFINE AW "W"
 #ELSE
@@ -190,3 +191,17 @@ begin
   Result := not ((r1 and r2) or r3);
 end;
 
+
+#ifdef WIN64
+// Sanity check to prevent installation on 32 bit system.
+function InitializeSetup(): Boolean;
+begin
+ if not IsWin64() then begin
+   MsgBox('Windows 64 bit distribution should not be installed on WIN 32 system', mbError, MB_OK);
+   Result := false;
+   end 
+ else begin
+   Result := true;
+ end;
+end;
+#endif

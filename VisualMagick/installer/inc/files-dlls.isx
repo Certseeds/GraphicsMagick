@@ -8,7 +8,7 @@
 ;
 #endif
 
-#define  public MSVCRedist "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist"
+;#define  public MSVCRedist "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist"
 
 #ifdef WIN64
   #define  public CPUARCH "amd64"
