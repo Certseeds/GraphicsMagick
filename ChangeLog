@@ -1,3 +1,12 @@
+2023-01-05 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/installer/inc/body.isx
+	* VisualMagick/installer/inc/files-dlls.isx
+	( VisualMagick/installer/redist/VC2008SP1/vcredist_x64.exe must be downloaded from www)
+	( VisualMagick/installer/redist/VC2008SP1/vcredist_x86.exe must be downloaded from www) 
+	Fix graphics magick installer for Windows.
+
+
 2023-01-04 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat Added new tests for PGX (jp2), MAT,
