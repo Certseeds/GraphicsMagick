@@ -3146,7 +3146,6 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
         p--;
 
       if ((LocaleCompare(p,".gz") == 0) ||
-          (LocaleCompare(p,".Z") == 0) ||
           (LocaleCompare(p,".bz2") == 0))
         compressed_extension = MagickTrue;
 

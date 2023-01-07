@@ -1,5 +1,9 @@
 2023-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/blob.c (OpenBlob): Zlib has never supported opening Unix
+	'compress' .Z files (although gzip does).  So don't open such
+	files using zlib.
+
 	* coders/sun.c: Add IM1, IM8, and IM24 magick aliases for Sun
 	Raster format since those are the historically correct extensions.
 
@@ -13,21 +17,22 @@
 	where binary operator is needed.
 
 2023-01-05 Fojtik Jaroslav  <JaFojtik@yandex.com>
-	* VisualMagick/installer/inc/body.isx 64 bit distribution MUST NOT be installed on pure
-	32 bit system. Sanity check added.
+
+	* VisualMagick/installer/inc/body.isx 64 bit distribution MUST NOT
+	be installed on pure 32 bit system. Sanity check added.
 
 2023-01-05 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/installer/inc/body.isx
 	* VisualMagick/installer/inc/files-dlls.isx
-	( VisualMagick/installer/redist/VC2008SP1/vcredist_x64.exe must be downloaded from www)
-	( VisualMagick/installer/redist/VC2008SP1/vcredist_x86.exe must be downloaded from www) 
+	(VisualMagick/installer/redist/VC2008SP1/vcredist_x64.exe must be downloaded from www).
+	(VisualMagick/installer/redist/VC2008SP1/vcredist_x86.exe must be downloaded from www).
 	Fix graphics magick installer for Windows.
 
 2023-01-04 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat Added new tests for PGX (jp2), MAT,
-	uncommented test for EPDF and PICON.
+	* VisualMagick/tests/runtest.bat Added new tests for PGX (jp2),
+	MAT, uncommented test for EPDF and PICON.
 
 2023-01-03 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
@@ -35,7 +40,7 @@
 
 2023-01-03 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	+ VisualMagick/jp2/src/libjasper/pgx/LIBRARY.txt
+	* VisualMagick/jp2/src/libjasper/pgx/LIBRARY.txt
 	* jp2/src/libjasper/include/jasper/jas_config.h
 	PGX codec was not compilled into gm, now added.
 
@@ -52,7 +57,7 @@
 
 	* jp2/* Update lib jasper to 2.0.33. Code cleanly compilles, but
 	there is still some problem. Will be solved later.
-	- jp2/src/lib/jasper/include/jasper/stdbool2.h No longer needed.
+	jp2/src/lib/jasper/include/jasper/stdbool2.h No longer needed.
 
 2023-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -72,7 +77,7 @@
 2022-12-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/pcx.c (WritePCXImage): Meke default RLE compression.
-        Uncompressed PCX is more rare.
+	Uncompressed PCX is more rare.
 
 2022-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -145,8 +150,8 @@
 2022-12-25 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* webp/src/webp/types.h Need to include inttypes.h
-        * jp2/src/libjasper/include/jasper/jas_types.h
-		Fix missing _PFX_PTR in newer MSVC.
+	* jp2/src/libjasper/include/jasper/jas_types.h
+	Fix missing _PFX_PTR in newer MSVC.
 
 2022-12-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -427,7 +432,7 @@
 
 2022-11-20 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-        coders/wpg.c Reveal more internal info to optional log.
+	* coders/wpg.c Reveal more internal info to optional log.
 
 2022-11-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
