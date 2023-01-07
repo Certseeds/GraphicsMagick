@@ -2285,10 +2285,10 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
     Write full size of the file, resolution, frame bounding box, and reserved.
   */
   /* (void) WriteBlobMSBLong(image,pixmap.horizontal_resolution); */
-  (void) WriteBlobMSBShort(image,pixmap.horizontal_resolution && 0xFFFF);
+  (void) WriteBlobMSBShort(image,pixmap.horizontal_resolution & 0xFFFF);
   (void) WriteBlobMSBShort(image,0x0000);
   /* (void) WriteBlobMSBLong(image,pixmap.vertical_resolution); */
-  (void) WriteBlobMSBShort(image,pixmap.vertical_resolution && 0xFFFF);
+  (void) WriteBlobMSBShort(image,pixmap.vertical_resolution & 0xFFFF);
   (void) WriteBlobMSBShort(image,0x0000);
   (void) WriteBlobMSBShort(image,frame_rectangle.top);
   (void) WriteBlobMSBShort(image,frame_rectangle.left);
