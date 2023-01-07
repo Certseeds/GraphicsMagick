@@ -77,10 +77,33 @@ typedef struct _SUNInfo
     maplength;  /* Size of the color map in bytes */
 } SUNInfo;
 
-static void LogSUNInfo(const SUNInfo *sun_info)
+/*
+  Compute bytes per line for an unencoded
+  image.
+
+  The width of a scan line is always a multiple of 16-bits, padded
+  when necessary.
+*/
+static size_t SUNBytesPerLine(const size_t width, const size_t depth)
+{
+  size_t
+    bits;
+
+  bits = MagickArraySize(width,depth);
+  if (0 != bits)
+      {
+        size_t abits = RoundUpToAlignment(bits,16);
+        if (abits < bits)
+          abits=0;
+        bits=abits;
+      }
+    return bits/8U;
+}
+
+static void LogSUNInfo(const SUNInfo *sun_info,const char *mode)
 {
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "SunHeader:\n"
+                        "%s SunHeader:\n"
                         "    Magic:     0x%04X\n"
                         "    Width:     %u\n"
                         "    Height:    %u\n"
@@ -89,6 +112,7 @@ static void LogSUNInfo(const SUNInfo *sun_info)
                         "    Type:      %u (%s)\n"
                         "    MapType:   %u (%s)\n"
                         "    MapLength: %u\n",
+                        mode,
                         sun_info->magic,
                         sun_info->width,
                         sun_info->height,
@@ -303,7 +327,6 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
     bytes_per_image,
     bytes_per_line,
     count,
-    pad,
     sun_data_length;
 
   SUNInfo
@@ -354,7 +377,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
       sun_info.maptype=ReadBlobMSBLong(image);
       sun_info.maplength=ReadBlobMSBLong(image);
       if (logging)
-        LogSUNInfo(&sun_info);
+        LogSUNInfo(&sun_info, "Read");
       if (EOFBlob(image))
         ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       /*
@@ -512,8 +535,8 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
           }
         default:
-          ThrowReaderException(CoderError,ColormapTypeNotSupported,image)
-            }
+          ThrowReaderException(CoderError,ColormapTypeNotSupported,image);
+        }
       image->matte=(sun_info.depth == 32);
       image->columns=sun_info.width;
       image->rows=sun_info.height;
@@ -533,21 +556,21 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         "The width of a scan line is always 16-bits, padded when necessary."
       */
-      bytes_per_line=MagickArraySize(sun_info.width,sun_info.depth);
-      if (bytes_per_line == 0)
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-
-      pad = sun_info.depth == 1 ? 15U : 7U;  /* Pad */
-      bytes_per_line += pad;
-
-      if (bytes_per_line != ((size_t) sun_info.width*sun_info.depth+pad))
-        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-
-      bytes_per_line /= 8U;
+      bytes_per_line = SUNBytesPerLine(sun_info.width,sun_info.depth);
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Bytes per line: %" MAGICK_SIZE_T_F "u",
+                              (MAGICK_SIZE_T) bytes_per_line);
       if (bytes_per_line == 0)
         ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
       bytes_per_image=MagickArraySize(sun_info.height,bytes_per_line);
+
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Bytes per image: %" MAGICK_SIZE_T_F "u",
+                              (MAGICK_SIZE_T) bytes_per_image);
+
       if (bytes_per_image == 0)
         ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
@@ -556,12 +579,22 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
       else
         sun_data_length=bytes_per_image;
 
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Sun data length: %" MAGICK_SIZE_T_F "u",
+                              (MAGICK_SIZE_T) sun_data_length);
+
       /*
         Verify that data length claimed by header is supported by file size
       */
       if (sun_info.type == RT_ENCODED)
         {
           if (sun_data_length < bytes_per_image/255U)
+            ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      else
+        {
+          if ((size_t) sun_info.length < bytes_per_image)
             ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
         }
       if (BlobIsSeekable(image))
@@ -597,7 +630,7 @@ static Image *ReadSUNImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (sun_info.type == RT_ENCODED)
         {
           /*
-            Read run-length encoded raster pixels (padded to 16-bit boundary).
+            Read run-length encoded raster pixels
           */
           sun_pixels=MagickAllocateResourceLimitedMemory(unsigned char *,
                                                          bytes_per_image+image->rows);
@@ -897,8 +930,11 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
   register const IndexPacket
     *indexes;
 
-  size_t
-    number_pixels;
+  unsigned char
+    *pixels;
+
+  register unsigned char
+    *q;
 
   register long
     x;
@@ -916,6 +952,8 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
     scene;
 
   size_t
+    bytes_per_image,
+    bytes_per_line,
     image_list_length;
 
   MagickBool
@@ -959,11 +997,12 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
       sun_info.magic=0x59a66a95;
       sun_info.width=image->columns;
       sun_info.height=image->rows;
+      sun_info.depth=0;
+      sun_info.length=0;
       sun_info.type=
         (image->storage_class == DirectClass ? RT_FORMAT_RGB : RT_STANDARD);
       sun_info.maptype=RMT_NONE;
       sun_info.maplength=0;
-      number_pixels=MagickArraySize(image->columns,image->rows);
 
       if (characteristics.monochrome)
         {
@@ -971,9 +1010,6 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
             Monochrome SUN raster.
           */
           sun_info.depth=1;
-          sun_info.length=((image->columns+7U) >> 3)*image->rows;
-          sun_info.length+=((image->columns/8U)+(image->columns % 8U ? 1U : 0U)) %
-            2U ? image->rows : 0U;
         }
       else if (characteristics.palette)
         {
@@ -981,8 +1017,6 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
             Colormapped SUN raster.
           */
           sun_info.depth=8;
-          sun_info.length=number_pixels;
-          sun_info.length+=image->columns & 0x01U ? image->rows : 0;
           sun_info.maptype=RMT_EQUAL_RGB;
           sun_info.maplength=image->colors*3;
         }
@@ -992,14 +1026,37 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
             Full color SUN raster.
           */
           sun_info.depth=(image->matte ? 32U : 24U);
-          sun_info.length=(image->matte ? 4U : 3U)*number_pixels;
-          sun_info.length+=image->columns & 0x01U ? image->rows : 0U;
         }
+
+      bytes_per_line=SUNBytesPerLine(sun_info.width,sun_info.depth);
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Bytes per line: %" MAGICK_SIZE_T_F "u",
+                              (MAGICK_SIZE_T) bytes_per_line);
+      if (0 == bytes_per_line)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      bytes_per_image=MagickArraySize(sun_info.height,bytes_per_line);
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Bytes per image: %" MAGICK_SIZE_T_F "u",
+                              (MAGICK_SIZE_T) bytes_per_image);
+      sun_info.length=bytes_per_image;
+      if (sun_info.length != bytes_per_image)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+
+      /*
+        Allocate memory for pixels.
+      */
+      pixels=MagickAllocateResourceLimitedClearedMemory(unsigned char *,
+                                                        bytes_per_line);
+      if (pixels == (unsigned char *) NULL)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
+                             image);
 
       /*
         Write SUN header.
       */
-      LogSUNInfo(&sun_info);
+      LogSUNInfo(&sun_info, "Write");
       (void) WriteBlobMSBLong(image,sun_info.magic);
       (void) WriteBlobMSBLong(image,sun_info.width);
       (void) WriteBlobMSBLong(image,sun_info.height);
@@ -1039,6 +1096,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
               p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
               if (p == (const PixelPacket *) NULL)
                 break;
+              q=pixels;
               indexes=AccessImmutableIndexes(image);
               bit=0;
               byte=0;
@@ -1050,17 +1108,15 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
                   bit++;
                   if (bit == 8)
                     {
-                      (void) WriteBlobByte(image,byte);
+                      *q++=byte;
                       bit=0;
                       byte=0;
                     }
                   p++;
                 }
               if (bit != 0)
-                (void) WriteBlobByte(image,byte << (8-bit));
-              if ((((image->columns/8)+
-                    (image->columns % 8 ? 1 : 0)) % 2) != 0)
-                (void) WriteBlobByte(image,0);  /* pad scanline */
+                *q++=(byte << (8-bit));
+              (void) WriteBlob(image,bytes_per_line,pixels);
               if (image->previous == (Image *) NULL)
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,&image->exception,
@@ -1092,14 +1148,14 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
               p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
               if (p == (const PixelPacket *) NULL)
                 break;
+              q=pixels;
               indexes=AccessImmutableIndexes(image);
               for (x=0; x < (long) image->columns; x++)
                 {
-                  (void) WriteBlobByte(image,indexes[x]);
+                  *q++=indexes[x];
                   p++;
                 }
-              if (image->columns & 0x01)
-                (void) WriteBlobByte(image,0);  /* pad scanline */
+              (void) WriteBlob(image,bytes_per_line,pixels);
               if (image->previous == (Image *) NULL)
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,&image->exception,
@@ -1113,33 +1169,11 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
           /*
             Full color SUN raster.
           */
-          register unsigned char
-            *q;
-
-          size_t
-            pad;
-
-          unsigned char
-            *pixels;
-
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Writing SUN truecolor frame %lu...",image->scene);
-
           /*
-            Allocate memory for pixels.
-
-            Scanlines are padded to 16-bit boundary so account for padding.
-          */
-          pad=(image->columns & 0x01 ? 1 : 0);
-          pixels=MagickAllocateResourceLimitedArray(unsigned char *,
-                                                    image->columns + pad,
-                                                    sizeof(PixelPacket));
-          if (pixels == (unsigned char *) NULL)
-            ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
-                                 image);
-          /*
-            Convert DirectClass packet to SUN RGB pixel.
+            Convert DirectClass packet to SUN (A)RGB pixel.
           */
           for (y=0; y < (long) image->rows; y++)
             {
@@ -1156,9 +1190,7 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
                   *q++=ScaleQuantumToChar(p->blue);
                   p++;
                 }
-              if (image->columns & 0x01)
-                *q++=0;  /* pad scanline */
-              (void) WriteBlob(image,q-pixels,(char *) pixels);
+              (void) WriteBlob(image,bytes_per_line,pixels);
               if (image->previous == (Image *) NULL)
                 if (QuantumTick(y,image->rows))
                   if (!MagickMonitorFormatted(y,image->rows,&image->exception,
@@ -1166,8 +1198,8 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
                                               image->columns,image->rows))
                     break;
             }
-          MagickFreeResourceLimitedMemory(pixels);
         }
+      MagickFreeResourceLimitedMemory(pixels);
       if (image->next == (Image *) NULL)
         break;
       image=SyncNextImageInList(image);

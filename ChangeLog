@@ -1,3 +1,12 @@
+2023-01-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sun.c (ReadSUNImage): Address oss-fuzz 54810
+	"graphicsmagick:coder_SUN_fuzzer: Heap-buffer-overflow in
+	ReadSUNImage".
+
+	* coders/pict.c (WritePICTImage): Fix use of logical operator
+	where binary operator is needed.
+
 2023-01-05 Fojtik Jaroslav  <JaFojtik@yandex.com>
 	* VisualMagick/installer/inc/body.isx 64 bit distribution MUST NOT be installed on pure
 	32 bit system. Sanity check added.
