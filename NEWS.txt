@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to December 30, 2022
+This file was last updated to reflect changes up to January 7, 2023
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.40 (XXXXXX XX, 2022)
+1.3.40 (XXXXXX XX, 2023)
 ==========================
 
 Special Issues:
@@ -51,6 +51,11 @@ Security Fixes:
 
 Bug fixes:
 
+* GetMagickGeometry(): Fix a scaling issue where dimensions could be
+  scaled down to zero.
+
+* PCD: Handle writing image with a dimension of 1.
+
 * SUN: The sense of monochrome images was inverted.  Fix scanline size
   calculation.
 
@@ -58,6 +63,9 @@ New Features:
 
 * PCX and DCX: Support writing uncompressed format (use -compress none
   for no compression).
+
+* Added IM1, IM8, and IM24 magick aliases for the Sun Raster format
+  since those are the historically correct extensions.
 
 API Updates:
 
@@ -67,7 +75,14 @@ API Updates:
 
 Windows Delegate Updates/Additions:
 
+* Jasper is updated to release 2.0.33.
+
 Build Changes:
+
+* Visual Studio build possible with Visual Studio 2008 - 2022.
+
+* Windows Inno Setup installer now installs Microsoft redistributables
+  rather than using a side-by-side DLL configuration.
 
 Behavior Changes:
 

@@ -1,5 +1,7 @@
 2023-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Updated the news.
+
 	* It is 2023 now!  Update copyrights, rotate changelogs, etc.
 
 	* magick/blob.c (OpenBlob): Zlib has never supported opening Unix
