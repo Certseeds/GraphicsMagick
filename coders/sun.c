@@ -849,6 +849,33 @@ ModuleExport void RegisterSUNImage(void)
   MagickInfo
     *entry;
 
+  entry=SetMagickInfo("IM1");
+  entry->decoder=(DecoderHandler) ReadSUNImage;
+  entry->encoder=(EncoderHandler) WriteSUNImage;
+  entry->magick=(MagickHandler) IsSUN;
+  entry->description="SUN Rasterfile (1 bit)";
+  entry->module="SUN";
+  entry->stealth=MagickTrue;
+  (void) RegisterMagickInfo(entry);
+
+  entry=SetMagickInfo("IM8");
+  entry->decoder=(DecoderHandler) ReadSUNImage;
+  entry->encoder=(EncoderHandler) WriteSUNImage;
+  entry->magick=(MagickHandler) IsSUN;
+  entry->description="SUN Rasterfile (8 bit)";
+  entry->module="SUN";
+  entry->stealth=MagickTrue;
+  (void) RegisterMagickInfo(entry);
+
+  entry=SetMagickInfo("IM24");
+  entry->decoder=(DecoderHandler) ReadSUNImage;
+  entry->encoder=(EncoderHandler) WriteSUNImage;
+  entry->magick=(MagickHandler) IsSUN;
+  entry->description="SUN Rasterfile (24 bit)";
+  entry->module="SUN";
+  entry->stealth=MagickTrue;
+  (void) RegisterMagickInfo(entry);
+
   entry=SetMagickInfo("RAS");
   entry->decoder=(DecoderHandler) ReadSUNImage;
   entry->encoder=(EncoderHandler) WriteSUNImage;
@@ -886,6 +913,9 @@ ModuleExport void RegisterSUNImage(void)
 */
 ModuleExport void UnregisterSUNImage(void)
 {
+  (void) UnregisterMagickInfo("IM1");
+  (void) UnregisterMagickInfo("IM8");
+  (void) UnregisterMagickInfo("IM24");
   (void) UnregisterMagickInfo("RAS");
   (void) UnregisterMagickInfo("SUN");
 }
