@@ -32,6 +32,10 @@ call :_dorwtest both ART
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both BMP
 if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both BMP2
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both BMP3
+if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both CAL
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both CIN
@@ -145,6 +149,8 @@ if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both VST
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both WBMP
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both WEBP
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both XBM
 if not %COUNT% EQU 6 goto :_failed
