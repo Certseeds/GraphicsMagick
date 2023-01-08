@@ -1297,6 +1297,7 @@ png_read_raw_profile(Image *image, const ImageInfo *image_info,
   else
     {
       strlcpy(profile_name,&text[ii].key[17],sizeof(profile_name));
+      LocaleUpper(profile_name);
       strlcpy(profile_description,"generic profile, type ",
               sizeof(profile_description));
       strlcat(profile_description,&text[ii].key[17],
@@ -8194,17 +8195,22 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
     if (profile_iterator)
       {
         const char
-          *profile_name;
+          *profile_name_uc;
 
         const unsigned char
           *profile_info;
 
+        char
+          profile_name[MaxTextExtent];
+
         size_t
           profile_length;
 
-        while (NextImageProfile(profile_iterator,&profile_name,&profile_info,
+        while (NextImageProfile(profile_iterator,&profile_name_uc,&profile_info,
                                 &profile_length) != MagickFail)
           {
+            (void) strlcpy(profile_name, profile_name_uc, sizeof(profile_name));
+            LocaleLower(profile_name);
             if (LocaleCompare(profile_name,"ICM") == 0)
               {
 #if defined(PNG_WRITE_iCCP_SUPPORTED)

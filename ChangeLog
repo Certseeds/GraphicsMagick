@@ -1,5 +1,10 @@
 2023-01-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/png.c (WriteOnePNGImage): Use lower-case raw profile
+	identifiers (e.g. 'Raw profile type xmp') because exiftool expects
+	that.  Partially addresses concerns raised by SourceForge bug #682
+	"Invalid storage of XMP in PNGs".
+
 	* www/INSTALL-unix.rst: Add notes about required libjxl versions.
 
 	* README.txt: Add notes about required libjxl versions.
