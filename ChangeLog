@@ -1,3 +1,9 @@
+2023-01-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-unix.rst: Add notes about required libjxl versions.
+
+	* README.txt: Add notes about required libjxl versions.
+
 2023-01-08 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat Added new tests for WEBP, BMP2 & BMP3.
