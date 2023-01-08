@@ -1,3 +1,7 @@
+2023-01-08  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/wpg.c Fixed deffect in WPG header reading.
+
 2023-01-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/png.c (WriteOnePNGImage): Use lower-case raw profile

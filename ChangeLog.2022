@@ -1,6 +1,6 @@
 2022-12-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/pcx.c (WritePCXImage): Meke default RLE compression.
+	* coders/pcx.c (WritePCXImage): Make default RLE compression.
 	Uncompressed PCX is more rare.
 
 2022-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

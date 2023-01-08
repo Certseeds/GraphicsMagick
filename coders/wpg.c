@@ -21,7 +21,7 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                              June 2000 - 2022                               %
+%                              June 2000 - 2023                               %
 %                         Rework for GraphicsMagick                           %
 %                              Bob Friesenhahn                                %
 %                               Feb-May 2003                                  %
@@ -1109,8 +1109,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   {
     unsigned long FileId;
     ExtendedSignedIntegralType DataOffset;  /* magick_uint32_t */
-    unsigned int ProductType;
-    unsigned int FileType;
+    unsigned char ProductType;
+    unsigned char FileType;
     unsigned char MajorVersion;
     unsigned char MinorVersion;
     unsigned int EncryptKey;
@@ -1250,15 +1250,15 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   */
   Header.FileId=ReadBlobLSBLong(image);
   Header.DataOffset=(ExtendedSignedIntegralType) ReadBlobLSBLong(image);
-  Header.ProductType=ReadBlobLSBShort(image);
-  Header.FileType=ReadBlobLSBShort(image);
+  Header.ProductType=ReadBlobByte(image);
+  Header.FileType=ReadBlobByte(image);
   Header.MajorVersion=ReadBlobByte(image);
   Header.MinorVersion=ReadBlobByte(image);
   Header.EncryptKey=ReadBlobLSBShort(image);
   Header.Reserved=ReadBlobLSBShort(image);
   if(logging) LogHeaderWPG(Header);
 
-  if (Header.FileId!=0x435057FF || (Header.ProductType>>8)!=0x16)
+  if (Header.FileId!=0x435057FF || Header.FileType!=0x16)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
   if (Header.EncryptKey!=0)
     ThrowReaderException(CoderError,EncryptedWPGImageFileNotSupported,image);
@@ -1285,7 +1285,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
     ThrowReaderException(CorruptImageError,AnErrorHasOccurredReadingFromFile,image);
   }
 
-  switch(Header.FileType)
+  switch(Header.MajorVersion)
     {
     case 1:     /* WPG level 1 */
       BitmapHeader2.RotAngle = 0;
