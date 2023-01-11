@@ -1339,7 +1339,15 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               image->rows=BitmapHeader1.Heigth;
               bpp=BitmapHeader1.Depth;
 				// Whole palette is useless for bilevel image.
-              if(bpp==1) image->storage_class=DirectClass;
+              if(bpp==1)
+              {
+                image->storage_class = PseudoClass;
+                image->colors = 2;
+                if (!AllocateImageColormap(image,2)) goto NoMemory;
+                image->colormap[0].red = image->colormap[0].green = image->colormap[0].blue = 0;
+                image->colormap[1].red = image->colormap[1].green = image->colormap[1].blue = MaxRGB;
+                image->colormap[0].opacity = image->colormap[1].opacity = OpaqueOpacity;
+              }
               goto UnpackRaster;
 
             case 0x0E:  /*Color palette */

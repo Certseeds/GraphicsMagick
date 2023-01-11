@@ -1,3 +1,8 @@
+2023-01-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/wpg.c Fixed Monochromatic bilevel WPG should answer to 
+	gm identify file.wpg ..... PseudoClass 2c 8-bit
+
 2023-01-08  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/wpg.c Fixed deffect in WPG header reading.
