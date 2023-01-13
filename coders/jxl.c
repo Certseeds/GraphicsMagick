@@ -168,6 +168,69 @@ static unsigned int JxlDataTypeToQuantumSize(const JxlDataType data_type)
   return quantum_size;
 }
 
+static const char *JxlExtraChannelTypeAsString(const JxlExtraChannelType extra_channel_type)
+{
+  const char *str = "Unknown";
+
+  /* Defined in jxl/codestream_header.h */
+  switch (extra_channel_type)
+    {
+    case JXL_CHANNEL_ALPHA:
+      str = "Alpha";
+      break;
+    case JXL_CHANNEL_DEPTH:
+      str = "Depth";
+      break;
+    case JXL_CHANNEL_SPOT_COLOR:
+      str = "SpotColor";
+      break;
+    case JXL_CHANNEL_SELECTION_MASK:
+      str = "SelectionMask";
+      break;
+    case JXL_CHANNEL_BLACK:
+      str = "Black";
+      break;
+    case JXL_CHANNEL_CFA:
+      str = "CFA";
+      break;
+    case JXL_CHANNEL_THERMAL:
+      str = "Thermal";
+      break;
+    case JXL_CHANNEL_RESERVED0:
+      str = "RESERVED0";
+      break;
+    case JXL_CHANNEL_RESERVED1:
+      str = "RESERVED1";
+      break;
+    case JXL_CHANNEL_RESERVED2:
+      str = "RESERVED2";
+      break;
+    case JXL_CHANNEL_RESERVED3:
+      str = "RESERVED3";
+      break;
+    case JXL_CHANNEL_RESERVED4:
+      str = "RESERVED4";
+      break;
+    case JXL_CHANNEL_RESERVED5:
+      str = "RESERVED5";
+      break;
+    case JXL_CHANNEL_RESERVED6:
+      str = "RESERVED6";
+      break;
+    case JXL_CHANNEL_RESERVED7:
+      str = "RESERVED7";
+      break;
+    case JXL_CHANNEL_UNKNOWN:
+      str = "Unknown";
+      break;
+    case JXL_CHANNEL_OPTIONAL:
+      str = "Optional";
+      break;
+    }
+
+  return str;
+}
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -326,6 +389,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   JxlPixelFormat
     pixel_format;
 
+  JxlExtraChannelInfo
+    extra_channel_info[5];
+
   struct MyJXLMemoryManager
     mm;
 
@@ -458,10 +524,48 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                       "    bits_per_sample=%u\n"
                                       "    exponent_bits_per_sample=%u\n"
                                       "    alpha_bits=%u\n"
-                                      "    num_color_channels=%u",
+                                      "    num_color_channels=%u\n"
+                                      "    have_animation=%s",
                                       basic_info.xsize, basic_info.ysize,
                                       basic_info.bits_per_sample, basic_info.exponent_bits_per_sample,
-                                      basic_info.alpha_bits, basic_info.num_color_channels);
+                                      basic_info.alpha_bits, basic_info.num_color_channels,
+                                      basic_info.have_animation == JXL_FALSE ? "False" : "True");
+              }
+            if (basic_info.num_extra_channels)
+              {
+                size_t index;
+                (void) memset(extra_channel_info,0,sizeof(extra_channel_info));
+                for (index = 0 ;index < Min(basic_info.num_extra_channels,
+                                            ArraySize(extra_channel_info));
+                     index++)
+                  {
+                    JxlExtraChannelInfo* ecip=&extra_channel_info[index];
+                    status=JxlDecoderGetExtraChannelInfo(jxl_decoder,
+                                                         index,
+                                                         ecip);
+                    if (JXL_DEC_SUCCESS == status)
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Extra Channel Info[%lu]:\n"
+                                            "    type=%s\n"
+                                            "    bits_per_sample=%u\n"
+                                            "    exponent_bits_per_sample=%u\n"
+                                            "    dim_shift=%u\n"
+                                            "    name_length=%u\n"
+                                            "    alpha_premultiplied=%s\n"
+                                            "    spot_color=%f,%f,%f,%f\n"
+                                            "    cfa_channel=%u"
+                                          ,
+                                            (unsigned long) index,
+                                            JxlExtraChannelTypeAsString(ecip->type),
+                                            ecip->bits_per_sample,
+                                            ecip->exponent_bits_per_sample,
+                                            ecip->dim_shift,
+                                            ecip->name_length,
+                                            ecip->alpha_premultiplied == JXL_FALSE ? "False" : "True",
+                                            ecip->spot_color[0],ecip->spot_color[1],
+                                            ecip->spot_color[2],ecip->spot_color[3],
+                                            ecip->cfa_channel);
+                  }
               }
 
             if (basic_info.have_animation == 1)
@@ -784,7 +888,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               do
                 {
                   JxlBoxType
-                    type;
+                    type; /* A 4 character string which is not null terminated! */
 
                   magick_uint64_t
                     profile_size = 0;
@@ -804,8 +908,8 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                     break;
 
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "JXL Box of type \"%s\" and %lu bytes",
-                                        type, (unsigned long) profile_size);
+                                        "JXL Box of type \"%c%c%c%c\" and %lu bytes",
+                                        type[0],type[1],type[2],type[3], (unsigned long) profile_size);
 
                   /* Ignore tiny profiles */
                   if (profile_size < 4)
@@ -1142,7 +1246,22 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   if ((jxl_status = JxlEncoderSetCodestreamLevel(jxl_encoder,-1)) != JXL_ENC_SUCCESS)
     {
     };
-
+  if (image->logging)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Basic Info:\n"
+                            "    xsize=%u\n"
+                            "    ysize=%u \n"
+                            "    bits_per_sample=%u\n"
+                            "    exponent_bits_per_sample=%u\n"
+                            "    alpha_bits=%u\n"
+                            "    num_color_channels=%u\n"
+                            "    have_animation=%s",
+                            basic_info.xsize, basic_info.ysize,
+                            basic_info.bits_per_sample, basic_info.exponent_bits_per_sample,
+                            basic_info.alpha_bits, basic_info.num_color_channels,
+                            basic_info.have_animation == JXL_FALSE ? "False" : "True");
+    }
   /* Set the global metadata of the image encoded by this encoder. */
   if ((jxl_status = JxlEncoderSetBasicInfo(jxl_encoder,&basic_info)) != JXL_ENC_SUCCESS)
     {
