@@ -1230,7 +1230,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 
   basic_info.num_color_channels = characteristics.grayscale ? 1 : 3;
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "Using %u channel%s", basic_info.num_color_channels,
+                        "Using %u color channel%s", basic_info.num_color_channels,
                         basic_info.num_color_channels > 1 ? "s" : "");
 
   if (!characteristics.opaque)
