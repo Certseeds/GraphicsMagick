@@ -1,5 +1,7 @@
 2023-01-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* PerlMagick/MANIFEST: Update PerlMagick manifest.
+
 	* version.sh: Updated for 1.3.40 release.
 
 	* NEWS.txt: Updated the news.

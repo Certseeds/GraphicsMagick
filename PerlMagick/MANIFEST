@@ -202,7 +202,14 @@ t/jpeg/input.sfw
 t/jpeg/input_plane.jpg
 t/jpeg/read.t
 t/jpeg/write.t
-t/jxl/input.jxl
+t/jxl/input_gray_08.jxl
+t/jxl/input_gray_16.jxl
+t/jxl/input_gray_16f.jxl
+t/jxl/input_gray_32f.jxl
+t/jxl/input_truecolor_08.jxl
+t/jxl/input_truecolor_16.jxl
+t/jxl/input_truecolor_16f.jxl
+t/jxl/input_truecolor_32f.jxl
 t/MasterImage_70x46.ppm
 t/montage.t
 t/mpeg/input.m2v
