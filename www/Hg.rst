@@ -86,9 +86,9 @@ By default the cloned directory is populated with files from the
 `default` (i.e. head) branch of the code, which is where active
 development happens.
 
-If you require a specific release of GraphicsMagick (e.g. 1.3.36), you may select it like::
+If you require a specific release of GraphicsMagick (e.g. 1.3.40), you may select it like::
 
-  hg update -r GraphicsMagick-1_3_36
+  hg update -r GraphicsMagick-1_3_40
 
 or if you require a specific branch of GraphicsMagick (e.g. 1.3), you may use::
 
