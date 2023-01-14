@@ -71,16 +71,19 @@
 * Includes.
 \******************************************************************************/
 
-#include <assert.h>
-
+#include "jasper/jas_image.h"
 #include "jasper/jas_types.h"
 #include "jasper/jas_stream.h"
-#include "jasper/jas_image.h"
 #include "jasper/jas_malloc.h"
+#include "jasper/jas_math.h"
 #include "jasper/jas_debug.h"
 #include "jasper/jas_tvp.h"
 
 #include "bmp_cod.h"
+
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /******************************************************************************\
 * Local types.
@@ -99,7 +102,7 @@ typedef enum {
 \******************************************************************************/
 
 static int bmp_gethdr(jas_stream_t *in, bmp_hdr_t *hdr);
-static bmp_info_t *bmp_getinfo(jas_stream_t *in);
+static bmp_info_t *bmp_getinfo(jas_stream_t *in, const bmp_dec_importopts_t *opts);
 static int bmp_getdata(jas_stream_t *in, bmp_info_t *info, jas_image_t *image);
 static int bmp_getint16(jas_stream_t *in, int_fast16_t *val);
 static int bmp_getint32(jas_stream_t *in, int_fast32_t *val);
@@ -109,7 +112,7 @@ static int bmp_gobble(jas_stream_t *in, long n);
 * Option parsing.
 \******************************************************************************/
 
-static jas_taginfo_t decopts[] = {
+static const jas_taginfo_t decopts[] = {
 	{OPT_MAXSIZE, "max_samples"},
 	{-1, 0}
 };
@@ -184,7 +187,7 @@ jas_image_t *bmp_decode(jas_stream_t *in, const char *optstr)
 	  ));
 
 	/* Read the bitmap information. */
-	if (!(info = bmp_getinfo(in))) {
+	if (!(info = bmp_getinfo(in, &opts))) {
 		jas_eprintf("cannot get info\n");
 		goto error;
 	}
@@ -291,26 +294,14 @@ error:
 
 int bmp_validate(jas_stream_t *in)
 {
-	int n;
-	int i;
 	jas_uchar buf[2];
 
 	assert(JAS_STREAM_MAXPUTBACK >= 2);
 
 	/* Read the first two characters that constitute the signature. */
-	if ((n = jas_stream_read(in, (char *) buf, 2)) < 0) {
+	if (jas_stream_peek(in, buf, sizeof(buf)) != sizeof(buf))
 		return -1;
-	}
-	/* Put the characters read back onto the stream. */
-	for (i = n - 1; i >= 0; --i) {
-		if (jas_stream_ungetc(in, buf[i]) == EOF) {
-			return -1;
-		}
-	}
-	/* Did we read enough characters? */
-	if (n < 2) {
-		return -1;
-	}
+
 	/* Is the signature correct for the BMP format? */
 	if (buf[0] == (BMP_MAGIC & 0xff) && buf[1] == (BMP_MAGIC >> 8)) {
 		return 0;
@@ -332,13 +323,17 @@ static int bmp_gethdr(jas_stream_t *in, bmp_hdr_t *hdr)
 	return 0;
 }
 
-static bmp_info_t *bmp_getinfo(jas_stream_t *in)
+static bmp_info_t *bmp_getinfo(jas_stream_t *in, const bmp_dec_importopts_t *opts)
 {
 	bmp_info_t *info;
 	int i;
 	bmp_palent_t *palent;
+	size_t num_pixels;
+
+	info = 0;
 
 	if (!(info = bmp_info_create())) {
+		goto error;
 		return 0;
 	}
 
@@ -350,8 +345,7 @@ static bmp_info_t *bmp_getinfo(jas_stream_t *in)
 	  bmp_getint32(in, &info->hres) || bmp_getint32(in, &info->vres) ||
 	  bmp_getint32(in, &info->numcolors) ||
 	  bmp_getint32(in, &info->mincolors)) {
-		bmp_info_destroy(info);
-		return 0;
+		goto error;
 	}
 
 	if (info->height < 0) {
@@ -363,21 +357,40 @@ static bmp_info_t *bmp_getinfo(jas_stream_t *in)
 
 	if (info->width <= 0 || info->height <= 0 || info->numplanes <= 0 ||
 	  info->depth <= 0  || info->numcolors < 0 || info->mincolors < 0) {
-		bmp_info_destroy(info);
-		return 0;
+		goto error;
+	}
+
+	if (info->depth != 8 && info->depth != 24) {
+		jas_eprintf(
+		  "BMP decoder only supports images with depth 8 or 24 "
+		  "(depth %d)\n", info->depth);
+		goto error;
+	}
+
+	if (!jas_safe_size_mul(info->width, info->height, &num_pixels) ||
+	    (opts->max_samples > 0 && num_pixels > opts->max_samples)) {
+		jas_eprintf("image dimensions too large\n");
+		goto error;
 	}
 
 	if (info->enctype != BMP_ENC_RGB) {
 		jas_eprintf("unsupported BMP encoding\n");
-		bmp_info_destroy(info);
-		return 0;
+		goto error;
+	}
+
+	/* Check for a palette whose size is unreasonably large. */
+	if ((uint_fast32_t)info->numcolors > 256 && (uint_fast32_t)info->numcolors > num_pixels) {
+		jas_eprintf("palette size is greater than 256 and "
+		  "greater than the number of pixels "
+		  "(%"_PFX_PTR"u > %"_PFX_PTR"u)\n",
+		  (uint_fast32_t)info->numcolors > num_pixels);
+		goto error;
 	}
 
 	if (info->numcolors > 0) {
 		if (!(info->palents = jas_alloc2(info->numcolors,
 		  sizeof(bmp_palent_t)))) {
-			bmp_info_destroy(info);
-			return 0;
+			goto error;
 		}
 	} else {
 		info->palents = 0;
@@ -389,12 +402,17 @@ static bmp_info_t *bmp_getinfo(jas_stream_t *in)
 		  (palent->grn = jas_stream_getc(in)) == EOF ||
 		  (palent->red = jas_stream_getc(in)) == EOF ||
 		  (palent->res = jas_stream_getc(in)) == EOF) {
-			bmp_info_destroy(info);
-			return 0;
+			goto error;
 		}
 	}
 
 	return info;
+
+error:
+	if (info) {
+		bmp_info_destroy(info);
+	}
+	return 0;
 }
 
 static int bmp_getdata(jas_stream_t *in, bmp_info_t *info, jas_image_t *image)

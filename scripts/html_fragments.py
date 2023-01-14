@@ -74,7 +74,7 @@ nav_template = """
 footer_template = u"""
 <hr class="docutils">
 <div class="document">
-    <p><a href="%(url_prefix)sCopyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2022%(sponsor_logo_html)s</p>
+    <p><a href="%(url_prefix)sCopyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2023%(sponsor_logo_html)s</p>
 </div>
 """
 

@@ -71,18 +71,18 @@
 * Includes.
 \******************************************************************************/
 
-#include <ctype.h>
-#include <math.h>
-#include <stdlib.h>
-#include <assert.h>
+#include "pnm_cod.h"
 
 #include "jasper/jas_types.h"
 #include "jasper/jas_stream.h"
 #include "jasper/jas_image.h"
 #include "jasper/jas_debug.h"
 #include "jasper/jas_tvp.h"
+#include "jasper/jas_math.h"
 
-#include "pnm_cod.h"
+#include <ctype.h>
+#include <stdlib.h>
+#include <assert.h>
 
 /******************************************************************************\
 * Local types.
@@ -120,7 +120,7 @@ static int pnm_getint16(jas_stream_t *in, int *val);
 * Option parsing.
 \******************************************************************************/
 
-static jas_taginfo_t pnm_decopts[] = {
+static const jas_taginfo_t pnm_decopts[] = {
 	{OPT_ALLOWTRUNC, "allow_trunc"},
 	{OPT_MAXSIZE, "max_samples"},
 	{-1, 0}
@@ -191,6 +191,10 @@ jas_image_t *pnm_decode(jas_stream_t *in, const char *optstr)
 	  hdr.sgnd)
 	  );
 
+	if (hdr.width <= 0 || hdr.height <= 0) {
+		goto error;
+	}
+
 	if (!jas_safe_size_mul3(hdr.width, hdr.height, hdr.numcmpts,
 	  &num_samples)) {
 		jas_eprintf("image too large\n");
@@ -254,25 +258,13 @@ error:
 int pnm_validate(jas_stream_t *in)
 {
 	jas_uchar buf[2];
-	int i;
-	int n;
 
 	assert(JAS_STREAM_MAXPUTBACK >= 2);
 
 	/* Read the first two characters that constitute the signature. */
-	if ((n = jas_stream_read(in, buf, 2)) < 0) {
+	if (jas_stream_peek(in, buf, sizeof(buf)) != sizeof(buf))
 		return -1;
-	}
-	/* Put these characters back to the stream. */
-	for (i = n - 1; i >= 0; --i) {
-		if (jas_stream_ungetc(in, buf[i]) == EOF) {
-			return -1;
-		}
-	}
-	/* Did we read enough data? */
-	if (n < 2) {
-		return -1;
-	}
+
 	/* Is this the correct signature for a PNM file? */
 	if (buf[0] == 'P' && isdigit(buf[1])) {
 		return 0;

@@ -924,7 +924,7 @@ ModuleExport void UnregisterPCXImage(void)
 %
 %
 */
-static MagickPassFail WriteRLEPixels(Image *image,
+static MagickPassFail WritePCXPixels(Image *image,
                                      PCXInfo *pcx_info,
                                      const unsigned char *pcx_row_pixels)
 {
@@ -945,16 +945,32 @@ static MagickPassFail WriteRLEPixels(Image *image,
   /* For each color plane ... */
   for (i=0; i < (long) pcx_info->planes; i++)
     {
-      previous=(*q++);
-      count=1;
-      /* For each column ... */
-      for (x=0; x < (long) (pcx_info->bytes_per_line-1); x++)
+      if (pcx_info->encoding == 0)
         {
-          packet=(*q++);
-          if ((packet == previous) && (count < 63))
+          for (x=0; x < (long) pcx_info->bytes_per_line; x++)
+            (void) WriteBlobByte(image,(unsigned char) (*q++));
+        }
+      else
+        {
+          previous=(*q++);
+          count=1;
+          /* For each column ... */
+          for (x=0; x < (long) (pcx_info->bytes_per_line-1); x++)
             {
-              count++;
-              continue;
+              packet=(*q++);
+              if ((packet == previous) && (count < 63))
+                {
+                  count++;
+                  continue;
+                }
+              if ((count > 1) || ((previous & 0xc0) == 0xc0))
+                {
+                  count|=0xc0;
+                  (void) WriteBlobByte(image,count);
+                }
+              (void) WriteBlobByte(image,previous);
+              previous=packet;
+              count=1;
             }
           if ((count > 1) || ((previous & 0xc0) == 0xc0))
             {
@@ -962,15 +978,7 @@ static MagickPassFail WriteRLEPixels(Image *image,
               (void) WriteBlobByte(image,count);
             }
           (void) WriteBlobByte(image,previous);
-          previous=packet;
-          count=1;
         }
-      if ((count > 1) || ((previous & 0xc0) == 0xc0))
-        {
-          count|=0xc0;
-          (void) WriteBlobByte(image,count);
-        }
-      (void) WriteBlobByte(image,previous);
     }
   return (MagickPass);
 }
@@ -1029,6 +1037,9 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
   unsigned long
     scene;
 
+  const unsigned long
+    max_scenes = 1024UL;
+
   ImageCharacteristics
     characteristics;
 
@@ -1057,11 +1068,12 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       */
       write_dcx=MagickTrue;
       (void) WriteBlobLSBLong(image,0x3ADE68B1L);
-      page_table=MagickAllocateResourceLimitedMemory(ExtendedSignedIntegralType *,
-        1024*sizeof(ExtendedSignedIntegralType));
+      page_table=MagickAllocateResourceLimitedClearedArray(ExtendedSignedIntegralType *,
+                                                           max_scenes+1,
+                                                           sizeof(ExtendedSignedIntegralType));
       if (page_table == (ExtendedSignedIntegralType *) NULL)
         ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-      for (scene=0; scene < 1024; scene++)
+      for (scene=0; scene < max_scenes; scene++)
         (void) WriteBlobLSBLong(image,0x00000000L);
     }
   adjoin=(image_info->adjoin) && (image->next != (const Image *) NULL) && (write_dcx);
@@ -1093,7 +1105,12 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     */
     pcx_info.identifier=0x0a;
     pcx_info.version=5;
-    pcx_info.encoding=1;
+    /* Please note that uncompressed PCX in quite rare and some applications cannot open it.
+       So the compressed PCX needs to be default. */
+    pcx_info.encoding = (image->compression==RLECompression || image->compression==UndefinedCompression) ? 1 : 0;
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Using %s compression",
+                          pcx_info.encoding == 1 ? "RLE" : "No");
     pcx_info.bits_per_pixel=8;
     if (characteristics.palette && characteristics.monochrome)
       pcx_info.bits_per_pixel=1;
@@ -1156,11 +1173,9 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     /*
       Dump colormap to file.
     */
-    pcx_colormap=MagickAllocateResourceLimitedMemory(unsigned char *,3*256);
+    pcx_colormap=MagickAllocateResourceLimitedClearedArray(unsigned char *,3,256);
     if (pcx_colormap == (unsigned char *) NULL)
       ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-    for (i=0; i < (3*256); i++)
-      pcx_colormap[i]=0;
     q=pcx_colormap;
     if (image->storage_class == PseudoClass)
       for (i=0; i < (long) image->colors; i++)
@@ -1177,7 +1192,9 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     for (i=0; i < 58; i++)
       (void) WriteBlobByte(image,'\0');
     /* Allocate memory for one pixel row. */
-    pcx_pixels=MagickAllocateResourceLimitedArray(unsigned char *,bytes_per_line,pcx_info.planes);
+    pcx_pixels=MagickAllocateResourceLimitedClearedArray(unsigned char *,
+                                                         bytes_per_line,
+                                                         pcx_info.planes);
     if (pcx_pixels == (unsigned char *) NULL)
       ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     q=pcx_pixels;
@@ -1236,7 +1253,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
                 }
               }
           }
-          if (WriteRLEPixels(image,&pcx_info,pcx_pixels) == MagickFail)
+          if (WritePCXPixels(image,&pcx_info,pcx_pixels) == MagickFail)
             break;
           if (QuantumTick(y,image->rows))
             if (!MagickMonitorFormatted(y,image->rows,&image->exception,
@@ -1261,7 +1278,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
           /* For each column ... */
           for (x=0; x < (long) image->columns; x++)
             *q++=indexes[x];
-          if (WriteRLEPixels(image,&pcx_info,pcx_pixels) == MagickFail)
+          if (WritePCXPixels(image,&pcx_info,pcx_pixels) == MagickFail)
             break;
           if (image->previous == (Image *) NULL)
             if (QuantumTick(y,image->rows))
@@ -1311,7 +1328,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
             }
             if (bit != 0)
               *q++=byte << (8-bit);
-            if (WriteRLEPixels(image,&pcx_info,pcx_pixels) == MagickFail)
+            if (WritePCXPixels(image,&pcx_info,pcx_pixels) == MagickFail)
             break;
             if (image->previous == (Image *) NULL)
               if (QuantumTick(y,image->rows))
@@ -1329,12 +1346,12 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,image_list_length,
+    status=MagickMonitorFormatted(scene++,Min(max_scenes,image_list_length),
                                   &image->exception,SaveImagesText,
                                   image->filename);
     if (status == False)
       break;
-    if (scene >= 1023)
+    if (scene >= max_scenes-1)
       break;
   } while (adjoin);
   if (adjoin)
@@ -1345,6 +1362,10 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       /*
         Write the DCX page table.
       */
+      if (logging && write_dcx && image_list_length > max_scenes)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "WARNING: DCX truncated to %lu scenes!",
+                              max_scenes-1);
       page_table[scene+1]=0;
       (void) SeekBlob(image,0L,SEEK_SET);
       (void) WriteBlobLSBLong(image,0x3ADE68B1L);

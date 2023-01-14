@@ -1463,6 +1463,57 @@ static void RemoveTemporaryInputFile(ImageInfo *image_info)
   errno=0;
 }
 
+/*
+  Test if image list is a simple ordered list already in the bounds of
+  subimage/subrange or if it needs to be reconciled.
+*/
+static MagickBool MagickReconcileListNeeded(const Image* image, const ImageInfo *image_info) MAGICK_FUNC_PURE;
+static MagickBool MagickReconcileListNeeded(const Image* image, const ImageInfo *image_info)
+{
+  const Image
+    *list;
+
+  const unsigned long
+    min_scene = image_info->subimage,
+    max_scene = image_info->subimage+image_info->subrange;
+
+  MagickBool
+    res = MagickFalse;
+
+  do
+    {
+      if (strchr(image_info->tile, ',') != (char *) NULL)
+        {
+          res=MagickTrue;
+          break;
+        }
+
+      for (list = image; list != (Image *) NULL; list=list->next)
+        {
+          if (!(list->scene >= min_scene))
+            {
+              res=MagickTrue;
+              break;
+            }
+
+          if (!(list->scene < max_scene))
+            {
+              res=MagickTrue;
+              break;
+            }
+
+          if ((list->next) && (list->scene+1 != list->next->scene))
+            {
+              res=MagickTrue;
+              break;
+            }
+        }
+
+    } while (0);
+
+  return res;
+}
+
 MagickExport Image *ReadImage(const ImageInfo *image_info,
   ExceptionInfo *exception)
 {
@@ -1634,6 +1685,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
 
       if (image != (Image *) NULL)
         {
+          image=GetFirstImageInList(image);
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Returned from \"%.1024s\" decoder: frames=%lu cache=%s"
                                 " monochrome=%s grayscale=%s class=%s colorspace=%s",
@@ -1750,6 +1802,7 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
 
       if (image != (Image *) NULL)
         {
+          image=GetFirstImageInList(image);
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Returned from \"%.1024s\" decoder: frames=%lu"
                                 " cache=%s monochrome=%s grayscale=%s class=%s"
@@ -1818,7 +1871,8 @@ MagickExport Image *ReadImage(const ImageInfo *image_info,
   if (GetBlobTemporary(image))
     RemoveTemporaryInputFile(clone_info);
 
-  if ((image->next != (Image *) NULL) && IsSubimage(clone_info->tile,False))
+  if ((image->next != (Image *) NULL) && IsSubimage(clone_info->tile,False) &&
+      MagickReconcileListNeeded(image,clone_info))
     {
       char
         *q;

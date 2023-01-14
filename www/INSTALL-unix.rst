@@ -820,8 +820,10 @@ Several configure options require special note:
 JPEG XL
 -------
 
-JPEG XL seems to be a work in progress.  For development testing with
-it we build it as described on its git page
+JPEG XL seems to be a work in progress, with previous APIs being
+deprecated, and replacement APIs introduced.  We have taken an
+approach to use the latest recommended APIs.  For development testing
+with it (0.7.0 or later) we build it as described on its git page
 (https://github.com/libjxl/libjxl), but configure and build it like::
 
   git clone https://github.com/libjxl/libjxl.git --recursive --shallow-submodules
@@ -834,6 +836,9 @@ it we build it as described on its git page
   make test
   [ check for 100% tests passed ]
   make install
+
+While the JPEG XL project recommends using Clang, it is observed to
+work without known issues when compiled using GCC 9.4.0.
 
 Popular Distribution Packages
 -----------------------------

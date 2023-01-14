@@ -69,35 +69,34 @@
 * Includes.
 \******************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <math.h>
-#include <float.h>
+#include "jpc_enc.h"
+#include "jpc_flt.h"
+#include "jpc_fix.h"
+#include "jpc_tagtree.h"
+#include "jpc_cs.h"
+#include "jpc_mct.h"
+#include "jpc_tsfb.h"
+#include "jpc_t1cod.h"
+#include "jpc_t1enc.h"
+#include "jpc_t2enc.h"
+#include "jpc_math.h"
+#include "jpc_util.h"
 
 #include "jasper/jas_types.h"
 #include "jasper/jas_string.h"
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_image.h"
-#include "jasper/jas_fix.h"
 #include "jasper/jas_tvp.h"
 #include "jasper/jas_version.h"
 #include "jasper/jas_math.h"
 #include "jasper/jas_debug.h"
 
-#include "jpc_flt.h"
-#include "jpc_fix.h"
-#include "jpc_tagtree.h"
-#include "jpc_enc.h"
-#include "jpc_cs.h"
-#include "jpc_mct.h"
-#include "jpc_tsfb.h"
-#include "jpc_qmfb.h"
-#include "jpc_t1enc.h"
-#include "jpc_t2enc.h"
-#include "jpc_cod.h"
-#include "jpc_math.h"
-#include "jpc_util.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include <math.h>
+#include <float.h>
 
 /******************************************************************************\
 *
@@ -119,8 +118,8 @@
 #define	JPC_POW2(n)	\
   (1 << (n))
 
-jpc_enc_tile_t *jpc_enc_tile_create(jpc_enc_cp_t *cp, jas_image_t *image, int tileno);
-void jpc_enc_tile_destroy(jpc_enc_tile_t *tile);
+static jpc_enc_tile_t *jpc_enc_tile_create(jpc_enc_cp_t *cp, jas_image_t *image, int tileno);
+static void jpc_enc_tile_destroy(jpc_enc_tile_t *tile);
 
 static jpc_enc_tcmpt_t *tcmpt_create(jpc_enc_tcmpt_t *tcmpt, jpc_enc_cp_t *cp,
   jas_image_t *image, jpc_enc_tile_t *tile);
@@ -131,40 +130,36 @@ static void rlvl_destroy(jpc_enc_rlvl_t *rlvl);
 static jpc_enc_band_t *band_create(jpc_enc_band_t *band, jpc_enc_cp_t *cp,
   jpc_enc_rlvl_t *rlvl, jpc_tsfb_band_t *bandinfos);
 static void band_destroy(jpc_enc_band_t *bands);
-static jpc_enc_prc_t *prc_create(jpc_enc_prc_t *prc, jpc_enc_cp_t *cp,
+static jpc_enc_prc_t *prc_create(jpc_enc_prc_t *prc,
   jpc_enc_band_t *band);
 static void prc_destroy(jpc_enc_prc_t *prcs);
-static jpc_enc_cblk_t *cblk_create(jpc_enc_cblk_t *cblk, jpc_enc_cp_t *cp,
+static jpc_enc_cblk_t *cblk_create(jpc_enc_cblk_t *cblk,
   jpc_enc_prc_t *prc);
 static void cblk_destroy(jpc_enc_cblk_t *cblks);
-int ratestrtosize(char *s, uint_fast32_t rawsize, uint_fast32_t *size);
+static int ratestrtosize(const char *s, uint_fast32_t rawsize, uint_fast32_t *size);
 static void pass_destroy(jpc_enc_pass_t *pass);
-void jpc_enc_dump(jpc_enc_t *enc);
+static void jpc_enc_dump(jpc_enc_t *enc);
 
 /******************************************************************************\
 * Local prototypes.
 \******************************************************************************/
 
-int dump_passes(jpc_enc_pass_t *passes, int numpasses, jpc_enc_cblk_t *cblk);
-void calcrdslopes(jpc_enc_cblk_t *cblk);
-void dump_layeringinfo(jpc_enc_t *enc);
-static int jpc_calcssexp(jpc_fix_t stepsize);
-static int jpc_calcssmant(jpc_fix_t stepsize);
-void jpc_quantize(jas_matrix_t *data, jpc_fix_t stepsize);
+static void calcrdslopes(jpc_enc_cblk_t *cblk);
+static void dump_layeringinfo(jpc_enc_t *enc);
+static void jpc_quantize(jas_matrix_t *data, jpc_fix_t stepsize);
+static jpc_enc_t *jpc_enc_create(jpc_enc_cp_t *cp, jas_stream_t *out, jas_image_t *image);
+static void jpc_enc_destroy(jpc_enc_t *enc);
 static int jpc_enc_encodemainhdr(jpc_enc_t *enc);
 static int jpc_enc_encodemainbody(jpc_enc_t *enc);
-int jpc_enc_encodetiledata(jpc_enc_t *enc);
-jpc_enc_t *jpc_enc_create(jpc_enc_cp_t *cp, jas_stream_t *out, jas_image_t *image);
-void jpc_enc_destroy(jpc_enc_t *enc);
-static int jpc_enc_encodemainhdr(jpc_enc_t *enc);
-static int jpc_enc_encodemainbody(jpc_enc_t *enc);
-int jpc_enc_encodetiledata(jpc_enc_t *enc);
-int rateallocate(jpc_enc_t *enc, int numlyrs, uint_fast32_t *cumlens);
-int setins(int numvalues, jpc_flt_t *values, jpc_flt_t value);
+static int jpc_enc_encodetiledata(jpc_enc_t *enc);
+static int rateallocate(jpc_enc_t *enc, unsigned numlyrs, uint_fast32_t *cumlens);
 static jpc_enc_cp_t *cp_create(const char *optstr, jas_image_t *image);
-void jpc_enc_cp_destroy(jpc_enc_cp_t *cp);
+static void jpc_enc_cp_destroy(jpc_enc_cp_t *cp);
 static uint_fast32_t jpc_abstorelstepsize(jpc_fix_t absdelta, int scaleexpn);
 
+/**
+ * @return UINT_FAST32_MAX on error
+ */
 static uint_fast32_t jpc_abstorelstepsize(jpc_fix_t absdelta, int scaleexpn)
 {
 	int p;
@@ -173,16 +168,18 @@ static uint_fast32_t jpc_abstorelstepsize(jpc_fix_t absdelta, int scaleexpn)
 	int n;
 
 	if (absdelta < 0) {
-		abort();
+		return UINT_FAST32_MAX;
 	}
 
-	p = jpc_firstone(absdelta) - JPC_FIX_FRACBITS;
-	n = 11 - jpc_firstone(absdelta);
+	p = jpc_fix_firstone(absdelta) - JPC_FIX_FRACBITS;
+	n = 11 - jpc_fix_firstone(absdelta);
 	mant = ((n < 0) ? (absdelta >> (-n)) : (absdelta << n)) & 0x7ff;
 	expn = scaleexpn - p;
 	if (scaleexpn < p) {
-		abort();
+		return UINT_FAST32_MAX;
 	}
+	if (expn >= 0x1f)
+		return UINT_FAST32_MAX;
 	return JPC_QCX_EXPN(expn) | JPC_QCX_MANT(mant);
 }
 
@@ -216,7 +213,7 @@ typedef enum {
 	OPT_JP2OVERHEAD
 } optid_t;
 
-static jas_taginfo_t encopts[] = {
+static const jas_taginfo_t encopts[] = {
 	{OPT_DEBUG, "debug"},
 	{OPT_IMGAREAOFFX, "imgareatlx"},
 	{OPT_IMGAREAOFFY, "imgareatly"},
@@ -253,7 +250,7 @@ typedef enum {
 } poid_t;
 
 
-static jas_taginfo_t prgordtab[] = {
+static const jas_taginfo_t prgordtab[] = {
 	{JPC_COD_LRCPPRG, "lrcp"},
 	{JPC_COD_RLCPPRG, "rlcp"},
 	{JPC_COD_RPCLPRG, "rpcl"},
@@ -267,7 +264,7 @@ typedef enum {
 	MODE_REAL
 } modeid_t;
 
-static jas_taginfo_t modetab[] = {
+static const jas_taginfo_t modetab[] = {
 	{MODE_INT, "int"},
 	{MODE_REAL, "real"},
 	{-1, 0}
@@ -293,32 +290,37 @@ int jpc_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 	}
 
 	if (!(enc = jpc_enc_create(cp, out, image))) {
+		jas_eprintf("jpc_enc_create failed\n");
 		goto error;
 	}
 	cp = 0;
 
 	/* Encode the main header. */
 	if (jpc_enc_encodemainhdr(enc)) {
+		jas_eprintf("cannot encode main header\n");
 		goto error;
 	}
 
 	/* Encode the main body.  This constitutes most of the encoding work. */
 	if (jpc_enc_encodemainbody(enc)) {
+		jas_eprintf("cannot encode main body\n");
 		goto error;
 	}
 
 	/* Write EOC marker segment. */
 	if (!(enc->mrk = jpc_ms_create(JPC_MS_EOC))) {
+		jas_eprintf("cannot create EOC marker\n");
 		goto error;
 	}
 	if (jpc_putms(enc->out, enc->cstate, enc->mrk)) {
-		jas_eprintf("cannot write EOI marker\n");
+		jas_eprintf("cannot write EOC marker\n");
 		goto error;
 	}
 	jpc_ms_destroy(enc->mrk);
 	enc->mrk = 0;
 
 	if (jas_stream_flush(enc->out)) {
+		jas_eprintf("stream flush failed\n");
 		goto error;
 	}
 
@@ -333,6 +335,7 @@ error:
 	if (enc) {
 		jpc_enc_destroy(enc);
 	}
+	jas_eprintf("jpc_encode failed\n");
 	return -1;
 }
 
@@ -352,7 +355,6 @@ static jpc_enc_cp_t *cp_create(const char *optstr, jas_image_t *image)
 	jpc_enc_tcp_t *tcp;
 	jpc_enc_tccp_t *tccp;
 	jpc_enc_ccp_t *ccp;
-	int cmptno;
 	uint_fast16_t rlvlno;
 	uint_fast16_t prcwidthexpn;
 	uint_fast16_t prcheightexpn;
@@ -362,6 +364,7 @@ static jpc_enc_cp_t *cp_create(const char *optstr, jas_image_t *image)
 	uint_fast32_t hsteplcm;
 	uint_fast32_t vsteplcm;
 	bool mctvalid;
+	unsigned cmptno;
 
 	tvp = 0;
 	cp = 0;
@@ -388,6 +391,7 @@ static jpc_enc_cp_t *cp_create(const char *optstr, jas_image_t *image)
 	cp->tilewidth = 0;
 	cp->tileheight = 0;
 	cp->numcmpts = jas_image_numcmpts(image);
+	cp->tcp.ilyrrates = NULL;
 
 	hsteplcm = 1;
 	vsteplcm = 1;
@@ -406,8 +410,11 @@ static jpc_enc_cp_t *cp_create(const char *optstr, jas_image_t *image)
 	if (!(cp->ccps = jas_alloc2(cp->numcmpts, sizeof(jpc_enc_ccp_t)))) {
 		goto error;
 	}
-	for (cmptno = 0, ccp = cp->ccps; cmptno < JAS_CAST(int, cp->numcmpts); ++cmptno,
-	  ++ccp) {
+
+	{
+	unsigned cmptno;
+	  for (cmptno = 0, ccp = cp->ccps; cmptno < cp->numcmpts; ++cmptno,
+	    ++ccp) {
 		ccp->sampgrdstepx = jas_image_cmpthstep(image, cmptno);
 		ccp->sampgrdstepy = jas_image_cmptvstep(image, cmptno);
 		/* XXX - this isn't quite correct for more general image */
@@ -417,9 +424,14 @@ static jpc_enc_cp_t *cp_create(const char *optstr, jas_image_t *image)
 		ccp->sgnd = jas_image_cmptsgnd(image, cmptno);
 		ccp->numstepsizes = 0;
 		memset(ccp->stepsizes, 0, sizeof(ccp->stepsizes));
+	  }
 	}
 
 	cp->rawsize = jas_image_rawsize(image);
+	if (cp->rawsize == 0) {
+		/* prevent division by zero in cp_create() */
+		goto error;
+	}
 	cp->totalsize = UINT_FAST32_MAX;
 
 	tcp = &cp->tcp;
@@ -502,6 +514,11 @@ static jpc_enc_cp_t *cp_create(const char *optstr, jas_image_t *image)
 			break;
 		case OPT_MAXRLVLS:
 			tccp->maxrlvls = atoi(jas_tvparser_getval(tvp));
+			if (tccp->maxrlvls > JPC_MAXRLVLS) {
+				jas_eprintf("number of resolution levels exceeds maximum %d\n",
+				  JPC_MAXRLVLS);
+				goto error;
+			}
 			break;
 		case OPT_SOP:
 			cp->tcp.csty |= JPC_COD_SOP;
@@ -779,7 +796,7 @@ void jpc_enc_cp_destroy(jpc_enc_cp_t *cp)
 	jas_free(cp);
 }
 
-int ratestrtosize(char *s, uint_fast32_t rawsize, uint_fast32_t *size)
+int ratestrtosize(const char *s, uint_fast32_t rawsize, uint_fast32_t *size)
 {
 	jpc_flt_t f;
 
@@ -863,27 +880,6 @@ void jpc_enc_destroy(jpc_enc_t *enc)
 * Code.
 \******************************************************************************/
 
-static int jpc_calcssmant(jpc_fix_t stepsize)
-{
-	int n;
-	int e;
-	int m;
-
-	n = jpc_firstone(stepsize);
-	e = n - JPC_FIX_FRACBITS;
-	if (n >= 11) {
-		m = (stepsize >> (n - 11)) & 0x7ff;
-	} else {
-		m = (stepsize & ((1 << n) - 1)) << (11 - n);
-	}
-	return m;
-}
-
-static int jpc_calcssexp(jpc_fix_t stepsize)
-{
-	return jpc_firstone(stepsize) - JPC_FIX_FRACBITS;
-}
-
 static int jpc_enc_encodemainhdr(jpc_enc_t *enc)
 {
 	jpc_siz_t *siz;
@@ -897,7 +893,6 @@ long mainhdrlen;
 	jpc_enc_tccp_t *tccp;
 	uint_fast16_t cmptno;
 	jpc_tsfb_band_t bandinfos[JPC_MAXBANDS];
-	jpc_fix_t mctsynweight;
 	jpc_enc_tcp_t *tcp;
 	jpc_tsfb_t *tsfb;
 	jpc_tsfb_band_t *bandinfo;
@@ -915,6 +910,7 @@ startoff = jas_stream_getrwcount(enc->out);
 
 	/* Write SOC marker segment. */
 	if (!(enc->mrk = jpc_ms_create(JPC_MS_SOC))) {
+		jas_eprintf("cannot create SOC marker\n");
 		return -1;
 	}
 	if (jpc_putms(enc->out, enc->cstate, enc->mrk)) {
@@ -926,6 +922,7 @@ startoff = jas_stream_getrwcount(enc->out);
 
 	/* Write SIZ marker segment. */
 	if (!(enc->mrk = jpc_ms_create(JPC_MS_SIZ))) {
+		jas_eprintf("cannot create SIZ marker\n");
 		return -1;
 	}
 	siz = &enc->mrk->parms.siz;
@@ -955,6 +952,7 @@ startoff = jas_stream_getrwcount(enc->out);
 	enc->mrk = 0;
 
 	if (!(enc->mrk = jpc_ms_create(JPC_MS_COM))) {
+		jas_eprintf("cannot create COM marker\n");
 		return -1;
 	}
 	sprintf(buf, "Creator: JasPer Version %s", jas_getversion());
@@ -962,7 +960,7 @@ startoff = jas_stream_getrwcount(enc->out);
 	com->len = JAS_CAST(uint_fast16_t, strlen(buf));
 	com->regid = JPC_COM_LATIN;
 	if (!(com->data = JAS_CAST(jas_uchar *, jas_strdup(buf)))) {
-		abort();
+		return -1;
 	}
 	if (jpc_putms(enc->out, enc->cstate, enc->mrk)) {
 		jas_eprintf("cannot write COM marker\n");
@@ -992,10 +990,10 @@ startoff = jas_stream_getrwcount(enc->out);
 		jpc_tsfb_getbands(tsfb, 0, 0, 1 << tccp->maxrlvls, 1 << tccp->maxrlvls,
 		  bandinfos);
 		jpc_tsfb_destroy(tsfb);
-		mctsynweight = jpc_mct_getsynweight(tcp->mctid, cmptno);
 		numbands = 3 * tccp->maxrlvls - 2;
 		for (bandno = 0, bandinfo = bandinfos; bandno < numbands;
 		  ++bandno, ++bandinfo) {
+			uint_fast32_t stepsize;
 			rlvlno = (bandno) ? ((bandno - 1) / 3 + 1) : 0;
 			analgain = JPC_NOMINALGAIN(tccp->qmfbid, tccp->maxrlvls,
 			  rlvlno, bandinfo->orient);
@@ -1005,14 +1003,18 @@ startoff = jas_stream_getrwcount(enc->out);
 			} else {
 				absstepsize = jpc_inttofix(1);
 			}	
-			cp->ccps[cmptno].stepsizes[bandno] =
+			/*const uint_fast32_t*/ stepsize =
 			  jpc_abstorelstepsize(absstepsize,
 			  cp->ccps[cmptno].prec + analgain);
+			if (stepsize == UINT_FAST32_MAX)
+				return -1;
+			cp->ccps[cmptno].stepsizes[bandno] = stepsize;
 		}
 		cp->ccps[cmptno].numstepsizes = numbands;
 	}
 
 	if (!(enc->mrk = jpc_ms_create(JPC_MS_COD))) {
+		jas_eprintf("cannot create COD marker\n");
 		return -1;
 	}
 	cod = &enc->mrk->parms.cod;
@@ -1041,6 +1043,7 @@ startoff = jas_stream_getrwcount(enc->out);
 	enc->mrk = 0;
 
 	if (!(enc->mrk = jpc_ms_create(JPC_MS_QCD))) {
+		jas_eprintf("cannot create QCD marker\n");
 		return -1;
 	}
 	qcd = &enc->mrk->parms.qcd;
@@ -1050,6 +1053,7 @@ startoff = jas_stream_getrwcount(enc->out);
 	qcd->compparms.numguard = cp->tccp.numgbits;
 	qcd->compparms.stepsizes = cp->ccps[0].stepsizes;
 	if (jpc_putms(enc->out, enc->cstate, enc->mrk)) {
+		jas_eprintf("cannot write marker\n");
 		return -1;
 	}
 	/* We do not want the step size array to be freed! */
@@ -1060,6 +1064,7 @@ startoff = jas_stream_getrwcount(enc->out);
 	tccp = &cp->tccp;
 	for (cmptno = 1; cmptno < cp->numcmpts; ++cmptno) {
 		if (!(enc->mrk = jpc_ms_create(JPC_MS_QCC))) {
+			jas_eprintf("cannot create QCC marker\n");
 			return -1;
 		}
 		qcc = &enc->mrk->parms.qcc;
@@ -1070,6 +1075,7 @@ startoff = jas_stream_getrwcount(enc->out);
 		qcc->compparms.numguard = cp->tccp.numgbits;
 		qcc->compparms.stepsizes = cp->ccps[cmptno].stepsizes;
 		if (jpc_putms(enc->out, enc->cstate, enc->mrk)) {
+			jas_eprintf("cannot write marker\n");
 			return -1;
 		}
 		/* We do not want the step size array to be freed! */
@@ -1096,35 +1102,27 @@ startoff = jas_stream_getrwcount(enc->out);
 static int jpc_enc_encodemainbody(jpc_enc_t *enc)
 {
 	int tileno;
-	int tilex;
-	int tiley;
-	int i;
 	jpc_sot_t *sot;
 	jpc_enc_tcmpt_t *comp;
 	jpc_enc_tcmpt_t *endcomps;
 	jpc_enc_band_t *band;
 	jpc_enc_band_t *endbands;
 	jpc_enc_rlvl_t *lvl;
-	int rlvlno;
+	unsigned rlvlno;
 	jpc_qcc_t *qcc;
 	jpc_cod_t *cod;
 	int adjust;
-	int j;
 	int absbandno;
-	long numbytes;
 	long tilehdrlen;
 	long tilelen;
 	jpc_enc_tile_t *tile;
 	jpc_enc_cp_t *cp;
 	double rho;
-	int lyrno;
-	int cmptno;
+	unsigned cmptno;
 	int samestepsizes;
 	jpc_enc_ccp_t *ccps;
 	jpc_enc_tccp_t *tccp;
 	int bandno;
-	uint_fast32_t x;
-	uint_fast32_t y;
 	int mingbits;
 	int actualnumbps;
 	jpc_fix_t mxmag;
@@ -1133,15 +1131,11 @@ static int jpc_enc_encodemainbody(jpc_enc_t *enc)
 
 	cp = enc->cp;
 
-	/* Avoid compile warnings. */
-	numbytes = 0;
-
 	for (tileno = 0; tileno < JAS_CAST(int, cp->numtiles); ++tileno) {
-		tilex = tileno % cp->numhtiles;
-		tiley = tileno / cp->numhtiles;
-
-		if (!(enc->curtile = jpc_enc_tile_create(enc->cp, enc->image, tileno))) {
-			abort();
+		if (!(enc->curtile = jpc_enc_tile_create(enc->cp, enc->image,
+		  tileno))) {
+			jas_eprintf("cannot create tile\n");
+			return -1;
 		}
 
 		tile = enc->curtile;
@@ -1153,8 +1147,10 @@ static int jpc_enc_encodemainbody(jpc_enc_t *enc)
 		endcomps = &tile->tcmpts[tile->numtcmpts];
 		for (cmptno = 0, comp = tile->tcmpts; cmptno < tile->numtcmpts; ++cmptno, ++comp) {
 			if (!cp->ccps[cmptno].sgnd) {
+				jas_matind_t i;
 				adjust = 1 << (cp->ccps[cmptno].prec - 1);
 				for (i = 0; i < jas_matrix_numrows(comp->data); ++i) {
+					jas_matind_t j;
 					for (j = 0; j < jas_matrix_numcols(comp->data); ++j) {
 						*jas_matrix_getref(comp->data, i, j) -= adjust;
 					}
@@ -1184,10 +1180,12 @@ assert(jas_image_numcmpts(enc->image) == 3);
 			break;
 		}
 
-		for (i = 0; i < jas_image_numcmpts(enc->image); ++i) {
+		  {
+		  unsigned  i;
+		  for (i = 0; i < jas_image_numcmpts(enc->image); ++i) {
 			comp = &tile->tcmpts[i];
 			jpc_tsfb_analyze(comp->tsfb, comp->data);
-
+		  }
 		}
 
 
@@ -1207,14 +1205,16 @@ assert(jas_image_numcmpts(enc->image) == 3);
 				}
 				endbands = &lvl->bands[lvl->numbands];
 				for (band = lvl->bands; band != endbands; ++band) {
+					jas_matind_t y;
 					if (!band->data) {
 						++absbandno;
 						continue;
 					}
 					actualnumbps = 0;
 					mxmag = 0;
-					for (y = 0; y < JAS_CAST(uint_fast32_t, jas_matrix_numrows(band->data)); ++y) {
-						for (x = 0; x < JAS_CAST(uint_fast32_t, jas_matrix_numcols(band->data)); ++x) {
+					for (y = 0; y < jas_matrix_numrows(band->data); ++y) {
+						jas_matind_t x;
+						for (x = 0; x < jas_matrix_numcols(band->data); ++x) {
 							mag = JAS_ABS(jas_matrix_get(band->data, y, x));
 							if (mag > mxmag) {
 								mxmag = mag;
@@ -1222,9 +1222,9 @@ assert(jas_image_numcmpts(enc->image) == 3);
 						}
 					}
 					if (tile->intmode) {
-						actualnumbps = jpc_firstone(mxmag) + 1;
+						actualnumbps = jpc_fix_firstone(mxmag) + 1;
 					} else {
-						actualnumbps = jpc_firstone(mxmag) + 1 - JPC_FIX_FRACBITS;
+						actualnumbps = jpc_fix_firstone(mxmag) + 1 - JPC_FIX_FRACBITS;
 					}
 					numgbits = actualnumbps - (cp->ccps[cmptno].prec - 1 +
 					  band->analgain);
@@ -1241,12 +1241,17 @@ jas_eprintf("%d %d mag=%d actual=%d numgbits=%d\n", cp->ccps[cmptno].prec, band-
 					} else {
 						band->absstepsize = jpc_inttofix(1);
 					}
-					band->stepsize = jpc_abstorelstepsize(
-					  band->absstepsize, cp->ccps[cmptno].prec +
-					  band->analgain);
-					band->numbps = cp->tccp.numgbits +
-					  JPC_QCX_GETEXPN(band->stepsize) - 1;
 
+					{
+					  const uint_fast32_t stepsize = jpc_abstorelstepsize(
+					    band->absstepsize, cp->ccps[cmptno].prec +
+					    band->analgain);
+					  if (stepsize == UINT_FAST32_MAX)
+						return -1;
+					  band->stepsize = stepsize;
+					  band->numbps = cp->tccp.numgbits +
+					    JPC_QCX_GETEXPN(band->stepsize) - 1;
+					}
 					if ((!tile->intmode) && band->data) {
 						jpc_quantize(band->data, band->absstepsize);
 					}
@@ -1299,9 +1304,10 @@ jas_eprintf("mingbits %d\n", mingbits);
 /************************************************************************/
 
 		tccp = &cp->tccp;
-		for (cmptno = 0; cmptno < JAS_CAST(int, cp->numcmpts); ++cmptno) {
+		for (cmptno = 0; cmptno < cp->numcmpts; ++cmptno) {
 			comp = &tile->tcmpts[cmptno];
 			if (comp->numrlvls != tccp->maxrlvls) {
+				unsigned i;
 				if (!(enc->mrk = jpc_ms_create(JPC_MS_COD))) {
 					return -1;
 				}
@@ -1330,8 +1336,7 @@ and other characteristics */
 			}
 		}
 
-		for (cmptno = 0, comp = tile->tcmpts; cmptno < JAS_CAST(int,
-		  cp->numcmpts); ++cmptno, ++comp) {
+		for (cmptno = 0, comp = tile->tcmpts; cmptno < cp->numcmpts; ++cmptno, ++comp) {
 			ccps = &cp->ccps[cmptno];
 			if (JAS_CAST(int, ccps->numstepsizes) == comp->numstepsizes) {
 				samestepsizes = 1;
@@ -1383,7 +1388,6 @@ and other characteristics */
 /************************************************************************/
 
 		if (jpc_enc_enccblks(enc)) {
-			abort();
 			return -1;
 		}
 
@@ -1393,26 +1397,24 @@ and other characteristics */
 		  cp->imgareatly));
 		tile->rawsize = cp->rawsize * rho;
 
-		for (lyrno = 0; lyrno < tile->numlyrs - 1; ++lyrno) {
+		{
+		  unsigned lyrno;
+		  for (lyrno = 0; lyrno < tile->numlyrs - 1; ++lyrno) {
 			tile->lyrsizes[lyrno] = tile->rawsize * jpc_fixtodbl(
 			  cp->tcp.ilyrrates[lyrno]);
+		  }
 		}
-#if !defined(__clang__)
-		// WARNING:
-		// Some versions of Clang (e.g., 3.7.1 and 3.8.1) appear to generate
-		// incorrect code for the following line.
-		tile->lyrsizes[tile->numlyrs - 1] =
-		  (cp->totalsize != UINT_FAST32_MAX) ?
-		  (rho * enc->mainbodysize) : UINT_FAST32_MAX;
-#else
+
 		if (cp->totalsize != UINT_FAST32_MAX) {
 			tile->lyrsizes[tile->numlyrs - 1] = (rho * enc->mainbodysize);
 		} else {
 			tile->lyrsizes[tile->numlyrs - 1] = UINT_FAST32_MAX;
 		}
-#endif
+
 //jas_eprintf("TESTING %ld %ld\n", cp->totalsize != UINT_FAST32_MAX, tile->lyrsizes[0]);
-		for (lyrno = 0; lyrno < tile->numlyrs; ++lyrno) {
+		{
+		  unsigned lyrno;
+		  for (lyrno = 0; lyrno < tile->numlyrs; ++lyrno) {
 			if (tile->lyrsizes[lyrno] != UINT_FAST32_MAX) {
 				if (JAS_CAST(uint_fast32_t, tilehdrlen) <= tile->lyrsizes[lyrno]) {
 					tile->lyrsizes[lyrno] -= tilehdrlen;
@@ -1420,6 +1422,7 @@ and other characteristics */
 					tile->lyrsizes[lyrno] = 0;
 				}
 			}
+		  }
 		}
 
 		if (rateallocate(enc, tile->numlyrs, tile->lyrsizes)) {
@@ -1477,32 +1480,10 @@ assert(enc->tmpstream);
 	return 0;
 }
 
-int dump_passes(jpc_enc_pass_t *passes, int numpasses, jpc_enc_cblk_t *cblk)
-{
-	jpc_enc_pass_t *pass;
-	int i;
-	jas_stream_memobj_t *smo;
-
-	smo = cblk->stream->obj_;
-
-	pass = passes;
-	for (i = 0; i < numpasses; ++i) {
-		jas_eprintf("start=%d end=%d type=%d term=%d lyrno=%d firstchar=%02x size=%ld pos=%ld\n",
-		  (int)pass->start, (int)pass->end, (int)pass->type, (int)pass->term, (int)pass->lyrno,
-		  smo->buf_[pass->start], (long)smo->len_, (long)smo->pos_);
-#if 0
-		jas_memdump(stderr, &smo->buf_[pass->start], pass->end - pass->start);
-#endif
-		++pass;
-	}
-	return 0;
-}
-
 void jpc_quantize(jas_matrix_t *data, jpc_fix_t stepsize)
 {
-	int i;
-	int j;
 	jpc_fix_t t;
+	jas_matind_t i, j;
 
 	if (stepsize == jpc_inttofix(1)) {
 		return;
@@ -1591,24 +1572,24 @@ void dump_layeringinfo(jpc_enc_t *enc)
 {
 
 	jpc_enc_tcmpt_t *tcmpt;
-	int tcmptno;
+	unsigned tcmptno;
 	jpc_enc_rlvl_t *rlvl;
-	int rlvlno;
+	unsigned rlvlno;
 	jpc_enc_band_t *band;
-	int bandno;
+	unsigned bandno;
 	jpc_enc_prc_t *prc;
-	int prcno;
+	unsigned prcno;
 	jpc_enc_cblk_t *cblk;
-	int cblkno;
+	unsigned cblkno;
 	jpc_enc_pass_t *pass;
-	int passno;
-	int lyrno;
+	unsigned passno;
 	jpc_enc_tile_t *tile;
+	unsigned lyrno;
 
 	tile = enc->curtile;
 
 	for (lyrno = 0; lyrno < tile->numlyrs; ++lyrno) {
-		jas_eprintf("lyrno = %02d\n", lyrno);
+		jas_eprintf("lyrno = %02u\n", lyrno);
 		for (tcmptno = 0, tcmpt = tile->tcmpts; tcmptno < tile->numtcmpts;
 		  ++tcmptno, ++tcmpt) {
 			for (rlvlno = 0, rlvl = tcmpt->rlvls; rlvlno < tcmpt->numrlvls;
@@ -1641,13 +1622,12 @@ void dump_layeringinfo(jpc_enc_t *enc)
 	}
 }
 
-int rateallocate(jpc_enc_t *enc, int numlyrs, uint_fast32_t *cumlens)
+int rateallocate(jpc_enc_t *enc, unsigned numlyrs, uint_fast32_t *cumlens)
 {
 	jpc_flt_t lo;
 	jpc_flt_t hi;
 	jas_stream_t *out;
 	uint_fast32_t cumlen;
-	int lyrno;
 	jpc_flt_t thresh;
 	jpc_flt_t goodthresh;
 	int success;
@@ -1670,16 +1650,15 @@ int rateallocate(jpc_enc_t *enc, int numlyrs, uint_fast32_t *cumlens)
 	jpc_flt_t mnrdslope;
 	jpc_enc_tile_t *tile;
 	jpc_enc_prc_t *prc;
-	int prcno;
+	unsigned prcno;
+	unsigned lyrno;
 
 	JAS_DBGLOG(10, ("starting rate allocation\n"));
 
 	tile = enc->curtile;
 
 	for (lyrno = 1; lyrno < numlyrs - 1; ++lyrno) {
-		if (cumlens[lyrno - 1] > cumlens[lyrno]) {
-			abort();
-		}
+		assert(cumlens[lyrno - 1] <= cumlens[lyrno]);
 	}
 
 	if (!(out = jas_stream_memopen(0, 0))) {
@@ -1729,7 +1708,7 @@ int rateallocate(jpc_enc_t *enc, int numlyrs, uint_fast32_t *cumlens)
 	JAS_DBGLOG(10, ("min rdslope = %f max rdslope = %f\n", mnrdslope,
 	  mxrdslope));
 
-	jpc_init_t2state(enc, 1);
+	jpc_init_t2state(enc, true);
 
 	for (lyrno = 0; lyrno < numlyrs; ++lyrno) {
 
@@ -1824,10 +1803,10 @@ int rateallocate(jpc_enc_t *enc, int numlyrs, uint_fast32_t *cumlens)
 
 			/* Check the rate constraint. */
 			assert(pos >= 0);
-			if (pos > cumlen) {
+			if ((uint_fast32_t)pos > cumlen) {
 				/* The rate is too high. */
 				lo = thresh;
-			} else if (pos <= cumlen) {
+			} else if ((uint_fast32_t)pos <= cumlen) {
 				/* The rate is low enough, so try higher. */
 				hi = thresh;
 				if (!success || thresh < goodthresh) {
@@ -1839,7 +1818,7 @@ int rateallocate(jpc_enc_t *enc, int numlyrs, uint_fast32_t *cumlens)
 			/* Save the tier 2 coding state. */
 			jpc_restore_t2state(enc);
 			if (jas_stream_seek(out, oldpos, SEEK_SET) < 0) {
-				abort();
+				return -1;
 			}
 
 			JAS_DBGLOG(10, ("maxlen=%08ld actuallen=%08ld thresh=%f\n",
@@ -1933,7 +1912,7 @@ int rateallocate(jpc_enc_t *enc, int numlyrs, uint_fast32_t *cumlens)
 * Tile constructors and destructors.
 \******************************************************************************/
 
-jpc_enc_tile_t *jpc_enc_tile_create(jpc_enc_cp_t *cp, jas_image_t *image, int tileno)
+static jpc_enc_tile_t *jpc_enc_tile_create(jpc_enc_cp_t *cp, jas_image_t *image, int tileno)
 {
 	jpc_enc_tile_t *tile;
 	uint_fast32_t htileno;
@@ -2036,7 +2015,9 @@ error:
 	return 0;
 }
 
-void jpc_enc_tile_destroy(jpc_enc_tile_t *tile)
+/* Note: I don't think that it is necessary to marked destroyed subobjects
+as such in this function. */
+static void jpc_enc_tile_destroy(jpc_enc_tile_t *tile)
 {
 	jpc_enc_tcmpt_t *tcmpt;
 	uint_fast16_t cmptno;
@@ -2047,16 +2028,21 @@ void jpc_enc_tile_destroy(jpc_enc_tile_t *tile)
 			tcmpt_destroy(tcmpt);
 		}
 		jas_free(tile->tcmpts);
+		/* tile->tcmpts = NULL; */
 	}
 	if (tile->lyrsizes) {
 		jas_free(tile->lyrsizes);
+		/* tile->lyrsizes = NULL; */
 	}
 	if (tile->pi) {
 		jpc_pi_destroy(tile->pi);
+		/* tile->pi = NULL; */
 	}
 	jas_free(tile);
+	/* tile = NULL; */
 }
 
+/* Note: This constructor creates the object in place. */
 static jpc_enc_tcmpt_t *tcmpt_create(jpc_enc_tcmpt_t *tcmpt, jpc_enc_cp_t *cp,
   jas_image_t *image, jpc_enc_tile_t *tile)
 {
@@ -2152,6 +2138,10 @@ error:
 
 }
 
+/* Note: Since jpc_enc_tcmpt_t objects are created in-place, they might
+potentially be destroyed multiple times at different levels in the call
+chain.  So, destroyed subobjects must be marked as destroyed to prevent
+problems such as double frees. */
 static void tcmpt_destroy(jpc_enc_tcmpt_t *tcmpt)
 {
 	jpc_enc_rlvl_t *rlvl;
@@ -2163,16 +2153,20 @@ static void tcmpt_destroy(jpc_enc_tcmpt_t *tcmpt)
 			rlvl_destroy(rlvl);
 		}
 		jas_free(tcmpt->rlvls);
+		tcmpt->rlvls = NULL;
 	}
 
 	if (tcmpt->data) {
 		jas_seq2d_destroy(tcmpt->data);
+		tcmpt->data = NULL;
 	}
 	if (tcmpt->tsfb) {
 		jpc_tsfb_destroy(tcmpt->tsfb);
+		tcmpt->tsfb = NULL;
 	}
 }
 
+/* Note: This constructor creates the object in place. */
 static jpc_enc_rlvl_t *rlvl_create(jpc_enc_rlvl_t *rlvl, jpc_enc_cp_t *cp,
   jpc_enc_tcmpt_t *tcmpt, jpc_tsfb_band_t *bandinfos)
 {
@@ -2254,6 +2248,10 @@ error:
 	return 0;
 }
 
+/* Note: Since jpc_enc_rlvl_t objects are created in-place, they might
+potentially be destroyed multiple times at different levels in the call
+chain.  So, destroyed subobjects must be marked as destroyed to prevent
+problems such as double frees. */
 static void rlvl_destroy(jpc_enc_rlvl_t *rlvl)
 {
 	jpc_enc_band_t *band;
@@ -2265,9 +2263,11 @@ static void rlvl_destroy(jpc_enc_rlvl_t *rlvl)
 			band_destroy(band);
 		}
 		jas_free(rlvl->bands);
+		rlvl->bands = NULL;
 	}
 }
 
+/* Note: This constructor creates the object in place. */
 static jpc_enc_band_t *band_create(jpc_enc_band_t *band, jpc_enc_cp_t *cp,
   jpc_enc_rlvl_t *rlvl, jpc_tsfb_band_t *bandinfos)
 {
@@ -2295,8 +2295,10 @@ if (bandinfo->xstart != bandinfo->xend && bandinfo->ystart != bandinfo->yend) {
 	if (!(band->data = jas_seq2d_create(0, 0, 0, 0))) {
 		goto error;
 	}
-	jas_seq2d_bindsub(band->data, tcmpt->data, bandinfo->locxstart,
-	  bandinfo->locystart, bandinfo->locxend, bandinfo->locyend);
+	if (jas_seq2d_bindsub(band->data, tcmpt->data, bandinfo->locxstart,
+			      bandinfo->locystart, bandinfo->locxend, bandinfo->locyend)) {
+		goto error;
+	}
 	jas_seq2d_setshift(band->data, bandinfo->xstart, bandinfo->ystart);
 }
 	band->orient = bandinfo->orient;
@@ -2322,7 +2324,7 @@ if (band->data) {
 	}
 	for (prcno = 0, prc = band->prcs; prcno < rlvl->numprcs; ++prcno,
 	  ++prc) {
-		if (!prc_create(prc, cp, band)) {
+		if (!prc_create(prc, band)) {
 			goto error;
 		}
 	}
@@ -2335,6 +2337,10 @@ error:
 	return 0;
 }
 
+/* Note: Since jpc_enc_band_t objects are created in-place, they might
+potentially be destroyed multiple times at different levels in the call
+chain.  So, destroyed subobjects must be marked as destroyed to prevent
+problems such as double frees. */
 static void band_destroy(jpc_enc_band_t *band)
 {
 	jpc_enc_prc_t *prc;
@@ -2348,13 +2354,16 @@ static void band_destroy(jpc_enc_band_t *band)
 			prc_destroy(prc);
 		}
 		jas_free(band->prcs);
+		band->prcs = NULL;
 	}
 	if (band->data) {
 		jas_seq2d_destroy(band->data);
+		band->data = NULL;
 	}
 }
 
-static jpc_enc_prc_t *prc_create(jpc_enc_prc_t *prc, jpc_enc_cp_t *cp, jpc_enc_band_t *band)
+/* Note: This constructor creates the object in place. */
+static jpc_enc_prc_t *prc_create(jpc_enc_prc_t *prc, jpc_enc_band_t *band)
 {
 	uint_fast32_t prcno;
 	uint_fast32_t prcxind;
@@ -2383,32 +2392,32 @@ static jpc_enc_prc_t *prc_create(jpc_enc_prc_t *prc, jpc_enc_cp_t *cp, jpc_enc_b
 
 	rlvl = band->rlvl;
 	tcmpt = rlvl->tcmpt;
-rlvlno = rlvl - tcmpt->rlvls;
+	rlvlno = rlvl - tcmpt->rlvls;
 	prcno = prc - band->prcs;
 	prcxind = prcno % rlvl->numhprcs;
 	prcyind = prcno / rlvl->numhprcs;
 	prc->band = band;
 
-tlprctlx = JPC_FLOORTOMULTPOW2(rlvl->tlx, rlvl->prcwidthexpn);
-tlprctly = JPC_FLOORTOMULTPOW2(rlvl->tly, rlvl->prcheightexpn);
-if (!rlvlno) {
-	tlcbgtlx = tlprctlx;
-	tlcbgtly = tlprctly;
-} else {
-	tlcbgtlx = JPC_CEILDIVPOW2(tlprctlx, 1);
-	tlcbgtly = JPC_CEILDIVPOW2(tlprctly, 1);
-}
+	tlprctlx = JPC_FLOORTOMULTPOW2(rlvl->tlx, rlvl->prcwidthexpn);
+	tlprctly = JPC_FLOORTOMULTPOW2(rlvl->tly, rlvl->prcheightexpn);
+	if (!rlvlno) {
+		tlcbgtlx = tlprctlx;
+		tlcbgtly = tlprctly;
+	} else {
+		tlcbgtlx = JPC_CEILDIVPOW2(tlprctlx, 1);
+		tlcbgtly = JPC_CEILDIVPOW2(tlprctly, 1);
+	}
 
 	/* Compute the coordinates of the top-left and bottom-right
 	  corners of the precinct. */
 	cbgtlx = tlcbgtlx + (prcxind << rlvl->cbgwidthexpn);
 	cbgtly = tlcbgtly + (prcyind << rlvl->cbgheightexpn);
-	prc->tlx = JAS_MAX(jas_seq2d_xstart(band->data), cbgtlx);
-	prc->tly = JAS_MAX(jas_seq2d_ystart(band->data), cbgtly);
-	prc->brx = JAS_MIN(jas_seq2d_xend(band->data), cbgtlx +
-	  (1 << rlvl->cbgwidthexpn));
-	prc->bry = JAS_MIN(jas_seq2d_yend(band->data), cbgtly +
-	  (1 << rlvl->cbgheightexpn));
+	prc->tlx = JAS_MAX(jas_seq2d_xstart(band->data), (jas_matind_t)cbgtlx);
+	prc->tly = JAS_MAX(jas_seq2d_ystart(band->data), (jas_matind_t)cbgtly);
+	prc->brx = JAS_MIN(jas_seq2d_xend(band->data), (jas_matind_t)(cbgtlx +
+	  (1 << rlvl->cbgwidthexpn)));
+	prc->bry = JAS_MIN(jas_seq2d_yend(band->data), (jas_matind_t)(cbgtly +
+	  (1 << rlvl->cbgheightexpn)));
 
 	if (prc->tlx < prc->brx && prc->tly < prc->bry) {
 		/* The precinct contains at least one code block. */
@@ -2454,7 +2463,7 @@ if (!rlvlno) {
 		}
 		for (cblkno = 0, cblk = prc->cblks; cblkno < prc->numcblks;
 		  ++cblkno, ++cblk) {
-			if (!cblk_create(cblk, cp, prc)) {
+			if (!cblk_create(cblk, prc)) {
 				goto error;
 			}
 		}
@@ -2479,6 +2488,10 @@ error:
 	return 0;
 }
 
+/* Note: Since jpc_enc_prc_t objects are created in-place, they might
+potentially be destroyed multiple times at different levels in the call
+chain.  So, destroyed subobjects must be marked as destroyed to prevent
+problems such as double frees. */
 static void prc_destroy(jpc_enc_prc_t *prc)
 {
 	jpc_enc_cblk_t *cblk;
@@ -2490,22 +2503,29 @@ static void prc_destroy(jpc_enc_prc_t *prc)
 			cblk_destroy(cblk);
 		}
 		jas_free(prc->cblks);
+		prc->cblks = NULL;
 	}
 	if (prc->incltree) {
 		jpc_tagtree_destroy(prc->incltree);
+		prc->incltree = NULL;
 	}
 	if (prc->nlibtree) {
 		jpc_tagtree_destroy(prc->nlibtree);
+		prc->nlibtree = NULL;
 	}
 	if (prc->savincltree) {
 		jpc_tagtree_destroy(prc->savincltree);
+		prc->savincltree = NULL;
 	}
 	if (prc->savnlibtree) {
 		jpc_tagtree_destroy(prc->savnlibtree);
+		prc->savnlibtree = NULL;
 	}
 }
 
-static jpc_enc_cblk_t *cblk_create(jpc_enc_cblk_t *cblk, jpc_enc_cp_t *cp, jpc_enc_prc_t *prc)
+/* Note: This constructor creates the object in place. */
+static jpc_enc_cblk_t *cblk_create(jpc_enc_cblk_t *cblk,
+  jpc_enc_prc_t *prc)
 {
 	jpc_enc_band_t *band;
 	uint_fast32_t cblktlx;
@@ -2554,7 +2574,9 @@ static jpc_enc_cblk_t *cblk_create(jpc_enc_cblk_t *cblk, jpc_enc_cp_t *cp, jpc_e
 	if (!(cblk->data = jas_seq2d_create(0, 0, 0, 0))) {
 		goto error;
 	}
-	jas_seq2d_bindsub(cblk->data, band->data, cblktlx, cblktly, cblkbrx, cblkbry);
+	if (jas_seq2d_bindsub(cblk->data, band->data, cblktlx, cblktly, cblkbrx, cblkbry)) {
+		goto error;
+	}
 
 	return cblk;
 
@@ -2563,6 +2585,10 @@ error:
 	return 0;
 }
 
+/* Note: Since jpc_enc_cblk_t objects are created in-place, they might
+potentially be destroyed multiple times at different levels in the call
+chain.  So, destroyed subobjects must be marked as destroyed to prevent
+problems such as double frees. */
 static void cblk_destroy(jpc_enc_cblk_t *cblk)
 {
 	uint_fast16_t passno;
@@ -2573,24 +2599,30 @@ static void cblk_destroy(jpc_enc_cblk_t *cblk)
 			pass_destroy(pass);
 		}
 		jas_free(cblk->passes);
+		cblk->passes = NULL;
 	}
 	if (cblk->stream) {
 		jas_stream_close(cblk->stream);
+		cblk->stream = NULL;
 	}
 	if (cblk->mqenc) {
 		jpc_mqenc_destroy(cblk->mqenc);
+		cblk->mqenc = NULL;
 	}
 	if (cblk->data) {
 		jas_seq2d_destroy(cblk->data);
+		cblk->data = NULL;
 	}
 	if (cblk->flags) {
 		jas_seq2d_destroy(cblk->flags);
+		cblk->flags = NULL;
 	}
 }
 
 static void pass_destroy(jpc_enc_pass_t *pass)
 {
 	/* XXX - need to free resources here */
+	(void)pass;
 }
 
 void jpc_enc_dump(jpc_enc_t *enc)

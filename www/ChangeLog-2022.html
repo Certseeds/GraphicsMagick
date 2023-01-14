@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="banner">
+<img src="images/gm-107x76.png" alt="GraphicMagick logo" width="107" height="76" />
+<span class="title">GraphicsMagick</span>
+<form action="http://www.google.com/search">
+  <input type="hidden" name="domains" value="www.graphicsmagick.org" />
+  <input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
+<span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
+</form>
+</div>
+
+
+<div class="navmenu">
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="project.html">Project</a></li>
+  <li><a href="download.html">Download</a></li>
+  <li><a href="README.html">Install</a></li>
+  <li><a href="Hg.html">Source</a></li>
+  <li><a href="NEWS.html">News</a> </li>
+  <li><a href="utilities.html">Utilities</a></li>
+  <li><a href="programming.html">Programming</a></li>
+  <li><a href="reference.html">Reference</a></li>
+</ul>
+</div>
+
+<div class="document">
+<p>2022-12-30  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/pcx.c (WritePCXImage): Make default RLE compression.
+Uncompressed PCX is more rare.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Updated the news.</p></li>
+<li><p>coders/pcx.c (WritePCXImage): Support writing uncompressed PCX
+by default.  Use -compress RLE to enable RLE compression.</p></li>
+<li><p>coders/sun.c (ReadSUNImage): Sense of monochrome images was
+inverted.  Fix scanline size calculation.
+(WriteSUNImage): Sense of monochrome images was inverted.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/pcx.c (WritePCXImage): Fix heap overflow when writing
+more than 1023 scenes, and also eliminate use of uninitialized
+memory.</p></li>
+<li><p>coders/pnm.c (ReadPNMImage): Compute the number of threads to
+use.</p></li>
+<li><p>NEWS.txt: Update the news.</p></li>
+<li><p>magick/command.c: Add use of GetFirstImageInList() where needed
+to assure that the list pointer is to the first image.</p></li>
+<li><p>magick/constitute.c (ReadImage): Only perform subimage
+processing when required.</p></li>
+<li><p>magick/command.c (MogrifyImages): Restore mogrify_images as
+first image in list since the rest of the code expects that.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/mat.c (ReadMATImageV4): Use ReplaceImageInList().
+(ReadMATImage): Use ReplaceImageInList().</p></li>
+<li><p>magick/command.c (MogrifyImages): Remove band-aid.</p></li>
+<li><p>magick/list.c (AppendImageToList): Image list is updated to be
+new image.</p></li>
+<li><p>magick/image.c (AllocateImage): Initialize colors directly.
+(GetImageInfo): Initialize colors directly.</p></li>
+<li><p>utilities/tests/convert-cmds.txt: Add more convert command
+permutations.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>version.sh: Update shared library versioning in preparation for
+1.3.39 release.</p></li>
+<li><p>NEWS.txt: Updated the news.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-26 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>jp2/src/appl/jasper.c: Link problem with jasper utility fixed.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/gem.c (Contrast): Visual Studio 17.4.3 does not like
+initializing a static constant with &quot;0.5+MagickEpsilon&quot; in
+/precise mode.</p></li>
+<li><p>magick/enhance.c (ContrastImagePixels): Visual Studio 17.4.3
+does not like initializing a static constant with
+&quot;0.5+MagickEpsilon&quot; in /precise mode.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-25 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>webp/src/webp/types.h Need to include inttypes.h</p></li>
+<li><p>jp2/src/libjasper/include/jasper/jas_types.h
+Fix missing _PFX_PTR in newer MSVC.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/symbols.h: Update symbol remappings which are enabled by
+PREFIX_MAGICK_SYMBOLS.  The only new symbol since the last release
+is IsEventLogged().</p></li>
+<li><p>NEWS.txt: Updated the news.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-25 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>jp2/* Update lib jasper to 1.900.16.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Updated the news.</p></li>
+<li><p>coders/jxl.c (ReadJXLImage): Request that libjxl take care of
+any pre-multiplied alpha for us so we don't need to do it</p></li>
+</ul>
+</blockquote>
+<p>2022-12-24 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>jp2/* Update lib jasper to 1.900.5.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c: Support reading and writing ICC, EXIF, and XMP
+profiles.  Lots of code cleanup.</p></li>
+<li><p>PerlMagick/t/jxl: Created some JXL sanity-test files.</p></li>
+</ul>
+</blockquote>
+<dl class="simple">
+<dt>2022-12-22 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
+<dd><ul class="simple">
+<li><p>VisualMagick/tests/runtest.bat Make binary directory configurable
+on one place. Report error when rwblob.exe does not exist.</p></li>
+</ul>
+</dd>
+</dl>
+<p>2022-12-22 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>jp2/* Update lib jasper from 1.900.1 to 1.900.2.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c (ReadJXLImage): Now based on
+ImportImagePixelArea().
+(WriteJXLImage): Now based on ExportImagePixelArea();</p></li>
+</ul>
+</blockquote>
+<p>2022-12-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/msl.c (MSLEntityDeclaration): Report an error if
+xmlAddDocEntity() or xmlAddDtdEntity() fails.</p></li>
+<li><p>coders/svg.c (SVGEntityDeclaration): Report an error if
+xmlAddDocEntity() or xmlAddDtdEntity() fails.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Updated the news.</p></li>
+<li><p>magick/image.c (SetImageDepth): Restore is_monochrome and
+is_grayscale image flags.  Changing depth should not change the
+nature of 'gray'.</p></li>
+<li><p>coders/jxl.c: Support reading and writing 32-bit 'float'
+images. Need a Q32 build in order to write 32-bit 'float' images.</p></li>
+<li><p>fuzzing/oss-fuzz-build.sh: Remove xz --with-pic=yes option which
+now seems to annoy oss-fuzz build.</p></li>
+</ul>
+</blockquote>
+<dl class="simple">
+<dt>2022-12-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
+<dd><ul class="simple">
+<li><p>VisualMagick/magick/magick_types.h.in
+Reverting from 16859. The change in 16860 completelly breaks
+compillation.</p></li>
+</ul>
+</dd>
+</dl>
+<p>2022-12-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>tiff/port/libport_config.h Added missing file
+Documentation of libtiff upgraded.
+Upgraded libtiff to 4.5.0.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>tests/rwfile_deep.tap: Add JXL tests for deep images.</p></li>
+<li><p>coders/jxl.c: Fix grayscale writer error.  Eliminate use of
+deprecated functions.  Support 16-bits/sample.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/pnm.c (ReadPNMImage): Do not promote gray images to
+PseudoClass unless the image dimensions make it worthwhile.</p></li>
+<li><p>coders/gif.c (ReadGIFImage): Allocate cleared memory.  Remove
+two redundant memsets.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/command.c (MogrifyImages): Fix performance anomaly
+noticed with large image list.</p></li>
+<li><p>coders/tiff.c (ReadTIFFImage): Move monitor for list to a better
+spot so that rows and columns are valid.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/png.c (png_error): Use a macro to report exceptions
+(rather than calling libpng's png_error()) for exceptions thrown
+from this module. This provides useful file/line information as
+well as allowing code analyzers to have a more accurate idea of
+what is going on.</p></li>
+<li><p>magick/widget.c (MagickXFileBrowserWidget): Fix Coverity 382252
+&quot;Wrong sizeof argument (SIZEOF_MISMATCH)&quot;.</p></li>
+<li><p>coders/meta.c (parse8BIM): Fix Coverity 382245 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(parse8BIMW): Fix Coverity 382250 &quot;Incorrect expression
+(SIZEOF_MISMATCH)&quot;.</p></li>
+<li><p>magick/widget.c (MagickXNoticeWidget): Fix Coverity 382254
+&quot;Incorrect expression (SIZEOF_MISMATCH).&quot;
+(MagickXFontBrowserWidget): Fix Coverity 382253 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(MagickXFileBrowserWidget): Fix Coverity 382252 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(MagickXPreferencesWidget): Fix Coverity 382251 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(MagickXConfirmWidget): Fix Coverity 382249 &quot;Incorrect expression
+(SIZEOF_MISMATCH)&quot;.
+(MagickXListBrowserWidget): Fix Coverity 382248 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.
+(MagickXDialogWidget): Fix Coverity 382247 &quot;Incorrect expression
+(SIZEOF_MISMATCH)&quot;.
+(MagickXColorBrowserWidget): Fix Coverity 382246
+&quot;(SIZEOF_MISMATCH)&quot;.</p></li>
+<li><p>coders/jpeg.c (WriteICCProfile): Fix Coverity 382255 &quot;Incorrect
+expression (SIZEOF_MISMATCH)&quot;.</p></li>
+<li><p>Makefile.am (clean-local): Added a clean-local target to remove
+Coverity subdirectory ('cov-int').  Building with 'coverity'
+target leaves Coverity subdirectory in place for inspection.</p></li>
+<li><p>NEWS.txt: Updated the news.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>utilities/tests/convert.tap: Produce more interesting 'info'
+output to 'convert.log'.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>configure.ac (top_srcdir_native): Produce a substituted value
+representing the top source directory expressed suitable for the
+native operating system.  This is to support MinGW.</p></li>
+<li><p>utilities/tests/convert.tap: Use ';' rather than '/' as sed
+delimiter character since '/' is a directory separator..</p></li>
+<li><p>winpath.sh: Use printf rather than echo.  If an escape level is
+not provided, then output an unescaped Windows path using
+forward-slashes.</p></li>
+<li><p>Magick++/lib/Color.cpp: Add Quantum casts to Color() arguments
+to solve error with unidentified compiler.  SourceForge issue #160
+&quot;Add Quantum casts for 16-bit to Image.cpp and Color.cpp&quot;.</p></li>
+<li><p>Magick++/lib/Image.cpp: Add Quantum casts to Color() arguments
+to solve error with unidentified compiler.  SourceForge issue #160
+&quot;Add Quantum casts for 16-bit to Image.cpp and Color.cpp&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-01 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<p>coders/ps2.c
+coders/ps3.c
+coders/tiff.c
+webp/src/webp/types.h
+tiff/libtiff/* Upgraded libtiff to libtiff-4.4.0
+But code is still compilable with MSVC2008!</p>
+</blockquote>
+<p>2022-11-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>Magick++/lib/Image.cpp: Don't just blindly return DisposeMethod
+as an 'int'.</p></li>
+<li><p>Magick++/tests/attributes.cpp (main): Test with a valid GIF
+disposal method.</p></li>
+<li><p>coders/msl.c (MSLStartElement): Eliminate 'undefined behavior'
+issues.</p></li>
+<li><p>magick/colorspace.c (XYZTransformPackets): Use 'double' when
+performing summation and eliminate 'undefined behavior' issues.
+(RGBTransformPackets): Use 'double' when performing summation and
+eliminate 'undefined behavior' issues.</p></li>
+<li><p>magick/constitute.c (ConstituteImage): Eliminate 'undefined
+behavior' issues.</p></li>
+<li><p>magick/fx.c (SolarizeImage): Eliminate 'undefined behavior'
+issues.</p></li>
+<li><p>magick/gem.c (Hull): Eliminate 'undefined behavior' issues.</p></li>
+<li><p>configure.ac, magick/magick_types.h.in: Added some support for
+deducing magick_uintptr_t and magick_ptrdiff_t types.</p></li>
+<li><p>utilities/tests/convert-cmds.txt: Added more command
+permutations to execute.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/constitute.c (ConstituteImage): Fix undefined behavior:
+runtime error: applying non-zero offset 2 to null pointer</p></li>
+<li><p>coders/logo.c (RegisterLOGOImage): Logo image subformats do not
+have an image extension.</p></li>
+<li><p>utilities/tests/convert-cmds.txt: Add more convert tests.</p></li>
+<li><p>magick/render.c (DrawPrimitive): Fix for SourceForge issue #679
+&quot;Using &quot;0,0&quot; for image size throws an error in v1.3.38, worked
+previously&quot;.  This bug was added in GraphicsMagick 1.3.36.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jpeg.c (ReadJPEGImage): Eliminate Clang Analyzer
+diagnostic. Add support for reading deep gray images.</p></li>
+<li><p>magick/xwindow.c (MagickXDitherImage): Update documentation to
+add a link to an article about the HP Color Recovery algorithm.</p></li>
+<li><p>coders/topol.c (ReadTOPOLImage): Eliminate Clang Analyzer
+diagnostic.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jpeg.c (WriteJPEGImage): Useful data_precision range is 8
+to 16.</p></li>
+<li><p>magick/profile.c (ProfileImagePixels): Make sure not to use
+indexes if it is NULL.</p></li>
+<li><p>magick/xwindow.c (MagickXDitherImage): Eliminate use of
+undefined behavior.  Make sure to deallocate memory upon error.</p></li>
+<li><p>magick/widget.c (MagickXCommandWidget): Assure that prerequisite
+'number_selections' is satisfied.</p></li>
+<li><p>magick/xwindow.c (MagickXGetWindowImage): Assure that
+prereqisite 'colors' table for PseudoClass case is satisifed.</p></li>
+<li><p>coders/png.c (ReadOnePNGImage): Make sure that background index
+is initialized.</p></li>
+<li><p>magick/profile.c (ProfileImagePixels): Don't de-reference
+indexes if they were not supplied.</p></li>
+<li><p>magick/widget.c (MagickXColorBrowserWidget): If mode_info.text
+is NULL, ignore event due to user pushing mode button.</p></li>
+<li><p>coders/heif.c (ReadMetadata): Also guard against profile name
+being null.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul>
+<li><p>coders/wpg.c (ReadWPGImage): Fix wrong use of
+LogWPGBitmapType2() macro, and resore previous definitions.</p></li>
+<li><p>VisualMagick/magick/magick_types.h.in: Declare a ssize_t typedef
+in VisualStudio's &lt;magick/magick_types.h&gt; due to the unfortunate
+accidental use of ssize_t in Wand's MagickExtentImage()
+declaration.  This should address SourceForge issue #673 &quot;visual
+studio include error ssize_t redefinition&quot;.</p>
+<p>Replace use of ReallocColormap() with previously existing
+ReallocateImageColormap(), which does the same thing.</p>
+</li>
+<li><p>coders/heif.c (ReadColorProfile): Support reading ICC color
+profile.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-20 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/wpg.c Reveal more internal info to optional log.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>PerlMagick/t/wmf/read.t: Change reference images from MIFF
+format to GIF format to reduce wasted space.</p></li>
+<li><p>PerlMagick/t/cgm/read.t: Change from read.miff to read.gif to
+reduce wasted space.</p></li>
+<li><p>PerlMagick/t/x/write.t: Change from congrats.miff to
+congrats.gif to reduce wasted space.</p></li>
+<li><p>coders/heif.c (ReadMetadata): If
+heif_image_handle_get_metadata_size() returns 0, then carrying on
+with reading image data. Addresses SourceForge issue 677 &quot;Memory
+allocation failed - HEIF&quot; but does not discover/address why
+libheif returns a zero metadata size.</p></li>
+<li><p>PerlMagick/t/subroutines.pl (testRead): Support read-options in
+order to be more flexible.</p></li>
+<li><p>PerlMagick/t/read.t: Change as many tests to be signature-based
+as possible and remove now unneeded reference files.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>PerlMagick/t/jpeg/read.t: Use JPEG image as reference image
+while doing Seattle FilmWorks test.</p></li>
+<li><p>PerlMagick/t/read.t: Reduced distribution size by using
+signature test method for some tests.</p></li>
+<li><p>PerlMagick/t/tiff/read.t: Added test for old JPEG.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<p>PerlMagick/t/input_JPG_old.tif Added JPG embedded into TIFF using
+old Adobe's embedding style.</p>
+<p>2022-11-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<p>tiff/libtiff/tif_ojpeg.c Backported from 4.4.0 to 4.1.0</p>
+</blockquote>
+<p>2022-11-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/nt_base.h (snprintf): Add missing comma in macro.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/nt_base.c (NTsnprintf): New function intended to emulate
+C'99 snprintf for MSVC older than 2015.</p></li>
+<li><p>magick/nt_base.h (snprintf): For MSVC older than 2015, fall back
+to using sprintf for the moment.</p></li>
+<li><p>coders/msl.c (ProcessMSLScript): Handle parser creation failure.</p></li>
+<li><p>coders/meta.c (GetIPTCStream): Assure that offset is initialized.</p></li>
+<li><p>magick/floats.c (_Gm_convert_fp32_to_fp16): Fix Clang Analyzer
+complaints.</p></li>
+<li><p>magick/xwindow.c (MagickXGetWindowColor): Assure that crop_info
+is initialized.</p></li>
+<li><p>Makefile.am (scan-build): Added a scan-build target to help run
+Clang Analyzer.</p></li>
+<li><p>coders/locale.c (WriteLOCALEImage): Fix Clang Analyzer
+complaints.</p></li>
+<li><p>ALL: Replace strcpy() with strlcpy(), replace strcat() with
+strlcat(), replace sprintf() with snprintf().  Prefer using
+bounded string functions.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/png.c (ReadOnePNGImage): Change ping_file_depth to
+unsigned and add verifications for ping_bit_depth.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-09 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/fits.c Store multiple scenes into one file.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/png.c (ReadOnePNGImage): More work on Coverity issue 381864.</p></li>
+<li><p>magick/image-private.h (MaxValueGivenBits): Move to private header.</p></li>
+<li><p>coders/xpm.c (ReadXPMImage): More work on Coverity issue 381862
+&quot;(DEADCODE)&quot;.</p></li>
+<li><p>magick/operator.c (QuantumLogCB): Fix Coverity issue 381861
+&quot;Control flow issues (DEADCODE)&quot;.</p></li>
+<li><p>coders/xpm.c (ReadXPMImage): Fix Coverity issue 381862
+&quot;(DEADCODE)&quot;.</p></li>
+<li><p>magick/operator.c (QuantumGammaCB): Fix Coverity issue 381863
+&quot;Control flow issues (DEADCODE)&quot;.</p></li>
+<li><p>coders/png.c (ReadOnePNGImage): Fix Coverity issue 381864
+&quot;BAD_SHIFT&quot;.</p></li>
+<li><p>magick/operator.c (QuantumDepthCB): Fix Coverity issue 381867
+&quot;Control flow issues (DEADCODE)&quot;.
+(QuantumPowCB): Fix Coverity issue 381865 &quot;Control flow issues
+(DEADCODE)&quot;.</p></li>
+<li><p>magick/import.c (ImportViewPixelArea): Fix Coverity issue 381868
+&quot;Control flow issues (DEADCODE)&quot;.</p></li>
+<li><p>magick/blob.c (DetachBlob): Do not dereference blob_info-&gt;data
+if it is null.  Addresses Coverity issue 381869 &quot;Null pointer
+dereferences (FORWARD_NULL)&quot;and issue 381866 &quot;Null pointer
+dereferences (FORWARD_NULL)&quot;.</p></li>
+<li><p>coders/jpeg.c (FreeMagickClientData): Fix Coverity issue 381870
+and 381860 &quot;Null pointer dereferences&quot;.</p></li>
+<li><p>magick/export.c (ExportViewPixelArea): Fix Coverity issue 381871
+&quot;Control flow issues (DEADCODE)&quot; for the case where QuantumDepth =
+32.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-05 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/wpg.c Shrink amount of colors when palette is bigger than
+raster could store.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c (ReadBlobString): Fix oss-fuzz issue 53001
+&quot;graphicsmagick:coder_TXT_fuzzer: Use-of-uninitialized-value in
+ReadBlobString&quot;, which occurs due a bug remaining in recent
+changes.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-04 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Remove junk n from log after printing footer contents.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-03  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>PerlMagick/t/input_3chars.xpm New testcase
+with 3 bytes encoding per one pixel.</p></li>
+<li><p>PerlMagick/t/reference/read/input_3chars_xpm.miff</p></li>
+<li><p>PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
+suite.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-03 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/xpm.c Allow to read pallete that contains more colors
+than MaxColormapSize.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/image.c (SetImageInfo): Avoid creating temporary files
+when reading files with .bz2, .gz, .svgz, and .Z extensions if the
+format is non-ambiguous based on the file extension, and the
+reader does not require seeking.</p></li>
+<li><p>magick/magick.c (MagickToMime): Add MIME mappings for apng,
+avif, bmp, ico, and webp.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/xpm.c (ReadXPMImage): coders/xpm.c (ReadXPMImage): Use
+qsort+bsearch to improve performance of color-lookups.</p></li>
+</ul>
+</blockquote>
+<p>2022-11-01  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/wpg.c Bilevel image must be allways monochrome.
+Discard palette if exists.</p></li>
+<li><p>PerlMagick/t/input1_1.wpg</p></li>
+<li><p>PerlMagick/t/reference/read/input1_1.wpg.miff New testcase
+with bilevel monochrome image.</p></li>
+<li><p>PerlMagick/t/read.t: Added input1_1.wpg to PerlMagick test suite.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-31  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/xpm.c (ReadXPMImage): Output intelligent messag when colormap
+exceeds limit.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c (ReadBlobString): Fix oss-fuzz issue 52917
+&quot;graphicsmagick:coder_TXT_fuzzer: Stack-buffer-overflow in
+ReadBlobString&quot;, which occurs due to a bug added in yesterday's
+ReadBlobString() changes.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c (ReadBlobString): Use fgets() in order to get much
+better performance.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/xpm.c (ReadXPMImage): Improve read performance by using
+integer keys.  Trace the colormap.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-29  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/xpm.c (ReadXPMImage): Replace strcmp with faster memcmp.
+It improves 21% performance on my test image.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/xpm.c (ReadXPMImage): Eliminate unnecessary strlen() upon
+memory reallocation for better performance.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-29  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>PerlMagick/t/input_bilevel.xpm</p></li>
+<li><p>PerlMagick/t/reference/read/input_xpm_bilevel.miff New testcase
+with bilevel monochrome image.</p></li>
+<li><p>PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
+suite.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-28  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>PerlMagick/t/input_pal16.xpm</p></li>
+<li><p>PerlMagick/t/reference/read/input_xpm_pal16.miff New testcase
+with 16 bit palette.</p></li>
+<li><p>PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
+suite.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Updated the news.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Remove &quot;optimisation&quot; that has negligible or negative
+effect to overall performance.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-19  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Cleanup GCC compile warnings.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-17  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Do not consider whole image to be invalid when a second
+chunk header contains invalid data.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-16  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Renamed image attribute &quot;comment&quot; from extended area to
+&quot;TGA:file.comment&quot; to prevent mix of these 2 comments.
+(Now TGA can produce both &quot;comment&quot; and &quot;TGA:file.comment&quot;).</p></li>
+</ul>
+</blockquote>
+<p>2022-10-14  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>PerlMagick/t/read.t Add new tests for TGA files.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/dpx.c: Revert undocumented change to 'DPX:file.creator'
+attribute.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-13  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Block alpha channel depending on value &quot;AttributesType&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-12  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c New attributes &quot;comment&quot;, &quot;creator&quot;, &quot;software&quot;, &quot;TGA:file.JobName&quot;</p></li>
+<li><p>coders/gpx.c Renamed attribute &quot;DPX:file.creator&quot; to &quot;creator&quot;</p></li>
+</ul>
+</blockquote>
+<p>2022-10-10  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c TGA developper area is read.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-09  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Check return code of seek blob operation.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c (SeekBlob): Fix SEEK_END validation.  Addresses
+oss-fuzz 52133 &quot;graphicsmagick:coder_ICB_fuzzer:
+Heap-buffer-overflow in ReadBlob&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>scripts/changelog2rst.sh: Try to deal with the crazy mix of
+spaces and hard tabs which are now appearing in the ChangeLog file.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Fixed oss-fuzz-52084.</p></li>
+<li><p>PerlMagick/t/input.tga renamed to PerlMagicktinput_8_CC.tga</p></li>
+<li><p>PerlMagick/t/reference/read/input_tga_8_BW.miff New testcase.</p></li>
+<li><p>PerlMagick/t/read.t: Added input_tga_8_BW.miff to PerlMagick test
+suite.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-03  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c TGA footer is read, currently used for logs only.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>scripts/rst2html5.py: Fix from Mark Mitchell to deal with RST
+file local include statements when invoked from a different
+directory.  Also fix requested character set encoding.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-02 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>PerlMagick/t/input_8_BW_rle.tga</p></li>
+<li><p>PerlMagick/t/input_8_CC_rle.tga</p></li>
+<li><p>PerlMagick/t/input_8_BW.tga
+Added 8 bit TGA samples.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul>
+<li><p>scripts/rst2html5.py: Applied patch by Mark Mitchell which
+replaces rst2htmldeco.py with rst2html5.py. rst2html5.py does
+essentially the same job as rst2htmldeco.py, but in a different
+way.  docutils_htmldeco_writer.py is no longer used or needed.</p>
+<p>Also fixed thanks.rst file which had non-utf8 characters, as well
+as ChangeLog.2006, ChangeLog.2008 and ChangeLog.2012.</p>
+</li>
+<li><p>PerlMagick/t/read.t: Added input_mono.tga to PerlMagick test
+suite.</p></li>
+<li><p>coders/tga.c: White-space normalization.  Eliminate compilation
+warning about unused indexes variable.</p></li>
+</ul>
+</blockquote>
+<p>2022-10-01  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Monochromatic bilevel TGA could be written.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-29  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c Monochromatic bilevel TGA could be read.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-28  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>PerlMagick/t/input_mono.tga Added monochromatic TGA sample generated
+by Graphics Workshop.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>scripts, www/Makefile.am: Fixes pertaining to use of Docutils to
+generate the HTML documentation.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>configure.ac: Search for a usable Python program, and then use
+it to execute Python scripts. This avoids depending on a default
+name.</p></li>
+<li><p>magick/common.h (MAGICK_FUNC_MALLOC_2ARG): Add macros to support
+GCC malloc attributes which accept arguments.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>www/formats.rst: Add AVIF image file format to the list.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>www/formats.rst: Add JPEG XL to the list.</p></li>
+<li><p>utilities/tests/icc-transform.tap: Preserve output files from
+icc-transform.tap until 'make clean' in order to allow inspection.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>fuzzing/oss-fuzz-build.sh: Disable using libxml2 in oss-fuzz
+build due to it being arbitrarily broken in the oss-fuzz build for
+several weeks with no solution offered.  Nobody seems to care any
+more.</p></li>
+<li><p>coders/svg.c: Re-enable support for XML internal subset.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>Magick++/lib/Image.cpp (Magick::Image::colorMapSize): Restore
+non-const Image::colorMapSize() since it caused an ABI change.
+Debian bug 1019158: &quot;graphicsmagick breaks gnudatalanguage
+autopkgtest: undefined symbol: _ZN6Magick5Image12colorMapSizeEv&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>jpeg/* Upgraded jpeg library to Version 9e 16-Jan-2022.</p></li>
+</ul>
+</blockquote>
+<p>2022-09-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/jpeg/LIBRARY.txt Exclude files cjpegalt.c and
+djpegalt.c; cjpeg.c and djpeg.c are already excluded.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>fuzzing/oss-fuzz-build.sh: Add messaging regarding building
+libxml2 and jasper.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>Makefile.am (release): Generate ASCII armored &quot;.asc&quot; files
+directly since this seems to be prefered over converting from
+&quot;.bin&quot; files.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>Makefile.am: Some people prefer GPG signature files in ASCII
+armored &quot;.asc&quot; format rather than the OpenPGP binary &quot;.bin&quot;
+format, so produce both.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>Fix UTF-8 encoding errors in some text and source files.  A few
+more issues remain.  Assistance is appreciated.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/svg.c (ReadSVGImage): Address concern from SourceForge
+issue #669 &quot;Segmentation fault caused by null pointer dereference
+by checking return from xmlCreatePushParserCtxt().  Address
+oss-fuzz 48340 &quot;graphicsmagick:coder_SVG_fuzzer:
+Heap-use-after-free in xmlParseInternalSubset&quot; by disabling
+internal subset handling until the parser context handling is
+fixed.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Updated the news.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-10  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/configure/stdafx.h Added define WIN32_LEAN_AND_MEAN</p></li>
+<li><p>VisualMagick/configure/configure.exe New rebuild.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>fuzzing/oss-fuzz-build.sh (MAGICK_LIBS): Add libsharpyuv.a to
+the list of libraries to check for.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>configure.ac: When checking for libwmf, add a test for
+libsharpyuv.  Not yet tested but maybe it will work.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-07  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagickconfigureconfigure.cpp: The /MACHINE:x86
+should never be placed to DLL dependency list.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c: Enhance 'coder' level trace information.
+Normalize on 'unsigned int' as much as possible in order to use
+natural types and likely help with function inligning.</p></li>
+</ul>
+</blockquote>
+<p>2022-08-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c (ReadTGAImage): Remove a defective validation of
+comment length, which blocked reading some sample TGA files from
+the &quot;Encyclopedia Of Graphics File Formats&quot; book.</p></li>
+</ul>
+</blockquote>
+<p>2022-07-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/heif.c: If module is compiled, but HasHEIF is not
+defined, then RegisterHEIFImage/UnregisterHEIFImage
+implementations are empty.</p></li>
+<li><p>coders/jxl.c: If module is compiled, but HasJXL is not defined,
+then RegisterJXLImage/UnregisterJXLImage implementations are
+empty.</p></li>
+</ul>
+</blockquote>
+<p>2022-07-30  Sam James        &lt;<a class="reference external" href="mailto:sam&#37;&#52;&#48;gentoo&#46;org">sam<span>&#64;</span>gentoo<span>&#46;</span>org</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>configure.ac: Fix Bashism in maintainer-mode check.</p></li>
+</ul>
+</blockquote>
+<p>2022-07-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/miff.c (ImportRLEPixels): Add missing type cast for
+consistency with other similar code.  However, I do not believe
+this is an actual bug.  Addresses GraphicsMagick bug 670 &quot;Missing
+cast&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-07-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/magic.c: Auto-detect JXL format based on file header.
+Much thanks to Quyen Pham Ngoc for noticing that this was missing.</p></li>
+</ul>
+</blockquote>
+<p>2022-06-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Update with news since last release.</p></li>
+</ul>
+</blockquote>
+<p>2022-05-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>Magick++/lib/Image.cpp: colorMapSize() method for returning the
+number of colormap entries should be a const method.  Change is
+due to an email from Miro Kropáček on May 29, 2022.</p></li>
+</ul>
+</blockquote>
+<p>2022-05-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>www/Magick++/Image.rst: Update getIndexes() and
+getConstIndexes() documention to mention that the selected region
+is defined by a prior getPixels(), getConstPixels(), or
+setPixels() call.  This is inspired by private email from Miro
+Kropáček on May 8, 2022.</p></li>
+<li><p>coders/jpeg.c (WriteJPEGImage): Change &quot;arithmetic&quot; to
+&quot;arithmetic-coding&quot; in order to match ImageMagick's previously
+existing syntax.</p></li>
+<li><p>coders/png.c (ReadOnePNGImage): Assure that entire image list is
+freed. Addresses oss-fuzz 46997 &quot;graphicsmagick:coder_MNG_fuzzer:
+Indirect-leak in MagickMallocCleared&quot;.  This is a new issue due to
+incrementally seeking the complete correct error-handling cleanup.</p></li>
+</ul>
+</blockquote>
+<p>2022-05-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>doc/options.imdoc: Add documentation for -define
+jpeg:arithmetic.</p></li>
+</ul>
+</blockquote>
+<p>2022-04-30  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jpeg.c: Optionally enable arithmetic coder in JPG images.
+gm convert -define jpeg:arithmetic=true testimg.jpg arith.jpg</p></li>
+</ul>
+</blockquote>
+<p>2022-04-27  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>jpeg/: Update aged JPG library to version 9d.</p></li>
+</ul>
+</blockquote>
+<p>2022-04-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/ps.c (ReadPSImage): Assure that 'bounds' structure is
+initialized.</p></li>
+<li><p>coders/ept.c (ReadEPTImage): Assure that 'bounds' structure is
+initialized.</p></li>
+<li><p>magick/log.c (IsEventLogged): New function to report if a
+particular event will be logged.  Us this as much as possible
+throughout the software to replace use of IsEventLogging().</p></li>
+<li><p>coders/png.c (ReadMNGImage): Address oss-fuzz 46913
+&quot;graphicsmagick:coder_WPG_fuzzer: Indirect-leak in
+MagickMallocCleared&quot; which was partially pre-existing and
+partially due to a botched fix for oss-fuzz 46843.</p></li>
+</ul>
+</blockquote>
+<p>2022-04-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/png.c (ReadMNGImage): Address oss-fuzz 46843
+&quot;graphicsmagick:enhance_fuzzer: Heap-use-after-free in CloseBlob&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-04-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/{msl.c, svg.c, url.c}: When __MINGW32__ is defined, then
+only define _MSC_VER if it is not already defined.  Also define
+_MSC_VER with a somewhat useful value.  This change is prompted by
+a posting by &quot;LM&quot; to the graphicsmagick-core list on April 17,
+2022.</p></li>
+</ul>
+</blockquote>
+<p>2022-04-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/png.c (ReadOnePNGImage): Make sure that ping_num_trans is
+initialized.  Fixes oss-fuzz 46760 &quot;Use-of-uninitialized-value -
+ReadOnePNGImage&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-04-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c (OpenBlob): Allocate setvbuf() buffer externally
+rather than implicitly.  I am hoping that the several oss-fuzz
+reports about using uninitalized memory from glibc's
+_IO_file_doallocate() go away.</p></li>
+</ul>
+</blockquote>
+<p>2022-04-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/heif.c (RegisterHEIFImage): Support reading AVIF via
+libheif if it supports decoding AVIF.</p></li>
+</ul>
+</blockquote>
+<p>2022-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>www/index.rst: Update the Coverity Analysis Metrics.</p></li>
+<li><p>magick/display.c (MagickXAnnotateEditImage): Quiet Coverity
+376901 &quot;Identical code for different branches
+(IDENTICAL_BRANCHES)&quot;.</p></li>
+<li><p>coders/svg.c (ReadSVGImage): Default to not allowing external
+entity substitution.  Quiets Coverity 376905
+&quot;unsafe_xml_parse_config (UNSAFE_XML_PARSE_CONFIG)&quot;.</p></li>
+<li><p>coders/msl.c (ProcessMSLScript): Default to not allowing
+external entity substitution.  Quiets Coverity 376913
+&quot;unsafe_xml_parse_config (UNSAFE_XML_PARSE_CONFIG)&quot;.</p></li>
+<li><p>magick/error.c (ThrowLoggedException): Silence Coverity 376912
+&quot;Dereference after null check (FORWARD_NULL)&quot;.</p></li>
+<li><p>coders/jp2.c (ReadJP2Image): Silence Coverity 264883 &quot;Division
+or modulo by float zero (DIVIDE_BY_ZERO)&quot;.
+(ReadJP2Image): Fix Coverity 376911 &quot;Improper use of negative
+value (NEGATIVE_RETURNS)&quot;.</p></li>
+<li><p>magick/xwindow.c (MagickXMakeMagnifyImage): Fix Coverity 376906
+&quot;Division or modulo by zero (DIVIDE_BY_ZERO)&quot;.</p></li>
+<li><p>magick/resize.c (ScaleImage): Fix Coverity 376908 &quot;Resource leak
+(RESOURCE_LEAK)&quot;.</p></li>
+<li><p>magick/locale.c (GetLocaleMessageFromTag): Fix Coverity 376907
+&quot;Out-of-bounds read (OVERRUN)&quot;.</p></li>
+<li><p>magick/render.c (DrawPrimitive): Fix Coverity 376904
+&quot;Out-of-bounds access (OVERRUN)&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-03-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>version.sh: Prepare for 1.3.38 release.</p></li>
+<li><p>Makefile.am (release, snapshot): Generate SHA-256 checksums as a
+by-product of 'make snapshot' or 'make release'.</p></li>
+<li><p>www/download.rst: Add documentation regaring SHA-256 checksums.</p></li>
+<li><p>NEWS.txt: Update the news again.</p></li>
+<li><p>coders/miff.c (ReadMIFFImage): Validate claimed bzip2-compressed
+row length prior to reading data into fixed size buffer.
+Addresses SourceForge bug #664 &quot;[bug]Heap buffer overflow when
+parsing MIFF&quot;.  This severe bug only impacts builds with BZLIB
+support.</p></li>
+</ul>
+</blockquote>
+<p>2022-03-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c (ReadJXLImage): Added patch from Tobias Mark to
+optimize EOF detection if the input file size is known.  Avoids
+waiting for ReadBlob() to report EOF.</p></li>
+</ul>
+</blockquote>
+<p>2022-03-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>Magick++/lib/Magick++/Include.h: Support 'ReadResource'.</p></li>
+</ul>
+</blockquote>
+<p>2022-03-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c: Added some debug logging instrumentation so we can
+see the information the JXL reader is provided by libjxl.</p></li>
+<li><p>configure.ac: JXL is working well enough to enable it by
+default.</p></li>
+</ul>
+</blockquote>
+<p>2022-03-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c (WriteJXLImage): Call JxlEncoderCloseInput() so
+that encoder output is not corrupt.  JXL passes testsuite tests
+now!</p></li>
+<li><p>magick/command.c (CompareImageCommand): Add -auto-orient support
+to 'compare'.  This tries to assure that the two images are right
+side up before comparing.</p></li>
+</ul>
+</blockquote>
+<p>2022-03-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c (WriteJXLImage): Work to update JXL writer code to
+compile clean with libjxl v0.7.0.  Still not working!</p></li>
+</ul>
+</blockquote>
+<p>2022-02-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/heif.c (ReadHEIFImage): Pass decode options to
+heif_decode_image().  Include rough implementation of progress
+monitor support but leave it disabled since libheif does not
+currently invoke the callbacks.</p></li>
+<li><p>coders/jpeg.c (ReadJPEGImage): Store embedded profiles in image,
+even if in 'ping' mode.  This addresses a problem discovered when
+interfacing with minimagick (Debian bug #1006374 &quot;graphicsmagick
+breaks ruby-mini-magick&quot;).</p></li>
+<li><p>coders/url.c (ReadURLImage): Deal with libxml2 not offering HTTP
+or FTP capabilities.  It seems that support for FTP has now been
+removed by default.</p></li>
+</ul>
+</blockquote>
+<p>2022-02-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>README.txt: Recomend using JasPer 3.0.0 (or later).</p></li>
+<li><p>VisualMagick/magick/magick_config.h.in: Disable building with
+bundled JasPer sources by default since the bundled sources are
+archaic.</p></li>
+<li><p>coders/jp2.c: Fix compilation with JasPer 3.0.0 (which is now
+released).</p></li>
+</ul>
+</blockquote>
+<p>2022-02-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/fx.c (ColorizeImagePixelsCB): Apply clipping and rounding
+to handle out of range values and provide the most accurate
+result.  Addresses SourceForge bug #662 &quot;Broken -colorize&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jp2.c (ReadJP2Image): Jasper 3.0.0 hid the functions we
+were using so switch back to using jas_image_decode(), but in a
+more secure way than before.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>www/download.rst: Document how to retrieve the PGP signing key
+from a key server.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jp2.c (ReadJP2Image): Always use
+ThrowJP2ReaderException().  Should address oss-fuzz Issue 43979:
+&quot;graphicsmagick:enhance_fuzzer: ASSERT: jas_get_ctx() ==
+jas_global.ctx&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>utilities/tests: Write compressed MIFF files to reduce disk
+space usage.</p></li>
+<li><p>magick/command.c (CompareImageCommand): Support '-compress'
+option.</p></li>
+<li><p>coders/mpc.c: Fix warnings from GCC 11.</p></li>
+<li><p>coders/miff.c: Fix warnings from GCC 11.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jp2.c: Adaptations to work with Jasper 3.0.0's
+jas_init_library() and other related functions.  Add missing
+jas_cleanup_thread().  Do not request a higher memory limit than
+JasPer's own limit in order to avoid a warning.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/miff.c (ReadMIFFImage): Do not proceed to next image in
+sequence unless the character read is the expected 'i' character.
+Inspired by GraphicsMagick bug #659 &quot;Can not escape $0 in a batch
+command&quot;.</p></li>
+<li><p>coders/heif.c (ReadHEIFImage): Take row stride into account when
+reading pixel rows. Add support for 'ping' mode.  Add header magic
+detection.  Add module aliases.  Add useful traces.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c: Added preliminary JPEG XL support written by
+Tobias Mark.  From Code Merge Request #14: &quot;Added (basic) jpeg-xl
+support&quot;.  The writer is not working properly at this time.</p></li>
+<li><p>www/formats.rst: Add HEIF to the list of supported formats.</p></li>
+<li><p>README.txt: Expand the text regarding support for HEIF/HVEC
+support.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/heif.c: HEIF reader written by Tobias Mark.  From
+SourceForge Code Merge Request #15: &quot;Added minimal heif support&quot;.</p></li>
+<li><p>magick/blob.c (ReadBlobStream): Fix EOF logic similar to
+ReadBlob. Addresses oss-fuzz 43617
+&quot;graphicsmagick:coder_P7_fuzzer: Use-of-uninitialized-value in
+WritePNMImage&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c (ReadBlob): Fix EOF logic. Addresses oss-fuzz
+43490 &quot;graphicsmagick:coder_PNM_fuzzer: Use-of-uninitialized-value
+in SyncImageCallBack&quot;.</p></li>
+<li><p>coders/pnm.c (ReadPNMImage): Make sure that we don't lose the
+image exception.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c: Throw a user-friendly exception when the read
+limit has been exceeded.</p></li>
+<li><p>coders/jpeg.c: Add tracing and fallback for longjmp().</p></li>
+<li><p>coders/pict.c (DecodeImage): Assure that the claimed scanline
+length is within the bounds of the scanline allocation to avoid
+possible heap overflow.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c: Make sure that read resource limiting can support
+very large files.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/resource.c: Add support for setting a read resource limit
+via the MAGICK_LIMIT_READ environment variable, or similar to
+'-limit read 5mb'.</p></li>
+<li><p>magick/resource.h: Added a ReadResource limit, which is a limit
+on how many uncompressed file bytes may be read while decoding an
+input file.</p></li>
+</ul>
+</blockquote>
+<p>2022-01-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>ChangeLog.2021: Rotate ChangeLog for 2022.  Happy New Year!</p></li>
+</ul>
+</blockquote>
+</div>
+
+
+<hr class="docutils">
+<div class="document">
+    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2023<!--SPONSOR_LOGO--></p>
+</div>
+
+</div>
+</body>
+</html>

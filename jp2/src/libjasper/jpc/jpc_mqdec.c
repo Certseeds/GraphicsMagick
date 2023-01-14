@@ -71,23 +71,20 @@
 * Includes.
 \******************************************************************************/
 
-#include <assert.h>
-#include <stdlib.h>
-#include <stdarg.h>
-//#include <inttypes.h>
+#include "jpc_mqdec.h"
 
 #include "jasper/jas_types.h"
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_math.h"
 #include "jasper/jas_debug.h"
 
-#include "jpc_mqdec.h"
+#include <assert.h>
 
 /******************************************************************************\
 * Local macros.
 \******************************************************************************/
 
-#if defined(DEBUG)
+#ifndef NDEBUG
 #define	MQDEC_CALL(n, x) \
 	((jas_getdbglevel() >= (n)) ? ((void)(x)) : ((void)0))
 #else
@@ -105,7 +102,7 @@ static void jpc_mqdec_bytein(jpc_mqdec_t *mqdec);
 \******************************************************************************/
 
 /* Create a MQ decoder. */
-jpc_mqdec_t *jpc_mqdec_create(int maxctxs, jas_stream_t *in)
+jpc_mqdec_t *jpc_mqdec_create(unsigned maxctxs, jas_stream_t *in)
 {
 	jpc_mqdec_t *mqdec;
 
@@ -146,9 +143,7 @@ error:
 /* Destroy a MQ decoder. */
 void jpc_mqdec_destroy(jpc_mqdec_t *mqdec)
 {
-	if (mqdec->ctxs) {
-		jas_free(mqdec->ctxs);
-	}
+	jas_free(mqdec->ctxs);
 	jas_free(mqdec);
 }
 
@@ -162,13 +157,13 @@ void jpc_mqdec_init(jpc_mqdec_t *mqdec)
 {
 	int c;
 
-	mqdec->eof = 0;
+	mqdec->eof = false;
 	mqdec->creg = 0;
 	/* Get the next byte from the input stream. */
 	if ((c = jas_stream_getc(mqdec->in)) == EOF) {
 		/* We have encountered an I/O error or EOF. */
 		c = 0xff;
-		mqdec->eof = 1;
+		mqdec->eof = true;
 	}
 	mqdec->inbuffer = c;
 	mqdec->creg += mqdec->inbuffer << 16;
@@ -187,32 +182,22 @@ void jpc_mqdec_setinput(jpc_mqdec_t *mqdec, jas_stream_t *in)
 
 /* Initialize one or more contexts. */
 
-void jpc_mqdec_setctxs(jpc_mqdec_t *mqdec, int numctxs, jpc_mqctx_t *ctxs)
+void jpc_mqdec_setctxs(const jpc_mqdec_t *mqdec, unsigned numctxs, const jpc_mqctx_t *ctxs)
 {
-	jpc_mqstate_t **ctx;
-	int n;
+	const jpc_mqstate_t **ctx;
 
+	unsigned n = JAS_MIN(mqdec->maxctxs, numctxs);
 	ctx = mqdec->ctxs;
-	n = JAS_MIN(mqdec->maxctxs, numctxs);
-	while (--n >= 0) {
+	while (n-- > 0) {
 		*ctx = &jpc_mqstates[2 * ctxs->ind + ctxs->mps];
 		++ctx;
 		++ctxs;
 	}
 	n = mqdec->maxctxs - numctxs;
-	while (--n >= 0) {
+	while (n-- > 0) {
 		*ctx = &jpc_mqstates[0];
 		++ctx;
 	}
-}
-
-/* Initialize a context. */
-
-void jpc_mqdec_setctx(jpc_mqdec_t *mqdec, int ctxno, jpc_mqctx_t *ctx)
-{
-	jpc_mqstate_t **ctxi;
-	ctxi = &mqdec->ctxs[ctxno];
-	*ctxi = &jpc_mqstates[2 * ctx->ind + ctx->mps];
 }
 
 /******************************************************************************\
@@ -221,9 +206,9 @@ void jpc_mqdec_setctx(jpc_mqdec_t *mqdec, int ctxno, jpc_mqctx_t *ctx)
 
 /* Decode a bit. */
 
-int jpc_mqdec_getbit_func(register jpc_mqdec_t *mqdec)
+bool jpc_mqdec_getbit_func(register jpc_mqdec_t *mqdec)
 {
-	int bit;
+	bool bit;
 	JAS_DBGLOG(100, ("jpc_mqdec_getbit_func(%p)\n", mqdec));
 	MQDEC_CALL(100, jpc_mqdec_dump(mqdec, stderr));
 	bit = jpc_mqdec_getbit_macro(mqdec);
@@ -233,25 +218,33 @@ int jpc_mqdec_getbit_func(register jpc_mqdec_t *mqdec)
 	return bit;
 }
 
-/* Apply MPS_EXCHANGE algorithm (with RENORMD). */
-int jpc_mqdec_mpsexchrenormd(register jpc_mqdec_t *mqdec)
+static void jpc_mqdec_renormd(jpc_mqdec_t *mqdec)
 {
-	int ret;
-	register jpc_mqstate_t *state = *mqdec->curctx;
-	jpc_mqdec_mpsexchange(mqdec->areg, state->qeval, mqdec->curctx, ret);
-	jpc_mqdec_renormd(mqdec->areg, mqdec->creg, mqdec->ctreg, mqdec->in,
-	  mqdec->eof, mqdec->inbuffer);
+	do {
+		if (!mqdec->ctreg)
+			jpc_mqdec_bytein(mqdec);
+
+		mqdec->areg <<= 1;
+		mqdec->creg <<= 1;
+		--mqdec->ctreg;
+	} while (!(mqdec->areg & 0x8000));
+}
+
+/* Apply MPS_EXCHANGE algorithm (with RENORMD). */
+bool jpc_mqdec_mpsexchrenormd(register jpc_mqdec_t *mqdec)
+{
+	register const jpc_mqstate_t *state = *mqdec->curctx;
+	bool ret = jpc_mqdec_mpsexchange(mqdec->areg, state->qeval, mqdec->curctx);
+	jpc_mqdec_renormd(mqdec);
 	return ret;
 }
 
 /* Apply LPS_EXCHANGE algorithm (with RENORMD). */
-int jpc_mqdec_lpsexchrenormd(register jpc_mqdec_t *mqdec)
+bool jpc_mqdec_lpsexchrenormd(register jpc_mqdec_t *mqdec)
 {
-	int ret;
-	register jpc_mqstate_t *state = *mqdec->curctx;
-	jpc_mqdec_lpsexchange(mqdec->areg, state->qeval, mqdec->curctx, ret);
-	jpc_mqdec_renormd(mqdec->areg, mqdec->creg, mqdec->ctreg, mqdec->in,
-	  mqdec->eof, mqdec->inbuffer);
+	register const jpc_mqstate_t *state = *mqdec->curctx;
+	bool ret = jpc_mqdec_lpsexchange(&mqdec->areg, state->qeval, mqdec->curctx);
+	jpc_mqdec_renormd(mqdec);
 	return ret;
 }
 
@@ -267,7 +260,7 @@ static void jpc_mqdec_bytein(jpc_mqdec_t *mqdec)
 
 	if (!mqdec->eof) {
 		if ((c = jas_stream_getc(mqdec->in)) == EOF) {
-			mqdec->eof = 1;
+			mqdec->eof = true;
 			c = 0xff;
 		}
 		prevbuf = mqdec->inbuffer;
@@ -296,12 +289,12 @@ static void jpc_mqdec_bytein(jpc_mqdec_t *mqdec)
 
 /* Dump a MQ decoder to a stream for debugging. */
 
-void jpc_mqdec_dump(jpc_mqdec_t *mqdec, FILE *out)
+void jpc_mqdec_dump(const jpc_mqdec_t *mqdec, FILE *out)
 {
 	fprintf(out, "MQDEC A = %08lx, C = %08lx, CT=%08lx, ",
 	  (unsigned long) mqdec->areg, (unsigned long) mqdec->creg,
 	  (unsigned long) mqdec->ctreg);
 	fprintf(out, "CTX = %" PRIdPTR ", ", mqdec->curctx - mqdec->ctxs);
-	fprintf(out, "IND %" PRIdPTR ", MPS %d, QEVAL %"PRIxFAST16"\n", *mqdec->curctx -
+	fprintf(out, "IND %" PRIdPTR ", MPS %d, QEVAL %"PRIxLEAST16"\n", *mqdec->curctx -
 	  jpc_mqstates, (*mqdec->curctx)->mps, (*mqdec->curctx)->qeval);
 }

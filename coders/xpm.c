@@ -855,8 +855,8 @@ static unsigned int WritePICONImage(const ImageInfo *image_info,Image *image)
     characters_per_pixel,
     colors;
 
-    ImageCharacteristics
-      characteristics;
+  ImageCharacteristics
+    characteristics;
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);

@@ -63,16 +63,21 @@
 * Includes.
 \******************************************************************************/
 
-#include <assert.h>
+#include "mif_cod.h"
 
+#include "jasper/jas_cm.h"
 #include "jasper/jas_tvp.h"
 #include "jasper/jas_stream.h"
 #include "jasper/jas_image.h"
+#include "jasper/jas_seq.h"
 #include "jasper/jas_string.h"
 #include "jasper/jas_malloc.h"
 #include "jasper/jas_debug.h"
 
-#include "mif_cod.h"
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /******************************************************************************\
 * Local types.
@@ -116,13 +121,13 @@ static mif_hdr_t *mif_makehdrfromimage(jas_image_t *image);
 * Local data.
 \******************************************************************************/
 
-jas_taginfo_t mif_tags2[] = {
+static const jas_taginfo_t mif_tags2[] = {
 	{MIF_CMPT, "component"},
 	{MIF_END, "end"},
 	{-1, 0}
 };
 
-jas_taginfo_t mif_tags[] = {
+static const jas_taginfo_t mif_tags[] = {
 	{MIF_TLX, "tlx"},
 	{MIF_TLY, "tly"},
 	{MIF_WIDTH, "width"},
@@ -156,7 +161,7 @@ jas_image_t *mif_decode(jas_stream_t *in, const char *optstr)
 	int bias;
 
 	/* Avoid warnings about unused parameters. */
-	optstr = 0;
+	(void)optstr;
 
 	hdr = 0;
 	image = 0;
@@ -372,29 +377,13 @@ int mif_validate(jas_stream_t *in)
 {
 	jas_uchar buf[MIF_MAGICLEN];
 	uint_fast32_t magic;
-	int i;
-	int n;
 
 	assert(JAS_STREAM_MAXPUTBACK >= MIF_MAGICLEN);
 
 	/* Read the validation data (i.e., the data used for detecting
 	  the format). */
-	if ((n = jas_stream_read(in, buf, MIF_MAGICLEN)) < 0) {
+	if (jas_stream_peek(in, buf, sizeof(buf)) != sizeof(buf))
 		return -1;
-	}
-
-	/* Put the validation data back onto the stream, so that the
-	  stream position will not be changed. */
-	for (i = n - 1; i >= 0; --i) {
-		if (jas_stream_ungetc(in, buf[i]) == EOF) {
-			return -1;
-		}
-	}
-
-	/* Was enough data read? */
-	if (n < MIF_MAGICLEN) {
-		return -1;
-	}
 
 	/* Compute the signature value. */
 	magic = (JAS_CAST(uint_fast32_t, buf[0]) << 24) |
@@ -639,10 +628,11 @@ static int mif_hdr_put(mif_hdr_t *hdr, jas_stream_t *out)
 	mif_cmpt_t *cmpt;
 
 	/* Output signature. */
-	jas_stream_putc(out, (MIF_MAGIC >> 24) & 0xff);
-	jas_stream_putc(out, (MIF_MAGIC >> 16) & 0xff);
-	jas_stream_putc(out, (MIF_MAGIC >> 8) & 0xff);
-	jas_stream_putc(out, MIF_MAGIC & 0xff);
+	if (jas_stream_putc(out, (MIF_MAGIC >> 24) & 0xff) == EOF ||
+	    jas_stream_putc(out, (MIF_MAGIC >> 16) & 0xff) == EOF ||
+	    jas_stream_putc(out, (MIF_MAGIC >> 8) & 0xff) == EOF ||
+	    jas_stream_putc(out, MIF_MAGIC & 0xff) == EOF)
+		return -1;
 
 	/* Output component information. */
 	for (cmptno = 0; cmptno < hdr->numcmpts; ++cmptno) {
@@ -666,6 +656,8 @@ static int mif_hdr_put(mif_hdr_t *hdr, jas_stream_t *out)
 static int mif_hdr_addcmpt(mif_hdr_t *hdr, int cmptno, mif_cmpt_t *cmpt)
 {
 	assert(cmptno >= hdr->numcmpts);
+	(void)cmptno;
+
 	if (hdr->numcmpts >= hdr->maxcmpts) {
 		if (mif_hdr_growcmpts(hdr, hdr->numcmpts + 128)) {
 			return -1;

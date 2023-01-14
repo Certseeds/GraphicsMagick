@@ -71,14 +71,9 @@
 * Includes.
 \******************************************************************************/
 
-#include <ctype.h>
-#include <math.h>
-#include <stdlib.h>
-#include <assert.h>
-
-#include "jasper/jas_math.h"
-
 #include "pnm_cod.h"
+
+#include <stdlib.h>
 
 /******************************************************************************\
 * Miscellaneous utilities.

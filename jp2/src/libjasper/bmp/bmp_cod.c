@@ -71,13 +71,11 @@
 * Includes.
 \******************************************************************************/
 
-#include <assert.h>
+#include "bmp_cod.h"
 
-#include "jasper/jas_types.h"
-#include "jasper/jas_image.h"
 #include "jasper/jas_malloc.h"
 
-#include "bmp_cod.h"
+#include <stdlib.h>
 
 /******************************************************************************\
 * Constructors and destructors.

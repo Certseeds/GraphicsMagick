@@ -74,10 +74,7 @@
 * Includes.
 \******************************************************************************/
 
-#include "jasper/jas_seq.h"
-
 #include "jpc_enc.h"
-#include "jpc_t1cod.h"
 
 /******************************************************************************\
 * Functions.
@@ -85,9 +82,5 @@
 
 /* Encode all of the code blocks. */
 int jpc_enc_enccblks(jpc_enc_t *enc);
-
-/* Encode a single code block. */
-int jpc_enc_enccblk(jpc_enc_t *enc, jas_stream_t *out, jpc_enc_tcmpt_t *comp,
-  jpc_enc_band_t *band, jpc_enc_cblk_t *cblk);
 
 #endif

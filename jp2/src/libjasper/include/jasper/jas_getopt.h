@@ -61,10 +61,9 @@
  * __END_OF_JASPER_LICENSE__
  */
 
-/*
- * Command Line Option Parsing Code
- *
- * $Id$
+/*!
+ * @file jas_getopt.h
+ * @brief Command Line Option Parsing Code
  */
 
 #ifndef JAS_GETOPT_H
@@ -97,7 +96,7 @@ typedef struct {
 	int id;
 	/* The unique identifier for this option. */
 
-	char *name;
+	const char *name;
 	/* The name of this option. */
 
 	int flags;
@@ -110,20 +109,20 @@ typedef struct {
 \******************************************************************************/
 
 /* The current option index. */
-extern int jas_optind;
+JAS_DLLEXPORT extern int jas_optind;
 
 /* The current option argument. */
-extern char *jas_optarg;
+JAS_DLLEXPORT extern const char *jas_optarg;
 
 /* The debug level. */
-extern int jas_opterr;
+JAS_DLLEXPORT extern int jas_opterr;
 
 /******************************************************************************\
 * Prototypes.
 \******************************************************************************/
 
 /* Get the next option. */
-int jas_getopt(int argc, char **argv, jas_opt_t *opts);
+JAS_DLLEXPORT int jas_getopt(int argc, char **argv, const jas_opt_t *opts);
 
 #ifdef __cplusplus
 }

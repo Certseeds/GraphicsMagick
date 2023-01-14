@@ -74,10 +74,11 @@
 * Includes.
 \******************************************************************************/
 
-#include <stdio.h>
-
 #include "jasper/jas_types.h"
 #include "jasper/jas_stream.h"
+
+#include <assert.h>
+#include <stdio.h>
 
 /******************************************************************************\
 * Constants.
@@ -133,7 +134,7 @@ typedef struct {
 \******************************************************************************/
 
 /* Open a stream as a bit stream. */
-jpc_bitstream_t *jpc_bitstream_sopen(jas_stream_t *stream, char *mode);
+jpc_bitstream_t *jpc_bitstream_sopen(jas_stream_t *stream, const char *mode);
 
 /* Close a bit stream. */
 int jpc_bitstream_close(jpc_bitstream_t *bitstream);
@@ -143,7 +144,7 @@ int jpc_bitstream_close(jpc_bitstream_t *bitstream);
 \******************************************************************************/
 
 /* Read a bit from a bit stream. */
-#if defined(DEBUG)
+#ifndef NDEBUG
 #define	jpc_bitstream_getbit(bitstream) \
 	jpc_bitstream_getbit_func(bitstream)
 #else
@@ -152,7 +153,7 @@ int jpc_bitstream_close(jpc_bitstream_t *bitstream);
 #endif
 
 /* Write a bit to a bit stream. */
-#if defined(DEBUG)
+#ifndef NDEBUG
 #define	jpc_bitstream_putbit(bitstream, v) \
 	jpc_bitstream_putbit_func(bitstream, v)
 #else
@@ -185,10 +186,12 @@ int jpc_bitstream_inalign(jpc_bitstream_t *bitstream, int fillmask,
 int jpc_bitstream_outalign(jpc_bitstream_t *bitstream, int filldata);
 
 /* Check if a bit stream needs alignment. */
-int jpc_bitstream_needalign(jpc_bitstream_t *bitstream);
+JAS_ATTRIBUTE_PURE
+int jpc_bitstream_needalign(const jpc_bitstream_t *bitstream);
 
 /* How many additional bytes would be output if the bit stream was aligned? */
-int jpc_bitstream_pending(jpc_bitstream_t *bitstream);
+JAS_ATTRIBUTE_PURE
+int jpc_bitstream_pending(const jpc_bitstream_t *bitstream);
 
 /******************************************************************************\
 * Functions/macros for querying state information for bit streams.

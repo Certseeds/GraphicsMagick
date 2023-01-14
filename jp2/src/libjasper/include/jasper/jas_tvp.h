@@ -59,10 +59,9 @@
  * __END_OF_JASPER_LICENSE__
  */
 
-/*
- * Tag/Value Parser
- *
- * $Id$
+/*!
+ * @file jas_tvp.h
+ * @brief Tag/Value Pair Parser
  */
 
 #ifndef JAS_TVP_H
@@ -90,7 +89,7 @@ typedef struct {
 	int id;
 	/* The ID for the tag. */
 
-	char *name;
+	const char *name;
 	/* The name of the tag. */
 
 } jas_taginfo_t;
@@ -105,7 +104,7 @@ typedef struct {
 	char *tag;
 	/* The current tag name. */
 
-	char *val;
+	const char *val;
 	/* The current value. */
 
 	char *pos;
@@ -118,32 +117,36 @@ typedef struct {
 \******************************************************************************/
 
 /* Lookup a tag by name. */
-jas_taginfo_t *jas_taginfos_lookup(jas_taginfo_t *taginfos, const char *name);
+JAS_ATTRIBUTE_PURE
+JAS_DLLEXPORT const jas_taginfo_t *jas_taginfos_lookup(const jas_taginfo_t *taginfos, const char *name);
 
 /* This function returns a pointer to the specified taginfo object if it
   exists (i.e., the pointer is nonnull); otherwise, a pointer to a dummy
   object is returned.  This is useful in some situations to avoid checking
   for a null pointer. */
-jas_taginfo_t *jas_taginfo_nonull(jas_taginfo_t *taginfo);
+JAS_ATTRIBUTE_PURE
+JAS_DLLEXPORT const jas_taginfo_t *jas_taginfo_nonull(const jas_taginfo_t *taginfo);
 
 /******************************************************************************\
 * Tag-value parser functions.
 \******************************************************************************/
 
 /* Create a tag-value parser for the specified string. */
-jas_tvparser_t *jas_tvparser_create(const char *s);
+JAS_DLLEXPORT jas_tvparser_t *jas_tvparser_create(const char *s);
 
 /* Destroy a tag-value parser. */
-void jas_tvparser_destroy(jas_tvparser_t *tvparser);
+JAS_DLLEXPORT void jas_tvparser_destroy(jas_tvparser_t *tvparser);
 
 /* Get the next tag-value pair. */
-int jas_tvparser_next(jas_tvparser_t *tvparser);
+JAS_DLLEXPORT int jas_tvparser_next(jas_tvparser_t *tvparser);
 
 /* Get the tag name for the current tag-value pair. */
-char *jas_tvparser_gettag(jas_tvparser_t *tvparser);
+JAS_ATTRIBUTE_PURE
+JAS_DLLEXPORT const char *jas_tvparser_gettag(const jas_tvparser_t *tvparser);
 
 /* Get the value for the current tag-value pair. */
-char *jas_tvparser_getval(jas_tvparser_t *tvparser);
+JAS_ATTRIBUTE_PURE
+JAS_DLLEXPORT const char *jas_tvparser_getval(const jas_tvparser_t *tvparser);
 
 #ifdef __cplusplus
 }

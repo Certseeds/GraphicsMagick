@@ -1474,6 +1474,7 @@ MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
       (void) CatchImageException(image);
       AppendImageToList(&image_list,image);
     }
+  image_list=GetFirstImageInList(image_list);
   if (resource_info.window_id != (char *) NULL)
     MagickXAnimateBackgroundImage(display,&resource_info,image_list);
   else
@@ -6228,6 +6229,7 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
       GetImageException(image,exception);
       AppendImageToList(&image_list,image);
     }
+  image_list=GetFirstImageInList(image_list);
   status&=WriteImages(image_info,image_list,argv[argc-1],exception);
   if (metadata != (char **) NULL)
     {
@@ -11582,7 +11584,6 @@ MagickExport MagickPassFail MogrifyImages(const ImageInfo *image_info,
           }
       }
       AppendImageToList(&mogrify_images,image);
-      mogrify_images=image;
     }
   mogrify_images=GetFirstImageInList(mogrify_images);
 
@@ -15197,6 +15198,7 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
    */
   (void) strlcpy(montage_info->filename,argv[argc-1],MaxTextExtent);
   /* (void) memmove(montage_info->filename,argv[argc-1],strlen(argv[argc-1])+1); */
+  image_list=GetFirstImageInList(image_list);
   montage_image=MontageImages(image_list,montage_info,exception);
   if (montage_image == (Image *) NULL)
     ThrowMontageException(OptionError,RequestDidNotReturnAnImage,(char *) NULL);

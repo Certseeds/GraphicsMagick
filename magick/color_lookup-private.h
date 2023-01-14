@@ -50,6 +50,42 @@ extern unsigned int
 extern MagickPassFail
   InitializeColorInfo(void);
 
+#define BackgroundColor "#ffffffffffff"  /* white */
+#define BackgroundColorInit(q) \
+  do { SetRedSample(q,MaxRGB); \
+    SetGreenSample(q,MaxRGB); \
+    SetBlueSample(q,MaxRGB); \
+    SetOpacitySample(q,0U); } while(0)
+
+#define BorderColor "#dfdfdfdfdfdf"  /* gray */
+#define BorderColorInit(q) \
+  do { \
+    SetGraySample(q,ScaleShortToQuantum(0xdfdf)); \
+    SetOpacitySample(q,0); \
+  } while(0)
+
+#define ForegroundColor "#000000000000"  /* black */
+#define ForegroundColorInit(q) \
+  do { \
+    SetGraySample(q,0); \
+    SetOpacitySample(q,0); } \
+  while(0)
+
+#define HighlightColor "#f1f100001e1e" /* light red */
+#define HighlightColorInit(q) \
+  do { SetRedSample(q,ScaleShortToQuantum(0xf1f1)); \
+    SetGreenSample(q,ScaleShortToQuantum(0x000)); \
+    SetBlueSample(q,ScaleShortToQuantum(0x1e1e)); \
+    SetOpacitySample(q,0); \
+  } while(0)
+
+#define MatteColor "#bdbdbdbdbdbd"  /* gray */
+#define MatteColorInit(q) \
+  do { \
+    SetGraySample(q,ScaleShortToQuantum(0xbdbd)); \
+    SetOpacitySample(q,0); \
+  } while(0)
+
 /*
  * Local Variables:
  * mode: c

@@ -72,13 +72,16 @@
 * Includes.
 \******************************************************************************/
 
+#include "jasper/jas_image.h"
 #include "jasper/jas_seq.h"
+#include "jasper/jas_stream.h"
 
+#include "jpc_t1cod.h"
 #include "jpc_t2cod.h"
 #include "jpc_mqenc.h"
-#include "jpc_cod.h"
 #include "jpc_tagtree.h"
 #include "jpc_cs.h"
+#include "jpc_fix.h"
 #include "jpc_flt.h"
 #include "jpc_tsfb.h"
 
@@ -268,7 +271,7 @@ typedef struct {
 	int end;
 
 	/* The type of data in this pass (i.e., MQ or raw). */
-	int type;
+	enum jpc_segtype type;
 
 	/* Flag indicating that this pass is terminated. */
 	int term;
@@ -277,7 +280,7 @@ typedef struct {
 	jpc_mqencstate_t mqencstate;
 
 	/* The layer to which this pass has been assigned. */
-	int lyrno;
+	unsigned lyrno;
 
 	/* The R-D slope for this pass. */
 	jpc_flt_t rdslope;
@@ -298,7 +301,7 @@ typedef struct {
 typedef struct {
 
 	/* The number of passes. */
-	int numpasses;
+	unsigned numpasses;
 
 	/* The per-pass information. */
 	jpc_enc_pass_t *passes;
@@ -374,7 +377,7 @@ typedef struct jpc_enc_prc_s {
 	int numvcblks;
 
 	/* The total number of code blocks. */
-	int numcblks;
+	unsigned numcblks;
 
 	/* The per-code-block information. */
 	jpc_enc_cblk_t *cblks;
@@ -409,7 +412,7 @@ typedef struct jpc_enc_band_s {
 	jas_matrix_t *data;
 
 	/* The orientation of this band (i.e., LL, LH, HL, or HH). */
-	int orient;
+	enum jpc_tsfb_orient orient;
 
 	/* The number of bit planes associated with this band. */
 	int numbps;
@@ -469,17 +472,17 @@ typedef struct jpc_enc_rlvl_s {
 	int numvprcs;
 
 	/* The total number of precincts. */
-	int numprcs;
+	unsigned numprcs;
 
 	/* The exponent value for the nominal code block group width.
 	  This quantity is associated with the next lower resolution level
 	  (assuming that there is one). */
-	int cbgwidthexpn;
+	unsigned cbgwidthexpn;
 
 	/* The exponent value for the nominal code block group height.
 	  This quantity is associated with the next lower resolution level
 	  (assuming that there is one). */
-	int cbgheightexpn;
+	unsigned cbgheightexpn;
 
 	/* The exponent value for the code block width. */
 	uint_fast16_t cblkwidthexpn;
@@ -488,7 +491,7 @@ typedef struct jpc_enc_rlvl_s {
 	uint_fast16_t cblkheightexpn;
 
 	/* The number of bands associated with this resolution level. */
-	int numbands;
+	unsigned numbands;
 
 	/* The per-band information. */
 	jpc_enc_band_t *bands;
@@ -503,7 +506,7 @@ typedef struct jpc_enc_rlvl_s {
 typedef struct jpc_enc_tcmpt_s {
 
 	/* The number of resolution levels. */
-	int numrlvls;
+	unsigned numrlvls;
 
 	/* The per-resolution-level information. */
 	jpc_enc_rlvl_t *rlvls;
@@ -582,7 +585,7 @@ typedef struct jpc_enc_tile_s {
 	uint_fast8_t prg;
 
 	/* The number of layers. */
-	int numlyrs;
+	unsigned numlyrs;
 
 	/* The MCT to employ (if any). */
 	uint_fast8_t mctid;
@@ -598,7 +601,7 @@ typedef struct jpc_enc_tile_s {
 	uint_fast32_t *lyrsizes;
 
 	/* The number of tile-components. */
-	int numtcmpts;
+	unsigned numtcmpts;
 
 	/* The per tile-component information. */
 	jpc_enc_tcmpt_t *tcmpts;

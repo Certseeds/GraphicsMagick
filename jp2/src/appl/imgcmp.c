@@ -73,7 +73,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <float.h>
-#include <assert.h>
 
 #include <jasper/jasper.h>
 
@@ -130,7 +129,7 @@ static jas_taginfo_t metrictab[] = {
 	{-1, 0}
 };
 
-static jas_opt_t opts[] = {
+static const jas_opt_t opts[] = {
 	{OPT_HELP, "help", 0},
 	{OPT_VERSION, "version", 0},
 	{OPT_VERBOSE, "verbose", 0},
@@ -154,10 +153,10 @@ static char *cmdname = 0;
 
 int main(int argc, char **argv)
 {
-	char *origpath;
-	char *reconpath;
+	const char *origpath;
+	const char *reconpath;
 	int verbose;
-	char *metricname;
+	const char *metricname;
 	int metric;
 
 	int id;
@@ -167,21 +166,15 @@ int main(int argc, char **argv)
 	jas_matrix_t *recondata;
 	jas_image_t *diffimage;
 	jas_stream_t *diffstream;
-	int width;
-	int height;
-	int depth;
-	int numcomps;
 	double d;
 	double maxdist;
 	double mindist;
-	int compno;
 	jas_stream_t *origstream;
 	jas_stream_t *reconstream;
-	char *diffpath;
+	const char *diffpath;
 	int maxonly;
 	int minonly;
 	int fmtid;
-	size_t max_mem;
 
 	verbose = 0;
 	origpath = 0;
@@ -192,7 +185,7 @@ int main(int argc, char **argv)
 	maxonly = 0;
 	minonly = 0;
 #if defined(JAS_DEFAULT_MAX_MEM_USAGE)
-	max_mem = JAS_DEFAULT_MAX_MEM_USAGE;
+	size_t max_mem = JAS_DEFAULT_MAX_MEM_USAGE;
 #endif
 
 	if (jas_init()) {
@@ -230,7 +223,9 @@ int main(int argc, char **argv)
 			exit(EXIT_SUCCESS);
 			break;
 		case OPT_MAXMEM:
+#if defined(JAS_DEFAULT_MAX_MEM_USAGE)
 			max_mem = strtoull(jas_optarg, 0, 10);
+#endif
 			break;
 		case OPT_HELP:
 		default:
@@ -292,7 +287,7 @@ int main(int argc, char **argv)
 	jas_stream_close(reconstream);
 
 	/* Ensure that both images have the same number of components. */
-	numcomps = jas_image_numcmpts(origimage);
+	const unsigned numcomps = jas_image_numcmpts(origimage);
 	if (jas_image_numcmpts(reconimage) != numcomps) {
 		fprintf(stderr, "number of components differ (%d != %d)\n",
 		  numcomps, jas_image_numcmpts(reconimage));
@@ -302,10 +297,10 @@ int main(int argc, char **argv)
 	/* Compute the difference for each component. */
 	maxdist = 0;
 	mindist = FLT_MAX;
-	for (compno = 0; compno < numcomps; ++compno) {
-		width = jas_image_cmptwidth(origimage, compno);
-		height = jas_image_cmptheight(origimage, compno);
-		depth = jas_image_cmptprec(origimage, compno);
+	for (unsigned compno = 0; compno < numcomps; ++compno) {
+		const uint_least32_t width = jas_image_cmptwidth(origimage, compno);
+		const uint_least32_t height = jas_image_cmptheight(origimage, compno);
+		const unsigned depth = jas_image_cmptprec(origimage, compno);
 		if (jas_image_cmptwidth(reconimage, compno) != width ||
 		 jas_image_cmptheight(reconimage, compno) != height) {
 			fprintf(stderr, "image dimensions differ\n");
@@ -434,12 +429,10 @@ double pae(jas_matrix_t *x, jas_matrix_t *y)
 {
 	double s;
 	double d;
-	int i;
-	int j;
 
 	s = 0.0;
-	for (i = 0; i < jas_matrix_numrows(x); i++) {
-		for (j = 0; j < jas_matrix_numcols(x); j++) {
+	for (jas_matind_t i = 0; i < jas_matrix_numrows(x); i++) {
+		for (jas_matind_t j = 0; j < jas_matrix_numcols(x); j++) {
 			d = JAS_ABS(jas_matrix_get(y, i, j) - jas_matrix_get(x, i, j));
 			if (d > s) {
 				s = d;
@@ -456,12 +449,10 @@ double msen(jas_matrix_t *x, jas_matrix_t *y, int n)
 {
 	double s;
 	double d;
-	int i;
-	int j;
 
 	s = 0.0;
-	for (i = 0; i < jas_matrix_numrows(x); i++) {
-		for (j = 0; j < jas_matrix_numcols(x); j++) {
+	for (jas_matind_t i = 0; i < jas_matrix_numrows(x); i++) {
+		for (jas_matind_t j = 0; j < jas_matrix_numcols(x); j++) {
 			d = jas_matrix_get(y, i, j) - jas_matrix_get(x, i, j);
 			if (n == 1) {
 				s += fabs(d);
@@ -497,18 +488,14 @@ jas_image_t *makediffimage(jas_matrix_t *origdata, jas_matrix_t *recondata)
 {
 	jas_image_t *diffimage;
 	jas_matrix_t *diffdata[3];
-	int width;
-	int height;
 	int i;
-	int j;
-	int k;
 	jas_image_cmptparm_t compparms[3];
 	jas_seqent_t a;
 	jas_seqent_t b;
 
 	diffimage = 0;
-	width = jas_matrix_numcols(origdata);
-	height = jas_matrix_numrows(origdata);
+	const jas_matind_t width = jas_matrix_numcols(origdata);
+	const jas_matind_t height = jas_matrix_numrows(origdata);
 
 	for (i = 0; i < 3; ++i) {
 		compparms[i].tlx = 0;
@@ -532,8 +519,8 @@ jas_image_t *makediffimage(jas_matrix_t *origdata, jas_matrix_t *recondata)
 		}
 	}
 
-	for (j = 0; j < height; ++j) {
-		for (k = 0; k < width; ++k) {
+	for (jas_matind_t j = 0; j < height; ++j) {
+		for (jas_matind_t k = 0; k < width; ++k) {
 			a = jas_matrix_get(origdata, j, k);
 			b = jas_matrix_get(recondata, j, k);
 			if (a > b) {

@@ -1050,11 +1050,11 @@ static unsigned int WritePCDTile(const ImageInfo *image_info,
   (void) GetMagickGeometry(page_geometry,&geometry.x,&geometry.y,
     &geometry.width,&geometry.height);
   if ((geometry.width % 2) != 0)
-    geometry.width--;
+    geometry.width = geometry.width > 1 ? geometry.width-1 : geometry.width+1 ;
   if ((geometry.height % 2) != 0)
-    geometry.height--;
+    geometry.height = geometry.height > 1 ? geometry.height-1 : geometry.height+1;
   tile_image=ResizeImage(image,geometry.width,geometry.height,TriangleFilter,
-    1.0,&image->exception);
+                         1.0,&image->exception);
   if (tile_image == (Image *) NULL)
     return(False);
   (void) sscanf(page_geometry,"%lux%lu",&geometry.width,&geometry.height);

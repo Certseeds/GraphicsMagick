@@ -71,15 +71,15 @@
 * Includes.
 \******************************************************************************/
 
-#include <assert.h>
-#include <stdlib.h>
+#include "ras_enc.h"
+#include "ras_cod.h"
 
 #include "jasper/jas_image.h"
 #include "jasper/jas_stream.h"
 #include "jasper/jas_debug.h"
 
-#include "ras_cod.h"
-#include "ras_enc.h"
+#include <assert.h>
+#include <stdio.h>
 
 /******************************************************************************\
 * Prototypes.
@@ -142,7 +142,6 @@ int ras_encode(jas_image_t *image, jas_stream_t *out, const char *optstr)
 	default:
 		jas_eprintf("error: unsupported color space\n");
 		return -1;
-		break;
 	}
 
 	width = jas_image_cmptwidth(image, enc->cmpts[0]);
@@ -212,7 +211,6 @@ static int ras_putdata(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image, in
 		break;
 	default:
 		ret = -1;
-		break;
 	}
 	return ret;
 }
@@ -231,6 +229,11 @@ static int ras_putdatastd(jas_stream_t *out, ras_hdr_t *hdr, jas_image_t *image,
 	int i;
 
 	assert(numcmpts <= 3);
+
+	if (RAS_ISRGB(hdr) && numcmpts < 3) {
+		/* need 3 components for RGB */
+		return -1;
+	}
 
 	for (i = 0; i < 3; ++i) {
 		data[i] = 0;

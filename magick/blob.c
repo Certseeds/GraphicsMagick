@@ -2678,8 +2678,8 @@ MagickExport void MSBOrderShort(unsigned char *p,const size_t length)
 %
 %  OpenBlob() opens a file associated with the image.  A file name of '-' sets
 %  the file to stdin for type 'r' and stdout for type 'w'.  If the filename
-%  suffix is '.gz' or '.Z', the image is decompressed for type 'r' and
-%  compressed for type 'w'.
+%  suffix is '.gz', the image is decompressed for type 'r' and compressed
+%  for type 'w'.
 %
 %  The format of the OpenBlob method is:
 %
@@ -2823,9 +2823,7 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
           (void) strlcpy(filename,image->filename,sizeof(filename));
         }
 #if defined(HasZLIB) && !defined(DISABLE_COMPRESSED_FILES)
-      if (((strlen(filename) > 2) &&
-           (LocaleCompare(filename+strlen(filename)-2,".Z") == 0)) ||
-          ((strlen(filename) > 3) &&
+      if (((strlen(filename) > 3) &&
            (LocaleCompare(filename+strlen(filename)-3,".gz") == 0)) ||
           ((strlen(filename) > 5) &&
            (LocaleCompare(filename+strlen(filename)-5,".svgz") == 0)))
@@ -4627,7 +4625,7 @@ MagickExport char *ReadBlobString(Image *image,char *string)
     }
 
   /* Strip trailing NL and CR */
-  while ((i > 0) && ((string[i-1] == '\r') || (string[i-1] == '\n'))) /* oss-fuzz 53001 */
+  while ((i > 0) && ((string[i-1] == '\r') || (string[i-1] == '\n')))
     {
       --i;
       string[i] = 0;

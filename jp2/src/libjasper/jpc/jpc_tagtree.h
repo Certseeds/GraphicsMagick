@@ -74,7 +74,6 @@
 * Includes
 \******************************************************************************/
 
-#include <limits.h>
 #include <stdio.h>
 
 #include "jpc_bs.h"
@@ -141,7 +140,7 @@ jpc_tagtree_t *jpc_tagtree_create(int numleafsh, int numleafsv);
 void jpc_tagtree_destroy(jpc_tagtree_t *tree);
 
 /* Copy data from one tag tree to another. */
-void jpc_tagtree_copy(jpc_tagtree_t *dsttree, jpc_tagtree_t *srctree);
+void jpc_tagtree_copy(jpc_tagtree_t *dsttree, const jpc_tagtree_t *srctree);
 
 /* Reset the tag tree state. */
 void jpc_tagtree_reset(jpc_tagtree_t *tree);
@@ -151,6 +150,7 @@ void jpc_tagtree_setvalue(jpc_tagtree_t *tree, jpc_tagtreenode_t *leaf,
   int value);
 
 /* Get a pointer to a particular leaf node. */
+JAS_ATTRIBUTE_PURE
 jpc_tagtreenode_t *jpc_tagtree_getleaf(jpc_tagtree_t *tree, int n);
 
 /* Invoke the tag tree decoding procedure. */
@@ -162,6 +162,6 @@ int jpc_tagtree_encode(jpc_tagtree_t *tree, jpc_tagtreenode_t *leaf,
   int threshold, jpc_bitstream_t *out);
 
 /* Dump a tag tree (for debugging purposes). */
-void jpc_tagtree_dump(jpc_tagtree_t *tree, FILE *out);
+void jpc_tagtree_dump(const jpc_tagtree_t *tree, FILE *out);
 
 #endif

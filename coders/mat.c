@@ -721,8 +721,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       rotated_image->blob = image->blob;
       rotated_image->colors = image->colors;
       image->blob = blob;
-      AppendImageToList(&image,rotated_image);
-      DeleteImageFromList(&image);
+      ReplaceImageInList(&image,rotated_image);
       image = rotated_image;
     }
 
@@ -1295,8 +1294,7 @@ ExitLoop:
       rotated_image->blob = image->blob;
       rotated_image->colors = image->colors;
       image->blob = blob;
-      AppendImageToList(&image,rotated_image);
-      DeleteImageFromList(&image);
+      ReplaceImageInList(&image,rotated_image);
     }
 
 skip_reading_current:

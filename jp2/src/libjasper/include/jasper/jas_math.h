@@ -61,10 +61,9 @@
  * __END_OF_JASPER_LICENSE__
  */
 
-/*
- * Math-Related Code
- *
- * $Id$
+/*!
+ * @file jas_math.h
+ * @brief Math-Related Code
  */
 
 #ifndef	JAS_MATH_H
@@ -77,13 +76,13 @@
 /* The configuration header file should be included first. */
 #include <jasper/jas_config.h>
 
+#include <jasper/jas_compiler.h>
 #include <jasper/jas_types.h>
 
 #include <assert.h>
-#include <stdio.h>
 #include <string.h>
-#include "stdbool2.h"
 //#include <stdint.h>
+#include <limits.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -122,57 +121,94 @@ extern "C" {
 *
 \******************************************************************************/
 
+#if defined(__clang__) || (defined(__GNUC__) && __GNUC__ > 6)
+/* suppress clang warning "shifting a negative signed value is
+   undefined" in the assertions below */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshift-negative-value"
+#endif
+
+JAS_ATTRIBUTE_CONST
 JAS_ATTRIBUTE_DISABLE_USAN
-inline static int jas_int_asr(int x, int n)
+inline static int jas_int_asr(int x, unsigned n)
 {
 	// Ensure that the shift of a negative value appears to behave as a
 	// signed arithmetic shift.
 	assert(((-1) >> 1) == -1);
-	assert(n >= 0);
 	// The behavior is undefined when x is negative. */
 	// We tacitly assume the behavior is equivalent to a signed
 	// arithmetic right shift.
 	return x >> n;
 }
 
+JAS_ATTRIBUTE_CONST
 JAS_ATTRIBUTE_DISABLE_USAN
-inline static int jas_int_asl(int x, int n)
+inline static int jas_int_asl(int x, unsigned n)
 {
 	// Ensure that the shift of a negative value appears to behave as a
 	// signed arithmetic shift.
 	assert(((-1) << 1) == -2);
-	assert(n >= 0);
 	// The behavior is undefined when x is negative. */
 	// We tacitly assume the behavior is equivalent to a signed
 	// arithmetic left shift.
 	return x << n;
 }
 
+JAS_ATTRIBUTE_CONST
 JAS_ATTRIBUTE_DISABLE_USAN
-inline static int jas_fast32_asr(int_fast32_t x, int n)
+inline static int_least32_t jas_least32_asr(int_least32_t x, unsigned n)
 {
 	// Ensure that the shift of a negative value appears to behave as a
 	// signed arithmetic shift.
-	assert(((JAS_CAST(int_fast32_t, -1)) >> 1) == JAS_CAST(int_fast32_t, -1));
-	assert(n >= 0);
+	assert(((JAS_CAST(int_least32_t, -1)) >> 1) == JAS_CAST(int_least32_t, -1));
 	// The behavior is undefined when x is negative. */
 	// We tacitly assume the behavior is equivalent to a signed
 	// arithmetic right shift.
 	return x >> n;
 }
 
+JAS_ATTRIBUTE_CONST
 JAS_ATTRIBUTE_DISABLE_USAN
-inline static int jas_fast32_asl(int_fast32_t x, int n)
+inline static int_least32_t jas_least32_asl(int_least32_t x, unsigned n)
 {
 	// Ensure that the shift of a negative value appears to behave as a
 	// signed arithmetic shift.
-	assert(((JAS_CAST(int_fast32_t, -1)) << 1) == JAS_CAST(int_fast32_t, -2));
-	assert(n >= 0);
+	assert(((JAS_CAST(int_least32_t, -1)) << 1) == JAS_CAST(int_least32_t, -2));
 	// The behavior is undefined when x is negative. */
 	// We tacitly assume the behavior is equivalent to a signed
 	// arithmetic left shift.
 	return x << n;
 }
+
+JAS_ATTRIBUTE_CONST
+JAS_ATTRIBUTE_DISABLE_USAN
+inline static int_fast32_t jas_fast32_asr(int_fast32_t x, unsigned n)
+{
+	// Ensure that the shift of a negative value appears to behave as a
+	// signed arithmetic shift.
+	assert(((JAS_CAST(int_fast32_t, -1)) >> 1) == JAS_CAST(int_fast32_t, -1));
+	// The behavior is undefined when x is negative. */
+	// We tacitly assume the behavior is equivalent to a signed
+	// arithmetic right shift.
+	return x >> n;
+}
+
+JAS_ATTRIBUTE_CONST
+JAS_ATTRIBUTE_DISABLE_USAN
+inline static int_fast32_t jas_fast32_asl(int_fast32_t x, unsigned n)
+{
+	// Ensure that the shift of a negative value appears to behave as a
+	// signed arithmetic shift.
+	assert(((JAS_CAST(int_fast32_t, -1)) << 1) == JAS_CAST(int_fast32_t, -2));
+	// The behavior is undefined when x is negative. */
+	// We tacitly assume the behavior is equivalent to a signed
+	// arithmetic left shift.
+	return x << n;
+}
+
+#if defined(__clang__) || (defined(__GNUC__) && __GNUC__ > 6)
+#pragma GCC diagnostic pop
+#endif
 
 /******************************************************************************\
 * Safe integer arithmetic (i.e., with overflow checking).
@@ -181,6 +217,12 @@ inline static int jas_fast32_asl(int_fast32_t x, int n)
 /* Compute the product of two size_t integers with overflow checking. */
 inline static bool jas_safe_size_mul(size_t x, size_t y, size_t *result)
 {
+#if jas_has_builtin(__builtin_mul_overflow) || (defined(__GNUC__) && __GNUC__ > 5)
+	size_t result_buffer;
+	if (!result)
+		result = &result_buffer;
+	return !__builtin_mul_overflow(x, y, result);
+#else
 	/* Check if overflow would occur */
 	if (x && y > SIZE_MAX / x) {
 		/* Overflow would occur. */
@@ -190,8 +232,10 @@ inline static bool jas_safe_size_mul(size_t x, size_t y, size_t *result)
 		*result = x * y;
 	}
 	return true;
+#endif
 }
 
+/* Compute the product of three size_t integers with overflow checking. */
 inline static bool jas_safe_size_mul3(size_t a, size_t b, size_t c,
   size_t *result)
 {
@@ -206,9 +250,15 @@ inline static bool jas_safe_size_mul3(size_t a, size_t b, size_t c,
 	return true;
 }
 
-/* Compute the sum of two size_t integer with overflow checking. */
+/* Compute the sum of two size_t integers with overflow checking. */
 inline static bool jas_safe_size_add(size_t x, size_t y, size_t *result)
 {
+#if jas_has_builtin(__builtin_add_overflow) || (defined(__GNUC__) && __GNUC__ > 5)
+	size_t result_buffer;
+	if (!result)
+		result = &result_buffer;
+	return !__builtin_add_overflow(x, y, result);
+#else
 	if (y > SIZE_MAX - x) {
 		return false;
 	}
@@ -216,11 +266,18 @@ inline static bool jas_safe_size_add(size_t x, size_t y, size_t *result)
 		*result = x + y;
 	}
 	return true;
+#endif
 }
 
-/* Compute the difference of two size_t integer with overflow checking. */
+/* Compute the difference of two size_t integers with overflow checking. */
 inline static bool jas_safe_size_sub(size_t x, size_t y, size_t *result)
 {
+#if jas_has_builtin(__builtin_sub_overflow) || (defined(__GNUC__) && __GNUC__ > 5)
+	size_t result_buffer;
+	if (!result)
+		result = &result_buffer;
+	return !__builtin_sub_overflow(x, y, result);
+#else
 	if (y > x) {
 		return false;
 	}
@@ -228,12 +285,19 @@ inline static bool jas_safe_size_sub(size_t x, size_t y, size_t *result)
 		*result = x - y;
 	}
 	return true;
+#endif
 }
 
-/* Compute the sum of two size_t integer with overflow checking. */
+/* Compute the product of two int_fast32_t integers with overflow checking. */
 inline static bool jas_safe_intfast32_mul(int_fast32_t x, int_fast32_t y,
   int_fast32_t *result)
 {
+#if jas_has_builtin(__builtin_mul_overflow) || (defined(__GNUC__) && __GNUC__ > 5)
+	int_fast32_t result_buffer;
+	if (!result)
+		result = &result_buffer;
+	return !__builtin_mul_overflow(x, y, result);
+#else
 	if (x > 0) {
 		/* x is positive */
 		if (y > 0) {
@@ -265,8 +329,10 @@ inline static bool jas_safe_intfast32_mul(int_fast32_t x, int_fast32_t y,
 		*result = x * y;
 	}
 	return true;
+#endif
 }
 
+/* Compute the product of three int_fast32_t integers with overflow checking. */
 inline static bool jas_safe_intfast32_mul3(int_fast32_t a, int_fast32_t b,
   int_fast32_t c, int_fast32_t *result)
 {
@@ -281,10 +347,16 @@ inline static bool jas_safe_intfast32_mul3(int_fast32_t a, int_fast32_t b,
 	return true;
 }
 
-/* Compute the sum of two size_t integer with overflow checking. */
+/* Compute the sum of two int_fast32_t integers with overflow checking. */
 inline static bool jas_safe_intfast32_add(int_fast32_t x, int_fast32_t y,
   int_fast32_t *result)
 {
+#if jas_has_builtin(__builtin_add_overflow) || (defined(__GNUC__) && __GNUC__ > 5)
+	int_fast32_t result_buffer;
+	if (!result)
+		result = &result_buffer;
+	return !__builtin_add_overflow(x, y, result);
+#else
 	if ((y > 0 && x > INT_FAST32_MAX - y) ||
 	  (y < 0 && x < INT_FAST32_MIN - y)) {
 		return false;
@@ -293,7 +365,27 @@ inline static bool jas_safe_intfast32_add(int_fast32_t x, int_fast32_t y,
 		*result = x + y;
 	}
 	return true;
+#endif
 }
+
+#if 0
+/*
+This function is potentially useful but not currently used.
+So, it is commented out.
+*/
+inline static bool jas_safe_uint_mul(unsigned x, unsigned y, unsigned *result)
+{
+	/* Check if overflow would occur */
+	if (x && y > UINT_MAX / x) {
+		/* Overflow would occur. */
+		return false;
+	}
+	if (result) {
+		*result = x * y;
+	}
+	return true;
+}
+#endif
 
 #ifdef __cplusplus
 }

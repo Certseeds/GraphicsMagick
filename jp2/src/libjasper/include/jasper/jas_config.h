@@ -7,9 +7,16 @@
 #define JAS_CONFIG_H
 
 /* This preprocessor symbol identifies the version of JasPer. */
-#define	JAS_VERSION "1.900.29"
+#define	JAS_VERSION "2.0.33"
 /* If configure is being used, this symbol will be defined automatically
   at this point in the configuration header file. */
+
+
+#define JAS_INCLUDE_JP2_CODEC 1
+#define JAS_INCLUDE_JPC_CODEC 1
+/* #define JAS_INCLUDE_JPG_CODEC 1 */
+#define JAS_INCLUDE_PGX_CODEC 1
+
 
 /* The preprocessor symbol JAS_WIN_MSVC_BUILD should not be defined
   unless the JasPer software is being built under Microsoft Windows
@@ -110,7 +117,7 @@
 #define JAS_CONFIGURE 1
 
 /* JasPer version */
-#define JAS_VERSION "1.900.29"
+#define JAS_VERSION "2.0.33"
 
 /* Name of package */
 #define PACKAGE "jasper"
@@ -122,19 +129,19 @@
 #define PACKAGE_NAME "jasper"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "jasper 1.900.29"
+#define PACKAGE_STRING "jasper 2.0.33"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "jasper"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.900.29"
+#define PACKAGE_VERSION "2.0.33"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.900.29"
+#define VERSION "2.0.33"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */
@@ -193,5 +200,14 @@
 #define JAS_ATTRIBUTE_DISABLE_USAN
 #endif
 
+
+#ifdef _DLL
+ //#define JAS_DLL		// I do not understand how this could help.
+#endif
+#include "jas_compiler.h"
+#include "jas_dll.h"
+
+
+#include "jas_types.h"
 
 #endif

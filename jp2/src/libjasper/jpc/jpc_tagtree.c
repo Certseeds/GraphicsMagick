@@ -71,14 +71,14 @@
 * Includes.
 \******************************************************************************/
 
-#include <limits.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <stdio.h>
+#include "jpc_tagtree.h"
 
 #include "jasper/jas_malloc.h"
+#include "jasper/jas_stream.h"
 
-#include "jpc_tagtree.h"
+#include <limits.h>
+#include <assert.h>
+#include <stdio.h>
 
 /******************************************************************************\
 * Prototypes.
@@ -169,9 +169,7 @@ jpc_tagtree_t *jpc_tagtree_create(int numleafsh, int numleafsv)
 
 void jpc_tagtree_destroy(jpc_tagtree_t *tree)
 {
-	if (tree->nodes_) {
-		jas_free(tree->nodes_);
-	}
+	jas_free(tree->nodes_);
 	jas_free(tree);
 }
 
@@ -196,18 +194,18 @@ static jpc_tagtree_t *jpc_tagtree_alloc()
 
 /* Copy state information from one tag tree to another. */
 
-void jpc_tagtree_copy(jpc_tagtree_t *dsttree, jpc_tagtree_t *srctree)
+void jpc_tagtree_copy(jpc_tagtree_t *dsttree, const jpc_tagtree_t *srctree)
 {
 	int n;
-	jpc_tagtreenode_t *srcnode;
 	jpc_tagtreenode_t *dstnode;
+	const jpc_tagtreenode_t *srcnode;
 
 	/* The two tag trees must have similar sizes. */
 	assert(srctree->numleafsh_ == dsttree->numleafsh_ &&
 	  srctree->numleafsv_ == dsttree->numleafsv_);
 
 	n = srctree->numnodes_;
-	srcnode = srctree->nodes_;
+	/* const jpc_tagtreenode_t * */srcnode = srctree->nodes_;
 	dstnode = dsttree->nodes_;
 	while (--n >= 0) {
 		dstnode->value_ = srcnode->value_;
@@ -245,7 +243,7 @@ void jpc_tagtree_setvalue(jpc_tagtree_t *tree, jpc_tagtreenode_t *leaf,
 	jpc_tagtreenode_t *node;
 
 	/* Avoid compiler warnings about unused parameters. */
-	tree = 0;
+	(void)tree;
 
 	assert(value >= 0);
 
@@ -274,7 +272,7 @@ int jpc_tagtree_encode(jpc_tagtree_t *tree, jpc_tagtreenode_t *leaf,
 	int low;
 
 	/* Avoid compiler warnings about unused parameters. */
-	tree = 0;
+	(void)tree;
 
 	assert(leaf);
 	assert(threshold >= 0);
@@ -335,7 +333,7 @@ int jpc_tagtree_decode(jpc_tagtree_t *tree, jpc_tagtreenode_t *leaf,
 	int ret;
 
 	/* Avoid compiler warnings about unused parameters. */
-	tree = 0;
+	(void)tree;
 
 	assert(threshold >= 0);
 
@@ -378,16 +376,15 @@ int jpc_tagtree_decode(jpc_tagtree_t *tree, jpc_tagtreenode_t *leaf,
 * Code for debugging.
 \******************************************************************************/
 
-void jpc_tagtree_dump(jpc_tagtree_t *tree, FILE *out)
+void jpc_tagtree_dump(const jpc_tagtree_t *tree, FILE *out)
 {
-	jpc_tagtreenode_t *node;
 	int n;
 
-	node = tree->nodes_;
+	const jpc_tagtreenode_t *node = tree->nodes_;
 	n = tree->numnodes_;
 	while (--n >= 0) {
 		fprintf(out, "node %p, parent %p, value %d, lower %d, known %d\n",
-		  (void *) node, (void *) node->parent_, node->value_, node->low_,
+		  (const void *) node, (const void *) node->parent_, node->value_, node->low_,
 		  node->known_);
 		++node;
 	}

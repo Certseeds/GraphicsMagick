@@ -361,12 +361,9 @@ MagickExport Image *AllocateImage(const ImageInfo *image_info)
   allocate_image->compose=OverCompositeOp;
   allocate_image->blur=1.0;
   GetExceptionInfo(&allocate_image->exception);
-  (void) QueryColorDatabase(BackgroundColor,&allocate_image->background_color,
-    &allocate_image->exception);
-  (void) QueryColorDatabase(BorderColor,&allocate_image->border_color,
-    &allocate_image->exception);
-  (void) QueryColorDatabase(MatteColor,&allocate_image->matte_color,
-    &allocate_image->exception);
+  BackgroundColorInit(&allocate_image->background_color);
+  BorderColorInit(&allocate_image->border_color);
+  MatteColorInit(&allocate_image->matte_color);
   allocate_image->orientation=UndefinedOrientation;
   GetTimerInfo(&allocate_image->timer);
   GetCacheInfo(&allocate_image->cache);
@@ -1944,10 +1941,9 @@ MagickExport void GetImageInfo(ImageInfo *image_info)
   image_info->dither=True;
   image_info->progress=True;
   GetExceptionInfo(&exception);
-  (void) QueryColorDatabase(BackgroundColor,&image_info->background_color,
-    &exception);
-  (void) QueryColorDatabase(BorderColor,&image_info->border_color,&exception);
-  (void) QueryColorDatabase(MatteColor,&image_info->matte_color,&exception);
+  BackgroundColorInit(&image_info->background_color);
+  BorderColorInit(&image_info->border_color);
+  MatteColorInit(&image_info->matte_color);
   DestroyExceptionInfo(&exception);
   image_info->signature=MagickSignature;
 }
@@ -3150,7 +3146,6 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
         p--;
 
       if ((LocaleCompare(p,".gz") == 0) ||
-          (LocaleCompare(p,".Z") == 0) ||
           (LocaleCompare(p,".bz2") == 0))
         compressed_extension = MagickTrue;
 

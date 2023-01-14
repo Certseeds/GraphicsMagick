@@ -59,15 +59,21 @@
  * __END_OF_JASPER_LICENSE__
  */
 
+/*!
+ * @file jas_tmr.h
+ * @brief Timer Code
+ */
+
 #ifndef JAS_TMR_H
 #define JAS_TMR_H
 
 /* The configuration header file should be included first. */
 #include <jasper/jas_config.h>
 
-#include<time.h>
 #if defined(JAS_HAVE_SYS_TIME_H)
 #include <sys/time.h>
+#else
+#include <time.h>
 #endif
 
 #ifdef __cplusplus
@@ -94,9 +100,9 @@ typedef int jas_tmr_t;
 
 #endif
 
-void jas_tmr_start(jas_tmr_t *tmr);
-void jas_tmr_stop(jas_tmr_t *tmr);
-double jas_tmr_get(jas_tmr_t *tmr);
+JAS_DLLEXPORT void jas_tmr_start(jas_tmr_t *tmr);
+JAS_DLLEXPORT void jas_tmr_stop(jas_tmr_t *tmr);
+JAS_DLLEXPORT double jas_tmr_get(jas_tmr_t *tmr);
 
 #ifdef __cplusplus
 }

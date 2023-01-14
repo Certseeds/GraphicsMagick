@@ -288,7 +288,7 @@ testRead('input.sgi', q//,
 print("SUN 1-bit Rasterfile ...\n");
 ++$test;
 testRead('input.im1', q//,
-         '615fa1d8bae486118b3733c1dba4e2a225fc1f4f8ff9441bcb7c3293753e4da1');
+         '86cf46ab9d620aa85eba722d777cc97e30df51916b2380df3cbc2685614d1222');
 
 print("SUN 8-bit Rasterfile ...\n");
 ++$test;

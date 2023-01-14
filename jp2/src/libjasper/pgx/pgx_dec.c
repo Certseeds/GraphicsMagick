@@ -63,16 +63,17 @@
 * Includes.
 \******************************************************************************/
 
-#include <assert.h>
-#include <ctype.h>
+#include "pgx_cod.h"
 
 #include "jasper/jas_tvp.h"
 #include "jasper/jas_stream.h"
 #include "jasper/jas_image.h"
-#include "jasper/jas_string.h"
 #include "jasper/jas_debug.h"
+#include "jasper/jas_math.h"
 
-#include "pgx_cod.h"
+#include <assert.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 /******************************************************************************\
 * Local types.
@@ -105,7 +106,7 @@ static jas_seqent_t pgx_wordtoint(uint_fast32_t word, int prec, bool sgnd);
 * Option parsing.
 \******************************************************************************/
 
-static jas_taginfo_t pgx_decopts[] = {
+static const jas_taginfo_t pgx_decopts[] = {
 	// Not yet supported
 	// {OPT_ALLOWTRUNC, "allow_trunc"},
 	{OPT_MAXSIZE, "max_samples"},
@@ -179,6 +180,10 @@ jas_image_t *pgx_decode(jas_stream_t *in, const char *optstr)
 		jas_eprintf("image too large\n");
 		goto error;
 	}
+	if (!num_samples) {
+		jas_eprintf("image has no samples\n");
+		goto error;
+	}
 	if (opts.max_samples > 0 && num_samples > opts.max_samples) {
 		jas_eprintf(
 		  "maximum number of samples would be exceeded (%"_PFX_PTR"u > %"_PFX_PTR"u)\n",
@@ -226,29 +231,13 @@ int pgx_validate(jas_stream_t *in)
 {
 	jas_uchar buf[PGX_MAGICLEN];
 	uint_fast32_t magic;
-	int i;
-	int n;
 
 	assert(JAS_STREAM_MAXPUTBACK >= PGX_MAGICLEN);
 
 	/* Read the validation data (i.e., the data used for detecting
 	  the format). */
-	if ((n = jas_stream_read(in, buf, PGX_MAGICLEN)) < 0) {
+	if (jas_stream_peek(in, buf, sizeof(buf)) != sizeof(buf))
 		return -1;
-	}
-
-	/* Put the validation data back onto the stream, so that the
-	  stream position will not be changed. */
-	for (i = n - 1; i >= 0; --i) {
-		if (jas_stream_ungetc(in, buf[i]) == EOF) {
-			return -1;
-		}
-	}
-
-	/* Did we read enough data? */
-	if (n < PGX_MAGICLEN) {
-		return -1;
-	}
 
 	/* Compute the signature value. */
 	magic = (buf[0] << 8) | buf[1];
@@ -296,6 +285,10 @@ static int pgx_gethdr(jas_stream_t *in, pgx_hdr_t *hdr)
 	}
 	if (pgx_getuint32(in, &hdr->prec)) {
 		jas_eprintf("cannot get precision\n");
+		goto error;
+	}
+	if (hdr->prec > 32) {
+		jas_eprintf("unsupported precision\n");
 		goto error;
 	}
 	if (pgx_getuint32(in, &hdr->width)) {
@@ -357,11 +350,9 @@ static int_fast32_t pgx_getword(jas_stream_t *in, bool bigendian, int prec)
 	int c;
 	int wordsize;
 
-	wordsize = (prec + 7) / 8;
+	assert(prec <= 32);
 
-	if (prec > 32) {
-		goto error;
-	}
+	wordsize = (prec + 7) / 8;
 
 	val = 0;
 	for (i = 0; i < wordsize; ++i) {
@@ -369,9 +360,9 @@ static int_fast32_t pgx_getword(jas_stream_t *in, bool bigendian, int prec)
 			goto error;
 		}
 		j = bigendian ? (wordsize - 1 - i) : i;
-		val = val | ((c & 0xff) << (8 * j));
+		val = val | ((c & 0xffU) << (8 * j));
 	}
-	val &= (1 << prec) - 1;
+	val &= (JAS_CAST(uint_fast32_t, 1) << prec) - 1;
 	return val;
 
 error:
