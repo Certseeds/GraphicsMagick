@@ -1,7 +1,12 @@
 2023-01-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* tests/rwblob.tap: Add sanity test for WPG format.
+
+	* tests/rwfile.tap: Add sanity test for WPG format.
+
 	* coders/wpg.c: Change line terminations back to ISO standard
 	format.
+	(RegisterWPGImage): WPG currently only supports one frame.
 
 	* Makefile.am: No longer produce ".sig" files since the ".asc"
 	files can do everything that the ".sig" files can do.

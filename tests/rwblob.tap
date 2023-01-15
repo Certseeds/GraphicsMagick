@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright (C) 2004-2018 GraphicsMagick Group
+# Copyright (C) 2004-2023 GraphicsMagick Group
 . ./common.shi
 . ${top_srcdir}/tests/common.shi
 
@@ -10,7 +10,7 @@ rwblob=./rwblob
 check_types='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 209
+test_plan_fn 213
 
 # ART format
 for type in ${check_types}
@@ -304,6 +304,12 @@ done
 for type in ${check_types}
 do
   test_command_fn "WEBP ${type} (lossless)" -F WEBP ${MEMCHECK} ${rwblob} -define webp:lossless=true "${SRCDIR}/input_${type}.miff" WEBP
+done
+
+# WPG format
+for type in ${check_types}
+do
+  test_command_fn "WPG ${type}" ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" WPG
 done
 
 # XBM format

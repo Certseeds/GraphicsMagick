@@ -2117,6 +2117,7 @@ ModuleExport void RegisterWPGImage(void)
   entry->description="Word Perfect Graphics";
   entry->module="WPG";
   entry->seekable_stream=True;
+  entry->adjoin=MagickFalse;
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }

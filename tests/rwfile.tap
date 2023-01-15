@@ -12,7 +12,7 @@ check_types='bilevel gray pallette truecolor truecolor_1x266'
 check_types_noone='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 818 # 820
+test_plan_fn 828 # 830
 
 # ART format
 for type in ${check_types}
@@ -488,6 +488,13 @@ done
 for type in ${check_types}
 do
   test_command_fn "WEBP ${type} (lossless)" -F WEBP ${MEMCHECK} ${rwfile} -filespec "out_${type}_lossless_%d" -define webp:lossless=true "${SRCDIR}/input_${type}.miff" WEBP
+done
+
+# WPG format
+for type in ${check_types}
+do
+  test_command_fn "WPG ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" WPG
+  test_command_fn "WPG ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" WPG
 done
 
 # XBM format
