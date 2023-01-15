@@ -1923,7 +1923,6 @@ static void WPG_RLE_Init(WPG_RLE_packer *WPG_RLE)
 static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
 {
   long y;
-  unsigned dummy = 0;
   unsigned int status;
   int logging;
   unsigned char StoredPlanes;
