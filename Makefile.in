@@ -11467,19 +11467,17 @@ dist-zstd: distdir
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  rm -f $${file}.asc $${file}.sig ; \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  rm -f $${file}.asc ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  sha256sum $${file} > $${file}.sum ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc %s.sig " $$f $$f ; done` \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc " $$f $$f ; done` \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@snapshot: distcheck
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  sha256sum $${file} > $${file}.sum ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	done
@@ -11487,7 +11485,6 @@ dist-zstd: distdir
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z*
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	mv $(SNAPSHOT_DIST_ARCHIVES) $(SNAPSHOT_DIRECTORY)/
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  mv $${file}.sig $(SNAPSHOT_DIRECTORY)/ ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  mv $${file}.asc $(SNAPSHOT_DIRECTORY)/ ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
@@ -11517,8 +11514,7 @@ gmsymbols:
 release: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
-	  rm -f $${file}.asc $${file}.sig ; \
-	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  rm -f $${file}.asc ; \
 	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done

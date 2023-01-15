@@ -405,13 +405,12 @@ snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-	  rm -f $${file}.asc $${file}.sig ; \
-	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  rm -f $${file}.asc ; \
 	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
 	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
-	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc %s.sig " $$f $$f ; done` \
+	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc " $$f $$f ; done` \
 	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 
 else
@@ -422,7 +421,6 @@ snapshot: distcheck
 	$(MAKE) $(DIST_ARCHIVE_SRPM)
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
@@ -430,7 +428,6 @@ snapshot: distcheck
 	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z*
 	mv $(SNAPSHOT_DIST_ARCHIVES) $(SNAPSHOT_DIRECTORY)/
 	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-	  mv $${file}.sig $(SNAPSHOT_DIRECTORY)/ ; \
 	  mv $${file}.asc $(SNAPSHOT_DIRECTORY)/ ; \
 	done
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
@@ -477,8 +474,7 @@ gmsymbols:
 release: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
-	  rm -f $${file}.asc $${file}.sig ; \
-	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  rm -f $${file}.asc ; \
 	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
