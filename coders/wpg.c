@@ -1797,6 +1797,7 @@ typedef struct
 	unsigned char buf[254];
 } WPG_RLE_packer;
 
+//FILE *DebugRLE = NULL;
 
 static void WPG_RLE_Flush(WPG_RLE_packer *WPG_RLE, Image *image, unsigned char n)
 {
@@ -1804,6 +1805,7 @@ static void WPG_RLE_Flush(WPG_RLE_packer *WPG_RLE, Image *image, unsigned char n
   if(n>0x7F) n=0x7F;
   if(n>0)
   {
+    //if(DebugRLE) fprintf(DebugRLE," size=%X",n);
     WriteBlobByte(image,n);
     WriteBlob(image, n, WPG_RLE->buf);
     WPG_RLE->pos -= n;
@@ -1819,6 +1821,13 @@ static void WPG_RLE_AddCharacter(WPG_RLE_packer *WPG_RLE, unsigned char b, Image
 {
   WPG_RLE->buf[WPG_RLE->pos++] = b;
 
+/*  if(DebugRLE)
+  {
+    fprintf(DebugRLE,"\n%u",b);
+    if(WPG_RLE->pos>=0x7E)
+	fprintf(DebugRLE," *%u %X", WPG_RLE->pos, WPG_RLE->pos);
+  } */
+
   if(WPG_RLE->pos>1)
   {
     if(WPG_RLE->count==0x7E || WPG_RLE->buf[WPG_RLE->pos-2]!=b)
@@ -1829,6 +1838,7 @@ static void WPG_RLE_AddCharacter(WPG_RLE_packer *WPG_RLE, unsigned char b, Image
         WPG_RLE_Flush(WPG_RLE, image, WPG_RLE->pos-1-WPG_RLE->count);
         WriteBlobByte(image, WPG_RLE->count|0x80);
         WriteBlobByte(image, WPG_RLE->buf[0]);
+        //if(DebugRLE) fprintf(DebugRLE," count=%X, val=%X",WPG_RLE->count,WPG_RLE->buf[0]);
         WPG_RLE->pos = 1;
         WPG_RLE->buf[0] = b;
       }
@@ -1838,9 +1848,14 @@ static void WPG_RLE_AddCharacter(WPG_RLE_packer *WPG_RLE, unsigned char b, Image
       WPG_RLE->count++;
   }
 
-  if(WPG_RLE->pos>=254)
+  if(WPG_RLE->pos-WPG_RLE->count>0x7E)	// We have uncompressible block with size 0x7F.
   {
     WPG_RLE_Flush(WPG_RLE, image, 0x7F);
+    return;
+  }
+  if(WPG_RLE->pos>0x7E && WPG_RLE->count>=1)
+  {
+    WPG_RLE_Flush(WPG_RLE, image, WPG_RLE->pos-1-WPG_RLE->count);
     return;
   }
 }
@@ -2028,6 +2043,9 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
   */
   for(y=0; y<(long)image->rows; y++)
   {
+    //if(y==1310 && DebugRLE==NULL) DebugRLE=fopen("o:\\temp\\14\\debug.txt","wb");
+    //if(y>1310 && DebugRLE) {fclose(DebugRLE);DebugRLE=NULL;}
+
     if(AcquireImagePixels(image,0,y,image->columns,1,&image->exception) == (const PixelPacket *)NULL)
     {
       status = MagickFail;
