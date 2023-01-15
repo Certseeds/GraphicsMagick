@@ -2070,9 +2070,10 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
   WriteBlobByte(image,0x10);
   WriteBlobByte(image,0);
 
+  MagickFreeResourceLimitedMemory(pixels);
 ImageFailure:
   CloseBlob(image);
-  MagickFreeResourceLimitedMemory(pixels);
+
 
   if (logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return WPG");
