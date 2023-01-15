@@ -152,6 +152,8 @@ call :_dorwtest both WBMP
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both WEBP
 if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both WPG
+if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both XBM
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both XPM

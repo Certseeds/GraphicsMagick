@@ -46,6 +46,7 @@
 #include "magick/shear.h"
 #include "magick/tempfile.h"
 #include "magick/transform.h"
+#include "magick/quantize.h"
 #include "magick/utility.h"
 
 
@@ -1787,6 +1788,279 @@ UnpackRaster:
     ThrowReaderException(CorruptImageError,ImageFileDoesNotContainAnyImageData,image);
   return(image);
 }
+
+
+typedef struct
+{
+	unsigned char count;
+	unsigned char pos;
+	unsigned char buf[254];
+} WPG_RLE_packer;
+
+
+static void WPG_RLE_Flush(WPG_RLE_packer *WPG_RLE, Image *image, unsigned char n)
+{
+  if(n>WPG_RLE->pos) n=WPG_RLE->pos;
+  if(n>0x7F) n=0x7F;
+  if(n>0)
+  {
+    WriteBlobByte(image,n);
+    WriteBlob(image, n, WPG_RLE->buf);
+    WPG_RLE->pos -= n;
+    if(WPG_RLE->pos>0)
+      memcpy(WPG_RLE->buf, WPG_RLE->buf+n, n);
+    else
+     WPG_RLE->count = 0;
+  }
+}
+
+
+static void WPG_RLE_AddCharacter(WPG_RLE_packer *WPG_RLE, unsigned char b, Image *image)
+{
+  WPG_RLE->buf[WPG_RLE->pos++] = b;
+
+  if(WPG_RLE->pos>1)
+  {
+    if(WPG_RLE->count==0x7E || WPG_RLE->buf[WPG_RLE->pos-2]!=b)
+    {
+      if(WPG_RLE->count>=1)
+      {
+        WPG_RLE->count++;		// True number of repeated BYTEs.
+        WPG_RLE_Flush(WPG_RLE, image, WPG_RLE->pos-1-WPG_RLE->count);
+        WriteBlobByte(image, WPG_RLE->count|0x80);
+        WriteBlobByte(image, WPG_RLE->buf[0]);
+        WPG_RLE->pos = 1;
+        WPG_RLE->buf[0] = b;
+      }
+      WPG_RLE->count = 0;
+    }
+    else
+      WPG_RLE->count++;
+  }
+
+  if(WPG_RLE->pos>=254)
+  {
+    WPG_RLE_Flush(WPG_RLE, image, 0x7F);
+    return;
+  }
+}
+
+
+static void WPG_RLE_FinalFlush(WPG_RLE_packer *WPG_RLE, Image *image)
+{
+  if(WPG_RLE->count>1)
+  {
+    WPG_RLE_AddCharacter(WPG_RLE, WPG_RLE->buf[WPG_RLE->pos-1]^0xFF, image); // Add a fake BYTE.
+    WPG_RLE->pos = 0;			// Take a last fake BYTE away.
+  }
+  else
+  {
+    WPG_RLE_Flush(WPG_RLE,image,0x7F);
+    WPG_RLE_Flush(WPG_RLE,image,0x7F);
+    WPG_RLE->count = 0;
+  }
+}
+
+
+static void WPG_RLE_AddBlock(WPG_RLE_packer *WPG_RLE, Image *image, const BYTE *blk, magick_uint16_t size)
+{
+  while(size-- > 0)
+  {
+    WPG_RLE_AddCharacter(WPG_RLE, *blk, image);
+    blk++;
+  }
+}
+
+
+static void WPG_RLE_Init(WPG_RLE_packer *WPG_RLE)
+{
+  WPG_RLE->pos = WPG_RLE->count = 0;
+}
+
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   W r i t e W P G I m a g e                                           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Function WriteWPGImage writes an WPG image to a file.
+%
+%  The format of the WriteWPGImage method is:
+%
+%      unsigned int WriteWPGImage(const ImageInfo *image_info,Image *image)
+%
+%  A description of each parameter follows.
+%
+%    o status: Function WriteWPGImage return True if the image is written.
+%      False is returned is there is a memory shortage or if the image file
+%      fails to write.
+%
+%    o image_info: Specifies a pointer to a ImageInfo structure.
+%
+%    o image:  A pointer to an Image structure.
+*/
+static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
+{
+  long y;
+  unsigned dummy = 0;
+  unsigned int status;
+  int logging;
+  unsigned char StoredPlanes;
+  unsigned ldblk;
+  magick_off_t NumericOffs, CurrOffs;
+  QuantizeInfo quantize_info;
+  WPG_RLE_packer PackRLE;
+  unsigned char *pixels;
+
+  /*
+    Open output image file.
+  */
+  assert(image_info != (const ImageInfo *) NULL);
+  assert(image_info->signature == MagickSignature);
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter WPG");
+  status = OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
+  if(status == MagickFail)
+    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+  WPG_RLE_Init(&PackRLE);
+
+  (void)TransformColorspace(image,RGBColorspace);
+
+  if(image->colors <= 2)
+  {
+    StoredPlanes=1;
+    ldblk = (image->columns+7)/8;
+  } else if(image->colors <= 16)
+  {
+    StoredPlanes=4;
+    ldblk = (image->columns+1)/2;
+  } else if(image->colors <= 256)
+  {
+    StoredPlanes = 8;
+    ldblk = image->columns;
+  } else
+  {
+    GetQuantizeInfo(&quantize_info);
+    quantize_info.dither = image_info->dither;
+    quantize_info.number_colors = 256;
+    (void)QuantizeImage(&quantize_info,image);
+    StoredPlanes = 8;
+    ldblk = image->columns;
+  }
+  pixels = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)(ldblk));
+  if(pixels == (unsigned char *) NULL)
+    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+
+	/* Write WPG hader. */
+  WriteBlobLSBLong(image,0x435057FF);		//DWORD FileId
+  WriteBlobLSBLong(image,16);			//DWORD DataOffset;
+  WriteBlobByte(image,1);			//BYTE Product Type
+  WriteBlobByte(image,0x16);			//BYTE FileType;
+  WriteBlobByte(image,1);			//BYTE MajorVersion;
+  WriteBlobByte(image,0);			//BYTE MinorVersion;
+  WriteBlobLSBShort(image,0);			//WORD EncryptKey;
+  WriteBlobLSBShort(image,0);			//WORD Reserved;
+
+	/* Start WPG l1 */
+  WriteBlobByte(image,0xF);
+  WriteBlobByte(image,0x6);
+  WriteBlobByte(image,1);			//BYTE Version number
+  WriteBlobByte(image,0);			//BYTE Flags (bit 0 PostScript, maybe bitmap, bit 1 PostScript, no bitmap
+  WriteBlobLSBShort(image,image->columns);	//WORD Width of image (arbitrary units)
+  WriteBlobLSBShort(image,image->rows);		//WORD Height of image (arbitrary units)
+
+	/* Palette */
+  if(StoredPlanes>1)
+  {
+    int i;
+    WriteBlobByte(image,0xE);
+    i = 4+3*(1<<StoredPlanes);
+    if(i<0xFF)
+        WriteBlobByte(image,i);
+    else
+    {
+      WriteBlobByte(image,0xFF);
+      WriteBlobLSBShort(image,i);
+    }
+    WriteBlobLSBShort(image,0);				// Start index
+    WriteBlobLSBShort(image,1<<StoredPlanes);		// Num entries
+
+    for(i=0; i<(1<<StoredPlanes); i++)
+    {
+      if(i>=image->colors || image->colormap==NULL)
+      {
+        WriteBlobByte(image,i);
+        WriteBlobByte(image,i);
+        WriteBlobByte(image,i);
+      }
+      else
+      {
+        WriteBlobByte(image,ScaleQuantumToChar(image->colormap[i].red));
+        WriteBlobByte(image,ScaleQuantumToChar(image->colormap[i].green));
+        WriteBlobByte(image,ScaleQuantumToChar(image->colormap[i].blue));
+      }
+    }
+  }
+
+	/* Bitmap 1 header */
+  WriteBlobByte(image,0xB);
+  WriteBlobByte(image,0xFF);
+  NumericOffs = TellBlob(image);
+  WriteBlobLSBShort(image,0x8000);
+  WriteBlobLSBShort(image,0);
+
+  WriteBlobLSBShort(image,image->columns);	//WORD Width
+  WriteBlobLSBShort(image,image->rows);		//WORD Height
+  WriteBlobLSBShort(image,StoredPlanes);	//WORD Depth;
+  WriteBlobLSBShort(image,75);			//WORD HorzRes;
+  WriteBlobLSBShort(image,75);			//WORD VertRes;
+
+  /*
+    Store image data.
+  */
+  for(y=0; y<(long)image->rows; y++)
+  {
+    if(AcquireImagePixels(image,0,y,image->columns,1,&image->exception) == (const PixelPacket *)NULL)
+    {
+      status = MagickFail;
+      break;
+    }
+    if(ExportImagePixelArea(image, (StoredPlanes==1)?GrayQuantum:IndexQuantum, StoredPlanes,pixels,0,0) != MagickPass)
+    {
+      status = MagickFail;
+      break;
+    }
+    WPG_RLE_AddBlock(&PackRLE,image,pixels,ldblk);
+    WPG_RLE_FinalFlush(&PackRLE,image);
+  }
+
+  CurrOffs = TellBlob(image);
+  SeekBlob(image,NumericOffs,SEEK_SET);
+  NumericOffs = CurrOffs - NumericOffs - 4;
+  WriteBlobLSBShort(image, 0x8000|(NumericOffs>>16));
+  WriteBlobLSBShort(image, NumericOffs&0xFFFF);
+  SeekBlob(image,CurrOffs,SEEK_SET);
+
+	/* End of WPG data */
+  WriteBlobByte(image,0x10);
+  WriteBlobByte(image,0);
+
+  CloseBlob(image);
+  MagickFreeResourceLimitedMemory(pixels);
+
+  if (logging)
+    (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return WPG");
+
+  return(status);
+}
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1818,6 +2092,7 @@ ModuleExport void RegisterWPGImage(void)
 
   entry=SetMagickInfo("WPG");
   entry->decoder=(DecoderHandler) ReadWPGImage;
+  entry->encoder = (EncoderHandler)WriteWPGImage;
   entry->magick=(MagickHandler) IsWPG;
   entry->description="Word Perfect Graphics";
   entry->module="WPG";
