@@ -1994,7 +1994,7 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
 	/* Palette */
   if(StoredPlanes>1)
   {
-    int i;
+    magick_uint16_t i;
     WriteBlobByte(image,0xE);
     i = 4+3*(1<<StoredPlanes);
     if(i<0xFF)
