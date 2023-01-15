@@ -1933,6 +1933,14 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
 
   (void)TransformColorspace(image,RGBColorspace);
 
+  if(image->colors<=0 || image->colors>256)
+  {
+    GetQuantizeInfo(&quantize_info);
+    quantize_info.dither = image_info->dither;
+    quantize_info.number_colors = 256;
+    status = QuantizeImage(&quantize_info,image);
+    if(status==MagickFail || image->colors==0) goto ImageFailure;
+  }
   if(image->colors <= 2)
   {
     StoredPlanes=1;
@@ -1941,19 +1949,12 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
   {
     StoredPlanes=4;
     ldblk = (image->columns+1)/2;
-  } else if(image->colors <= 256)
-  {
-    StoredPlanes = 8;
-    ldblk = image->columns;
   } else
   {
-    GetQuantizeInfo(&quantize_info);
-    quantize_info.dither = image_info->dither;
-    quantize_info.number_colors = 256;
-    (void)QuantizeImage(&quantize_info,image);
     StoredPlanes = 8;
     ldblk = image->columns;
   }
+
   pixels = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)(ldblk));
   if(pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -2052,6 +2053,7 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
   WriteBlobByte(image,0x10);
   WriteBlobByte(image,0);
 
+ImageFailure:
   CloseBlob(image);
   MagickFreeResourceLimitedMemory(pixels);
 
