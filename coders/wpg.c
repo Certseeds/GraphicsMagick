@@ -1877,7 +1877,7 @@ static void WPG_RLE_FinalFlush(WPG_RLE_packer *WPG_RLE, Image *image)
 }
 
 
-static void WPG_RLE_AddBlock(WPG_RLE_packer *WPG_RLE, Image *image, const BYTE *blk, magick_uint16_t size)
+static void WPG_RLE_AddBlock(WPG_RLE_packer *WPG_RLE, Image *image, const unsigned char *blk, magick_uint16_t size)
 {
   while(size-- > 0)
   {
