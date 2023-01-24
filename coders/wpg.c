@@ -193,6 +193,7 @@ static const RGB_Record WPG1_Palette[256]={
 static int ApproveFormatForWPG(const char *Format)
 {
   if(!strcmp(Format,"PFB")) return 0;
+  if(!strcmp(Format,"8BIMTEXT")) return 0;
   return 1;
 }
 
@@ -963,8 +964,18 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
     {
       goto FINISH_UNL;
     }
-  if(exception->severity>=ErrorException) /* When exception is raised, destroy image2 read. */
+  if(exception->severity >= ErrorException) /* When exception is raised, destroy image2 read. */
   {
+    if(image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(), "Exception raised during embedded image reading.");
+    CloseBlob(image2);
+    DestroyImageList(image2);
+    goto FINISH_UNL;
+  }
+  if(!GetPixelCachePresent(image2))
+  {
+    if(image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(), "Pixel cache is missing for embedded image.");
     CloseBlob(image2);
     DestroyImageList(image2);
     goto FINISH_UNL;
@@ -1790,6 +1801,7 @@ UnpackRaster:
 }
 
 
+/* RLE helper structure. */
 typedef struct
 {
 	unsigned char count;
