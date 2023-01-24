@@ -1,3 +1,7 @@
+2023-01-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/tests/runtest.bat Add missing tests of fileformats.
+
 2023-01-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/rwblob.tap: Add sanity test for WPG format.

@@ -26,9 +26,19 @@ if not {%1}=={} (
 goto :_exit
 
 :_testall
+@rem This test is failing!
+call :_dorwtest both 8BIM
+@rem if not %COUNT% EQU 6 goto :_failed
+@rem This test is failing!
+call :_dorwtest both APP1
+@rem if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both AVS
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both ART
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both AVS
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both BIE
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both BMP
 if not %COUNT% EQU 6 goto :_failed
@@ -41,6 +51,10 @@ if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both CIN
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both CMYK
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both CMYKA
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both DCX
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both DIB
 if not %COUNT% EQU 6 goto :_failed
@@ -56,13 +70,27 @@ call :_dorwtest both EPI
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both EPS
 if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both EPS2
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both EPS3
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both EPSF
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both EPSI
+if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both EPT
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both EPT2
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both EPT3
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both FAX
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both FITS
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both GIF
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both GIF87
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both GRAY
 if not %COUNT% EQU 6 goto :_failed
@@ -73,11 +101,11 @@ call :_dorwtest both ICB
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both JBIG
 if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both JNG
+if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both JP2
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both JPEG
-if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both JNG
 if not %COUNT% EQU 6 goto :_failed
 @rem This test is failing!
 call :_dorwtest both MAP
@@ -89,6 +117,8 @@ if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both MNG
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both MONO
+if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both MPC
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both MTV
 if not %COUNT% EQU 6 goto :_failed
