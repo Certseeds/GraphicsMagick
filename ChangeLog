@@ -1,3 +1,8 @@
+2023-01-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (WriteWPGImage): image->colors is only valid for
+	storage_class == PseudoClass.
+
 2023-01-25  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/wpg.c: Format "8BIMTEXT" cannot be embedded inside WPG.
