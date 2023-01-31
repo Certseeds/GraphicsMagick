@@ -192,8 +192,18 @@ static const RGB_Record WPG1_Palette[256]={
 
 static int ApproveFormatForWPG(const char *Format)
 {
+  ExceptionInfo exception;
+  const MagickInfo *magick_info;
+
   if(!strcmp(Format,"PFB")) return 0;
-  if(!strcmp(Format,"8BIMTEXT")) return 0;
+
+  /*if(!strcmp(Format,"8BIMTEXT")) return 0; This test is no longer needed, META module includes this case. */
+  magick_info = GetMagickInfo(Format,&exception);
+  if(magick_info != (const MagickInfo *)NULL)
+  {
+    if(strcmp(magick_info->module, "META") == 0) return 0;
+  }
+
   return 1;
 }
 
