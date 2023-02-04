@@ -190,15 +190,14 @@ static const RGB_Record WPG1_Palette[256]={
 };
 
 
-static int ApproveFormatForWPG(const char *Format)
+static int ApproveFormatForWPG(const char *Format, ExceptionInfo *exception)
 {
-  ExceptionInfo exception;
   const MagickInfo *magick_info;
 
   if(!strcmp(Format,"PFB")) return 0;
 
   /*if(!strcmp(Format,"8BIMTEXT")) return 0; This test is no longer needed, META module includes this case. */
-  magick_info = GetMagickInfo(Format,&exception);
+  magick_info = GetMagickInfo(Format,exception);
   if(magick_info != (const MagickInfo *)NULL)
   {
     if(strcmp(magick_info->module, "META") == 0) return 0;
@@ -876,7 +875,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   /*
     Verify if this is an allowed subordinate image format
   */
-  if(!ApproveFormatForWPG(format))
+  if(!ApproveFormatForWPG(format,exception))
   {
     (void) LogMagickEvent(CoderEvent, GetMagickModule(),
                         "Format \"%s\" cannot be embedded inside WPG.", format);
