@@ -1,8 +1,11 @@
 2023-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: Test for interesting libjpeg-turbo 3.0 functions
+	(which may also appear in other JPEG libraries).
+
 	* coders/jpeg.c: Block out existing code for C_LOSSLESS_SUPPORTED
-	and D_LOSSLESS_SUPPORTED when compiling with JPEG-Turbo since it
-	is not compatible with it.
+	and D_LOSSLESS_SUPPORTED when compiling with JPEG-Turbo 3.0 since
+	it is not compatible with it.
 
 	* coders/wpg.c (ApproveFormatForWPG): Pass in existing
 	ExceptionInfo pointer.

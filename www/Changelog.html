@@ -40,9 +40,11 @@
 <p>2023-02-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>configure.ac: Test for interesting libjpeg-turbo 3.0 functions
+(which may also appear in other JPEG libraries).</p></li>
 <li><p>coders/jpeg.c: Block out existing code for C_LOSSLESS_SUPPORTED
-and D_LOSSLESS_SUPPORTED when compiling with JPEG-Turbo since it
-is not compatible with it.</p></li>
+and D_LOSSLESS_SUPPORTED when compiling with JPEG-Turbo 3.0 since
+it is not compatible with it.</p></li>
 <li><p>coders/wpg.c (ApproveFormatForWPG): Pass in existing
 ExceptionInfo pointer.</p></li>
 </ul>

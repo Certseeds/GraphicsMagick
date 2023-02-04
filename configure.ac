@@ -2250,6 +2250,9 @@ then
         AC_DEFINE([HasJPEG],[1],[Define if you have JPEG library])
         AC_MSG_RESULT([yes])
         have_jpeg='yes'
+        # Test for interesting libjpeg-turbo 3.0 functions (which may also appear in other JPEG libraries)
+        AC_CHECK_FUNCS([jpeg_enable_lossless jpeg12_write_scanlines jpeg16_write_scanlines \
+                        jpeg12_read_scanlines jpeg16_read_scanlines])
     fi
     else
         AC_MSG_RESULT([no])
