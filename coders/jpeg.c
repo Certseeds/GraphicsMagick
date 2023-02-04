@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -954,7 +954,7 @@ EstimateJPEGQuality(const struct jpeg_decompress_struct *jpeg_info,
     i;
 
   save_quality=0;
-#ifdef D_LOSSLESS_SUPPORTED
+#if !defined(LIBJPEG_TURBO_VERSION_NUMBER) && defined(D_LOSSLESS_SUPPORTED)
   if (image->compression==LosslessJPEGCompression)
     {
       save_quality=100;
@@ -1461,7 +1461,9 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
     }
 #endif
 #if (JPEG_LIB_VERSION >= 61) && defined(D_PROGRESSIVE_SUPPORTED)
-#ifdef D_LOSSLESS_SUPPORTED
+#if !defined(LIBJPEG_TURBO_VERSION_NUMBER) && defined(D_LOSSLESS_SUPPORTED)
+  /* This code is based on a patch to IJG JPEG 6b, or somesuch.  Standard
+     library does not have a 'process' member. */
   image->interlace=
     jpeg_info.process == JPROC_PROGRESSIVE ? LineInterlace : NoInterlace;
   image->compression=jpeg_info.process == JPROC_LOSSLESS ?
@@ -2896,7 +2898,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   if ((image->compression == LosslessJPEGCompression) ||
       (quality > 100))
     {
-#if defined(C_LOSSLESS_SUPPORTED)
+#if !defined(LIBJPEG_TURBO_VERSION_NUMBER) && defined(C_LOSSLESS_SUPPORTED)
       if (quality < 100)
         ThrowException(&image->exception,CoderWarning,
                        LosslessToLossyJPEGConversion,(char *) NULL);
