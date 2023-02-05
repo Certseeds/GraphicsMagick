@@ -247,12 +247,12 @@ BEGIN
             VALUE "Comments", "This program is part of the GraphicMagick imaging tookit."
             VALUE "CompanyName", "GraphicsMagick Group"
             VALUE "FileDescription", "GraphicMagick Windows Configure Application"
-            VALUE "FileVersion", "1, 0, 1, 1"
+            VALUE "FileVersion", "1, 0, 1, 2"
             VALUE "InternalName", "Configure"
             VALUE "LegalCopyright", "Same as GraphicsMagick copyright."
-            VALUE "OriginalFilename", "Configure.EXE"
+            VALUE "OriginalFilename", "configure.exe"
             VALUE "ProductName", "Windows Configure Application"
-            VALUE "ProductVersion", "1, 0, 1, 1"
+            VALUE "ProductVersion", "1, 0, 1, 2"
         END
     END
     BLOCK "VarFileInfo"

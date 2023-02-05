@@ -1,3 +1,10 @@
+2023-02-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        * VisualMagick/configure/configure.rc	Changed "Configure.EXE" to "configure.exe"
+        * VisualMagick/configure/configure.exe
+	Configure.exe has been blacklisted with 6 antiviruses.
+        https://www.virustotal.com/gui/file/3a0e54c8439200faf666b5680e0608e93fd67b5cda0d72dc32f54f0308574aba
+
 2023-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Test for interesting libjpeg-turbo 3.0 functions
