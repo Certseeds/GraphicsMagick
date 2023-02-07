@@ -1033,7 +1033,9 @@ ModuleExport void RegisterMPCImage(void)
   entry->encoder=(EncoderHandler) WriteMPCImage;
   entry->magick=(MagickHandler) IsMPC;
   entry->description="Magick Persistent Cache image format";
+  entry->adjoin=MagickFalse;
   entry->seekable_stream=MagickTrue;
+  entry->blob_support=MagickFalse;
   entry->module="MPC";
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
