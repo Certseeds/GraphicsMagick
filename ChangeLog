@@ -1,3 +1,8 @@
+2023-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (ImageToBlob): Immediately reject attempts to
+	write blobs to formats which can not support blobs.
+
 2023-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/mpc.c (RegisterMPCImage): Set seekable_stream and

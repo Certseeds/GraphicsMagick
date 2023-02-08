@@ -2235,7 +2235,17 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
     *blob;
 
   unsigned int
+    i,
     status;
+
+  static const char no_blob_support[][6] =
+    {
+     "CACHE",
+     "MPC",
+     "MPR",
+     "MPRI",
+     "X"
+    };
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
@@ -2244,15 +2254,29 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
   assert(exception != (ExceptionInfo *) NULL);
 
   if (image->blob->logging)
-    (void) LogMagickEvent(BlobEvent,GetMagickModule(),"Entering ImageToBlob");
+    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                          "Entering ImageToBlob (image magick=\"%s\")",
+                          image->magick);
   /* SetExceptionInfo(exception,UndefinedException); */
+  for (i = 0; i < ArraySize(no_blob_support); i++)
+    {
+      if (LocaleCompare(image->magick,no_blob_support[i]) == 0)
+        {
+          ThrowException(exception,MissingDelegateError,
+                         NoEncodeDelegateForThisImageFormat,image->magick);
+          if (image->blob->logging)
+            (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                  "Exiting ImageToBlob");
+          return((void *) NULL);
+        }
+    }
   clone_info=CloneImageInfo(image_info);
   (void) strlcpy(clone_info->magick,image->magick,MaxTextExtent);
   magick_info=GetMagickInfo(clone_info->magick,exception);
   if (magick_info == (const MagickInfo *) NULL)
     {
       ThrowException(exception,MissingDelegateError,
-                     NoDecodeDelegateForThisImageFormat,clone_info->magick);
+                     NoEncodeDelegateForThisImageFormat,clone_info->magick);
       DestroyImageInfo(clone_info);
       if (image->blob->logging)
         (void) LogMagickEvent(BlobEvent,GetMagickModule(),
