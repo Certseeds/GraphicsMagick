@@ -1,3 +1,10 @@
+2023-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadJPEGImage): Replace
+	MagickAllocateResourceLimitedArray() with
+	MagickAllocateResourceLimitedClearedArray() and eliminate explicit
+	memset().
+
 2023-02-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (ImageToBlob): Immediately reject attempts to
