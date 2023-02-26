@@ -1,5 +1,7 @@
 2023-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* Makefile.am: Stop producing Zstandard compressed archives.
+
 	* www/download.rst: Add summary documentation regarding archive formats.
 
 	* Makefile.am: Stop producing BZip compressed archives.

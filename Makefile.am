@@ -382,8 +382,8 @@ DIST_ARCHIVE_RPM=
 endif # HAS_RPM
 
 # Add zstd compression to output files
-DIST_TARGETS = dist-lzip dist-xz dist-gzip dist-zstd
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.lz $(distdir).tar.xz $(distdir).tar.zst
+DIST_TARGETS = dist-lzip dist-xz dist-gzip
+DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.lz $(distdir).tar.xz
 
 # Rules to build a .tar.zst tarball
 dist-zstd: distdir
