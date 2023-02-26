@@ -2404,6 +2404,8 @@ am__remove_distdir = \
   else :; fi
 am__post_remove_distdir = $(am__remove_distdir)
 GZIP_ENV = --best
+DIST_ARCHIVES = $(distdir).tar.xz
+DIST_TARGETS = dist-xz
 # Exists only to be overridden by the user if desired.
 AM_DISTCHECK_DVI_TARGET = dvi
 distuninstallcheck_listfiles = find . -type f -print
@@ -2731,10 +2733,11 @@ xml2_config = @xml2_config@
 
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
-# nostdinc
-# no-dist-gzip - Do not hook dist-gzip to dist.
 # dist-bzip2 - Hook dist-bzip2 to dist.
-AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-xz foreign dist-lzip
+# no-dist-gzip - Do not hook dist-gzip to dist.
+# dist-lzip - Hook dist-lzip to dist.
+# dist-zstd - Hook dist-zstd to dist.
+AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-xz foreign no-dist-gzip
 topincludedir = @includedir@/GraphicsMagick
 
 # CPPFLAGS required by all C/C++ code
@@ -4922,8 +4925,13 @@ DISTDIRS = locale scripts www PerlMagick TclMagick
 
 
 # Add zstd compression to output files
-DIST_TARGETS = dist-lzip dist-xz dist-gzip
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.lz $(distdir).tar.xz
+#DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip dist-zstd
+#DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz $(distdir).tar.xz $(distdir).tar.zst
+
+# Rules to build a .tar.zst tarball (zstd compression)
+#dist-zstd: distdir
+#	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-22} zstd --ultra -c >$(distdir).tar.zst
+#	$(am__post_remove_distdir)
 
 #
 # Build a validated snapshot release and move to the snapshots directory.
@@ -10059,11 +10067,16 @@ dist-gzip: distdir
 dist-bzip2: distdir
 	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
 	$(am__post_remove_distdir)
+
 dist-lzip: distdir
 	tardir=$(distdir) && $(am__tar) | lzip -c $${LZIP_OPT--9} >$(distdir).tar.lz
 	$(am__post_remove_distdir)
 dist-xz: distdir
 	tardir=$(distdir) && $(am__tar) | XZ_OPT=$${XZ_OPT--e} xz -c >$(distdir).tar.xz
+	$(am__post_remove_distdir)
+
+dist-zstd: distdir
+	tardir=$(distdir) && $(am__tar) | zstd -c $${ZSTD_CLEVEL-$${ZSTD_OPT--19}} >$(distdir).tar.zst
 	$(am__post_remove_distdir)
 
 dist-tarZ: distdir
@@ -11458,11 +11471,6 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 @HAS_RPM_TRUE@	@echo ==============================================================
 @HAS_RPM_TRUE@	@echo $(DIST_ARCHIVE_RPM) is ready for distribution.
 @HAS_RPM_TRUE@	@echo ==============================================================
-
-# Rules to build a .tar.zst tarball
-dist-zstd: distdir
-	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-22} zstd --ultra -c >$(distdir).tar.zst
-	$(am__post_remove_distdir)
 # FIXME: Can use gpg --enarmor to produce asc files from sig files
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@snapshot: distcheck
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
