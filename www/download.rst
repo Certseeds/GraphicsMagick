@@ -8,6 +8,7 @@ GraphicsMagick Download
 
 .. _Bob Friesenhahn : mailto:bfriesen@graphicsmagick.org
 .. _SourceForge Download : https://sourceforge.net/projects/graphicsmagick/files/
+.. _tar : https://en.wikipedia.org/wiki/Tar_(computing)
 
 .. contents::
   :local:
@@ -18,6 +19,60 @@ Download Sites
 The source distribution of GraphicsMagick as well as pre-compiled
 binaries may be downloaded from the `SourceForge Download`_ page.
 This is also where 'snapshot' distribution archives may be found.
+
+Download Formats
+================
+
+The GraphicsMagick source files may be available in several different
+archive formats:
+
+tar.gz
+------
+
+This is a POSIX tar_ file compressed using the legacy GNU gzip format ('gz'
+extension) by Jean-loup Gailly and Mark Adler. Gzip is available from
+https://www.gzip.org/.  Gzip is the the most readily available
+compressor on the planet.
+
+tar.bz2
+-------
+
+This is a POSIX tar_ file compressed using the legacy bzip2 format ('bz2'
+extension) by Julian Seward.  Bzip2 is available from http://sourceware.org/bzip2/.
+
+tar.xz
+------
+
+This is a POSIX tar_ file compressed using XZ Utils ('xz' extension) by
+Lasse Collin starting with Igor Pavlov's LZMA-SDK.  XZ Utils is
+available from https://tukaani.org/xz/.  XZ Utils is very popular and
+readily available.
+
+tar.zst
+-------
+
+This is a POSIX tar_ file compressed using Facebook's Zstandard format
+('zst' extension) by Yann Collet.  Zstd is available from
+https://facebook.github.io/zstd/.  While Zstd is not yet popular for
+source archive distribution, it is supported by Automake and GNU tar,
+and its compression ratio is very good.
+
+tar.lz
+------
+
+This is a POSIX tar_ file compressed using Lzip ('lz' extension).
+Lzip is available from https://lzip.nongnu.org/lzip.html.  In our
+experience, Lzip produces the smallest source archive files and uses a
+compact and portable implementation (as compared with 'xz', which is
+its primary competitor).
+
+7z
+---
+
+This is a 7-Zip archive file ('7z' extension) by Igor Pavlov.  7-Zip
+is available from https://www.7-zip.org/.  This format is used for the
+Microsoft Windows sources since 7-Zip is much more widely available
+under Windows than 'tar' is.
 
 Verifying The Download
 ======================
