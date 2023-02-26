@@ -1,3 +1,9 @@
+2023-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/download.rst: Add summary documentation regarding archive formats.
+
+	* Makefile.am: Stop producing BZip compressed archives.
+
 2023-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jpeg.c (ReadJPEGImage): Replace

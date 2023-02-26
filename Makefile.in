@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2004-2022 GraphicsMagick Group
+# Copyright (C) 2004-2023 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -2732,7 +2732,9 @@ xml2_config = @xml2_config@
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
 # nostdinc
-AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
+# no-dist-gzip - Do not hook dist-gzip to dist.
+# dist-bzip2 - Hook dist-bzip2 to dist.
+AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-xz foreign dist-lzip
 topincludedir = @includedir@/GraphicsMagick
 
 # CPPFLAGS required by all C/C++ code
@@ -4920,10 +4922,8 @@ DISTDIRS = locale scripts www PerlMagick TclMagick
 
 
 # Add zstd compression to output files
-DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip dist-zstd
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
-	$(distdir).tar.xz $(distdir).tar.zst
-
+DIST_TARGETS = dist-lzip dist-xz dist-gzip dist-zstd
+DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.lz $(distdir).tar.xz $(distdir).tar.zst
 
 #
 # Build a validated snapshot release and move to the snapshots directory.
@@ -10055,6 +10055,7 @@ distdir-am: $(DISTFILES)
 dist-gzip: distdir
 	tardir=$(distdir) && $(am__tar) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).tar.gz
 	$(am__post_remove_distdir)
+
 dist-bzip2: distdir
 	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
 	$(am__post_remove_distdir)

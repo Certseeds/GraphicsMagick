@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2022 GraphicsMagick Group
+# Copyright (C) 2004-2023 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -13,7 +13,9 @@
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
 # nostdinc
-AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
+# no-dist-gzip - Do not hook dist-gzip to dist.
+# dist-bzip2 - Hook dist-bzip2 to dist.
+AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-xz foreign dist-lzip
 
 topincludedir = @includedir@/GraphicsMagick
 
@@ -380,9 +382,8 @@ DIST_ARCHIVE_RPM=
 endif # HAS_RPM
 
 # Add zstd compression to output files
-DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip dist-zstd
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
-	$(distdir).tar.xz $(distdir).tar.zst
+DIST_TARGETS = dist-lzip dist-xz dist-gzip dist-zstd
+DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.lz $(distdir).tar.xz $(distdir).tar.zst
 
 # Rules to build a .tar.zst tarball
 dist-zstd: distdir
