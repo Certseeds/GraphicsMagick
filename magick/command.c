@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -10711,6 +10711,7 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
                   region_geometry.y);
                 DestroyImage(*image);
                 *image=region_image;
+                region_image=(Image *) NULL;
               }
             if (*option == '+')
               continue;
@@ -11429,7 +11430,7 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
         break;
     }
   }
-  if (region_image != (Image *) NULL)
+  if ((region_image != (Image *) NULL) && (region_image != *image))
     {
       /*
         Composite transformed region onto image.

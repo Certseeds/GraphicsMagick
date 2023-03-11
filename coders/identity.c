@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2009-2020 GraphicsMagick Group
+% Copyright (C) 2009-2023 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -34,7 +34,8 @@
 %  identity image.  The minimum order which may be specified is 2.  Higher
 %  order LUTs contain more colors and are therefore more accurate, but consume
 %  more memory.  Typical Hald CLUT identity images have an order of between 8
-%  (512x512) and 16 (4096x4096).  The default order is 8.
+%  (512x512) and 16 (4096x4096).   An arbitrary maximum order of 40 (a
+%  64000x64000 image) is enforced. The default order is 8.
 %
 %  The format of the ReadIdentityImage method is:
 %
@@ -63,10 +64,10 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
     *image;
 
   unsigned long
-    cube_size;
+    cube_size,
+    order;
 
   long
-    order,
     y;
 
   unsigned long
@@ -83,14 +84,16 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
-  image=(Image *) NULL;
+  image=AllocateImage(image_info);
   order=8;
   if (image_info->filename[0] != '\0')
-    order=MagickAtoL(image_info->filename);
+    if ((status &= MagickAtoULChk(image_info->filename, &order)) != MagickPass)
+      ThrowReaderException(FileOpenError,UnableToOpenFile,image);
+  if (order > 40)
+      ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   if (order < 2)
     order=8;
 
-  image=AllocateImage(image_info);
   cube_size=order*order;
   image->columns=image->rows=order*order*order;
 

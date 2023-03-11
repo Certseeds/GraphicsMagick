@@ -1,5 +1,13 @@
 2023-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/identity.c (ReadIdentityImage): Limit 'order' to a
+	maximum of 40, and change to unsigned type in order to avoid
+	undefined arithmetic overflow.
+
+	* magick/command.c (MogrifyImage): Handle the case where image and
+	region_image are the same.  Addresses SourceForge issue #688 "Heap
+	UAF in gm (magick/command.c:11427)".
+
 	* coders/pict.c (WritePICTImage): Fix use of
 	MagickFreeResourceLimitedMemory() on non-managed memory. Addresses
 	SourceForge issue #687 "Heap Overflow in gm

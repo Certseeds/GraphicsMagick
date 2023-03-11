@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -1589,7 +1589,10 @@ MagickExport MagickPassFail GetExecutionPathUsingName(char *path)
 %  A description of each parameter follows:
 %
 %    o flags:  Method GetGeometry returns a bitmask that indicates
-%      which of the four values were located in the geometry string.
+%      which of the values from GeometryFlags (XValue, YValue, WidthValue,
+%      HeightValue, XNegative, YNegative, PercentValue, AspectValue, LessValue,
+%      GreaterValue, AreaValue, MinimumValue) were located in the geometry
+%      string.
 %
 %    o image_geometry:  Specifies a character string representing the geometry
 %      specification.
