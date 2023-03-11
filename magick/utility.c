@@ -6062,8 +6062,10 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
     offset;
 
   assert(image != (Image *) NULL);
-  if ((formatted_text == (const char *) NULL) || (*formatted_text == '\0'))
+  if (formatted_text == (const char *) NULL)
     return((char *) NULL);
+  if (*formatted_text == '\0')
+    return AcquireString(formatted_text);
   text=(char *) formatted_text;
   /*
     Translate any embedded format characters.

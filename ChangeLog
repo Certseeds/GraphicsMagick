@@ -1,3 +1,12 @@
+2023-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (MogrifyImage): Report a draw argument error if
+	drawing primitive is NULL.  Addresses SourceForge issue #684
+	"Assertion bug in gm (magick/render.c:2715)"
+
+	* magick/utility.c (TranslateTextEx): An empty string argument
+	should return an empty string rather than a NULL string.
+
 2023-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Makefile.am: Stop producing BZip, Gzip, Lzip, and Zstandard

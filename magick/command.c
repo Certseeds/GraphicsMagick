@@ -9691,7 +9691,10 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             */
             MagickFreeMemory(draw_info->primitive);
             draw_info->primitive=AmpersandTranslateText(clone_info,*image,argv[++i]);
-            (void) DrawImage(*image,draw_info);
+            if (draw_info->primitive != (char *) NULL)
+              (void) DrawImage(*image,draw_info);
+            else
+              ThrowException(&(*image)->exception,OptionError,MissingArgument,option);
             continue;
           }
         break;
