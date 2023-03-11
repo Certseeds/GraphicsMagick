@@ -1,5 +1,9 @@
 2023-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/msl.c (ProcessMSLScript): Fix use of memory just freed.
+	Addresses SourceForge issue #689 "Heap UAF in gm
+	(magick/utility.c:3792)"
+
 	* coders/identity.c (ReadIdentityImage): Limit 'order' to a
 	maximum of 40, and change to unsigned type in order to avoid
 	undefined arithmetic overflow.

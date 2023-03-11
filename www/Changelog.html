@@ -40,6 +40,9 @@
 <p>2023-03-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/msl.c (ProcessMSLScript): Fix use of memory just freed.
+Addresses SourceForge issue #689 &quot;Heap UAF in gm
+(magick/utility.c:3792)&quot;</p></li>
 <li><p>coders/identity.c (ReadIdentityImage): Limit 'order' to a
 maximum of 40, and change to unsigned type in order to avoid
 undefined arithmetic overflow.</p></li>

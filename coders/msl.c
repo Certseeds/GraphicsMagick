@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -4550,7 +4550,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
     {
       DestroyImage(msl_image);
       ThrowException(exception,FileOpenError,UnableToOpenFile,
-                     msl_image->filename);
+                     image_info->filename);
       return(MagickFail);
     }
 
