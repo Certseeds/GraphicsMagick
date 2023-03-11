@@ -161,6 +161,10 @@ MagickExport Image *AdaptiveThresholdImage(const Image * image,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
+  if ((width == 0) || (height == 0))
+    ThrowImageException3(OptionError, UnableToThresholdImage,
+                         NonzeroWidthAndHeightRequired);
+
   if ((image->columns < width) || (image->rows < height))
     ThrowImageException3(OptionError, UnableToThresholdImage,
                          ImageSmallerThanRadius);

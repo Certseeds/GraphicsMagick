@@ -10113,10 +10113,16 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             /*
               Local adaptive threshold image.
             */
-            offset=0;
-            height=3;
-            width=3;
-            (void) sscanf(argv[++i],"%lux%lu%lf",&width,&height,&offset);
+            if (sscanf(argv[++i],"%lux%lu%lf",&width,&height,&offset) != 3)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option);
+                break;
+              }
+            if ((width == 0) || (height == 0))
+              {
+                ThrowException3(&(*image)->exception,OptionError,UnableToThresholdImage,NonzeroWidthAndHeightRequired);
+                break;
+              }
             if (strchr(argv[i],'%') != (char *) NULL)
               offset*=((double) MaxRGB/100.0);
             threshold_image=AdaptiveThresholdImage(*image,width,height,offset,
