@@ -1,5 +1,10 @@
 2023-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pict.c (WritePICTImage): Fix use of
+	MagickFreeResourceLimitedMemory() on non-managed memory. Addresses
+	SourceForge issue #687 "Heap Overflow in gm
+	(magick/memory.c:728)".
+
 	* magick/command.c (MogrifyImage): Validate that -lat argument is
 	correctly formed, and that width and height are not zero.
 

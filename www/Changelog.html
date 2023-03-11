@@ -40,6 +40,10 @@
 <p>2023-03-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/pict.c (WritePICTImage): Fix use of
+MagickFreeResourceLimitedMemory() on non-managed memory. Addresses
+SourceForge issue #687 &quot;Heap Overflow in gm
+(magick/memory.c:728)&quot;.</p></li>
 <li><p>magick/command.c (MogrifyImage): Validate that -lat argument is
 correctly formed, and that width and height are not zero.</p></li>
 <li><p>magick/effect.c (AdaptiveThresholdImage): Validate that width
