@@ -9431,6 +9431,11 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             type=(*option);
             option=argv[++i];
             colorspace=StringToColorspaceType(option);
+            if (colorspace == UndefinedColorspace)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,"colorspace");
+                break;
+              }
             quantize_info.colorspace=colorspace;
             /* Never quantize in CMYK colorspace */
             if (IsCMYKColorspace(colorspace))
@@ -9691,10 +9696,12 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             */
             MagickFreeMemory(draw_info->primitive);
             draw_info->primitive=AmpersandTranslateText(clone_info,*image,argv[++i]);
-            if (draw_info->primitive != (char *) NULL)
+            if (draw_info->primitive == (char *) NULL)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option);
+                break;
+              }
               (void) DrawImage(*image,draw_info);
-            else
-              ThrowException(&(*image)->exception,OptionError,MissingArgument,option);
             continue;
           }
         break;

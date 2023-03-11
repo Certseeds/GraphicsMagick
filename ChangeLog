@@ -3,6 +3,9 @@
 	* magick/command.c (MogrifyImage): Report a draw argument error if
 	drawing primitive is NULL.  Addresses SourceForge issue #684
 	"Assertion bug in gm (magick/render.c:2715)"
+	(MogrifyImage): Validate colorspace argument.  Addresses
+	SourceForge issue #685 Assertion bug in gm
+	(magick/colorspace.c:1045)".
 
 	* magick/utility.c (TranslateTextEx): An empty string argument
 	should return an empty string rather than a NULL string.
