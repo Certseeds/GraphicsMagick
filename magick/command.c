@@ -5595,6 +5595,11 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
                   ThrowConvertException(OptionError,MissingArgument,
                     option);
               }
+            else
+              {
+                ThrowConvertException(OptionError,MissingArgument,
+                                      option);
+              }
             break;
           }
         if (LocaleCompare("ordered-dither",option+1) == 0)
@@ -10386,28 +10391,42 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
           }
         if (LocaleCompare("operator",option+1) == 0)
           {
-            ChannelType
-              channel;
+            if (*option == '-')
+              {
+                ChannelType
+                  channel;
 
-            QuantumOperator
-              quantum_operator;
+                QuantumOperator
+                  quantum_operator;
 
-            double
-              rvalue;
+                double
+                  rvalue;
 
-            /* channel */
-            channel=StringToChannelType(argv[++i]);
+                if ((argv[i+1] == NULL) || (argv[i+2] == NULL) || (argv[i+3] == NULL))
+                  {
+                    ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                    break;
+                  }
 
-            /* operator id */
-            quantum_operator=StringToQuantumOperator(argv[++i]);
+                /* channel */
+                channel=StringToChannelType(argv[++i]);
 
-            /* rvalue */
-            option=argv[++i];
-            rvalue=StringToDouble(option,MaxRGB);
-            (void) QuantumOperatorImage(*image,channel,quantum_operator,
-               rvalue,&(*image)->exception);
+                /* operator id */
+                quantum_operator=StringToQuantumOperator(argv[++i]);
 
-            continue;
+                /* rvalue */
+                option=argv[++i];
+                rvalue=StringToDouble(option,MaxRGB);
+                (void) QuantumOperatorImage(*image,channel,quantum_operator,
+                                            rvalue,&(*image)->exception);
+
+                continue;
+              }
+            else
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                break;
+              }
           }
         if (LocaleCompare("ordered-dither",option+1) == 0)
           {
@@ -13241,6 +13260,11 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
                   ThrowMogrifyException(OptionError,MissingArgument,
                     option);
               }
+            else
+              {
+                ThrowMogrifyException(OptionError,MissingArgument,
+                    option);
+              }
             break;
           }
         if (LocaleCompare("ordered-dither",option+1) == 0)
@@ -14856,6 +14880,10 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
           break;
         ThrowMontageException(OptionError,UnrecognizedOption,option)
       }
+      case 'o':
+      {
+        ThrowMontageException(OptionError,UnrecognizedOption,option)
+      }
       case 'p':
       {
         if (LocaleCompare("page",option+1) == 0)
@@ -15144,7 +15172,11 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
               }
             break;
           }
-        ThrowMontageException(OptionError,UnrecognizedOption,option)
+        ThrowMontageException(OptionError,UnrecognizedOption,option);
+      }
+    case 'u':
+      {
+        ThrowMontageException(OptionError,UnrecognizedOption,option);
       }
       case 'v':
       {

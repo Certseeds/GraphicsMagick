@@ -1,5 +1,9 @@
 2023-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/command.c: Make "operator" parameter checking more
+	robust. Addresses SourceForge issue #690 "Segmentation Violations
+	in gm (magick/utility.c:3397)".
+
 	* coders/msl.c (ProcessMSLScript): Fix use of memory just freed.
 	Addresses SourceForge issue #689 "Heap UAF in gm
 	(magick/utility.c:3792)"
