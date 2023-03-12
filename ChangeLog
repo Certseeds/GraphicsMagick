@@ -6,6 +6,9 @@
 	(MogrifyImage): Improve operator parameter validation.  Addresses
 	SourceForge issue #694 "Segmentation Violation in gm (MagickStrToD
 	function)".
+	(MogrifyImage): Improve ordered-dither parameter
+	validation. Addresses SourceForge issue #695 "Segmentation
+	Violation in gm (LocaleCompare).
 
 	* magick/error.c (DefaultFatalErrorHandler): Perform printf
 	substitutions similar to DefaultErrorHandler.
