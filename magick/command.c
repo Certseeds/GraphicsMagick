@@ -10408,7 +10408,7 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
                 double
                   rvalue;
 
-                if ((argv[i+1] == NULL) || (argv[i+2] == NULL) || (argv[i+3] == NULL))
+                if (i+3 > argc)
                   {
                     ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
                     break;

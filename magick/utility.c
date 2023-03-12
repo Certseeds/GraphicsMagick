@@ -930,7 +930,7 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
   */
   assert(argc != (int *) NULL);
   assert(argv != (char ***) NULL);
-  vector=MagickAllocateMemory(char **,(*argc+prealloc_entries)*sizeof(char *));
+  vector=MagickAllocateClearedMemory(char **,(*argc+prealloc_entries)*sizeof(char *));
   if (vector == (char **) NULL)
     return(MagickFail);
   /*

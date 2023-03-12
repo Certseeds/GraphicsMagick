@@ -3,6 +3,9 @@
 	* magick/command.c (ConjureImageCommand): Properly check argument
 	list when handling options.  Addresses SourceForge issue #693
 	"Segmentation Violation in gm - SetImageAttribute function".
+	(MogrifyImage): Improve operator parameter validation.  Addresses
+	SourceForge issue #694 "Segmentation Violation in gm (MagickStrToD
+	function)".
 
 	* magick/error.c (DefaultFatalErrorHandler): Perform printf
 	substitutions similar to DefaultErrorHandler.
