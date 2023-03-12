@@ -6496,7 +6496,7 @@ static void ConjureUsage(void)
   (void) puts("  -verbose             print detailed information about the image");
   (void) puts("  -version             print version information");
   (void) puts("");
-  (void) puts("In additiion, define any key value pairs required by your script.  For");
+  (void) puts("In addition, define any key value pairs required by your script.  For");
   (void) puts("example,");
   (void) puts("");
   (void) puts("    conjure -size 100x100 -color blue -foo bar script.msl");
@@ -6597,10 +6597,12 @@ MagickExport MagickPassFail ConjureImageCommand(ImageInfo *image_info,
           Persist key/value pair.
         */
         (void) SetImageAttribute(image_info->attributes,option+1,(char *) NULL);
-        status&=SetImageAttribute(image_info->attributes,option+1,argv[i+1]);
+        i++;
+        if (i == argc)
+          MagickFatalError(OptionFatalError,MissingArgument,option);
+        status&=SetImageAttribute(image_info->attributes,option+1,argv[i]);
         if (status == MagickFail)
           MagickFatalError(ImageFatalError,UnableToPersistKey,option);
-        i++;
         continue;
       }
     /*
