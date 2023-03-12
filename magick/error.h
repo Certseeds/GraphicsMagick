@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003-2020 GraphicsMagick Group
+  Copyright (C) 2003-2023 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -186,8 +186,9 @@ typedef enum
 */
 
 /*
-  ExceptionInfo is used to report exceptions to higher level routines,
-  and to the user.
+  The ExceptionInfo structure is used to report exceptions to higher level
+  routines, and to the user.  The ExceptionInfo structure must be initialized
+  using the GetExceptionInfo() function prior to use.
 */
 typedef struct _ExceptionInfo
 {
@@ -229,46 +230,46 @@ typedef struct _ExceptionInfo
   Exception typedef declarations.
 */
 typedef void
-  (*ErrorHandler)(const ExceptionType,const char *,const char *);
+  (*ErrorHandler)(const ExceptionType severity,const char *reason,const char *description);
 
 typedef void
-  (*FatalErrorHandler)(const ExceptionType,const char *,const char *) MAGICK_FUNC_NORETURN;
+  (*FatalErrorHandler)(const ExceptionType severity,const char *reason,const char *description) MAGICK_FUNC_NORETURN;
 
 typedef void
-  (*WarningHandler)(const ExceptionType,const char *,const char *);
+  (*WarningHandler)(const ExceptionType severity,const char *reason,const char *description);
 
 /*
   Exception declarations.
 */
 extern MagickExport const char
-  *GetLocaleExceptionMessage(const ExceptionType,const char *),
-  *GetLocaleMessage(const char *);
+  *GetLocaleExceptionMessage(const ExceptionType severity,const char *tag),
+  *GetLocaleMessage(const char *tag);
 
 extern MagickExport ErrorHandler
-  SetErrorHandler(ErrorHandler);
+  SetErrorHandler(ErrorHandler handler);
 
 extern MagickExport FatalErrorHandler
-  SetFatalErrorHandler(FatalErrorHandler);
+  SetFatalErrorHandler(FatalErrorHandler handler);
 
 extern MagickExport void
-  CatchException(const ExceptionInfo *),
-  CopyException(ExceptionInfo *copy, const ExceptionInfo *original),
-  DestroyExceptionInfo(ExceptionInfo *),
-  GetExceptionInfo(ExceptionInfo *),
-  MagickError(const ExceptionType,const char *,const char *),
-  MagickFatalError(const ExceptionType,const char *,const char *) MAGICK_FUNC_NORETURN,
-  MagickWarning(const ExceptionType,const char *,const char *),
-  _MagickError(const ExceptionType,const char *,const char *),
-  _MagickFatalError(const ExceptionType,const char *,const char *) MAGICK_FUNC_NORETURN,
-  _MagickWarning(const ExceptionType,const char *,const char *),
-  SetExceptionInfo(ExceptionInfo *,ExceptionType),
-  ThrowException(ExceptionInfo *,const ExceptionType,const char *,const char *),
-  ThrowLoggedException(ExceptionInfo *exception, const ExceptionType severity,
-    const char *reason,const char *description,const char *module,
-    const char *function,const unsigned long line);
+  CatchException(const ExceptionInfo *exception),
+  CopyException(ExceptionInfo *copy,const ExceptionInfo *original),
+  DestroyExceptionInfo(ExceptionInfo *exception),
+  GetExceptionInfo(ExceptionInfo *exception),
+  MagickError(const ExceptionType error,const char *reason,const char *description),
+  MagickFatalError(const ExceptionType error,const char *reason,const char *description) MAGICK_FUNC_NORETURN,
+  MagickWarning(const ExceptionType severity,const char *reason,const char *description),
+  _MagickError(const ExceptionType severity,const char *reason, const char *description),
+  _MagickFatalError(const ExceptionType severity,const char *reason,const char *description) MAGICK_FUNC_NORETURN,
+  _MagickWarning(const ExceptionType warning,const char *reason,const char *description),
+  SetExceptionInfo(ExceptionInfo *exception,ExceptionType severity),
+  ThrowException(ExceptionInfo *exception,const ExceptionType severity,const char *reason,const char *description),
+  ThrowLoggedException(ExceptionInfo *exception,const ExceptionType severity,const char *reason,
+                       const char *description,const char *module,const char *function,
+                       const unsigned long line);
 
 extern MagickExport WarningHandler
-  SetWarningHandler(WarningHandler);
+  SetWarningHandler(WarningHandler handler);
 
 /*
   Exception define definitions.
