@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -307,8 +307,12 @@ static void DefaultErrorHandler(const ExceptionType severity,const char *reason,
     FIXME: The following captures a random errno value rather than the
     errno associated with the actual error.
   */
+#if 0
   if ((severity != OptionError) && errno)
     (void) fprintf(stderr," [%.1024s]",GetErrorMessageString(errno));
+#else
+  (void) severity;
+#endif
   (void) fprintf(stderr,".\n");
 }
 
@@ -347,11 +351,31 @@ static void DefaultFatalErrorHandler(const ExceptionType severity,
 {
   if (reason != (char *) NULL)
     {
-      (void) fprintf(stderr,"%.1024s: %.1024s",GetClientName(),reason);
-      if (description != (char *) NULL)
-        (void) fprintf(stderr," (%.1024s)",description);
+      (void) fprintf(stderr,"%.1024s: ",GetClientName());
+      if (strstr(reason,"%s") && description)
+        {
+          /*
+            Reason contains printf specification. %s in reason string
+            is substituted with description.
+          */
+          (void) fprintf(stderr,reason,description);
+        }
+      else
+        {
+          (void) fprintf(stderr,"%.1024s",reason);
+          if (description != (char *) NULL)
+            (void) fprintf(stderr," (%.1024s)",description);
+        }
+      /*
+        FIXME: The following captures a random errno value rather than the
+        errno associated with the actual error.
+      */
+#if 0
       if ((severity != OptionError) && errno)
         (void) fprintf(stderr," [%.1024s]",GetErrorMessageString(errno));
+#else
+  (void) severity;
+#endif
       (void) fprintf(stderr,".\n");
     }
   /*
@@ -386,8 +410,7 @@ static void DefaultFatalErrorHandler(const ExceptionType severity,
 %
 %    o warning: Specifies the numeric warning category.
 %
-%    o reason: Specifies the reason to display before terminating the
-%      program.
+%    o reason: Specifies the reason to display.
 %
 %    o description: Specifies any description to the reason.
 %
