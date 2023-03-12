@@ -5792,7 +5792,7 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
             if (*option == '-')
               {
                 i++;
-                if ((i == (argc-1)) || !IsGeometry(argv[i]))
+                if ((i == argc) || !IsGeometry(argv[i]))
                   ThrowConvertException(OptionError,MissingArgument,option);
               }
             break;
@@ -13445,16 +13445,6 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
             if (*option == '-')
               {
                 i++;
-                if ((i == (argc-1)) || !IsGeometry(argv[i]))
-                  ThrowMogrifyException(OptionError,MissingArgument,option);
-              }
-            break;
-          }
-        if (LocaleCompare("resize",option+1) == 0)
-          {
-            if (*option == '-')
-              {
-                i++;
                 if ((i == argc) || !IsGeometry(argv[i]))
                   ThrowMogrifyException(OptionError,MissingArgument,option);
               }
@@ -13466,8 +13456,7 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
               {
                 i++;
                 if ((i == argc) || !IsGeometry(argv[i]))
-                  ThrowMogrifyException(OptionError,MissingArgument,
-                    option);
+                  ThrowMogrifyException(OptionError,MissingArgument,option);
               }
             break;
           }

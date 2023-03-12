@@ -4,6 +4,9 @@
 	-noop when the user has not provided any images.  Addresses
 	SourceForge issue #691 "Segmentation Violation in gm
 	(magick/command.c:3054)".
+	(MogrifyImageCommand): Properly check argument list when
+	validating "resample".  Addresses SourceForge issue #692
+	"Segmentation Violation in gm (GetGeometry function)".
 
 2023-03-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
