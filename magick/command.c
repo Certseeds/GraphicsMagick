@@ -3801,8 +3801,12 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
           break;
         if (LocaleCompare("noop",option+1) == 0)
           {
+            if (image == NULL)
+              ThrowCompositeException(OptionError,NoImagesDefined,
+                                      "no images in composite image list");
+
             status&=CompositeImageList(image_info,&image,composite_image,
-              mask_image,&option_info,exception);
+                                       mask_image,&option_info,exception);
             if (composite_image != (Image *) NULL)
               {
                 DestroyImageList(composite_image);
