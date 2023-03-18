@@ -1,5 +1,10 @@
 2023-03-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
+	* coders/png.c There were 2 defects that prevented eXIf chunk
+        to be read.
+
+2023-03-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* coders/png.c Variable "png_byte unused_chunks" should be const
         and not be placed on a stack.
 

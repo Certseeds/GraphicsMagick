@@ -1396,8 +1396,8 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       s=chunk->data;
 
       if (chunk->size > 6 &&
-          (s[0] == 'E' || s[1] == 'x' || s[2] == 'i' ||
-           s[3] == 'f' || s[4] == '\0' || s[5] == '\0'))
+          (s[0] == 'E' && s[1] == 'x' && s[2] == 'i' &&
+           s[3] == 'f' && s[4] == '\0' && s[5] == '\0'))
         {
           /*
             Skip over "Exif\0\0" if already present
@@ -1577,6 +1577,9 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       115,  67,  65,  76, '\0',   /* sCAL */
       115,  80,  76,  84, '\0',   /* sPLT */
       116,  73,  77,  69, '\0',   /* tIME */
+#ifdef PNG_READ_eXIf_SUPPORTED /* Enforce custom eXIf processing to override default one. */
+      101,  88,  73, 102, '\0',   /* eXIf*/
+#endif
 #ifdef PNG_APNG_SUPPORTED /* libpng was built with APNG patch; */
                           /* ignore the APNG chunks */
        97,  99,  84,  76, '\0',   /* acTL */
@@ -1959,7 +1962,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                                 intent+1);
       }
   }
-#endif
+#endif /* if defined(PNG_READ_sRGB_SUPPORTED) */
   {
     double
       file_gamma;
