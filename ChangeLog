@@ -1,3 +1,8 @@
+2023-03-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/png.c Variable "png_byte unused_chunks" should be const
+        and not be placed on a stack.
+
 2023-03-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (ConjureImageCommand): Properly check argument
