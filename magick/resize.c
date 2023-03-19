@@ -849,6 +849,9 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
   MagickBool
     monitor_active;
 
+  const MagickBool
+    matte = ((destination->matte) || (destination->colorspace == CMYKColorspace));
+
   MagickPassFail
     status=MagickPass;
 
@@ -966,27 +969,25 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
         {
           source_indexes=AccessImmutableIndexes(source);
           indexes=AccessMutableIndexes(destination);
-          for (y=0; y < (long) destination->rows; y++)
+          if (matte)
             {
-              double
-                weight;
-
-              DoublePixelPacket
-                pixel;
-
-              long
-                j;
-
-              register long
-                i;
-
-              pixel=zero;
-              if ((destination->matte) || (destination->colorspace == CMYKColorspace))
+              for (y=0; y < (long) destination->rows; y++)
                 {
                   double
                     transparency_coeff,
-                    normalize;
+                    normalize,
+                    weight;
 
+                  DoublePixelPacket
+                    pixel;
+
+                  long
+                    j;
+
+                  register long
+                    i;
+
+                  pixel=zero;
                   normalize=0.0;
                   for (i=0; i < n; i++)
                     {
@@ -1008,9 +1009,33 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
                   q[y].green=RoundDoubleToQuantum(pixel.green);
                   q[y].blue=RoundDoubleToQuantum(pixel.blue);
                   q[y].opacity=RoundDoubleToQuantum(pixel.opacity);
+
+                  if ((indexes != (IndexPacket *) NULL) &&
+                      (source_indexes != (IndexPacket *) NULL))
+                    {
+                      i=Min(Max((long) (center+0.5),start),stop-1);
+                      j=y*(contribution[n-1].pixel-contribution[0].pixel+1)+
+                        (contribution[i-start].pixel-contribution[0].pixel);
+                      indexes[y]=source_indexes[j];
+                    }
                 }
-              else
+            }
+          else
+            {
+              for (y=0; y < (long) destination->rows; y++)
                 {
+                  double
+                    weight;
+
+                  DoublePixelPacket
+                    pixel=zero;
+
+                  long
+                    j;
+
+                  register long
+                    i;
+
                   for (i=0; i < n; i++)
                     {
                       j=(long) (y*(contribution[n-1].pixel-contribution[0].pixel+1)+
@@ -1024,15 +1049,15 @@ HorizontalFilter(const Image * restrict source,Image * restrict destination,
                   q[y].green=RoundDoubleToQuantum(pixel.green);
                   q[y].blue=RoundDoubleToQuantum(pixel.blue);
                   q[y].opacity=OpaqueOpacity;
-                }
 
-              if ((indexes != (IndexPacket *) NULL) &&
-                  (source_indexes != (IndexPacket *) NULL))
-                {
-                  i=Min(Max((long) (center+0.5),start),stop-1);
-                  j=y*(contribution[n-1].pixel-contribution[0].pixel+1)+
-                    (contribution[i-start].pixel-contribution[0].pixel);
-                  indexes[y]=source_indexes[j];
+                  if ((indexes != (IndexPacket *) NULL) &&
+                      (source_indexes != (IndexPacket *) NULL))
+                    {
+                      i=Min(Max((long) (center+0.5),start),stop-1);
+                      j=y*(contribution[n-1].pixel-contribution[0].pixel+1)+
+                        (contribution[i-start].pixel-contribution[0].pixel);
+                      indexes[y]=source_indexes[j];
+                    }
                 }
             }
           if (!SyncImagePixelsEx(destination,exception))
@@ -1100,6 +1125,9 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
 
   MagickBool
     monitor_active;
+
+  const MagickBool
+    matte = ((destination->matte) || (destination->colorspace == CMYKColorspace));
 
   MagickPassFail
     status=MagickPass;
@@ -1220,26 +1248,23 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
         {
           source_indexes=AccessImmutableIndexes(source);
           indexes=AccessMutableIndexes(destination);
-          for (x=0; x < (long) destination->columns; x++)
+          if (matte)
             {
-              double
-                weight;
-
-              DoublePixelPacket
-                pixel;
-
-              long
-                j;
-
-              register long
-                i;
-
-              pixel=zero;
-              if ((source->matte) || (source->colorspace == CMYKColorspace))
+              for (x=0; x < (long) destination->columns; x++)
                 {
                   double
                     transparency_coeff,
-                    normalize;
+                    normalize,
+                    weight;
+
+                  DoublePixelPacket
+                    pixel=zero;
+
+                  long
+                    j;
+
+                  register long
+                    i;
 
                   normalize=0.0;
                   for (i=0; i < n; i++)
@@ -1263,9 +1288,34 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
                   q[x].green=RoundDoubleToQuantum(pixel.green);
                   q[x].blue=RoundDoubleToQuantum(pixel.blue);
                   q[x].opacity=RoundDoubleToQuantum(pixel.opacity);
+
+                  if ((indexes != (IndexPacket *) NULL) &&
+                      (source_indexes != (IndexPacket *) NULL))
+                    {
+                      i=Min(Max((long) (center+0.5),start),stop-1);
+                      j=(long) ((contribution[i-start].pixel-contribution[0].pixel)*
+                                source->columns+x);
+                      indexes[x]=source_indexes[j];
+                    }
                 }
-              else
+            }
+          else
+            {
+              for (x=0; x < (long) destination->columns; x++)
                 {
+                  double
+                    weight;
+
+                  DoublePixelPacket
+                    pixel;
+
+                  long
+                    j;
+
+                  register long
+                    i;
+
+                  pixel=zero;
                   for (i=0; i < n; i++)
                     {
                       j=(long) ((contribution[i].pixel-contribution[0].pixel)*
@@ -1279,15 +1329,15 @@ VerticalFilter(const Image * restrict source,Image * restrict destination,
                   q[x].green=RoundDoubleToQuantum(pixel.green);
                   q[x].blue=RoundDoubleToQuantum(pixel.blue);
                   q[x].opacity=OpaqueOpacity;
-                }
 
-              if ((indexes != (IndexPacket *) NULL) &&
-                  (source_indexes != (IndexPacket *) NULL))
-                {
-                  i=Min(Max((long) (center+0.5),start),stop-1);
-                  j=(long) ((contribution[i-start].pixel-contribution[0].pixel)*
-                            source->columns+x);
-                  indexes[x]=source_indexes[j];
+                  if ((indexes != (IndexPacket *) NULL) &&
+                      (source_indexes != (IndexPacket *) NULL))
+                    {
+                      i=Min(Max((long) (center+0.5),start),stop-1);
+                      j=(long) ((contribution[i-start].pixel-contribution[0].pixel)*
+                                source->columns+x);
+                      indexes[x]=source_indexes[j];
+                    }
                 }
             }
           if (!SyncImagePixelsEx(destination,exception))
@@ -1410,7 +1460,7 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   if (resize_image == (Image *) NULL)
     return ((Image *) NULL);
 
-  order=(((double) columns*((size_t) image->rows+rows)) >
+  order=(((double) columns*((size_t) image->rows+rows)) >=
          ((double) rows*((size_t) image->columns+columns)));
   if (order)
     source_image=CloneImage(resize_image,columns,image->rows,True,exception);

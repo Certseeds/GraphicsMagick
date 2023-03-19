@@ -1,3 +1,8 @@
+2023-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resize.c (ResizeImage): Clarify
+	HorizontalFilter()/VerticalFilter() loops.
+
 2023-03-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/png.c There were 2 defects that prevented eXIf chunk
