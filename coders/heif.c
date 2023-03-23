@@ -461,6 +461,12 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   PixelPacket
     *q;
 
+  const char
+    *value;
+
+  MagickBool
+    ignore_transformations;
+
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
@@ -483,6 +489,11 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
 
   if (ReadBlob(image,in_len,in_buf) != in_len)
     ThrowHEIFReaderException(CorruptImageError, UnexpectedEndOfFile, image);
+
+  ignore_transformations = MagickFalse;
+  if ((value=AccessDefinition(image_info,"heic","ignore_transformations")))
+    if (LocaleCompare(value,"TRUE") == 0)
+      ignore_transformations = MagickTrue;
 
   /* Init HEIF-Decoder handles */
   heif=heif_context_alloc();
@@ -516,6 +527,8 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       ThrowHEIFReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
     }
 
+  // Note: Those values are preliminary but likely the upper bound
+  // The real image values might be rotated or cropped due to transformations
   image->columns=heif_image_handle_get_width(heif_image_handle);
   image->rows=heif_image_handle_get_height(heif_image_handle);
   if (heif_image_handle_has_alpha_channel(heif_image_handle))
@@ -543,7 +556,9 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       return NULL;
     }
 
-  if (image_info->ping)
+  // when apply transformations (the default) the whole image has to be
+  // read to get the real dimensions
+  if (image_info->ping && ignore_transformations)
     {
       image->depth = 8;
       HEIFReadCleanup();
@@ -565,7 +580,7 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   progress_user_data.progress = 0;
 
   /* version 1 options */
-  decode_options->ignore_transformations = 0;
+  decode_options->ignore_transformations = ignore_transformations == MagickTrue ? 1 : 0;
 #if HEIF_ENABLE_PROGRESS_MONITOR
   decode_options->start_progress = start_progress;
   decode_options->on_progress = on_progress;
@@ -598,6 +613,18 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
                               "heif_decode_image() reports error \"%s\"",
                               heif_status.message);
       ThrowHEIFReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
+    }
+
+  // update with final values, see preliminary note above
+  image->columns=heif_image_get_primary_width(heif_image);
+  image->rows=heif_image_get_primary_height(heif_image);
+
+  if (image_info->ping)
+    {
+      image->depth = 8;
+      HEIFReadCleanup();
+      CloseBlob(image);
+      return image;
     }
 
   image->depth=heif_image_get_bits_per_pixel(heif_image, heif_channel_interleaved);
