@@ -2,6 +2,8 @@
 
 	* magick/nt_base.h Improve compatibility witholder versions
         of MSVC.
+        *VisualMagick/configure/configure.rc Disable checkbox 
+        for MSVC6 format - it is not workable.
 
 2023-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

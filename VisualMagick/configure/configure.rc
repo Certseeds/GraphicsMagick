@@ -121,7 +121,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,182,236,10
     PUSHBUTTON      "Edit ""magick_config.h""",IDC_EditConfig,109,219,92,14
     CONTROL         "Generate Visual Studio 7 format",IDC_GENERATE_VS7,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,198,140,10
+                    "Button",BS_AUTOCHECKBOX | WS_DISABLED,15,198,140,10
     CONTROL         "All coders go into one big DLL",IDC_BIGCODERDLL,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,186,134,111,10
     CONTROL         "Build 64-bit distribution",IDC_BUILD_64_BIT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,135,100,10
     LTEXT           "Quantum depth",IDC_STATIC,205,134,55,8
