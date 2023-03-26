@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1623,7 +1623,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
         quantum_type=image->matte ? IndexAlphaQuantum : IndexQuantum;
         if (image->colors <= 256)
           quantum_size=8;
-        else if (image->colors <= 65535)
+        else if (image->colors <= 65536)
           quantum_size=16;
         else
           quantum_size=32;
