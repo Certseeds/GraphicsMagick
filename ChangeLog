@@ -1,5 +1,8 @@
 2023-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/identity.c (ReadIdentityImage): Return a PseudoClass
+	image if possible.
+
 	* coders/miff.c (ReadMIFFImage): With depth == 32, the range of
 	image->colors is 1 to 65536.
 

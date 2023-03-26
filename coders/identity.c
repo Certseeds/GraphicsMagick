@@ -12,6 +12,7 @@
 */
 #include "magick/studio.h"
 #include "magick/blob.h"
+#include "magick/colormap.h"
 #include "magick/pixel_cache.h"
 #include "magick/constitute.h"
 #include "magick/magick.h"
@@ -65,13 +66,11 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
 
   unsigned long
     cube_size,
-    order;
+    order,
+    row_count=0;
 
   long
     y;
-
-  unsigned long
-    row_count=0;
 
   unsigned int
     status=MagickPass;
@@ -97,6 +96,9 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
   cube_size=order*order;
   image->columns=image->rows=order*order*order;
 
+  if (image->columns*image->rows <= MaxColormapSize)
+    AllocateImageColormap(image,(const unsigned long) image->columns*image->rows);
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime) shared(row_count, status)
@@ -112,6 +114,12 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
       register PixelPacket
         *q;
 
+      register IndexPacket
+        *indexes = (IndexPacket *) NULL;
+
+      register unsigned int
+        index = (unsigned int) y*image->columns;
+
 #if defined(HAVE_OPENMP)
 #  pragma omp critical (GM_IdentityImage)
 #endif
@@ -122,6 +130,9 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
       q=SetImagePixelsEx(image,0,y,image->columns,order,&image->exception);
       if (q == (PixelPacket *) NULL)
         thread_status=MagickFail;
+
+      if (image->storage_class == PseudoClass)
+        indexes=AccessMutableIndexes(image);
 
       if (q != (PixelPacket *) NULL)
         {
@@ -134,9 +145,9 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
             blue;
 
           blue=y/order;
-          for(green = 0; green < cube_size; green++)
+          for (green = 0; green < cube_size; green++)
             {
-              for(red = 0; red < cube_size; red++)
+              for (red = 0; red < cube_size; red++)
                 {
                   value=MaxRGBDouble * (double)red / (double)(cube_size - 1);
                   q->red   = RoundDoubleToQuantum(value);
@@ -145,6 +156,11 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
                   value    = MaxRGBDouble * (double)blue / (double)(cube_size - 1);
                   q->blue  = RoundDoubleToQuantum(value);
                   q->opacity = OpaqueOpacity;
+                  if (indexes != (IndexPacket *) NULL)
+                    {
+                      image->colormap[index]=*q;
+                      *indexes++=index++;
+                    }
                   q++;
                 }
             }
