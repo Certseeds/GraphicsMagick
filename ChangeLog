@@ -1,3 +1,8 @@
+2023-03-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* magick/nt_base.h Improve compatibility witholder versions
+        of MSVC.
+
 2023-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/resize.c (ResizeImage): Clarify

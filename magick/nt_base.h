@@ -219,7 +219,11 @@ extern "C" {
 #if defined(_VISUALC_) && (_MSC_VER < 1900)
 #undef snprintf
 extern MagickExport int NTsnprintf(char* str, size_t size, const char* format, ...);
+#if _MSC_VER < 1400
+#define snprintf NTsnprintf
+#else
 #define snprintf(str,size,format,...) NTsnprintf(str,size,format,__VA_ARGS__)
+#endif
 #endif
 
 /*
