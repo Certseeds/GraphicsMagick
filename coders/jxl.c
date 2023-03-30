@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2022 GraphicsMagick Group
+% Copyright (C) 2023 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -912,8 +912,11 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                         type[0],type[1],type[2],type[3], (unsigned long) profile_size);
 
                   /* Ignore tiny profiles */
-                  if (profile_size < 4)
+                  if (profile_size < 12)
                     break;
+
+                  /* Discard raw box size and type bytes */
+                  profile_size -= 8;
 
                   if (LocaleNCompare(type,"Exif",sizeof(type)) == 0)
                     {
@@ -980,7 +983,12 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
       unsigned char *p = exif_profile;
       magick_uint32_t exif_profile_offset;
 
-      (void) memcpy(&exif_profile_offset,p+exif_pad,sizeof(exif_profile_offset));
+      /* Big-endian offset decoding */
+      exif_profile_offset = p[exif_pad+0] << 24 |
+                            p[exif_pad+1] << 16 |
+                            p[exif_pad+2] << 8 |
+                            p[exif_pad+3];
+
 #if 0
       fprintf(stderr,
               "BOX-1: %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x\n",
@@ -992,9 +1000,23 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                             (unsigned long) exif_size, exif_profile_offset);
 
       /*
-        FIXME: If the TIFF header offset is not zero, then need to
+        If the TIFF header offset is not zero, then need to
         move the TIFF data forward to the correct offset.
       */
+      exif_size -= 4;
+      if (exif_profile_offset > 0 && exif_profile_offset < exif_size)
+        {
+          exif_size -= exif_profile_offset;
+
+          /* Strip any EOI marker if payload starts with a JPEG marker */
+          if (exif_size > 2 &&
+              (memcmp(p+exif_pad+4,"\xff\xd8",2) == 0 ||
+               memcmp(p+exif_pad+4,"\xff\xe1",2) == 0) &&
+              memcmp(p+exif_pad+4+exif_size-2,"\xff\xd9",2) == 0)
+            exif_size -= 2;
+
+          (void) memmove(p+exif_pad+4,p+exif_pad+4+exif_profile_offset,exif_size);
+        }
 
       p[0]='E';
       p[1]='x';
@@ -1008,7 +1030,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               "BOX-2: %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x, %02x\n",
               p[0], p[1],p[2], p[3], p[4], p[5], p[6], p[7],  p[8],  p[9],  p[10],  p[11]);
 #endif
-      (void) SetImageProfile(image,"EXIF",exif_profile,exif_size+exif_pad);
+      (void) SetImageProfile(image,"EXIF",exif_profile,exif_size+exif_pad+4);
 
       MagickFreeResourceLimitedMemory(exif_profile);
     }

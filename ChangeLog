@@ -1,3 +1,13 @@
+2023-03-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jxl.c (ReadJXLImage): Fix JXL EXIF offset handling, and
+	deal with any EOI marker. (From SourceForge patch #69 submitted by
+	Milos Komarcevic).
+
+	* coders/heif.c (ReadHEIFImage): Fix HEIF EXIF offset handling,
+	and deal with any EOI marker.  Also fix HEIF XMP parsing. (From
+	SourceForge patch #69 submitted by Milos Komarcevic).
+
 2023-03-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/identity.c (ReadIdentityImage): Return a PseudoClass
