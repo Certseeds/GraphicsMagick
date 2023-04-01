@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013-2022 GraphicsMagick Group
+% Copyright (C) 2013-2023 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -328,7 +328,17 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),"EXIF Profile: %lu bytes",
                               (unsigned long) flag_data.size);
         if ((flag_data.bytes != NULL) && (flag_data.size > 0))
-          SetImageProfile(image,"EXIF",flag_data.bytes,flag_data.size);
+
+          {
+            size_t profile_size = flag_data.size+MAGICK_JPEG_APP1_EXIF_HEADER_SIZE;
+            unsigned char *profile=MagickAllocateResourceLimitedMemory(unsigned char *,profile_size);
+            (void) memcpy((void *) profile, (const void *) MAGICK_JPEG_APP1_EXIF_HEADER,
+                          MAGICK_JPEG_APP1_EXIF_HEADER_SIZE);
+            (void) memcpy((void *) (profile+MAGICK_JPEG_APP1_EXIF_HEADER_SIZE),flag_data.bytes,
+                          flag_data.size);
+            SetImageProfile(image,"EXIF",profile,profile_size);
+            MagickFreeResourceLimitedMemory(profile);
+          }
       }
 
     if ((webp_flags & XMP_FLAG) &&
@@ -839,7 +849,7 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
       size_t idx;
 
       /* Mapping of GraphicsMagick->libwebp feature/profile names */
-      char data_features[][3][6]={{"ICC", "ICCP"},{"EXIF", "EXIF"},{"XMP", "XMP"}};
+      static const char data_features[][3][6]={{"ICC", "ICCP"},{"EXIF", "EXIF"},{"XMP", "XMP"}};
 
       /* Prepare the WebP muxer */
       WebPMuxError mux_error;
@@ -859,6 +869,18 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
 
           if (!chunk.bytes)
             continue;
+
+          /*
+            Skip over JPEG APP1 "Exif\0\0" header if present
+          */
+          if ((chunk.size > MAGICK_JPEG_APP1_EXIF_HEADER_SIZE) &&
+              (memcmp((const void *) chunk.bytes,
+                      (const void *) MAGICK_JPEG_APP1_EXIF_HEADER,
+                      MAGICK_JPEG_APP1_EXIF_HEADER_SIZE) == 0))
+            {
+              chunk.bytes += MAGICK_JPEG_APP1_EXIF_HEADER_SIZE;
+              chunk.size -= MAGICK_JPEG_APP1_EXIF_HEADER_SIZE;
+            }
 
           /* Write feature data */
           mux_error=WebPMuxSetChunk(mux,data_features[idx][1],&chunk,0);

@@ -1,3 +1,14 @@
+2023-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/profile-private.h: Added a new private implementation
+	header file.
+
+	* coders/png.c: EXIF header implementation details/refinements.
+
+	* coders/webp.c: Add/remove the internally expected 6-byte JPEG
+	APP1 "Exif\0\0" header to/from the pristine Exif blob. Addresses
+	SourceForge #696 "WebP Exif handling bug.
+
 2023-03-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jxl.c (ReadJXLImage): Fix JXL EXIF offset handling, and

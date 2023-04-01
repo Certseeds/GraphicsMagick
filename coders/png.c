@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1367,6 +1367,8 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       size_t
         i;
 
+      const size_t app1_hdr_size = MAGICK_JPEG_APP1_EXIF_HEADER_SIZE;
+
       image=(Image *) png_get_user_chunk_ptr(ping);
 
       if (image->logging)
@@ -1384,26 +1386,22 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
       p=profile;
 
-      /* Stored profile must start with "Exif\0\0" */
-      *p++ ='E';
-      *p++ ='x';
-      *p++ ='i';
-      *p++ ='f';
-      *p++ ='\0';
-      *p++ ='\0';
+      /* Stored profile should start with JPEG APP1 "Exif\0\0" header */
+      (void) memcpy(p,MAGICK_JPEG_APP1_EXIF_HEADER,app1_hdr_size);
+      p += app1_hdr_size;
 
       i=0;
       s=chunk->data;
 
-      if (chunk->size > 6 &&
-          (s[0] == 'E' && s[1] == 'x' && s[2] == 'i' &&
-           s[3] == 'f' && s[4] == '\0' && s[5] == '\0'))
+      if (chunk->size > app1_hdr_size &&
+          (memcmp((const void *) s,(const void *) MAGICK_JPEG_APP1_EXIF_HEADER,
+                  app1_hdr_size) == 0))
         {
           /*
             Skip over "Exif\0\0" if already present
           */
-          i=6;
-          s += 6;
+          i=app1_hdr_size;
+          s += app1_hdr_size;
         }
 
       /* copy chunk->data to profile */
