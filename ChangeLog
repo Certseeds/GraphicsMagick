@@ -1,3 +1,15 @@
+2023-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* utilities/tests/gen-tiff-images/genimages: Added a script to
+	produce a large number of TIFF files (736 files!) using various
+	sample depths and great many other permutations supportable by
+	libtiff.  This is both a technology demo of GraphicsMagick (and
+	libtiff) as well as a way to generate interesting test inputs for
+	other software.  While much of this work existed previously, it is
+	included with GraphicsMagick in response to Sebastian Rasmussen's
+	post to the GM-help mailing list on March 24 regarding "A set of
+	old TIFF sample files..?".
+
 2023-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/profile-private.h: Added a new private implementation
