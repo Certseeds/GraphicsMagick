@@ -1,5 +1,9 @@
 2023-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jpeg.c (WriteJPEGImage): Do not set image resolution if
+	the values provided are outside of the valid range (SourceForge
+	issue #706 test case 'bug4').
+
 	* coders/rle.c (ReadRLEImage): Eliminate a unsigned offset
 	overflow runtime error from UBSAN (SourceForge issue #706 test
 	case 'bug5').

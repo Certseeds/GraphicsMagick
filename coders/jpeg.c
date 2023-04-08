@@ -2790,7 +2790,8 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
       "Image resolution: %ld,%ld",(long) image->x_resolution,
       (long) image->y_resolution);
-  if ((image->x_resolution != 0) && (image->y_resolution != 0))
+  if ((image->x_resolution >= 0) && (image->x_resolution < (double) SHRT_MAX) &&
+      (image->y_resolution >= 0) && (image->y_resolution < (double) SHRT_MAX))
     {
       /*
         Set image resolution.
