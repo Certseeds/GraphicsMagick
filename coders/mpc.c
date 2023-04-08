@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -145,6 +145,23 @@ do { \
 } while (0);
 
 #define ReadMPCMaxKeyWordCount 256 /* Arbitrary limit on number of keywords in MPC frame */
+
+/*
+  Ignore attempts to set the same attribute multiple times.
+*/
+static MagickPassFail
+SetNewImageAttribute(Image *image,const char *key,const char *value)
+{
+  MagickPassFail
+    status;
+
+  if (GetImageAttribute(image,key) == (const ImageAttribute *) NULL)
+    status = SetImageAttribute(image,key,value);
+  else
+    status = MagickFail;
+
+  return status;
+};
 
 static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
@@ -294,7 +311,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
             ThrowMPCReaderException(ResourceLimitError,MemoryAllocationFailed,
               image);
           *p='\0';
-          (void) SetImageAttribute(image,"comment",comment);
+          (void) SetNewImageAttribute(image,"comment",comment);
           comment_count++;
           MagickFreeResourceLimitedMemory(comment);
           c=ReadBlobByte(image);
@@ -429,7 +446,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       exception);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -493,7 +510,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     image->columns= MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -523,7 +540,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                           image->dispose=PreviousDispose;
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -535,7 +552,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     image->error.mean_error_per_pixel=MagickAtoF(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -560,7 +577,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       &image->chromaticity.green_primary.y);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -577,7 +594,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     image->iterations=MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -617,7 +634,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     (void) CloneString(&image->montage,values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -635,7 +652,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     image->orientation=StringToOrientationType(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -671,7 +688,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     number_of_profiles++;
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -683,7 +700,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     quantum_depth=MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -724,7 +741,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     image->rows=MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -736,7 +753,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     image->scene=MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -753,7 +770,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         image->units=PixelsPerCentimeterResolution;
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -767,13 +784,13 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                       &image->chromaticity.white_point.y);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
               default:
               {
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }

@@ -752,6 +752,23 @@ do { \
 
 #define ReadMIFFMaxKeyWordCount 256 /* Arbitrary limit on keywords in one MIFF frame */
 
+/*
+  Ignore attempts to set the same attribute multiple times.
+*/
+static MagickPassFail
+SetNewImageAttribute(Image *image,const char *key,const char *value)
+{
+  MagickPassFail
+    status;
+
+  if (GetImageAttribute(image,key) == (const ImageAttribute *) NULL)
+    status = SetImageAttribute(image,key,value);
+  else
+    status = MagickFail;
+
+  return status;
+};
+
 static Image *ReadMIFFImage(const ImageInfo *image_info,
   ExceptionInfo *exception)
 {
@@ -926,7 +943,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               image);
           *p='\0';
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Comment: \"%s\"", comment);
-          (void) SetImageAttribute(image,"comment",comment);
+          (void) SetNewImageAttribute(image,"comment",comment);
           comment_count++;
           MagickFreeResourceLimitedMemory(comment);
           c=ReadBlobByte(image);
@@ -1060,7 +1077,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       exception);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1135,7 +1152,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     image->columns= MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1165,7 +1182,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                           image->dispose=PreviousDispose;
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1184,7 +1201,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       &image->chromaticity.green_primary.y);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1201,7 +1218,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     image->iterations=MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1225,7 +1242,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     (void) CloneString(&image->montage,values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1243,7 +1260,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     image->orientation=StringToOrientationType(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1281,7 +1298,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     number_of_profiles++;
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1322,7 +1339,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     image->rows= MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1334,7 +1351,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     image->scene=MagickAtoL(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1351,7 +1368,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                         image->units=PixelsPerCentimeterResolution;
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1363,7 +1380,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                     version=MagickAtoF(values);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
@@ -1377,13 +1394,13 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       &image->chromaticity.white_point.y);
                     break;
                   }
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }
               default:
               {
-                (void) SetImageAttribute(image,keyword,
+                (void) SetNewImageAttribute(image,keyword,
                   *values == '{' ? values+1 : values);
                 break;
               }

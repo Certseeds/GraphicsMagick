@@ -1,3 +1,14 @@
+2023-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/mpc.c (ReadMPCImage): If an attribute appears multiple
+	times in the MPC header, only set it once.
+
+	* coders/miff.c (ReadMIFFImage): If an attribute appears multiple
+	times in the MIFF header, only set it once.
+
+	* magick/attribute.c (SetImageAttribute): Fix bounds issue when
+	concatenating string (SourceForge issue #706 test case 'bug11');
+
 2023-04-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/tests/gen-tiff-images/genimages: Added a script to
