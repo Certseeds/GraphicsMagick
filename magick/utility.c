@@ -1605,6 +1605,8 @@ MagickExport MagickPassFail GetExecutionPathUsingName(char *path)
 %
 %
 */
+#define MagickULongRangeOk(double_val) ((double_val <= (double) ULONG_MAX) && (double_val >= 0.0))
+#define MagickLongRangeOk(double_val) ((double_val <= (double) LONG_MAX) && (double_val >= (double) LONG_MIN))
 MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
   unsigned long *width,unsigned long *height)
 {
@@ -1743,8 +1745,12 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
       count=MagickStrToD(p,&q,&double_val);
       if (count)
         {
-          bounds.width=(unsigned long) floor(double_val+0.5);
-          flags|=WidthValue;
+          double_val=floor(double_val+0.5);
+          if (MagickULongRangeOk(double_val))
+            {
+              bounds.width=(unsigned long) double_val;
+              flags|=WidthValue;
+            }
         }
       if ((*q == 'x') || (*q == 'X') || ((flags & AreaValue) && (*q == '\0')))
         p=q;
@@ -1753,9 +1759,13 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
           count=MagickStrToD(p,&p,&double_val);
           if (count)
             {
-              bounds.width=(unsigned long) floor(double_val+0.5);
-              bounds.height=bounds.width;
-              flags|=HeightValue;
+              double_val=floor(double_val+0.5);
+              if (MagickULongRangeOk(double_val))
+                {
+                  bounds.width=(unsigned long) double_val;
+                  bounds.height=bounds.width;
+                  flags|=HeightValue;
+                }
             }
         }
     }
@@ -1769,8 +1779,12 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
       count=MagickStrToD(p,&p,&double_val);
       if (count)
         {
-          bounds.height=(unsigned long) floor(double_val+0.5);
-          flags|=HeightValue;
+          double_val=floor(double_val+0.5);
+          if (MagickULongRangeOk(double_val))
+            {
+              bounds.height=(unsigned long) double_val;
+              flags|=HeightValue;
+            }
         }
     }
   if ((*p == '+') || (*p == '-'))
@@ -1783,7 +1797,15 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
           p++;
           q=p;
           count=MagickStrToD(p,&p,&double_val);
-          bounds.x=(long) ceil(double_val-0.5);
+          if (count)
+            {
+              double_val=ceil(double_val-0.5);
+              if (MagickLongRangeOk(double_val))
+                {
+                  bounds.x=(long) double_val;
+                  flags|=XValue;
+                }
+            }
         }
       else
         {
@@ -1792,12 +1814,15 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
           count=MagickStrToD(p,&p,&double_val);
           if (count)
             {
-              bounds.x=(long) ceil(-double_val-0.5);
-              flags|=XNegative;
+              double_val=ceil(-double_val-0.5);
+              if (MagickLongRangeOk(double_val))
+                {
+                  bounds.x=(long) double_val;
+                  flags|=XValue;
+                  flags|=XNegative;
+                }
             }
         }
-      if (count)
-        flags|=XValue;
       if ((*p == '+') || (*p == '-'))
         {
           /*
@@ -1808,7 +1833,15 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
               p++;
               q=p;
               count=MagickStrToD(p,&p,&double_val);
-              bounds.y=(long) ceil(double_val-0.5);
+              if (count)
+                {
+                  double_val = ceil(double_val-0.5);
+                  if (MagickLongRangeOk(double_val))
+                    {
+                      bounds.y=(long) double_val;
+                      flags|=YValue;
+                    }
+                }
             }
           else
             {
@@ -1817,12 +1850,15 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
               count=MagickStrToD(p,&p,&double_val);
               if (count)
                 {
-                  bounds.y=(long) ceil(-double_val-0.5);
-                  flags|=YNegative;
+                  double_val=ceil(-double_val-0.5);
+                  if (MagickLongRangeOk(double_val))
+                    {
+                      bounds.y=(long) ceil(double_val);
+                      flags|=YValue;
+                      flags|=YNegative;
+                    }
                 }
             }
-          if (count)
-            flags|=YValue;
         }
     }
   if (*p != '\0')

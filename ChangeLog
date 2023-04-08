@@ -1,5 +1,9 @@
 2023-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/utility.c (GetGeometry): Improve geometry parser to
+	validate that parsed double values do not underflow or overflow
+	when cast to 'unsigned long' or 'long' types.
+
 	* coders/mpc.c (ReadMPCImage): If an attribute appears multiple
 	times in the MPC header, only set it once.
 
