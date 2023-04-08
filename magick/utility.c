@@ -3714,6 +3714,221 @@ MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *excepti
 }
 
 /*
+  Convert a double to an int, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport int MagickDoubleToInt(const double dval/*, ExceptionInfo *exception*/)
+{
+  int lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=INT_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=INT_MIN;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) INT_MAX - 1))
+        {
+          lval=INT_MAX;
+          break;
+        }
+      if (ceil(dval) < ((double) INT_MIN + 1))
+        {
+          lval=INT_MIN;
+          break;
+        }
+      lval=(int) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to an unsigned long, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport unsigned long MagickDoubleToULong(const double dval/*, ExceptionInfo *exception*/)
+{
+  unsigned long lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=ULONG_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=0;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) ULONG_MAX - 1))
+        {
+          lval=ULONG_MAX;
+          break;
+        }
+      if (ceil(dval) < 0.0)
+        {
+          lval=0;
+          break;
+        }
+      lval=(unsigned long) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to an unsigned int, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport unsigned int MagickDoubleToUInt(const double dval/*, ExceptionInfo *exception*/)
+{
+  unsigned int lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=UINT_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=0;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) UINT_MAX - 1))
+        {
+          lval=UINT_MAX;
+          break;
+        }
+      if (ceil(dval) < 0.0)
+        {
+          lval=0;
+          break;
+        }
+      lval=(unsigned int) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to a short, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport short int MagickDoubleToShort(const double dval/*, ExceptionInfo *exception*/)
+{
+  short int lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=SHRT_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=SHRT_MIN;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) SHRT_MAX - 1))
+        {
+          lval=SHRT_MAX;
+          break;
+        }
+      if (ceil(dval) < ((double) SHRT_MIN + 1))
+        {
+          lval=SHRT_MIN;
+          break;
+        }
+      lval=(short int) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to an unsigned short, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport unsigned short int MagickDoubleToUShort(const double dval/*, ExceptionInfo *exception*/)
+{
+  unsigned short int lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=USHRT_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=0;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) USHRT_MAX - 1))
+        {
+          lval=USHRT_MAX;
+          break;
+        }
+      if (ceil(dval) < 0.0)
+        {
+          lval=0;
+          break;
+        }
+      lval=(unsigned short int) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
 %                                                                             %

@@ -40,9 +40,13 @@
 <p>2023-04-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/png.c (WriteOnePNGImage): Address undefined behavior
+while converting floating point resolution to unsigned integer.
+(SourceForge issue #706 test case 'bug19');</p></li>
 <li><p>magick/utility.c (GetGeometry): Improve geometry parser to
 validate that parsed double values do not underflow or overflow
-when cast to 'unsigned long' or 'long' types.</p></li>
+when cast to 'unsigned long' or 'long' types. (SourceForge issue
+#706 test case 'bug11');</p></li>
 <li><p>coders/mpc.c (ReadMPCImage): If an attribute appears multiple
 times in the MPC header, only set it once.</p></li>
 <li><p>coders/miff.c (ReadMIFFImage): If an attribute appears multiple
