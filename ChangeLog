@@ -1,3 +1,9 @@
+2023-04-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (SetImageAttribute): Eliminate memory leak
+	when handling attribute with key "EXIF:Orientation".  (SourceForge
+	issue #707 "memory leaks in gm").
+
 2023-04-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jpeg.c (WriteJPEGImage): Do not set image resolution if

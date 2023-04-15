@@ -3178,9 +3178,6 @@ SetImageAttribute(Image *image,const char *key,const char *value)
   register ImageAttribute
     *p;
 
-  int
-    orientation;
-
   /*
     Initialize new attribute.
   */
@@ -3271,6 +3268,9 @@ SetImageAttribute(Image *image,const char *key,const char *value)
 
           if (LocaleCompare(attribute->key,"EXIF:Orientation") == 0)
             {
+              int
+                orientation = 0;
+
               /*
                 Special handling for EXIF orientation tag.
                 If new value differs from existing value,
@@ -3278,17 +3278,19 @@ SetImageAttribute(Image *image,const char *key,const char *value)
                 is valid. Don't append new value to existing value,
                 replace it instead.
               */
-              orientation = MagickAtoI(value);
-              if (orientation > 0 || orientation <= (int)LeftBottomOrientation)
-                SetEXIFOrientation(image, orientation);
-
-              /* Replace current attribute with new one */
-              attribute->next = p->next;
-              if (p->previous == (ImageAttribute *) NULL)
-                image->attributes=attribute;
-              else
-                p->previous->next = attribute;
-              DestroyImageAttribute(p);
+              if ((MagickAtoIChk(value, &orientation) == MagickPass) &&
+                  (orientation > 0 || orientation <= (int)LeftBottomOrientation))
+                {
+                  SetEXIFOrientation(image, orientation);
+                }
+              /* Assign changed value to attribute in list */
+              if (LocaleCompare(p->value, attribute->value) != 0)
+                {
+                  MagickFreeMemory(p->value);
+                  p->value=attribute->value;
+                  attribute->value = (char *) NULL;
+                }
+              DestroyImageAttribute(attribute);
               return(MagickPass);
             }
           else
@@ -3296,6 +3298,9 @@ SetImageAttribute(Image *image,const char *key,const char *value)
               /*
                 Extend existing text string.  This functionality is deprecated!
               */
+              fprintf(stderr,
+                      "SetImageAttribute: Extending attribute value text is deprecated! (key=\"%s\")\n",
+                      attribute->key);
               min_l=p->length+attribute->length+1;
               for (realloc_l=2; realloc_l <= min_l; realloc_l *= 2)
                     { /* nada */};

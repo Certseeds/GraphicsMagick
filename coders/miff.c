@@ -761,10 +761,14 @@ SetNewImageAttribute(Image *image,const char *key,const char *value)
   MagickPassFail
     status;
 
+  status = SetImageAttribute(image,key,value);
+
+#if 0
   if (GetImageAttribute(image,key) == (const ImageAttribute *) NULL)
     status = SetImageAttribute(image,key,value);
   else
     status = MagickFail;
+#endif
 
   return status;
 };
