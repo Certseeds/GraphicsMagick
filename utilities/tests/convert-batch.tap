@@ -20,6 +20,6 @@ do
     # identity:10 produces a 1000x1000 image
     # Removed -segment 0.5x0.25 since it can not work with such images
     subcommande1=$(printf '%s' "${subcommand}" | sed "s/'/\\\'/g")
-    printf "convert identity:10 -comment \"%s\" %s -format '%s' info:-\n" "${subcommande1}" "${subcommand}" '%r %g %# %c'
+    printf "convert identity:10 -comment \"%s\" %s -format '%s' info:-\n" "${subcommand}" "${subcommand}" '%r %g %# %c'
     #set +x
 done | gm batch -echo off -prompt off -feedback on -pass PASS -fail FAIL
