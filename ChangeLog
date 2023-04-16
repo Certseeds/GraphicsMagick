@@ -1,3 +1,12 @@
+2023-04-16 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        *VisualMagick/CMakeLists.txt Add posibility to use CMake for
+        configure.exe
+        *VisualMagick/README.txt Update description for building
+        configure.exe
+        -VisualMagick/configure/CStringEx.cpp
+        -VisualMagick/configure/CStringEx.h removed useless code.
+
 2023-04-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c (SetImageAttribute): Eliminate memory leak
