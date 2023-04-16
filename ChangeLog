@@ -1,3 +1,13 @@
+2023-04-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* utilities/tests/convert-batch.tap: Added a TAP-like test script
+	which is similar to convert.tap, but is not really a TAP test
+	yet. This is to explore the concept of using 'gm batch' as part of
+	TAP testing.
+
+	* utilities/tests/convert-cmds.txt: Backslash-escape double-quoted
+	filename.
+
 2023-04-16 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/CMakeLists.txt: Add posibility to use CMake for
