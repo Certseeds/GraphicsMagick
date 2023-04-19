@@ -22,4 +22,4 @@ do
     subcommande1=$(printf '%s' "${subcommand}" | sed "s/'/\\\'/g")
     printf "convert identity:10 -comment \"%s\" %s -format '%s' info:-\n" "${subcommand}" "${subcommand}" '%r %g %# %c'
     #set +x
-done | gm batch -echo on -prompt off -feedback on -pass PASS -fail FAIL
+done | gm batch -tap-mode on -prompt '# '  #-echo on -prompt off -feedback on -pass PASS -fail FAIL

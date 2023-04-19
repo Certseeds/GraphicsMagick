@@ -1,3 +1,10 @@
+2023-04-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (BatchCommand): Implement simple Test Anything
+	Protocol (TAP) test counting and "ok N"/"not ok N" messaging for
+	'gm batch' via the '-tap-mode on' option.  This is still a work in
+	progress, but is already useful.
+
 2023-04-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/tests/convert-batch.tap: Added a TAP-like test script

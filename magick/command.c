@@ -129,13 +129,19 @@ typedef int (*CommandLineParser)(FILE *in, int acmax, char **av);
 
 #define SIZE_OPTION_VALUE 256
 typedef struct _BatchOptions {
-  MagickBool        stop_on_error,
-                    is_feedback_enabled,
-                    is_echo_enabled;
-  char              prompt[SIZE_OPTION_VALUE],
-                    pass[SIZE_OPTION_VALUE],
-                    fail[SIZE_OPTION_VALUE];
-  CommandLineParser command_line_parser;
+  MagickBool
+    stop_on_error,
+    is_feedback_enabled,
+    is_echo_enabled,
+    is_tap_mode;
+
+  char
+    prompt[SIZE_OPTION_VALUE],
+    pass[SIZE_OPTION_VALUE],
+    fail[SIZE_OPTION_VALUE];
+
+  CommandLineParser
+    command_line_parser;
 } BatchOptions;
 
 typedef MagickPassFail (*CommandVectorHandler)(ImageInfo *image_info,
@@ -1547,6 +1553,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
   MagickBool hasInputFile;
   int ac;
   char *av[MAX_PARAM+1];
+  unsigned int line_no = 0;
 
 #if defined(MSWINDOWS)
   InitializeMagick((char *) NULL);
@@ -1600,9 +1607,15 @@ static MagickPassFail BatchCommand(int argc, char **argv)
       (void) fflush(stdout);
     }
 
+
   while (!(ferror(stdin) || ferror(stdout) || ferror(stderr) || feof(stdin)))
     {
-      if (batch_options.prompt[0])
+      if (batch_options.is_tap_mode)
+        {
+          (void) fputs("# ", stdout);
+          (void) fflush(stdout);
+        }
+      else if (batch_options.prompt[0])
         {
           (void) fputs(batch_options.prompt, stdout);
           (void) fflush(stdout);
@@ -1614,7 +1627,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
           result = MagickPass;
           break;
         };
-      if (batch_options.is_echo_enabled)
+      if (batch_options.is_tap_mode || batch_options.is_echo_enabled)
         {
           int i;
           for (i = 1; i < ac; i++)
@@ -1641,8 +1654,14 @@ static MagickPassFail BatchCommand(int argc, char **argv)
                            MAX_PARAM);
           result = MagickFail;
         }
+      ++line_no;
 
-      if (batch_options.is_feedback_enabled)
+      if (batch_options.is_tap_mode)
+        {
+          /* FIXME: Support TAP test description */
+          (void) fprintf(stdout, "%s %u\n", result ? "ok" : "not ok", line_no);
+        }
+      else if (batch_options.is_feedback_enabled)
         {
           (void) fputs(result ? batch_options.pass : batch_options.fail, stdout);
           (void) fputc('\n', stdout);
@@ -1654,7 +1673,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
         break;
     }
 
-  if (batch_options.prompt[0])
+  if (!batch_options.is_tap_mode && batch_options.prompt[0])
     {
       (void) fputs("\n", stdout);
       (void) fflush(stdout);
@@ -1702,6 +1721,12 @@ static void BatchOptionUsage(void)
          "  -stop-on-error on|off\n"
          "                       when turned on, batch execution quits prematurely when\n"
          "                       any command returns error\n"
+         "  -tap-mode on|off\n"
+         "                       when turned on, a simple implementation of Test Anything\n"
+         "                       Protocol (TAP) is enabled to produce \"ok N\" and \n"
+         "                       \"not ok N\" feedback to indicate the test number, and to\n"
+         "                       supplant the function of -fail, -pass, -feedback in order\n"
+         "                       to support simple TAP output messaging\n"
          "\n"
          "Unix escape allows the use backslash(\\), single quote(') and double quote(\") in\n"
          "the command line. Windows escape only uses double quote(\").  For example,\n"
@@ -16749,6 +16774,10 @@ static int ProcessBatchOptions(int argc, char **argv, BatchOptions *options)
           if (LocaleCompare(option = "-stop-on-error", p) == 0)
             status = GetOnOffOptionValue(option, argv[++i], &options->stop_on_error);
           break;
+        case 't':
+          if (LocaleCompare(option = "-tap-mode", p) == 0)
+            status = GetOnOffOptionValue(option, argv[++i], &options->is_tap_mode);
+          break;
         }
       if (status == OptionSuccess)
         continue;
@@ -16825,6 +16854,8 @@ static unsigned int SetCommand(ImageInfo *image_info,
   printf("stop-on-error : %s\n", on_off_option_values[batch_options.stop_on_error]);
   printf("pass          : %s\n", batch_options.pass);
   printf("prompt        : %s\n", batch_options.prompt);
+  printf("tap-mode      : %s\n", on_off_option_values[batch_options.is_tap_mode]);
+
   return MagickTrue;
 }
 
