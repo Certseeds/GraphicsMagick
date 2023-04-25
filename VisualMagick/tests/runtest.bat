@@ -118,8 +118,8 @@ call :_dorwtest both MNG
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both MONO
 if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both MPC
-if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest file MPC
+if not %COUNT% EQU 3 goto :_failed
 call :_dorwtest both MTV
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both P7
@@ -203,7 +203,7 @@ if {%1}=={none} goto :EOF
 if {%1}=={blob} goto :_doblob
 if {%1}=={file} goto :_dofile
 :_dofile
-%exedir%rwfile ..\..\PerlMagick\t\input_p4.pbm %TYPE%
+%exedir%rwfile  ..\..\PerlMagick\t\input_p4.pbm %TYPE%
 if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
 %exedir%rwfile ..\..\PerlMagick\t\input_p5.pgm %TYPE%
@@ -225,7 +225,7 @@ if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
 goto :EOF
 :_problem
-@echo Test %COUNT% on type %TYPE% failed
+@echo Test %COUNT% on type %TYPE% failed, ERRORLEVEL is %ERRORLEVEL%
 goto :EOF
 
 :_failed

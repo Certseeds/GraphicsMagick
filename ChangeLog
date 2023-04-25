@@ -1,3 +1,8 @@
+2023-04-25  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/tests/runtest.bat Apply only filetests to MPC.
+
+
 2023-04-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (BatchCommand): Implement simple Test Anything
