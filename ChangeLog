@@ -1,12 +1,11 @@
 2023-04-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat Added new tests for all possible
-        fileformats. XTRNIMAGE causes segfault - this should be fixed.
+	* VisualMagick/tests/runtest.bat: Added new tests for all possible
+	fileformats. XTRNIMAGE causes segfault - this should be fixed.
 
 2023-04-25  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat Apply only filetests to MPC.
-
+	* VisualMagick/tests/runtest.bat: Apply only filetests to MPC.
 
 2023-04-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
