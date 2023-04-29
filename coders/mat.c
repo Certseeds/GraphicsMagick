@@ -171,7 +171,7 @@ static void InsertComplexDoubleRow(double *p, long y, Image *image, double MinVa
     if (*p > 0)
     {
       f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);  /* first multiplier should be in a range <0;1> */
-      if (isnan(f))
+      if (MAGICK_ISNAN(f))
         f=0.0;
       /*if(f<0) f=0; */
       if (f + q->red >= MaxRGB)
@@ -187,7 +187,7 @@ static void InsertComplexDoubleRow(double *p, long y, Image *image, double MinVa
     if (*p < 0)
     {
       f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* first multiplier should be in a range <0;1>; *p<0 and MinVal<0. */
-      if (isnan(f))
+      if (MAGICK_ISNAN(f))
         f=0.0;
       /*if(f<0) f=0; */
       if (f + q->blue >= MaxRGB)
@@ -234,7 +234,7 @@ static void InsertComplexFloatRow(float *p, long y, Image *image, double MinVal,
     if (*p > 0)
     {
       f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);
-      if (isnan(f))
+      if (MAGICK_ISNAN(f))
         f=0.0;
       /*if(f<0) f=0;    //Only for Assert, should be commented out */
       if (f + q->red < MaxRGB)
@@ -250,7 +250,7 @@ static void InsertComplexFloatRow(float *p, long y, Image *image, double MinVal,
     if (*p < 0)
     {
       f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* f is positive only <0; inf> */
-      if (isnan(f))
+      if (MAGICK_ISNAN(f))
         f=0.0;
       /*if(f<0) f=0;    //Only for Assert, should be commented out */
       if (f + q->blue < MaxRGB)
