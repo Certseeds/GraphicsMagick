@@ -1,3 +1,11 @@
+2023-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Validate that TIFFGetField() did
+	return count and text rather than just relying on its return
+	status.  Addresses SourceForge issue #710 "Undefined behavior
+	while passing a null pointer as an argument to a nonnull
+	function.".
+
 2023-04-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat: Added new tests for all possible

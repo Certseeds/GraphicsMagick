@@ -1771,13 +1771,13 @@ DisassociateAlphaRegion(Image *image)
 /*
   Copy a possibly unterminated sized string to an image attribute.
 */
-#define CopySizedFieldToAttribute(key,count,text)                     \
-  do                                                                  \
-    {                                                                 \
-      char _attribute[MaxTextExtent];                                 \
-      (void) memcpy(_attribute,text,Min(sizeof(_attribute),count));   \
-      _attribute[Min(sizeof(_attribute)-1,count)]='\0';                \
-      (void) SetImageAttribute(image,key,_attribute);                 \
+#define CopySizedFieldToAttribute(key,count,text)                       \
+  do                                                                    \
+    {                                                                   \
+      char _attribute[MaxTextExtent];                                   \
+      (void) memcpy(_attribute,text,Min(sizeof(_attribute),count));     \
+      _attribute[Min(sizeof(_attribute)-1,count)]='\0';                 \
+      (void) SetImageAttribute(image,key,_attribute);                   \
     } while(0);
 
 
@@ -2345,13 +2345,13 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         "Unsupported" tags return two arguments.
       */
-      if (TIFFGetField(tiff,TIFFTAG_OPIIMAGEID,&count,&text) == 1)
+      if ((TIFFGetField(tiff,TIFFTAG_OPIIMAGEID,&count,&text) == 1) && (count) && (text != (const char*) NULL))
         CopySizedFieldToAttribute("imageid",count,text);
 
-      if (TIFFGetField(tiff,33423,&count,&text) == 1)
+      if ((TIFFGetField(tiff,33423,&count,&text) == 1) && (count) && (text != (const char*) NULL))
         CopySizedFieldToAttribute("kodak-33423",count,text);
 
-      if (TIFFGetField(tiff,36867,&count,&text) == 1)
+      if ((TIFFGetField(tiff,36867,&count,&text) == 1) && (count) && (text != (const char*) NULL))
         CopySizedFieldToAttribute("kodak-36867",count,text);
 
       if ((photometric == PHOTOMETRIC_PALETTE) ||
