@@ -398,6 +398,7 @@ extern "C" {
                                                     const magick_int32_t value);
 
 
+  extern MagickExport size_t WriteBlobLSBDouble(Image *image, double d);
 
   /*
     Write a 32-bit unsigned "long" value to the file or BLOB in big-endian

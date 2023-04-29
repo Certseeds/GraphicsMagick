@@ -5458,6 +5458,7 @@ MagickExport MagickPassFail WriteBlobFile(Image *image,const char *filename)
 */
 MagickExport size_t WriteBlobLSBLong(Image *image,const magick_uint32_t value)
 {
+#if defined(WORDS_BIGENDIAN)
   unsigned char
     buffer[4];
 
@@ -5468,6 +5469,12 @@ MagickExport size_t WriteBlobLSBLong(Image *image,const magick_uint32_t value)
   buffer[2]=(unsigned char) (value >> 16);
   buffer[3]=(unsigned char) (value >> 24);
   return(WriteBlob(image,4,buffer));
+#else
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  assert(sizeof(value) == 4);
+  return(WriteBlob(image,4,&value));
+#endif
 }
 
 /*
@@ -5602,6 +5609,21 @@ MagickExport size_t WriteBlobLSBSignedShort(Image *image,const magick_int16_t va
   buffer[1]=(unsigned char) (uvalue.uint16 >> 8);
   return(WriteBlob(image,2,buffer));
 }
+
+
+MagickExport size_t WriteBlobLSBDouble(Image *image, double d)
+{
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  assert(sizeof(d) == 8);
+
+#if defined(WORDS_BIGENDIAN)
+  MagickSwabDouble(&d);
+#endif
+  return(WriteBlob(image,8,&d));
+}
+
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5654,6 +5676,7 @@ MagickExport size_t ReadBlobLSBShorts(Image *image, size_t octets,
 
   return octets_read;
 }
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

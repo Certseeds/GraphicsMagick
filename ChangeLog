@@ -1,3 +1,8 @@
+2023-04-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/topol.c: First attempt to make a writer.
+	* magick/blob.h magick/blob.c: New function WriteBlobLSBDouble.
+
 2023-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/image.h (RoundDoubleToQuantumN): New macro to address NaN
