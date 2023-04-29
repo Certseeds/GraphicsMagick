@@ -1,5 +1,17 @@
 2023-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/image.h (RoundDoubleToQuantumN): New macro to address NaN
+	issues when converting a double to a Quantum.  Use it where
+	needed.
+
+	* magick/import.c (ImportGrayQuantumType): If value is nan, then
+	use 0.0. Addresses SourceForge issue #706 "Integer overflow,
+	floating-point exception, pointer overflow in gm".
+
+	* coders/viff.c (ReadVIFFImage): If value is nan, then use 0.0.
+	Addresses SourceForge issue #706 "Integer overflow, floating-point
+	exception, pointer overflow in gm".
+
 	* coders/mat.c (InsertComplexDoubleRow): If computed f is nan,
 	then use 0.0.  Addresses SourceForge issue #708 "Undefined
 	behavior while converting negative infinity to integer".

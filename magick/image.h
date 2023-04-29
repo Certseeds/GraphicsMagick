@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2019 GraphicsMagick Group
+  Copyright (C) 2003 - 2023 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -126,6 +126,8 @@ typedef unsigned int Quantum;
 #define TransparentOpacity  MaxRGB
 #define RoundDoubleToQuantum(value) ((Quantum) (value < 0.0 ? 0U : \
   (value > MaxRGBDouble) ? MaxRGB : value + 0.5))
+#define RoundDoubleToQuantumN(value) ((Quantum) (MAGICK_ISNAN(value) ? 0U : \
+  (value < 0.0 ? 0U : (value > MaxRGBDouble) ? MaxRGB : value + 0.5)))
 #define RoundFloatToQuantum(value) ((Quantum) (value < 0.0f ? 0U : \
   (value > MaxRGBFloat) ? MaxRGB : value + 0.5f))
 #define ConstrainToRange(min,max,value) (value < min ? min :    \

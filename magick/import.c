@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2022 GraphicsMagick Group
+  Copyright (C) 2003 - 2023 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -187,8 +187,6 @@ static const PixelPacket WhitePixel = {MaxRGB, MaxRGB, MaxRGB, OpaqueOpacity};
         fu_.c[0]=*p++;                          \
         value=fu_.f;                            \
       }                                         \
-    if (MAGICK_ISNAN(value))                    \
-      value = 0.0;                              \
   }
 #define ImportFloat64Quantum(endian,value,p)    \
   {                                             \
@@ -215,8 +213,6 @@ static const PixelPacket WhitePixel = {MaxRGB, MaxRGB, MaxRGB, OpaqueOpacity};
         du_.c[0]=*p++;                          \
         value=du_.d;                            \
       }                                         \
-    if (MAGICK_ISNAN(value))                \
-      value = 0.0;                              \
   }
 
 /*
@@ -978,7 +974,7 @@ ImportGrayQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGraySample(q,RoundDoubleToQuantum(double_value));
+                SetGraySample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -990,7 +986,7 @@ ImportGrayQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGraySample(q,RoundDoubleToQuantum(double_value));
+                SetGraySample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1002,7 +998,7 @@ ImportGrayQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGraySample(q,RoundDoubleToQuantum(double_value));
+                SetGraySample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1014,7 +1010,7 @@ ImportGrayQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGraySample(q,RoundDoubleToQuantum(double_value));
+                SetGraySample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1324,11 +1320,11 @@ ImportGrayAlphaQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGraySample(q,RoundDoubleToQuantum(double_value));
+                SetGraySample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1340,11 +1336,11 @@ ImportGrayAlphaQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGraySample(q,RoundDoubleToQuantum(double_value));
+                SetGraySample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1356,11 +1352,11 @@ ImportGrayAlphaQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGraySample(q,RoundDoubleToQuantum(double_value));
+                SetGraySample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1372,11 +1368,11 @@ ImportGrayAlphaQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGraySample(q,RoundDoubleToQuantum(double_value));
+                SetGraySample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1509,7 +1505,7 @@ ImportRedQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1521,7 +1517,7 @@ ImportRedQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1533,7 +1529,7 @@ ImportRedQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1545,7 +1541,7 @@ ImportRedQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1678,7 +1674,7 @@ ImportGreenQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1690,7 +1686,7 @@ ImportGreenQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1702,7 +1698,7 @@ ImportGreenQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1714,7 +1710,7 @@ ImportGreenQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1848,7 +1844,7 @@ ImportBlueQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1860,7 +1856,7 @@ ImportBlueQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1872,7 +1868,7 @@ ImportBlueQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -1884,7 +1880,7 @@ ImportBlueQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2013,7 +2009,7 @@ ImportAlphaQuantumType(const unsigned char *source,
                     ImportFloat16Quantum(endian,double_value,p);
                     double_value -= double_minvalue;
                     double_value *= double_scale;
-                    *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantum(double_value);
+                    *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantumN(double_value);
                   }
                 break;
               }
@@ -2024,7 +2020,7 @@ ImportAlphaQuantumType(const unsigned char *source,
                     ImportFloat24Quantum(endian,double_value,p);
                     double_value -= double_minvalue;
                     double_value *= double_scale;
-                    *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantum(double_value);
+                    *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantumN(double_value);
                   }
                 break;
               }
@@ -2035,7 +2031,7 @@ ImportAlphaQuantumType(const unsigned char *source,
                     ImportFloat32Quantum(endian,double_value,p);
                     double_value -= double_minvalue;
                     double_value *= double_scale;
-                    *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantum(double_value);
+                    *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantumN(double_value);
                   }
                 break;
               }
@@ -2046,7 +2042,7 @@ ImportAlphaQuantumType(const unsigned char *source,
                     ImportFloat64Quantum(endian,double_value,p);
                     double_value -= double_minvalue;
                     double_value *= double_scale;
-                    *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantum(double_value);
+                    *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantumN(double_value);
                   }
                 break;
               }
@@ -2136,7 +2132,7 @@ ImportAlphaQuantumType(const unsigned char *source,
                     ImportFloat16Quantum(endian,double_value,p);
                     double_value -= double_minvalue;
                     double_value *= double_scale;
-                    SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                    SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                     q++;
                   }
                 break;
@@ -2148,7 +2144,7 @@ ImportAlphaQuantumType(const unsigned char *source,
                     ImportFloat24Quantum(endian,double_value,p);
                     double_value -= double_minvalue;
                     double_value *= double_scale;
-                    SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                    SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                     q++;
                   }
                 break;
@@ -2160,7 +2156,7 @@ ImportAlphaQuantumType(const unsigned char *source,
                     ImportFloat32Quantum(endian,double_value,p);
                     double_value -= double_minvalue;
                     double_value *= double_scale;
-                    SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                    SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                     q++;
                   }
                 break;
@@ -2172,7 +2168,7 @@ ImportAlphaQuantumType(const unsigned char *source,
                     ImportFloat64Quantum(endian,double_value,p);
                     double_value -= double_minvalue;
                     double_value *= double_scale;
-                    SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                    SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                     q++;
                   }
                 break;
@@ -2306,7 +2302,7 @@ ImportBlackQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2318,7 +2314,7 @@ ImportBlackQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2330,7 +2326,7 @@ ImportBlackQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2342,7 +2338,7 @@ ImportBlackQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2502,15 +2498,15 @@ ImportRGBQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 SetOpacitySample(q,OpaqueOpacity);
                 q++;
               }
@@ -2523,15 +2519,15 @@ ImportRGBQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 SetOpacitySample(q,OpaqueOpacity);
                 q++;
               }
@@ -2544,15 +2540,15 @@ ImportRGBQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 SetOpacitySample(q,OpaqueOpacity);
                 q++;
               }
@@ -2565,15 +2561,15 @@ ImportRGBQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 SetOpacitySample(q,OpaqueOpacity);
                 q++;
               }
@@ -2734,19 +2730,19 @@ ImportRGBAQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2758,19 +2754,19 @@ ImportRGBAQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2782,19 +2778,19 @@ ImportRGBAQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2806,19 +2802,19 @@ ImportRGBAQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetRedSample(q,RoundDoubleToQuantum(double_value));
+                SetRedSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetGreenSample(q,RoundDoubleToQuantum(double_value));
+                SetGreenSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlueSample(q,RoundDoubleToQuantum(double_value));
+                SetBlueSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantum(double_value));
+                SetOpacitySample(q,MaxRGB-RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -2978,19 +2974,19 @@ ImportCMYKQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetCyanSample(q,RoundDoubleToQuantum(double_value));
+                SetCyanSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetMagentaSample(q,RoundDoubleToQuantum(double_value));
+                SetMagentaSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetYellowSample(q,RoundDoubleToQuantum(double_value));
+                SetYellowSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -3002,19 +2998,19 @@ ImportCMYKQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetCyanSample(q,RoundDoubleToQuantum(double_value));
+                SetCyanSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetMagentaSample(q,RoundDoubleToQuantum(double_value));
+                SetMagentaSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetYellowSample(q,RoundDoubleToQuantum(double_value));
+                SetYellowSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -3026,19 +3022,19 @@ ImportCMYKQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetCyanSample(q,RoundDoubleToQuantum(double_value));
+                SetCyanSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetMagentaSample(q,RoundDoubleToQuantum(double_value));
+                SetMagentaSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetYellowSample(q,RoundDoubleToQuantum(double_value));
+                SetYellowSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -3050,19 +3046,19 @@ ImportCMYKQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetCyanSample(q,RoundDoubleToQuantum(double_value));
+                SetCyanSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetMagentaSample(q,RoundDoubleToQuantum(double_value));
+                SetMagentaSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetYellowSample(q,RoundDoubleToQuantum(double_value));
+                SetYellowSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 q++;
               }
             break;
@@ -3237,23 +3233,23 @@ ImportCMYKAQuantumType(const unsigned char *source,
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetCyanSample(q,RoundDoubleToQuantum(double_value));
+                SetCyanSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetMagentaSample(q,RoundDoubleToQuantum(double_value));
+                SetMagentaSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetYellowSample(q,RoundDoubleToQuantum(double_value));
+                SetYellowSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat16Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantum(double_value);
+                *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantumN(double_value);
                 q++;
               }
             break;
@@ -3265,23 +3261,23 @@ ImportCMYKAQuantumType(const unsigned char *source,
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetCyanSample(q,RoundDoubleToQuantum(double_value));
+                SetCyanSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetMagentaSample(q,RoundDoubleToQuantum(double_value));
+                SetMagentaSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetYellowSample(q,RoundDoubleToQuantum(double_value));
+                SetYellowSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat24Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantum(double_value);
+                *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantumN(double_value);
                 q++;
               }
             break;
@@ -3293,23 +3289,23 @@ ImportCMYKAQuantumType(const unsigned char *source,
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetCyanSample(q,RoundDoubleToQuantum(double_value));
+                SetCyanSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetMagentaSample(q,RoundDoubleToQuantum(double_value));
+                SetMagentaSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetYellowSample(q,RoundDoubleToQuantum(double_value));
+                SetYellowSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat32Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantum(double_value);
+                *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantumN(double_value);
                 q++;
               }
             break;
@@ -3321,23 +3317,23 @@ ImportCMYKAQuantumType(const unsigned char *source,
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetCyanSample(q,RoundDoubleToQuantum(double_value));
+                SetCyanSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetMagentaSample(q,RoundDoubleToQuantum(double_value));
+                SetMagentaSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetYellowSample(q,RoundDoubleToQuantum(double_value));
+                SetYellowSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                SetBlackSample(q,RoundDoubleToQuantum(double_value));
+                SetBlackSample(q,RoundDoubleToQuantumN(double_value));
                 ImportFloat64Quantum(endian,double_value,p);
                 double_value -= double_minvalue;
                 double_value *= double_scale;
-                *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantum(double_value);
+                *indexes++=(IndexPacket) MaxRGB-RoundDoubleToQuantumN(double_value);
                 q++;
               }
             break;
