@@ -127,11 +127,11 @@ signature) or ".asc" (ASCII armored format signature) file.  The
 distribution file and a signature file must be
 downloaded. Verification is performed by doing this::
 
-  gpg --verify GraphicsMagick-1.3.37.tar.xz.sig
+  gpg --verify GraphicsMagick-1.3.40.tar.xz.sig GraphicsMagick-1.3.40.tar.xz
 
 and you should see output similar to::
 
-  gpg: assuming signed data in 'GraphicsMagick-1.3.37.tar.xz'
+  gpg: assuming signed data in 'GraphicsMagick-1.3.40.tar.xz'
   gpg: Signature made Sun Dec 12 15:30:02 2021 CST
   gpg:                using DSA key EBDFDB21B020EE8FD151A88DE301047DE1198975
   gpg: Good signature from "Bob Friesenhahn <bfriesen@simple.dallas.tx.us>" [ultimate]
@@ -151,11 +151,11 @@ https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/
 which you *should* subscribe to).  In this case you may do this for a
 SHA-256 checksum::
 
-  sha256sum GraphicsMagick-1.3.37.tar.xz
+  sha256sum GraphicsMagick-1.3.40.tar.xz
 
 and this for a SHA-1 (legacy) checksum::
 
-  sha1sum GraphicsMagick-1.3.37.tar.xz
+  sha1sum GraphicsMagick-1.3.40.tar.xz
 
 and then compare the generated checksum (hex format) with the checksum
 provided in the release announcement.  While this is much more secure
