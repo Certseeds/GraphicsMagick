@@ -1,5 +1,10 @@
 2023-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/attribute.c (GenerateEXIFAttribute): Assure that float
+	and double values are suitably alligned.  Addresses SourceForge
+	issue #709 "Undefined behavior while loading a value of type float
+	from an unaligned address".
+
 	* coders/tiff.c (ReadTIFFImage): Validate that TIFFGetField() did
 	return count and text rather than just relying on its return
 	status.  Addresses SourceForge issue #710 "Undefined behavior

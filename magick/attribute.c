@@ -2156,6 +2156,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SINGLE:
                   {
+                    float fval;
                     if ((pval < tiffp) || ((pval+sizeof(float)) > tiffp_max))
                       {
                         if (logging)
@@ -2164,12 +2165,14 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                                                 (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
-                    FormatString(s,"%f",(double) *(float *) pval);
+                    (void) memcpy(&fval,pval,sizeof(fval));
+                    FormatString(s,"%f",(double) fval);
                     value=AllocateString(s);
                     break;
                   }
                 case EXIF_FMT_DOUBLE:
                   {
+                    double dval;
                     if ((pval < tiffp) || ((pval+sizeof(double)) > tiffp_max))
                       {
                         if (logging)
@@ -2178,7 +2181,8 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                                                 (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
-                    FormatString(s,"%f",*(double *) pval);
+                    (void) memcpy(&dval,pval,sizeof(dval));
+                    FormatString(s,"%f",dval);
                     value=AllocateString(s);
                     break;
                   }
