@@ -40,6 +40,14 @@
 <p>2023-04-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/mat.c (InsertComplexDoubleRow): If computed f is nan,
+then use 0.0.  Addresses SourceForge issue #708 &quot;Undefined
+behavior while converting negative infinity to integer&quot;.
+(InsertComplexFloatRow):  If computed f is nan, then use 0.0.</p></li>
+<li><p>magick/attribute.c (GenerateEXIFAttribute): Assure that float
+and double values are suitably alligned.  Addresses SourceForge
+issue #709 &quot;Undefined behavior while loading a value of type float
+from an unaligned address&quot;.</p></li>
 <li><p>coders/tiff.c (ReadTIFFImage): Validate that TIFFGetField() did
 return count and text rather than just relying on its return
 status.  Addresses SourceForge issue #710 &quot;Undefined behavior

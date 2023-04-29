@@ -5,6 +5,11 @@
 
 2023-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/mat.c (InsertComplexDoubleRow): If computed f is nan,
+	then use 0.0.  Addresses SourceForge issue #708 "Undefined
+	behavior while converting negative infinity to integer".
+	(InsertComplexFloatRow):  If computed f is nan, then use 0.0.
+
 	* magick/attribute.c (GenerateEXIFAttribute): Assure that float
 	and double values are suitably alligned.  Addresses SourceForge
 	issue #709 "Undefined behavior while loading a value of type float
