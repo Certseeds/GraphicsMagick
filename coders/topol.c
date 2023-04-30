@@ -50,11 +50,10 @@ typedef struct
   magick_uint16_t Rows;
   magick_uint16_t Cols;
   magick_uint16_t FileType;     /* 0-binary, 1-8 bitu, 2-8 bits+PAL, 3-4 bits,
-                                   4-4 bits+PAL, 5-24 bits, 6-16 bits, 7-32
-                                   bits */
+                                   4-4 bits+PAL, 5-24 bits, 6-16 bits, 7-32 bits */
   magick_uint32_t Zoom;
   magick_uint16_t Version;
-  magick_uint16_t Komprese;             /* 0 - uncompressed (from release 1) */
+  magick_uint16_t Komprese;	/* 0 - uncompressed (from release 1) */
   magick_uint16_t Stav;
   double xRasMin;
   double yRasMin;
@@ -282,6 +281,32 @@ static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
 
   return 0;
 }
+
+
+static void LogHeaderTopoL(RasHeader *pHeader)
+{
+ if(pHeader==NULL) return;
+ (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "TopoL Header:\n"
+                        "    Rows:		%u\n"
+                        "    Columns:		%u\n"
+                        "    FileType:		%u\n"
+                        "    Zoom:		%u\n"
+                        "    Version:		%u\n"
+                        "    Compression:	%u\n"
+                        "    Status:		%u",
+                               pHeader->Rows,
+			       pHeader->Cols,
+                               pHeader->FileType,
+			       pHeader->Zoom,
+                               pHeader->Version,
+			       pHeader->Komprese,
+                               pHeader->Stav);
+
+}
+
+
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -410,6 +435,7 @@ static Image *ReadTopoLImage(const ImageInfo * image_info, ExceptionInfo * excep
       if (EOFBlob(image))
         ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     }
+  if(image->logging) LogHeaderTopoL(&Header);
 
   for (i = 0; i < (long) sizeof(Header.Name); i++)
     {
