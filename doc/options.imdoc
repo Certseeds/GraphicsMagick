@@ -1176,6 +1176,11 @@ in the reader, or swap-samples-write when swapping should only occur
 in the writer.
 </dd>
 
+<dt>heif:ignore-transformations={true|false}</dt>
+<dd>
+Return HEIF (e.g. HEIC/AVIF) image without any transformations (e.g. rotation) applied.
+</dd>
+
 <dt>gradient:direction={South|North|West|East|NorthWest|NorthEast|SouthWest|SouthEast}</dt>
 <dd>By default, the gradient coder produces a gradient from top to
 bottom ("South").  Since GraphicsMagick 1.3.35, the gradient direction

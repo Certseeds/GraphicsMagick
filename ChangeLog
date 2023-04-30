@@ -1,3 +1,19 @@
+2023-04-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/heif.c (ReadHEIFImage): Change comments to C99
+	syntax. Try to fix compilation with version of libheif prior to
+	version 1.9.  Change to use -define heif:ignore-transformations to
+	use same naming strategy as the other existing defines.
+
+2023-04-30  Tobias Mark  <tbsmark86@gmail.com>
+
+	* coders/heif.c (ReadHEIFImage): HEIF: Fix reading images with
+	rotation/transformation; added option to ignore them. SourceForge
+	patch #70 "Fix Heif image with transformations".
+
+	* doc/options.imdoc: Add documentation for -define
+	heic:ignore-transformations.
+
 2023-04-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/topol.c: Deallocate 'pixels' correctly, fix MEZ reindexing.

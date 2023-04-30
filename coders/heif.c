@@ -491,7 +491,7 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
     ThrowHEIFReaderException(CorruptImageError, UnexpectedEndOfFile, image);
 
   ignore_transformations = MagickFalse;
-  if ((value=AccessDefinition(image_info,"heic","ignore_transformations")))
+  if ((value=AccessDefinition(image_info,"heif","ignore-transformations")))
     if (LocaleCompare(value,"TRUE") == 0)
       ignore_transformations = MagickTrue;
 
@@ -619,7 +619,12 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       ThrowHEIFReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
     }
 
-  /* Update with final values, see preliminary note above */
+  /*
+    Update with final values, see preliminary note above
+
+    These functions are apparently added in libheif 1.9
+  */
+#if LIBHEIF_NUMERIC_VERSION >= 0x01090000
   image->columns=heif_image_get_primary_width(heif_image);
   image->rows=heif_image_get_primary_height(heif_image);
 
@@ -630,6 +635,7 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       CloseBlob(image);
       return image;
     }
+#endif
 
   image->depth=heif_image_get_bits_per_pixel(heif_image, heif_channel_interleaved);
   /* The requested channel is interleaved there depth is a sum of all channels
