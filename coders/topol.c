@@ -477,7 +477,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   if(j<=0 || j>256) j=256;
   for(i=0; i<j; i++)
   {
-    MEZ[i] = (unsigned char)((i*256)/j);
+    MEZ[i] = (unsigned char)((i*255) / (j-1));
   }
 
   if(Header.FileType>=5) goto NoMEZ;
@@ -585,8 +585,11 @@ NoMEZ:          /*Clean up palette and clone_info*/
     {
       ldblk=ReadBlobByte(palette);              /*size of palette*/
       if(ldblk==EOF) goto ErasePalette;
-      image->colors=ldblk+1;
-      if (!AllocateImageColormap(image, image->colors)) goto NoMemory;
+      if(ldblk==0)
+          image->colors = 256;
+      else
+          image->colors = ldblk+1;
+      if(!AllocateImageColormap(image, image->colors)) goto NoMemory;
 
       for(i=0;i<=ldblk;i++)
       {
@@ -782,6 +785,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   size_t DataSize;
   QuantumType qt;
   int bpp;
+  ImageInfo *clone_info;
 
 	/* Open output image file. */
   assert(image_info != (const ImageInfo *) NULL);
@@ -796,7 +800,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   //Header.Version = 0;
   Header.Cols = image->columns;
   Header.Rows = image->rows;
-  if(image->colors>=1 && image->colors<=255)
+  if(image->colors>=1 && image->colors<=256)
   {
     if(image->colors <= 2)
     {
@@ -859,9 +863,6 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
 
   WriteBlob(image, 423, Header.Dummy);
 
-	/* Palette */
-
-
 	/* Store image data. */
   for(y=0; y<(long)image->rows; y++)
   {
@@ -883,6 +884,66 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   }
 
   CloseBlob(image);
+  MagickFreeResourceLimitedMemory(pixels);
+
+	/* Palette */
+  if(qt == IndexQuantum)
+  {
+    if((clone_info=CloneImageInfo(image_info)) != NULL)
+    {
+      size_t i,j;
+      Image *Palette;
+      ExceptionInfo exception;
+
+      i = strlen(clone_info->filename);
+      j = i;
+      while(--i > 0)
+      {
+        if(clone_info->filename[i]=='.')
+        {
+          break;
+        }
+        if(clone_info->filename[i]=='/' || clone_info->filename[i]=='\\' || clone_info->filename[i]==':' )
+        {
+          i=j;
+          break;
+        }
+      }
+      (void) strlcpy(clone_info->filename+i,".pal",sizeof(clone_info->filename)-i);
+      if((clone_info->file=fopen(clone_info->filename,"wb"))!=NULL)
+      {
+        if((Palette=AllocateImage(clone_info))!=NULL )
+        {
+          if(OpenBlob(clone_info,Palette,WriteBinaryBlobMode,&exception))
+          {
+            if(Header.FileType == 2)
+              j = 256;
+            else
+              j = 15;
+            WriteBlobByte(Palette,j);
+            for(i=0; i<j; i++)
+            {
+              WriteBlobByte(Palette, i&0xFF);
+              if(i<image->colors)
+              {
+                WriteBlobByte(Palette,i);
+                WriteBlobByte(Palette,i);
+                WriteBlobByte(Palette,i);
+              }
+              else
+              {
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].red));
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].green));
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
+              }
+            }
+          }
+        }
+      }
+      DestroyImageInfo(clone_info);
+    }
+  }
+
 
   if(logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return TopoL");

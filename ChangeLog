@@ -1,3 +1,7 @@
+2023-04-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/topol.c: Deallocate 'pixels' correctly, fix MEZ reindexing.
+
 2023-04-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/download.rst: More properly describe how to use 'gpg
