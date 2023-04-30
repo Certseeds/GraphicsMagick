@@ -527,8 +527,10 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       ThrowHEIFReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
     }
 
-  // Note: Those values are preliminary but likely the upper bound
-  // The real image values might be rotated or cropped due to transformations
+  /*
+    Note: Those values are preliminary but likely the upper bound
+    The real image values might be rotated or cropped due to transformations
+  */
   image->columns=heif_image_handle_get_width(heif_image_handle);
   image->rows=heif_image_handle_get_height(heif_image_handle);
   if (heif_image_handle_has_alpha_channel(heif_image_handle))
@@ -556,8 +558,10 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       return NULL;
     }
 
-  // when apply transformations (the default) the whole image has to be
-  // read to get the real dimensions
+  /*
+    When apply transformations (the default) the whole image has to be
+    read to get the real dimensions.
+  */
   if (image_info->ping && ignore_transformations)
     {
       image->depth = 8;
@@ -615,7 +619,7 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       ThrowHEIFReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
     }
 
-  // update with final values, see preliminary note above
+  /* Update with final values, see preliminary note above */
   image->columns=heif_image_get_primary_width(heif_image);
   image->rows=heif_image_get_primary_height(heif_image);
 
@@ -628,7 +632,7 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
     }
 
   image->depth=heif_image_get_bits_per_pixel(heif_image, heif_channel_interleaved);
-  /* the requested channel is interleaved there depth is a sum of all channels
+  /* The requested channel is interleaved there depth is a sum of all channels
      split it up again: */
   if (image->logging)
     {
