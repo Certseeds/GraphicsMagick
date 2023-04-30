@@ -283,6 +283,22 @@ static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
 }
 
 
+static const char *ExplainFileType(magick_uint16_t FileType)
+{
+  switch(FileType)
+  {
+    case 0: return "binary";
+    case 1: return "8 bits gray";
+    case 2: return "8 bits + PALETTE";
+    case 3: return "4 bits gray";
+    case 4: return "4 bits + PALETTE";
+    case 5: return "24 bits RGB";
+    case 6: return "16 bits";
+    case 7: return "32 bits";
+  }
+  return "Unknown - invalid";
+}
+
 static void LogHeaderTopoL(RasHeader *pHeader)
 {
  if(pHeader==NULL) return;
@@ -290,14 +306,14 @@ static void LogHeaderTopoL(RasHeader *pHeader)
                         "TopoL Header:\n"
                         "    Rows:		%u\n"
                         "    Columns:		%u\n"
-                        "    FileType:		%u\n"
+                        "    FileType:		%u %s\n"
                         "    Zoom:		%u\n"
                         "    Version:		%u\n"
                         "    Compression:	%u\n"
                         "    Status:		%u",
                                pHeader->Rows,
 			       pHeader->Cols,
-                               pHeader->FileType,
+                               pHeader->FileType, ExplainFileType(pHeader->FileType),
 			       pHeader->Zoom,
                                pHeader->Version,
 			       pHeader->Komprese,
