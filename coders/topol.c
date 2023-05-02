@@ -937,46 +937,49 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
       Image *Palette;
       ExceptionInfo exception;
 
-      i = strlen(clone_info->filename);
-      j = i;
-      while(--i > 0)
+      i = strnlen(clone_info->filename, sizeof(clone_info->filename));
+      if(i < sizeof(clone_info->filename))
       {
-        if(clone_info->filename[i]=='.')
+        j = i;
+        while(--i > 0)
         {
-          break;
-        }
-        if(clone_info->filename[i]=='/' || clone_info->filename[i]=='\\' || clone_info->filename[i]==':' )
-        {
-          i=j;
-          break;
-        }
-      }
-      (void) strlcpy(clone_info->filename+i,".pal",sizeof(clone_info->filename)-i);
-      if((clone_info->file=fopen(clone_info->filename,"wb"))!=NULL)
-      {
-        if((Palette=AllocateImage(clone_info))!=NULL )
-        {
-          if(OpenBlob(clone_info,Palette,WriteBinaryBlobMode,&exception))
+          if(clone_info->filename[i]=='.')
           {
-            if(Header.FileType == 2)
-              j = 256;
-            else
-              j = 15;
-            WriteBlobByte(Palette,j);
-            for(i=0; i<j; i++)
+            break;
+          }
+          if(clone_info->filename[i]=='/' || clone_info->filename[i]=='\\' || clone_info->filename[i]==':' )
+          {
+            i=j;
+            break;
+          }
+        }
+        (void) strlcpy(clone_info->filename+i,".pal",sizeof(clone_info->filename)-i);
+        if((clone_info->file=fopen(clone_info->filename,"wb"))!=NULL)
+        {
+          if((Palette=AllocateImage(clone_info))!=NULL )
+          {
+            if(OpenBlob(clone_info,Palette,WriteBinaryBlobMode,&exception))
             {
-              WriteBlobByte(Palette, i&0xFF);
-              if(i<image->colors)
-              {
-                WriteBlobByte(Palette,i);
-                WriteBlobByte(Palette,i);
-                WriteBlobByte(Palette,i);
-              }
+              if(Header.FileType == 2)
+                j = 256;
               else
+                j = 15;
+              WriteBlobByte(Palette,j);
+              for(i=0; i<j; i++)
               {
-                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].red));
-                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].green));
-                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
+                WriteBlobByte(Palette, i&0xFF);
+                if(i<image->colors)
+                {
+                  WriteBlobByte(Palette,i);
+                  WriteBlobByte(Palette,i);
+                  WriteBlobByte(Palette,i);
+                }
+                else
+                {
+                  WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].red));
+                  WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].green));
+                  WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
+                }
               }
             }
           }
