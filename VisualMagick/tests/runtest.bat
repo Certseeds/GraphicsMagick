@@ -325,6 +325,11 @@ call :_dorwtest both TIFF
 if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both TIM
 @rem if not %COUNT% EQU 6 goto :_failed
+@rem These two extensions clashes with TopoL format
+del out_?.mez
+del out_?.pal
+call :_dorwtest file TOPOL
+if not %COUNT% EQU 3 goto :_failed
 @rem call :_dorwtest both TTF
 @rem if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both TXT

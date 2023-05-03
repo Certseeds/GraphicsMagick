@@ -318,9 +318,44 @@ static void LogHeaderTopoL(RasHeader *pHeader)
                                pHeader->Version,
 			       pHeader->Komprese,
                                pHeader->Stav);
-
 }
 
+
+static ImageInfo *CheckFName(ImageInfo *clone_info, size_t *i)
+{
+size_t j;
+  if(clone_info==NULL || i==NULL) return NULL;
+  //if((clone_info=CloneImageInfo(clone_info)) == NULL) return NULL;
+
+  *i = strnlen(clone_info->filename, sizeof(clone_info->filename));
+  if(*i >= sizeof(clone_info->filename))
+  {
+    DestroyImageInfo(clone_info);
+    return NULL;
+  }
+
+  j = *i;
+  while(--*i > 0)
+  {
+    if(clone_info->filename[*i]=='.')
+    {
+      break;
+    }
+    if(clone_info->filename[*i]=='/' || clone_info->filename[*i]=='\\' || clone_info->filename[*i]==':' )
+    {
+      *i = j;
+      break;
+    }
+  }
+
+  if(*i <= 0)
+  {
+    DestroyImageInfo(clone_info);
+    return NULL;
+  }
+
+return clone_info;
+}
 
 
 
@@ -384,8 +419,8 @@ static Image *ReadTopoLImage(const ImageInfo * image_info, ExceptionInfo * excep
     depth,
     status;
 
+  size_t i;
   long
-    i,
     j,
     ldblk;
 
@@ -524,25 +559,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
 
   if(Header.FileType>=5) goto NoMEZ;
 
-  if ((clone_info=CloneImageInfo(image_info)) == NULL) goto NoMEZ;
-
-  i=(long) strlen(clone_info->filename);
-  j=i;
-  while(--i>0)
-    {
-      if(clone_info->filename[i]=='.')
-      {
-        break;
-      }
-      if(clone_info->filename[i]=='/' || clone_info->filename[i]=='\\' || clone_info->filename[i]==':' )
-      {
-        i=j;
-        break;
-      }
-    }
-
-  if (i <= 0)
-    goto NoPalette;
+  if((clone_info=CheckFName(CloneImageInfo(image_info),&i)) == NULL) goto NoMEZ;
 
   (void) strlcpy(clone_info->filename+i,".MEZ",sizeof(clone_info->filename)-i);
   if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
@@ -575,26 +592,7 @@ NoMEZ:          /*Clean up palette and clone_info*/
 
   /* ----- Do something with palette ----- */
   if(Header.FileType==5) goto NoPalette;
-  if ((clone_info=CloneImageInfo(image_info)) == NULL) goto NoPalette;
-
-  i=(long) strlen(clone_info->filename);
-  j=i;
-  while(--i>0)
-    {
-      if(clone_info->filename[i]=='.')
-        {
-          break;
-        }
-      if(clone_info->filename[i]=='/' || clone_info->filename[i]=='\\' ||
-         clone_info->filename[i]==':' )
-        {
-          i=j;
-          break;
-        }
-    }
-
-  if (i <= 0)
-    goto NoPalette;
+  if ((clone_info=CheckFName(CloneImageInfo(image_info),&i)) == NULL) goto NoPalette;
 
   (void) strlcpy(clone_info->filename+i,".PAL",sizeof(clone_info->filename)-i);
   if ((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
@@ -827,7 +825,6 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   size_t DataSize;
   QuantumType qt;
   int bpp;
-  ImageInfo *clone_info;
 
 	/* Open output image file. */
   assert(image_info != (const ImageInfo *) NULL);
@@ -931,55 +928,39 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
 	/* Palette */
   if(qt == IndexQuantum)
   {
-    if((clone_info=CloneImageInfo(image_info)) != NULL)
+    ImageInfo *clone_info;
+    size_t i;
+    if((clone_info=CheckFName(CloneImageInfo(image_info),&i)) != NULL)
     {
-      size_t i,j;
-      Image *Palette;
-      ExceptionInfo exception;
-
-      i = strnlen(clone_info->filename, sizeof(clone_info->filename));
-      if(i < sizeof(clone_info->filename))
+      (void)strlcpy(clone_info->filename+i,".pal",sizeof(clone_info->filename)-i);
+      if((clone_info->file=fopen(clone_info->filename,"wb"))!=NULL)
       {
-        j = i;
-        while(--i > 0)
+        Image *Palette;
+        if((Palette=AllocateImage(clone_info))!=NULL )
         {
-          if(clone_info->filename[i]=='.')
+          ExceptionInfo exception;
+          if(OpenBlob(clone_info,Palette,WriteBinaryBlobMode,&exception))
           {
-            break;
-          }
-          if(clone_info->filename[i]=='/' || clone_info->filename[i]=='\\' || clone_info->filename[i]==':' )
-          {
-            i=j;
-            break;
-          }
-        }
-        (void) strlcpy(clone_info->filename+i,".pal",sizeof(clone_info->filename)-i);
-        if((clone_info->file=fopen(clone_info->filename,"wb"))!=NULL)
-        {
-          if((Palette=AllocateImage(clone_info))!=NULL )
-          {
-            if(OpenBlob(clone_info,Palette,WriteBinaryBlobMode,&exception))
+            size_t j;
+            if(Header.FileType == 2)
+              j = 256;
+            else
+              j = 15;
+            WriteBlobByte(Palette,j);
+            for(i=0; i<j; i++)
             {
-              if(Header.FileType == 2)
-                j = 256;
-              else
-                j = 15;
-              WriteBlobByte(Palette,j);
-              for(i=0; i<j; i++)
+              WriteBlobByte(Palette, i&0xFF);
+              if(i<image->colors)
               {
-                WriteBlobByte(Palette, i&0xFF);
-                if(i<image->colors)
-                {
-                  WriteBlobByte(Palette,i);
-                  WriteBlobByte(Palette,i);
-                  WriteBlobByte(Palette,i);
-                }
-                else
-                {
-                  WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].red));
-                  WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].green));
-                  WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
-                }
+                WriteBlobByte(Palette,i);
+                WriteBlobByte(Palette,i);
+                WriteBlobByte(Palette,i);
+              }
+              else
+              {
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].red));
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].green));
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
               }
             }
           }
@@ -988,7 +969,6 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
       DestroyImageInfo(clone_info);
     }
   }
-
 
   if(logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return TopoL");
