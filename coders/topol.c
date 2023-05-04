@@ -975,9 +975,61 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
 
   return(status);
 }
-
-
 
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   I s T o p o L                                                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method IsTopoL returns True if the image format type, identified by the
+%  magick string, is TopoL.
+%
+%  The format of the IsTopoL method is:
+%
+%      unsigned int IsTopoL(const unsigned char *magick,const size_t length)
+%
+%  A description of each parameter follows:
+%
+%    o status:  Method IsTopoL returns True if the image format type is TopoL.
+%
+%    o magick: This string is generally the first few bytes of an image file
+%      or blob.
+%
+%    o length: Specifies the length of the magick string.*/
+static unsigned int IsTopoL(const unsigned char *magick, const size_t length)
+{
+int i;
+magick_uint16_t FileType;     /* 0-binary, 1-8 bitu, 2-8 bits+PAL, 3-4 bits,
+                                   4-4 bits+PAL, 5-24 bits, 6-16 bits, 7-32 bits */
+//magick_uint32_t Zoom;
+magick_uint16_t Version;
+magick_uint16_t Compression;	/* 0 - uncompressed (from release 1) */
+//magick_uint16_t Stav;
+
+  if (length < 34) return(False);
+  for(i=0; i<20; i++)
+      if(magick[i] != ' ') return(False);
+  if(magick[20]==0 && magick[21]==0) return(False);	// Zero rows
+  if(magick[22]==0 && magick[23]==0) return(False);	// Zero cols
+
+  FileType = magick[24] + 256*magick[25];
+  if(FileType > 7) return False;
+  Version = magick[30] + 256*magick[31];
+  if(Version > 2) return(False);
+  Compression = magick[32] + 256*magick[33];
+  if(Compression > 1) return(False);
+  if(Compression==1 && Version==0) return(False);
+
+  return(True);
+}
+
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -1008,6 +1060,7 @@ ModuleExport void RegisterTOPOLImage(void)
   entry = SetMagickInfo("TOPOL");
   entry->decoder = (DecoderHandler) ReadTopoLImage;
   entry->encoder = (EncoderHandler) WriteTopoLImage;
+  entry->magick = (MagickHandler) IsTopoL;
   entry->seekable_stream = True;
   entry->description = "TopoL X Image";
   entry->module = "TOPOL";

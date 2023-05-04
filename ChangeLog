@@ -1,3 +1,7 @@
+2023-05-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/topol.c: Provide function IsTopoL.
+
 2023-05-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat Added checking for TopoL.
