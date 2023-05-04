@@ -420,9 +420,8 @@ static Image *ReadTopoLImage(const ImageInfo * image_info, ExceptionInfo * excep
     status;
 
   size_t i;
-  long
-    j,
-    ldblk;
+  unsigned long j;
+  long ldblk;
 
   unsigned char
     *BImgBuff = NULL,
@@ -488,7 +487,7 @@ static Image *ReadTopoLImage(const ImageInfo * image_info, ExceptionInfo * excep
     }
   if(image->logging) LogHeaderTopoL(&Header);
 
-  for (i = 0; i < (long) sizeof(Header.Name); i++)
+  for(i=0; i<sizeof(Header.Name); i++)
     {
       if (Header.Name[i] < ' ')
 TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImageHeader, image);
@@ -577,7 +576,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   status=OpenBlob(clone_info,palette,ReadBinaryBlobMode,exception);
   if (status == False) goto NoMEZ;
 
-  ldblk=(long) GetBlobSize(palette);
+  ldblk = (long)GetBlobSize(palette);
   if ( ldblk > (long) sizeof(MEZ))
     ldblk=sizeof(MEZ);
   (void) ReadBlob(palette, ldblk, MEZ);
@@ -665,7 +664,7 @@ NoPalette:
           ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
       }
 
-      for(i = 0; i < (long) image->colors; i++)
+      for(i = 0; i < image->colors; i++)
       {
         j = MEZ[i];
         image->colormap[i].red = ScaleCharToQuantum(j);
@@ -685,7 +684,7 @@ NoPalette:
      if (BImgBuff == NULL)
         ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
      (void) SeekBlob(image, 512 /*sizeof(Header)*/, SEEK_SET);
-     for (i = 0; i < (int) Header.Rows; i++)
+     for (i = 0; i < Header.Rows; i++)
      {
        if (ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
          ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -936,7 +935,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
       if((clone_info->file=fopen(clone_info->filename,"wb"))!=NULL)
       {
         Image *Palette;
-        if((Palette=AllocateImage(clone_info))!=NULL )
+        if((Palette=AllocateImage(clone_info)) != NULL)
         {
           ExceptionInfo exception;
           if(OpenBlob(clone_info,Palette,WriteBinaryBlobMode,&exception))
@@ -964,6 +963,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
               }
             }
           }
+          DestroyImage(Palette);
         }
       }
       DestroyImageInfo(clone_info);
