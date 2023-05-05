@@ -1,3 +1,8 @@
+2023-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/topol.c: Eliminate warnings and add some more error
+	checks.
+
 2023-05-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/topol.c: Fix memory leak.

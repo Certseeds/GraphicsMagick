@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -420,7 +420,7 @@ static Image *ReadTopoLImage(const ImageInfo * image_info, ExceptionInfo * excep
     status;
 
   size_t i;
-  unsigned long j;
+  long j;
   long ldblk;
 
   unsigned char
@@ -551,7 +551,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   /* ----- Handle the reindexing mez file ----- */
   j = image->colors;
   if(j<=0 || j>256) j=256;
-  for(i=0; i<j; i++)
+  for(i=0; i<(size_t) j; i++)
   {
     MEZ[i] = (unsigned char)((i*255) / (j-1));
   }
@@ -630,7 +630,7 @@ NoMEZ:          /*Clean up palette and clone_info*/
           image->colors = ldblk+1;
       if(!AllocateImageColormap(image, image->colors)) goto NoMemory;
 
-      for(i=0;i<=ldblk;i++)
+      for(i=0;i<=(size_t) ldblk;i++)
       {
         j = ReadBlobByte(palette);      /* Flag */
         if(j==EOF) break;               /* unexpected end of file */
@@ -824,6 +824,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   size_t DataSize;
   QuantumType qt;
   int bpp;
+  ExportPixelAreaInfo export_info;
 
 	/* Open output image file. */
   assert(image_info != (const ImageInfo *) NULL);
@@ -872,6 +873,8 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   if(DataSize==0)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   pixels = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) (DataSize));
+  if (pixels == (unsigned char *) NULL)
+    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
   status = OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if(status == MagickFail)
@@ -900,6 +903,8 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   WriteBlobByte(image, Header.TileCompression);
 
   WriteBlob(image, 423, Header.Dummy);
+  if (GetBlobStatus(image))
+     ThrowWriterException(FileOpenError,UnableToWriteFile,image);
 
 	/* Store image data. */
   for(y=0; y<(long)image->rows; y++)
@@ -909,7 +914,12 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
       status=MagickFail;
       break;
     }
-    if(ExportImagePixelArea(image,qt,bpp,pixels,0,0) != MagickPass)
+    if(ExportImagePixelArea(image,qt,bpp,pixels,0,&export_info) != MagickPass)
+    {
+      status = MagickFail;
+      break;
+    }
+    if (DataSize != export_info.bytes_exported)
     {
       status = MagickFail;
       break;
@@ -921,8 +931,12 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
     }
   }
 
-  CloseBlob(image);
+  CloseBlob(image); /* valgrind reports write of unitialized data */
   MagickFreeResourceLimitedMemory(pixels);
+
+  if (y != (long)image->rows)
+    ThrowWriterException(FileOpenError,UnableToWriteFile,image);
+
 
 	/* Palette */
   if(qt == IndexQuantum)
@@ -962,6 +976,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
                 WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
               }
             }
+            CloseBlob(Palette);
           }
           DestroyImage(Palette);
         }
