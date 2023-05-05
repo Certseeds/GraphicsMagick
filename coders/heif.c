@@ -461,9 +461,6 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   PixelPacket
     *q;
 
-  const char
-    *value;
-
   MagickBool
     ignore_transformations;
 
@@ -490,10 +487,20 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   if (ReadBlob(image,in_len,in_buf) != in_len)
     ThrowHEIFReaderException(CorruptImageError, UnexpectedEndOfFile, image);
 
+#if LIBHEIF_NUMERIC_VERSION >= 0x01090000
   ignore_transformations = MagickFalse;
-  if ((value=AccessDefinition(image_info,"heif","ignore-transformations")))
-    if (LocaleCompare(value,"TRUE") == 0)
-      ignore_transformations = MagickTrue;
+  {
+    const char
+      *value;
+
+    if ((value=AccessDefinition(image_info,"heif","ignore-transformations")))
+      if (LocaleCompare(value,"TRUE") == 0)
+        ignore_transformations = MagickTrue;
+  }
+#else
+  /* Older versions are missing required function to get real width/height. */
+  ignore_transformations = MagickTrue;
+#endif
 
   /* Init HEIF-Decoder handles */
   heif=heif_context_alloc();

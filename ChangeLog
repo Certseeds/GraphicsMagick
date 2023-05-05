@@ -1,5 +1,9 @@
 2023-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/heif.c (ReadHEIFImage): Implemented Tobias Mark's idea
+	for how ignore_transformations should be supported for older
+	libheif versions.
+
 	* coders/topol.c: Eliminate warnings and add some more error
 	checks.
 
