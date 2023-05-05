@@ -12,7 +12,7 @@ check_types='bilevel gray pallette truecolor truecolor_1x266'
 check_types_noone='bilevel gray pallette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 828 # 830
+test_plan_fn 828 # 838
 
 # ART format
 for type in ${check_types}
@@ -426,6 +426,13 @@ do
   test_command_fn "TGA ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" TGA
   test_command_fn "TGA ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" TGA
 done
+
+# TOPOL format
+#for type in ${check_types}
+#do
+#  test_command_fn "TOPOL ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" TOPOL
+#  test_command_fn "TOPOL ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" TOPOL
+#done
 
 # TXT format
 for type in ${check_types}

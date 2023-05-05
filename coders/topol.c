@@ -1081,6 +1081,7 @@ ModuleExport void RegisterTOPOLImage(void)
   entry->magick = (MagickHandler) IsTopoL;
   entry->seekable_stream = True;
   entry->description = "TopoL X Image";
+  entry->adjoin=MagickFalse;
   entry->module = "TOPOL";
   (void) RegisterMagickInfo(entry);
 }
