@@ -1,3 +1,7 @@
+2023-05-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/rwfile.tap: Add TopoL to rwfile tests.
+
 2023-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/topol.c (RegisterTOPOLImage): Set adjoin to MagickFalse.
