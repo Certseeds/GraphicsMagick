@@ -325,30 +325,30 @@ static ImageInfo *CheckFName(ImageInfo *clone_info, size_t *i)
 {
 size_t j;
   if(clone_info==NULL || i==NULL) return NULL;
-  //if((clone_info=CloneImageInfo(clone_info)) == NULL) return NULL;
 
-  *i = strnlen(clone_info->filename, sizeof(clone_info->filename));
-  if(*i >= sizeof(clone_info->filename))
+  j = *i = strnlen(clone_info->filename, sizeof(clone_info->filename));
+  if(j>=sizeof(clone_info->filename) || j==0)
   {
     DestroyImageInfo(clone_info);
     return NULL;
   }
 
-  j = *i;
-  while(--*i > 0)
+  while(--j > 0)
   {
-    if(clone_info->filename[*i]=='.')
-    {
-      break;
-    }
-    if(clone_info->filename[*i]=='/' || clone_info->filename[*i]=='\\' || clone_info->filename[*i]==':' )
+    const char c = clone_info->filename[j];
+    if(c == '.')
     {
       *i = j;
       break;
     }
+    if(c=='/' || c=='\\' || c==':')
+    {
+      j = *i;
+      break;	/* *i will remain intact. */
+    }
   }
 
-  if(*i <= 0)
+  if(j <= 0)
   {
     DestroyImageInfo(clone_info);
     return NULL;
@@ -542,7 +542,10 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
 
   j = GetBlobSize(image);
   if(j<512)			// Header size=512bytes; negative number means failure.
-      goto TOPOL_KO;
+  {
+    fprintf(stderr,"TopoL: GetBlobSize() returned small or negative value %ld!",j);
+    goto TOPOL_KO;
+  }
 
   /* If ping is true, then only set image size and colors without reading any image data. */
   if (image_info->ping) goto DONE_READING;
