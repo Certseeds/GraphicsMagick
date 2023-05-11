@@ -37,6 +37,19 @@
 </div>
 
 <div class="document">
+<p>2023-05-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>utilities/tests/gen-tiff-images/genimages: Write one-bit grey
+(monochrome) images.  Write miniswhite images.</p></li>
+<li><p>coders/tiff.c (WriteTIFFImage): Support '-define
+tiff:photometric=minisblack' and '-define
+tiff:photometric=miniswhite' to be able to adjust the sense used
+when writing bilevel TIFF images.  Adjust the heuristics used to
+select 'miniswhite' to hopefully preserve the user's intent as
+much as possible, while obeying codec requirements.</p></li>
+</ul>
+</blockquote>
 <p>2023-05-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

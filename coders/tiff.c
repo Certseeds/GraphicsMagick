@@ -4649,6 +4649,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else if (characteristics.monochrome)
         {
           photometric=PHOTOMETRIC_MINISWHITE;
+          depth=1;
         }
       else if (characteristics.palette)
         {
@@ -4693,6 +4694,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else if (compress_tag == COMPRESSION_CCITTFAX3)
         {
           photometric=PHOTOMETRIC_MINISWHITE;
+          depth=1;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Using MINISWHITE photometric due to request"
@@ -4701,6 +4703,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else if (compress_tag == COMPRESSION_CCITTFAX4)
         {
           photometric=PHOTOMETRIC_MINISWHITE;
+          depth=1;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Using MINISWHITE photometric due to request"
@@ -4710,6 +4713,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else if (compress_tag == COMPRESSION_JBIG)
         {
           photometric=PHOTOMETRIC_MINISWHITE;
+          depth=1;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Using MINISWHITE photometric due to request"
@@ -4735,6 +4739,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
         case BilevelType:
           {
             photometric=PHOTOMETRIC_MINISWHITE;
+            depth=1;
             break;
           }
         case GrayscaleType:
@@ -4793,6 +4798,29 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
         }
 
       /*
+        Allow the user to over-ride the photometric for bilevel and
+        gray images since 'type' is insufficient for this.
+      */
+      if ((PHOTOMETRIC_MINISWHITE == photometric) ||
+          (PHOTOMETRIC_MINISBLACK == photometric))
+      {
+        const char *
+          value;
+
+        /*
+          Photometric
+        */
+        value=AccessDefinition(image_info,"tiff","photometric");
+        if (value)
+          {
+            if (LocaleCompare(value,"miniswhite") == 0)
+              photometric=PHOTOMETRIC_MINISWHITE;
+            else if (LocaleCompare(value,"minisblack") == 0)
+              photometric=PHOTOMETRIC_MINISBLACK;
+          }
+      }
+
+      /*
         If the user has selected something other than MINISWHITE,
         MINISBLACK, or RGB, then remove JPEG compression.  Also remove
         fax compression if photometric is not compatible.
@@ -4843,24 +4871,13 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #endif /* defined(COMPRESSION_JBIG) */
 
       /*
-        Bilevel presents a bit of a quandary since the user is free to
-        change the type so we don't want to set depth in advance.  So
-        we will intuit the depth here.  For the moment, we assume that
-        if the photometric is PHOTOMETRIC_MINISWHITE that we are
-        probably outputting bilevel.  Note that the user is still able
-        to override bits_per_sample.
-      */
-      if (PHOTOMETRIC_MINISWHITE == photometric)
-        depth=1;
-
-      /*
         Support writing bits per sample of 8, 16, & 32 by default.
       */
       for (bits_per_sample=8; bits_per_sample < depth; )
         bits_per_sample*=2;
 
       /*
-        Now chose appropriate settings for the photometric.
+        Now choose appropriate settings for the photometric.
       */
       switch (photometric)
         {
@@ -5825,6 +5842,8 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       */
       if (photometric == PHOTOMETRIC_MINISWHITE)
         export_options.grayscale_miniswhite=MagickTrue;
+      else if (photometric == PHOTOMETRIC_MINISBLACK)
+         export_options.grayscale_miniswhite=MagickFalse;
       /*
         Set extra export options for floating point.
       */

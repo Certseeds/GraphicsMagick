@@ -1354,6 +1354,15 @@ that some TIFF tags are required in order to be able to read the image
 data at all.
 </dd>
 
+<dt>tiff:photometric={minisblack|miniswhite}</dt>
+<dd>For grayscale and bilevel images, GraphicsMagick normally chooses
+the photometric based on bit depth and compression.  If the
+tiff:photometric key is defined, GraphicsMagick will use it to
+determine the photometric used while writing grayscale and bilevel
+images.  Normally bilevel images are miniswhite and grayscale images
+are minisblack.
+</dd>
+
 <dt>tiff:report-warnings={false|true}</dt>
 <dd>If the tiff:report-warnings key is defined and set to <s>true</s>,
 then TIFF warnings are reported as a warning exception rather than as

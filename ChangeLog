@@ -1,3 +1,15 @@
+2023-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* utilities/tests/gen-tiff-images/genimages: Write one-bit grey
+	(monochrome) images.  Write miniswhite images.
+
+	* coders/tiff.c (WriteTIFFImage): Support '-define
+	tiff:photometric=minisblack' and '-define
+	tiff:photometric=miniswhite' to be able to adjust the sense used
+	when writing bilevel TIFF images.  Adjust the heuristics used to
+	select 'miniswhite' to hopefully preserve the user's intent as
+	much as possible, while obeying codec requirements.
+
 2023-05-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/rwfile.tap: Add TopoL to rwfile tests.
