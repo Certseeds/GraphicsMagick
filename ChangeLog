@@ -1,3 +1,7 @@
+2023-05-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/png.c: Expose gama value to the optional log.
+
 2023-05-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/tests/gen-tiff-images/genimages: Write one-bit grey

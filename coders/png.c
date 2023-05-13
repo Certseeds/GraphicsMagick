@@ -8307,7 +8307,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
           */
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "  Setting up gAMA chunk");
+                                  "  Setting up gAMA chunk gamma=%f", image->gamma);
           png_set_gAMA(ping,ping_info,image->gamma);
         }
       if (!mng_info->have_write_global_chrm &&
