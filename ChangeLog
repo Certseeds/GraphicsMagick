@@ -1,5 +1,8 @@
 2023-05-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (ReadTIFFImage): Verify that the bits per sample
+	is suitable for the claimed compressor.
+
 	* coders/bmp.c (ReadBMPImage): Do not decode primaries or gamma
 	unless colorspace is LCS_CALIBRATED_RGB.
 
