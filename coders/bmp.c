@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -67,8 +67,8 @@
 #undef BI_BITFIELDS
 #define BI_BITFIELDS  3
 
-#undef LCS_CALIBRATED_RBG
-#define LCS_CALIBRATED_RBG  0
+#undef LCS_CALIBRATED_RGB
+#define LCS_CALIBRATED_RGB  0
 #undef LCS_sRGB
 #define LCS_sRGB  1
 #undef LCS_WINDOWS_COLOR_SPACE
@@ -86,7 +86,7 @@
 #define LCS_GM_IMAGES  4  /* Perceptual */
 #undef LCS_GM_ABS_COLORIMETRIC
 #define LCS_GM_ABS_COLORIMETRIC  8  /* Absolute */
-#endif
+#endif /* !defined(MSWINDOWS) || defined(__MINGW32__) */
 
 /*
   Typedef declarations.
@@ -630,7 +630,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       quantum_bits,
       shift;
 
-    unsigned long
+    magick_uint32_t
       profile_data,
       profile_size;
 
@@ -808,75 +808,134 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
         if (bmp_info.size > 40)
           {
+            /*
+              https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv4header
+            */
+            magick_uint32_t
+              v4_red_primary_x, v4_red_primary_y, v4_red_primary_z,
+              v4_green_primary_x, v4_green_primary_y, v4_green_primary_z,
+              v4_blue_primary_x, v4_blue_primary_y, v4_blue_primary_z,
+              v4_gamma_x, v4_gamma_y, v4_gamma_z;
+
             double
+              bmp_gamma,
               sum;
 
             /*
               Read color management information.
             */
             bmp_info.alpha_mask=ReadBlobLSBLong(image);
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "Alpha Mask: 0x%04x",
+                                    bmp_info.alpha_mask);
             bmp_info.colorspace=(magick_int32_t) ReadBlobLSBLong(image);
-            /*
-              Decode 2^30 fixed point formatted CIE primaries.
-            */
-            bmp_info.red_primary.x=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
-            bmp_info.red_primary.y=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
-            bmp_info.red_primary.z=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
-            bmp_info.green_primary.x=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
-            bmp_info.green_primary.y=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
-            bmp_info.green_primary.z=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
-            bmp_info.blue_primary.x=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
-            bmp_info.blue_primary.y=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
-            bmp_info.blue_primary.z=(double)
-              ReadBlobLSBLong(image)/0x3ffffff;
+            if (image->logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "BMP Colorspace: 0x%04x",
+                                    bmp_info.colorspace);
 
-            sum=bmp_info.red_primary.x+bmp_info.red_primary.y+
-              bmp_info.red_primary.z;
-            sum=Max(MagickEpsilon,sum);
-            bmp_info.red_primary.x/=sum;
-            bmp_info.red_primary.y/=sum;
-            image->chromaticity.red_primary.x=bmp_info.red_primary.x;
-            image->chromaticity.red_primary.y=bmp_info.red_primary.y;
+            v4_red_primary_x=ReadBlobLSBLong(image);
+            v4_red_primary_y=ReadBlobLSBLong(image);
+            v4_red_primary_z=ReadBlobLSBLong(image);
+            v4_green_primary_x=ReadBlobLSBLong(image);
+            v4_green_primary_y=ReadBlobLSBLong(image);
+            v4_green_primary_z=ReadBlobLSBLong(image);
+            v4_blue_primary_x=ReadBlobLSBLong(image);
+            v4_blue_primary_y=ReadBlobLSBLong(image);
+            v4_blue_primary_z=ReadBlobLSBLong(image);
+            v4_gamma_x = ReadBlobLSBLong(image);
+            v4_gamma_y = ReadBlobLSBLong(image);
+            v4_gamma_z = ReadBlobLSBLong(image);
 
-            sum=bmp_info.green_primary.x+bmp_info.green_primary.y+
-              bmp_info.green_primary.z;
-            sum=Max(MagickEpsilon,sum);
-            bmp_info.green_primary.x/=sum;
-            bmp_info.green_primary.y/=sum;
-            image->chromaticity.green_primary.x=bmp_info.green_primary.x;
-            image->chromaticity.green_primary.y=bmp_info.green_primary.y;
+            if (LCS_CALIBRATED_RGB == bmp_info.colorspace)
+              {
+                /*
+                  Decode 2^30 fixed point formatted CIE primaries.
+                  https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-ciexyztriple
+                  https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-ciexyz
+                */
+                bmp_info.red_primary.x=(double) v4_red_primary_x/0x3ffffff;
+                bmp_info.red_primary.y=(double) v4_red_primary_y/0x3ffffff;
+                bmp_info.red_primary.z=(double) v4_red_primary_z/0x3ffffff;
 
-            sum=bmp_info.blue_primary.x+bmp_info.blue_primary.y+
-              bmp_info.blue_primary.z;
-            sum=Max(MagickEpsilon,sum);
-            bmp_info.blue_primary.x/=sum;
-            bmp_info.blue_primary.y/=sum;
-            image->chromaticity.blue_primary.x=bmp_info.blue_primary.x;
-            image->chromaticity.blue_primary.y=bmp_info.blue_primary.y;
+                bmp_info.green_primary.x=(double) v4_green_primary_x/0x3ffffff;
+                bmp_info.green_primary.y=(double) v4_green_primary_y/0x3ffffff;
+                bmp_info.green_primary.z=(double) v4_green_primary_z/0x3ffffff;
 
-            /*
-              Decode 16^16 fixed point formatted gamma_scales.
-            */
-            bmp_info.gamma_scale.x=(double) ReadBlobLSBLong(image)/0xffff;
-            bmp_info.gamma_scale.y=(double) ReadBlobLSBLong(image)/0xffff;
-            bmp_info.gamma_scale.z=(double) ReadBlobLSBLong(image)/0xffff;
-            /*
-              Compute a single gamma from the BMP 3-channel gamma.
-            */
-            image->gamma=(bmp_info.gamma_scale.x+bmp_info.gamma_scale.y+
-              bmp_info.gamma_scale.z)/3.0;
+                bmp_info.blue_primary.x=(double) v4_blue_primary_x/0x3ffffff;
+                bmp_info.blue_primary.y=(double) v4_blue_primary_y/0x3ffffff;
+                bmp_info.blue_primary.z=(double) v4_blue_primary_z/0x3ffffff;
+
+                if (image->logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "BMP Primaries: red(%g,%g,%g), green(%g,%g,%g), blue(%g,%g,%g)",
+                                        bmp_info.red_primary.x, bmp_info.red_primary.y, bmp_info.red_primary.z,
+                                        bmp_info.green_primary.x, bmp_info.green_primary.y, bmp_info.green_primary.z,
+                                        bmp_info.blue_primary.x, bmp_info.blue_primary.y, bmp_info.blue_primary.z);
+
+                sum=bmp_info.red_primary.x+bmp_info.red_primary.y+bmp_info.red_primary.z;
+                sum=Max(MagickEpsilon,sum);
+                bmp_info.red_primary.x/=sum;
+                bmp_info.red_primary.y/=sum;
+                image->chromaticity.red_primary.x=bmp_info.red_primary.x;
+                image->chromaticity.red_primary.y=bmp_info.red_primary.y;
+
+                sum=bmp_info.green_primary.x+bmp_info.green_primary.y+bmp_info.green_primary.z;
+                sum=Max(MagickEpsilon,sum);
+                bmp_info.green_primary.x/=sum;
+                bmp_info.green_primary.y/=sum;
+                image->chromaticity.green_primary.x=bmp_info.green_primary.x;
+                image->chromaticity.green_primary.y=bmp_info.green_primary.y;
+
+                sum=bmp_info.blue_primary.x+bmp_info.blue_primary.y+bmp_info.blue_primary.z;
+                sum=Max(MagickEpsilon,sum);
+                bmp_info.blue_primary.x/=sum;
+                bmp_info.blue_primary.y/=sum;
+                image->chromaticity.blue_primary.x=bmp_info.blue_primary.x;
+                image->chromaticity.blue_primary.y=bmp_info.blue_primary.y;
+
+                /*
+                  Decode 16^16 fixed point formatted gamma_scales.
+                  Gamma encoded in unsigned fixed 16.16 format. The
+                  upper 16 bits are the unsigned integer value. The
+                  lower 16 bits are the fractional part.
+                */
+                bmp_info.gamma_scale.x=v4_gamma_x/0xffff;
+                bmp_info.gamma_scale.y=v4_gamma_y/0xffff;
+                bmp_info.gamma_scale.z=v4_gamma_z/0xffff;
+
+                /*
+                  Compute a single averaged gamma from the BMP 3-channel gamma.
+                */
+                bmp_gamma = (bmp_info.gamma_scale.x+bmp_info.gamma_scale.y+
+                             bmp_info.gamma_scale.z)/3.0;
+                if (image->logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "BMP Gamma: %g", bmp_gamma);
+                /* This range is based on what libpng is willing to accept */
+                if (bmp_gamma > 0.00016 && bmp_gamma < 6250.0)
+                  {
+                    image->gamma=bmp_gamma;
+                  }
+                else
+                  {
+                    if (image->logging)
+                      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                            "Ignoring illegal BMP gamma value %g "
+                                            "(gamma scale xyz %g,%g,%g)",
+                                            bmp_gamma, bmp_info.gamma_scale.x,
+                                            bmp_info.gamma_scale.y, bmp_info.gamma_scale.z);
+                  }
+            }
           }
         if (bmp_info.size > 108)
           {
-            unsigned long
+            /*
+              https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv5header
+              https://www.loc.gov/preservation/digital/formats/fdd/fdd000189.shtml
+            */
+            magick_uint32_t
               intent;
 
             /*
@@ -909,7 +968,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             profile_data=ReadBlobLSBLong(image);
             profile_size=ReadBlobLSBLong(image);
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "  Profile: size %lu data %lu",
+                                  "  Profile: size %u data %u",
                                   profile_size,profile_data);
             (void) ReadBlobLSBLong(image);  /* Reserved byte */
           }
