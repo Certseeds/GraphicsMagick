@@ -40,8 +40,9 @@
 <p>2023-05-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tiff.c (ReadTIFFImage): Verify that the bits per sample
-is suitable for the claimed compressor.</p></li>
+<li><p>coders/tiff.c (ReadTIFFImage): Verify that the bits per sample,
+samples per pixel, and photometric are suitable for the claimed
+compressor.</p></li>
 <li><p>coders/bmp.c (ReadBMPImage): Do not decode primaries or gamma
 unless colorspace is LCS_CALIBRATED_RGB.</p></li>
 </ul>

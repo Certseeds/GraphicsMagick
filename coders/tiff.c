@@ -2396,38 +2396,89 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
 
       /*
-        Verify that the bits per sample is suitable for the claimed compressor
+        Verify that the bits per sample, samples per pixel, and
+        photometric are suitable for the claimed compressor
       */
 #if defined(COMPRESSION_CCITTFAX3)
-      if ((COMPRESSION_CCITTFAX3 == compress_tag) && (1 != bits_per_sample))
+      if (COMPRESSION_CCITTFAX3 == compress_tag)
         {
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "CCITT FAX3 compression requires 1 bits per sample!");
-          ThrowTIFFReaderException(CoderError,UnsupportedBitsPerSample,image);
+          if (1 != bits_per_sample)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 1 bits per sample!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires photometric of minisblack or miniswhite!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+            }
         }
 #endif /* if defined(COMPRESSION_CCITTFAX3) */
 #if defined(COMPRESSION_CCITTFAX4)
-      if ((COMPRESSION_CCITTFAX4 == compress_tag) && (1 != bits_per_sample))
+      if (COMPRESSION_CCITTFAX4 == compress_tag)
         {
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "CCITT FAX4 compression requires 1 bits per sample!");
-          ThrowTIFFReaderException(CoderError,UnsupportedBitsPerSample,image);
+          if (1 != bits_per_sample)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 1 bits per sample!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((PHOTOMETRIC_MINISBLACK != photometric) && (PHOTOMETRIC_MINISWHITE != photometric))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires photometric of minisblack or miniswhite!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
         }
 #endif /* if defined(COMPRESSION_CCITTFAX4) */
 #if defined(COMPRESSION_JBIG)
-      if ((COMPRESSION_JBIG == compress_tag) && (1 != bits_per_sample))
+      if (COMPRESSION_JBIG == compress_tag)
         {
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "JBIG compression requires 1 bits per sample!");
-          ThrowTIFFReaderException(CoderError,UnsupportedBitsPerSample,image);
+          if (1 != bits_per_sample)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 1 bits per sample!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((PHOTOMETRIC_MINISBLACK != photometric) && (PHOTOMETRIC_MINISWHITE != photometric))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires photometric of minisblack or miniswhite!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
         }
 #endif /* if defined(COMPRESSION_JBIG) */
 #if defined(COMPRESSION_WEBP)
-      if ((COMPRESSION_WEBP == compress_tag) && (8 != bits_per_sample))
+      if (COMPRESSION_WEBP == compress_tag)
         {
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "WebP compression requires 8 bits per sample!");
-          ThrowTIFFReaderException(CoderError,UnsupportedBitsPerSample,image);
+          if (8 != bits_per_sample)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 8 bits per sample!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((3 != samples_per_pixel) && (4 != samples_per_pixel))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 3 or 4 samples per pixel!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if (PHOTOMETRIC_RGB != photometric)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires photometric RGB!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
         }
 #endif /* if defined(COMPRESSION_WEBP) */
 
