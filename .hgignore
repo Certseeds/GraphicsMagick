@@ -200,3 +200,6 @@ www/Magick\+\+/ChangeLog.rst
 ^contrib/win32/ATL7/ImageMagickObject/type-ghostscript\.mgk
 ^contrib/win32/ATL7/ImageMagickObject/type\.mgk
 ^contrib/win32/ATL7/ImageMagickObject/.+\.pdb
+^utilities/tests/gen-tiff-images/.+\.tif
+^utilities/tests/gen-tiff-images/.+\.miff
+^utilities/tests/gen-tiff-images/summary.txt
