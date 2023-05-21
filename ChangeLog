@@ -1,5 +1,10 @@
 2023-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* utilities/tests/gen-tiff-images/genimages: Add support for
+	writing uncompressed ("none"), rle, lzw, zip, zstd, and lzma
+	compressed variants since these compressors do not have peculiar
+	requirements.  With this change 5568 files are generated!
+
 	* coders/png.c (ReadMNGImage): Can not use interpolation for first
 	pixel in MNG X_method 5.  Fixes oss-fuzz issue 31109
 	"graphicsmagick:coder_MNG_fuzzer: Heap-buffer-overflow in

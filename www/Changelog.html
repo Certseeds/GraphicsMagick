@@ -40,6 +40,10 @@
 <p>2023-05-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>utilities/tests/gen-tiff-images/genimages: Add support for
+writing uncompressed (&quot;none&quot;), rle, lzw, zip, zstd, and lzma
+compressed variants since these compressors do not have peculiar
+requirements.  With this change 5568 files are generated!</p></li>
 <li><p>coders/png.c (ReadMNGImage): Can not use interpolation for first
 pixel in MNG X_method 5.  Fixes oss-fuzz issue 31109
 &quot;graphicsmagick:coder_MNG_fuzzer: Heap-buffer-overflow in
