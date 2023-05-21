@@ -21,8 +21,8 @@
 
 # The output file "summary.txt" summarizes the files which were generated.
 
-GM=${HOME}/build/GM-32-static/utilities/gm
-#GM=gm
+#GM=${HOME}/build/GM-32-static/utilities/gm
+GM=gm
 GM_STD_OPT=""
 MASTER_IMAGE_ORIGINAL=../sunrise.miff  #${HOME}/Downloads/IMG_20170904_182108.jpg
 MASTER_IMAGE_GRAY=master_gray.miff
