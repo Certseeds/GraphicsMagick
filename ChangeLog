@@ -1,5 +1,8 @@
 2023-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (RegisterTIFFImage): Provide a note regarding
+	supported compressions for this libtiff build.
+
 	* utilities/tests/gen-tiff-images/genimages: Add support for
 	writing uncompressed ("none"), rle, lzw, zip, zstd, and lzma
 	compressed variants since these compressors do not have peculiar

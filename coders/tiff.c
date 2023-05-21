@@ -3822,6 +3822,44 @@ RegisterTIFFImage(void)
   MagickInfo
     *entry;
 
+  static const char
+    TIFFNote[] =
+    "Supported Compressions: "
+#if defined(COMPRESSION_NONE)
+    "None"
+#endif
+#if defined(COMPRESSION_CCITTFAX3)
+    ", Fax/Group3"
+#endif
+#if defined(COMPRESSION_CCITTFAX4)
+    ", Group4"
+#endif
+#if defined(COMPRESSION_JBIG)
+    ", JBIG"
+#endif
+#if defined(COMPRESSION_JPEG)
+    ", JPEG"
+#endif
+#if defined(COMPRESSION_LZW)
+    ", LZW"
+#endif
+#if defined(COMPRESSION_LZMA)
+    ", LZMA"
+#endif
+#if defined(COMPRESSION_PACKBITS)
+    ", RLE"
+#endif
+#if defined(COMPRESSION_ADOBE_DEFLATE)
+    ", ZIP"
+#endif
+#if defined(COMPRESSION_ZSTD)
+    ", ZSTD"
+#endif
+#if defined(COMPRESSION_WEBP)
+    ", WEBP"
+#endif
+    ;
+
   /*
     Initialize thread specific data key.
   */
@@ -3854,6 +3892,7 @@ RegisterTIFFImage(void)
   entry->encoder=(EncoderHandler) WriteTIFFImage;
   entry->seekable_stream=MagickTrue;
   entry->description=BIGTIFFDescription;
+  entry->note=TIFFNote;
   entry->module="TIFF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -3884,6 +3923,7 @@ RegisterTIFFImage(void)
   entry->encoder=(EncoderHandler) WritePTIFImage;
   entry->seekable_stream=MagickTrue;
   entry->description=PTIFDescription;
+  entry->note=TIFFNote;
   entry->module="TIFF";
   (void) RegisterMagickInfo(entry);
 
@@ -3898,6 +3938,7 @@ RegisterTIFFImage(void)
   entry->description=TIFFDescription;
   if (*version != '\0')
     entry->version=version;
+  entry->note=TIFFNote;
   entry->stealth=MagickTrue; /* Don't list in '-list format' output */
   entry->module="TIFF";
   entry->coder_class=PrimaryCoderClass;
@@ -3915,6 +3956,7 @@ RegisterTIFFImage(void)
   entry->description=TIFFDescription;
   if (*version != '\0')
     entry->version=version;
+  entry->note=TIFFNote;
   entry->module="TIFF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
