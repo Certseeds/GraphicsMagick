@@ -5848,6 +5848,35 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             magnify the image.
 
             http://www.libpng.org/pub/mng/spec/mng-1.0-20010209-pdg.html#mng-MAGN
+
+            Extracted summary of magnification options:
+
+            X_method:       1 byte
+                            0 or omitted: No magnification
+                            1: Pixel replication of color and alpha samples.
+                            2: Magnified intervals with linear interpolation of
+                               color and alpha samples.
+                            3: Magnified intervals with replication of color and
+                               alpha samples from the closest pixel.
+                            4: Magnified intervals with linear interpolation of
+                               color samples and replication of alpha samples from
+                               the closest pixel.
+                            5: Magnified intervals with linear interpolation of
+                               alpha samples and replication of color samples from
+                               the closest pixel.
+            MX:             2 bytes. X magnification factor, range 1-65535.  If
+                              omitted, MX=1.  Ignored if X_method is 0 and assumed to
+                              be 1.
+            MY:             2 bytes. Y magnification factor.  If omitted, MY=MX.
+            ML:             2 bytes. Left X magnification factor.  If omitted, ML=MX.
+            MR:             2 bytes. Right X magnification factor.  If omitted, MR=MX.
+            MT:             2 bytes. Top Y magnification factor.  If omitted, MT=MY.
+                              Ignored if Y_method is 0 and assumed to be 1.
+            MB:             2 bytes. Bottom Y magnification factor.  If omitted,
+                              MB=MY.
+            Y_method:       1 byte.  If omitted, Y_method is the same as X_method.
+
+
           */
           if (((mng_info->magn_methx > 0) && (mng_info->magn_methx <= 5)) &&
               ((mng_info->magn_methy > 0) && (mng_info->magn_methy <= 5)))
@@ -6146,11 +6175,20 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                     *q=(*n);
                                   if (magn_methy == 5)
                                     {
-                                      (*q).opacity=(QM) (
+                                      if (i == 0)
+                                        {
+                                          /* Copy */
+                                          (*q).opacity=(*p).opacity;
+                                        }
+                                      else
+                                        {
+                                          /* Interpolate */
+                                          (*q).opacity=(QM) (
                                              ((long) (2*i*((*n).opacity
                                              -(*p).opacity)+m))/
                                              ((long) (m*2))+
                                              (*p).opacity);
+                                        }
                                     }
                                 }
                               n++;
@@ -6256,11 +6294,19 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                     *q=(*n);
                                   if (magn_methx == 5)
                                     {
-                                      /* Interpolate */
-                                      (*q).opacity=(QM) ((2*i*((*n).opacity /* oss-fuzz 31109 buffer over-read */
-                                                         -(*p).opacity)+m)/
-                                                         ((long) (m*2))
-                                                         +(*p).opacity);
+                                      if (i == 0)
+                                        {
+                                          /* Copy */
+                                          (*q).opacity=(*p).opacity;
+                                        }
+                                      else
+                                        {
+                                          /* Interpolate */
+                                          (*q).opacity=(QM) ((2*i*((*n).opacity
+                                                                   -(*p).opacity)+m)/
+                                                             ((long) (m*2))
+                                                             +(*p).opacity);
+                                        }
                                     }
                                 }
                               q++;

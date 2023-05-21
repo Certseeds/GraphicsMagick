@@ -1,3 +1,12 @@
+2023-05-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Can not use interpolation for first
+	pixel in MNG X_method 5.  Fixes oss-fuzz issue 31109
+	"graphicsmagick:coder_MNG_fuzzer: Heap-buffer-overflow in
+	ReadMNGImage" and oss-fuzz issue 58381
+	"graphicsmagick:coder_MNG_fuzzer: Heap-buffer-overflow in
+	ReadMNGImage".
+
 2023-05-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Verify that the bits per sample,
