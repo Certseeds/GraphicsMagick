@@ -2313,47 +2313,71 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->scene=pagenumber;
       }
 
-      if (TIFFGetField(tiff,TIFFTAG_ARTIST,&text) == 1)
-        (void) SetImageAttribute(image,"artist",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_COPYRIGHT,&text) == 1) /* TIFFTAG_COPYRIGHT */
-        (void) SetImageAttribute(image,"copyright",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_DATETIME,&text) == 1)
-        (void) SetImageAttribute(image,"timestamp",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_DOCUMENTNAME,&text) == 1)
-        (void) SetImageAttribute(image,"document",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_HOSTCOMPUTER,&text) == 1)
-        (void) SetImageAttribute(image,"hostcomputer",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_IMAGEDESCRIPTION,&text) == 1)
-        (void) SetImageAttribute(image,"comment",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_MAKE,&text) == 1)
-        (void) SetImageAttribute(image,"make",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_MODEL,&text) == 1)
-        (void) SetImageAttribute(image,"model",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_PAGENAME,&text) == 1)
-        (void) SetImageAttribute(image,"label",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_SOFTWARE,&text) == 1)
-        (void) SetImageAttribute(image,"software",text);
-
       /*
-        "Unsupported" tags return two arguments.
+        Convert TIFF tags to text attributes
       */
-      if ((TIFFGetField(tiff,TIFFTAG_OPIIMAGEID,&count,&text) == 1) && (count) && (text != (const char*) NULL))
-        CopySizedFieldToAttribute("imageid",count,text);
+      {
+        static const struct
+        {
+          uint32 tag;
+          const char name[14];
+        } text_tags[] =
+            {
+             { TIFFTAG_ARTIST, "artist" },
+             { TIFFTAG_COPYRIGHT, "copyright" },
+             { TIFFTAG_DATETIME, "timestamp" },
+             { TIFFTAG_DOCUMENTNAME, "document" },
+             { TIFFTAG_HOSTCOMPUTER, "hostcomputer" },
+             { TIFFTAG_IMAGEDESCRIPTION, "comment" },
+             { TIFFTAG_MAKE, "make" },
+             { TIFFTAG_MODEL, "model" },
+             { TIFFTAG_PAGENAME, "label" },
+             { TIFFTAG_SOFTWARE, "software" },
+#if 0
+             { TIFFTAG_OPIIMAGEID, "imageid" }, /* Causes TIFFFieldWithTag() to return NULL */
+#endif
+             { 33423, "kodak-33423" },
+             { 36867, "kodak-36867" }
+            };
 
-      if ((TIFFGetField(tiff,33423,&count,&text) == 1) && (count) && (text != (const char*) NULL))
-        CopySizedFieldToAttribute("kodak-33423",count,text);
-
-      if ((TIFFGetField(tiff,36867,&count,&text) == 1) && (count) && (text != (const char*) NULL))
-        CopySizedFieldToAttribute("kodak-36867",count,text);
+        for (i = 0; i < ArraySize(text_tags); i++)
+          {
+            const uint32 tag = text_tags[i].tag;
+            const char *tag_name = text_tags[i].name;
+            int field_passcount;
+#if TIFFLIB_VERSION <= 20111221
+             /*
+               Before tiff 4.0.0 (20111221), TIFFFieldWithTag returned
+               TIFFFieldInfo * which provides field_passcount
+             */
+            const TIFFFieldInfo* tiff_field=TIFFFieldWithTag(tiff,tag);
+            field_passcount=tiff_field->field_passcount;
+#else
+            const TIFFField *tiff_field=TIFFFieldWithTag(tiff,tag);
+            if (tiff_field == (const TIFFField *) NULL)
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "TIFFFieldWithTag() returns NULL for tag %u \"%s\"", tag, tag_name);
+                continue;
+              }
+            field_passcount=TIFFFieldPassCount(tiff_field);
+#endif
+#if 0
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Field pass count for tag %u \"%s\" is %d", tag, tag_name, field_passcount);
+#endif
+            if (field_passcount)
+              {
+                if ((TIFFGetField(tiff,tag,&count,&text) == 1) && (count) && (text != (const char*) NULL))
+                  CopySizedFieldToAttribute(tag_name,count,text);
+              }
+            else
+              {
+                if ((TIFFGetField(tiff,tag,&text) == 1) && (text != (const char*) NULL))
+                  (void) SetImageAttribute(image,tag_name,text);
+              }
+          }
+      }
 
       if ((photometric == PHOTOMETRIC_PALETTE) ||
           ((photometric == PHOTOMETRIC_MINISWHITE ||
