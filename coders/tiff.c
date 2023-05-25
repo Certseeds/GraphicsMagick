@@ -2252,9 +2252,24 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (extra_samples == 0)
         if ((photometric == PHOTOMETRIC_RGB) && (samples_per_pixel == 4))
           {
+#if 0
+
+            /*
+              FIXME: Temporarily (?) disabled until a solution is found
+               which does not cause issues.
+            */
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Promoting RGB image to associated alpha due to"
+                                  " samples-per-pixel=%u", samples_per_pixel);
             extra_samples=1;
             alpha_type=AssociatedAlpha;
             image->matte=MagickTrue;
+#else
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Photometric is RGB but %u samples/pixel provided!",
+                                  samples_per_pixel);
+            ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+#endif
           }
 
       /*
