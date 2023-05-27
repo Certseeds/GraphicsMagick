@@ -736,6 +736,27 @@ PhotometricTagToString(unsigned int photometric)
   return result;
 }
 
+static const char *ExtraSampleToString(const unsigned int sample_info)
+{
+  const char
+    *result = "Unknown";
+
+  switch (sample_info)
+    {
+    case EXTRASAMPLE_UNSPECIFIED:
+      result="Unspecified data";
+      break;
+    case EXTRASAMPLE_ASSOCALPHA:
+      result="Associated alpha data (with pre-multiplied color)";
+      break;
+    case EXTRASAMPLE_UNASSALPHA:
+      result="Unassociated alpha data";
+      break;
+    }
+
+  return result;
+}
+
 /*
   Locate and store Photoshop or IPTC profiles.
 
@@ -2225,51 +2246,38 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
           if (extra_samples != 0)
             {
-              /* FIXME: Is it ok to make this gross assumption? */
-              alpha_type=AssociatedAlpha;
-              image->matte=True;
-
               if (sample_info[0] == EXTRASAMPLE_UNSPECIFIED)
-                alpha_type=UnspecifiedAlpha;
+                {
+                  alpha_type=UnspecifiedAlpha;
+                }
               else if (sample_info[0] == EXTRASAMPLE_UNASSALPHA)
-                alpha_type=UnassociatedAlpha;
+                {
+                  alpha_type=UnassociatedAlpha;
+                  image->matte=True;
+                }
               else if (sample_info[0] == EXTRASAMPLE_ASSOCALPHA)
-                alpha_type=AssociatedAlpha;
+                {
+                  alpha_type=AssociatedAlpha;
+                  image->matte=True;
+                }
             }
           if (image->logging)
             for (sample_index=0 ; sample_index < extra_samples; sample_index++)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "Extra sample %u contains %s alpha",sample_index+1,
-                                      ((sample_info[sample_index] == EXTRASAMPLE_ASSOCALPHA) ? "ASSOCIATED" :
-                                       (sample_info[sample_index] == EXTRASAMPLE_UNASSALPHA) ? "UNASSOCIATED" :
-                                       "UNSPECIFIED"));
+                                      "Extra sample %u contains %s",sample_index+1,
+                                      ExtraSampleToString(sample_info[sample_index]));
               }
         }
       /*
-        Handle RGBA images which are improperly marked.
+        Report RGBA images which may be improperly marked.
       */
-      if (extra_samples == 0)
+      if ((image->logging) && (extra_samples == 0))
         if ((photometric == PHOTOMETRIC_RGB) && (samples_per_pixel == 4))
           {
-#if 0
-
-            /*
-              FIXME: Temporarily (?) disabled until a solution is found
-               which does not cause issues.
-            */
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Promoting RGB image to associated alpha due to"
-                                  " samples-per-pixel=%u", samples_per_pixel);
-            extra_samples=1;
-            alpha_type=AssociatedAlpha;
-            image->matte=MagickTrue;
-#else
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Photometric is RGB but %u samples/pixel provided!",
-                                  samples_per_pixel);
-            ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
-#endif
+                                  "Photometric is RGB but %u samples/pixel and %u extra_samples provided!",
+                                  samples_per_pixel, extra_samples);
           }
 
       /*

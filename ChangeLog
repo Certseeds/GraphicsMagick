@@ -1,3 +1,10 @@
+2023-05-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Require that TIFFTAG_EXTRASAMPLES
+	be used appropriately to indicate the intention of extra channels.
+	Otherwise extra samples beyond what is required by the photometric
+	will be ignored.
+
 2023-05-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Stop promoting RGB image to
