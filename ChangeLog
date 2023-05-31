@@ -1,3 +1,11 @@
+2023-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/transform.c (ChopImage): Assure that chop image has valid
+	dimensions.  Addresses SourceForge issue #697 "Assertion
+	`image->columns != 0' failed in gm (RollImage at
+	magick/transform.c:1532)" and issue #698 "Assertion `image->rows
+	!= 0' failed (magick/transform.c:1533 at RollImage)".
+
 2023-05-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (ReadTIFFImage): Require that TIFFTAG_EXTRASAMPLES

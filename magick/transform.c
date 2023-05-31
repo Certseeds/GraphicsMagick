@@ -130,6 +130,10 @@ MagickExport Image *ChopImage(const Image *image,const RectangleInfo *chop_info,
       clone_info.height-=(unsigned long) (-clone_info.y);
       clone_info.y=0;
     }
+  if ((clone_info.width >= image->columns) ||
+      (clone_info.height >= image->rows))
+    ThrowImageException3(OptionError,GeometryDoesNotContainImage,
+                         UnableToChopImage);
   /*
     Initialize chop image attributes.
   */

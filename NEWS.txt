@@ -19,6 +19,74 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
+1.3.40 (???, 2023)
+=========================
+
+Special Issues:
+
+* GraphicsMagick really does need some additional productive
+  volunteers.  For several years now, the burden has entirely been on
+  me (Bob Friesenhahn).  I have been sheparding the project for 20
+  years already (and contributed to ImageMagick and GraphicsMagick
+  combined for 26 years already).  It is not reasonable to expect
+  someone with a full time job (and expecting to retire in a few
+  years) to do all of the work.
+
+Security Fixes:
+
+* GraphicsMagick is participating in Google's oss-fuzz project since
+  February 4 2018 due to the contributions and assistance of Alex
+  Gaynor and Paul Kehrer. The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
+
+Bug fixes:
+
+* Blob: Immediately reject attempts to write blobs to formats which can not support blobs.
+
+* TranslateTextEx(): An empty string argument should return an empty string rather than a NULL string.
+
+* SetImageAttribute(): Fix bounds issue when concatenating string.
+
+* JPEG: Do not set image resolution if the values provided are outside of the valid range.
+
+* Fixes for NaN when reading formats based on floating point.
+
+* HEIF: Fix reading images with rotation/transformation.
+
+* BMP: Do not decode primaries or gamma unless colorspace is LCS_CALIBRATED_RGB.
+
+* MNG: Fixes for resizing using X_method 5.
+
+New Features:
+
+* TopoL: Now provides a writer.
+
+* WPG: Now provides a writer.
+
+* gm batch: Implement simple Test Anything Protocol (TAP) test counting and "ok N"/"not ok N" messaging.
+
+* TIFF: Support '-define tiff:photometric=minisblack' and '-define tiff:photometric=miniswhite' to be able to adjust the sense used when writing bilevel TIFF images.
+
+* TIFF: Require that TIFFTAG_EXTRASAMPLES be used appropriately to indicate the intention of extra channels.
+
+* utilities/tests/gen-tiff-images/genimages: Script for writing thousands of TIFF format variants.
+
+API Updates:
+
+Windows Delegate Updates/Additions:
+
+Build Changes:
+
+* A CMake script is provided as an option for building the Visual Studio project generator, configure.exe.
+
+Behavior Changes:
+
+
 1.3.40 (January 14, 2023)
 =========================
 
