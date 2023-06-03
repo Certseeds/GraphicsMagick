@@ -1,5 +1,9 @@
 2023-06-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/command.c (MogrifyImage): Assure that -set has arguments.
+	Addresses SourceForge issue #701 "Segmentation Violation in gm
+	(magick/attribute.c:324 in SetImageAttribute)".
+
 	* magick/analyze.c (AllocateDepthMap): Use resource-limited memory
 	allocator.
 

@@ -11014,10 +11014,20 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
               *key,
               *value;
 
+            if (i+1 > argc)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                break;
+              }
             key=argv[++i];
             (void) SetImageAttribute(*image,key,(char *) NULL);
             if (*option == '-')
               {
+                if (i+1 > argc)
+                  {
+                    ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                    break;
+                  }
                 value=argv[++i];
                 (void) SetImageAttribute(*image,key,value);
               }
