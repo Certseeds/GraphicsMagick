@@ -794,7 +794,7 @@ static int GetBlurKernel(unsigned long width,const double sigma,double **kernel)
   */
   if (width == 0)
     width=3;
-  *kernel=MagickAllocateMemory(double *,width*sizeof(double));
+  *kernel=MagickAllocateResourceLimitedArray(double *,width,sizeof(double));
   if (*kernel == (double *) NULL)
     return(0);
   for (i=0; i < (long) width; i++)
@@ -971,21 +971,21 @@ BlurImage(const Image *original_image,const double radius,
       while ((long) (MaxRGB*kernel[0]) > 0)
         {
           if (last_kernel != (double *)NULL)
-            MagickFreeMemory(last_kernel);
+            MagickFreeResourceLimitedMemory(last_kernel);
           last_kernel=kernel;
           kernel=(double *) NULL;
           width=GetBlurKernel(width+2,sigma,&kernel);
         }
       if (last_kernel != (double *) NULL)
         {
-          MagickFreeMemory(kernel);
+          MagickFreeResourceLimitedMemory(kernel);
           width-=2;
           kernel=last_kernel;
         }
     }
   if (width < 3)
     {
-      MagickFreeMemory(kernel);
+      MagickFreeResourceLimitedMemory(kernel);
       ThrowImageException3(OptionError,UnableToBlurImage,
                            KernelRadiusIsTooSmall);
     }
@@ -1021,7 +1021,7 @@ BlurImage(const Image *original_image,const double radius,
     status&=BlurImageScanlines(blur_image,kernel,width,BlurImageRowsText,
                                exception);
 
-  MagickFreeMemory(kernel);
+  MagickFreeResourceLimitedMemory(kernel);
 
   if (blur_image != (Image *) NULL)
     blur_image->is_grayscale=original_image->is_grayscale;

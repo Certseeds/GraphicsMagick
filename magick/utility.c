@@ -1915,7 +1915,7 @@ static int MagickStrToD(const char *start,char **end,double *value)
 
   char
     buff[MaxTextExtent],
-    *endptr;
+    *estr;
 
   int
     i,
@@ -1927,10 +1927,28 @@ static int MagickStrToD(const char *start,char **end,double *value)
     buff[i]=*p++;
   buff[i]=0;
   errno=0;
-  *value=strtod(buff,&endptr);
-  if ((errno == 0) && (buff != endptr))
-    n++;
-  *end=(char *) start+(endptr-buff);
+  *value=strtod(buff,&estr);
+  if (buff == estr)
+    {
+      *value=0.0;
+    }
+#if defined(INFINITY)
+  else if ((*value == +INFINITY) || (*value == -INFINITY))
+    {
+      *value=0.0;
+      errno=ERANGE;
+    }
+#endif
+  else if (isnan(*value))
+    {
+      *value=0.0;
+      errno=ERANGE;
+    }
+  else if (errno == 0)
+    {
+      n++;
+    }
+  *end=(char *) start+(estr-buff);
 
   return (n);
 }
