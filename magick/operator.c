@@ -520,11 +520,13 @@ QuantumAssignCB(void *mutable_data,
 
   return (MagickPass);
 }
+#if 0
 #define ApplyChannelDepth(parameter)                                    \
   {                                                                     \
     for (i=0; i < npixels; i++)                                         \
       parameter=scale*((parameter)/scale);                              \
   }
+#endif
 #if MaxRGB > MaxMap
 #  define CrushChannelDepth(parameter) (scale*((parameter)/scale))
 #else
@@ -548,9 +550,6 @@ QuantumDepthCB(void *mutable_data,
   unsigned int
     depth;
 
-  register unsigned int
-    scale;
-
   register long
     i;
 
@@ -568,8 +567,6 @@ QuantumDepthCB(void *mutable_data,
 
   if (depth < QuantumDepth)
     {
-      scale=MaxRGB / (MaxRGB >> (QuantumDepth-depth));
-
       /*
         Build LUT for Q8 and Q16 builds
       */
@@ -579,14 +576,21 @@ QuantumDepthCB(void *mutable_data,
 #  endif
       if (mutable_context->channel_lut == (Quantum *) NULL)
         {
+          unsigned int
+            scale;
+
+          scale=MaxRGB / (MaxRGB >> (QuantumDepth-depth));
           mutable_context->channel_lut=MagickAllocateArray(Quantum *, MaxMap+1,sizeof(Quantum));
           if (mutable_context->channel_lut == (Quantum *) NULL)
             status=MagickFail;
 
           if (mutable_context->channel_lut != (Quantum *) NULL)
             {
-              for (i=0; i <= (long) MaxMap; i++)
-                mutable_context->channel_lut[i] = scale*(i/scale);
+              unsigned int
+                li;
+
+              for (li=0; li <= MaxMap; li++)
+                mutable_context->channel_lut[li] = scale*(li/scale);
             }
         }
 

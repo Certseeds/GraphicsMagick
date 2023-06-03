@@ -37,9 +37,21 @@
 </div>
 
 <div class="document">
+<p>2023-06-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/analyze.c (AllocateDepthMap): Use resource-limited memory
+allocator.</p></li>
+<li><p>magick/operator.c (QuantumDepthCB): Janitorial cleanups.</p></li>
+</ul>
+</blockquote>
 <p>2023-06-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>magick/command.c (MogrifyImage): Validate the number of
+'-random-threshold' arguments.  Addresses SourceForge issue #700
+Segmentation Violation in gm (magick/utility.c:3399 in
+LocaleCompare)&quot;.</p></li>
 <li><p>magick/montage.c (MontageImages): Report exception if tile
 geometry component is zero. Addresses SourceForge issue #699
 &quot;Floating Point Exception in gm (magick/montage.c:514 in
@@ -48,21 +60,12 @@ MontageImages)&quot;.</p></li>
 </blockquote>
 <p>2023-05-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
-<ul>
+<ul class="simple">
 <li><p>magick/transform.c (ChopImage): Assure that chop image has valid
 dimensions.  Addresses SourceForge issue #697 &quot;Assertion
-<a href="#id1"><span class="problematic" id="id2">`</span></a>image-&gt;columns != 0' failed in gm (RollImage at
-magick/transform.c:1532)&quot; and issue #698 &quot;Assertion <a href="#id3"><span class="problematic" id="id4">`</span></a>image-&gt;rows
-!= 0' failed (magick/transform.c:1533 at RollImage)&quot;.</p>
-<div class="system-message" id="id1">
-<p class="system-message-title">System Message: WARNING/2 (<span class="docutils literal">&lt;string&gt;</span>, line 10); <em><a href="#id2">backlink</a></em></p>
-<p>Inline interpreted text or phrase reference start-string without end-string.</p>
-</div>
-<div class="system-message" id="id3">
-<p class="system-message-title">System Message: WARNING/2 (<span class="docutils literal">&lt;string&gt;</span>, line 10); <em><a href="#id4">backlink</a></em></p>
-<p>Inline interpreted text or phrase reference start-string without end-string.</p>
-</div>
-</li>
+'image-&gt;columns != 0' failed in gm (RollImage at
+magick/transform.c:1532)&quot; and issue #698 &quot;Assertion 'image-&gt;rows
+!= 0' failed (magick/transform.c:1533 at RollImage)&quot;.</p></li>
 </ul>
 </blockquote>
 <p>2023-05-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

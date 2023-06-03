@@ -1,7 +1,14 @@
+2023-06-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/analyze.c (AllocateDepthMap): Use resource-limited memory
+	allocator.
+
+	* magick/operator.c (QuantumDepthCB): Janitorial cleanups.
+
 2023-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (MogrifyImage): Validate the number of
-	-random-threshold arguments.  Addresses SourceForge issue #700
+	'-random-threshold' arguments.  Addresses SourceForge issue #700
 	Segmentation Violation in gm (magick/utility.c:3399 in
 	LocaleCompare)".
 
@@ -14,8 +21,8 @@
 
 	* magick/transform.c (ChopImage): Assure that chop image has valid
 	dimensions.  Addresses SourceForge issue #697 "Assertion
-	`image->columns != 0' failed in gm (RollImage at
-	magick/transform.c:1532)" and issue #698 "Assertion `image->rows
+	'image->columns != 0' failed in gm (RollImage at
+	magick/transform.c:1532)" and issue #698 "Assertion 'image->rows
 	!= 0' failed (magick/transform.c:1533 at RollImage)".
 
 2023-05-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
