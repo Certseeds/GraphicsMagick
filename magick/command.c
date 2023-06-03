@@ -10670,6 +10670,11 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             /*
               Threshold image.
             */
+            if (i+2 > argc)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                break;
+              }
             (void) RandomChannelThresholdImage(*image,argv[i+1],argv[i+2],
                 &(*image)->exception);
             i+=2;
