@@ -1,3 +1,10 @@
+2023-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/montage.c (MontageImages): Report exception if tile
+	geometry component is zero. Addresses SourceForge issue #699
+	"Floating Point Exception in gm (magick/montage.c:514 in
+	MontageImages)".
+
 2023-05-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/transform.c (ChopImage): Assure that chop image has valid
