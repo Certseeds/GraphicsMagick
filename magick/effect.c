@@ -4239,7 +4239,8 @@ MagickExport Image *SharpenImageChannel(const Image *image,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  SpreadImage() is a special effects method that randomly displaces each
-%  pixel in a block defined by the radius parameter.
+%  pixel in a block defined by the radius parameter.  Useful values are 1
+%  to than less than 100.
 %
 %  The format of the SpreadImage method is:
 %
@@ -4272,8 +4273,13 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  if ((image->columns < 3) || (image->rows < 3))
-    return((Image *) NULL);
+  if ((image->columns < 3) || (image->rows < 3) ||
+      ((image->columns < radius) && (image->rows < radius)))
+    {
+      ThrowImageException3(OptionError, UnableToSpreadImage,
+                           ImageSmallerThanRadius);
+    }
+
   /*
     Initialize spread image attributes.
   */
@@ -4385,6 +4391,8 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
                   tries;
 
                 tries=0;
+                if (offsets_index == OFFSETS_ENTRIES)
+                  offsets_index=0;
                 do
                   {
                     x_distance=offsets[offsets_index++];
@@ -4400,6 +4408,8 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
                   } while (((x+x_distance) < 0) ||
                            ((x+x_distance) >= (long) image->columns));
                 tries=0;
+                if (offsets_index == OFFSETS_ENTRIES)
+                  offsets_index=0;
                 do
                   {
                     y_distance=offsets[offsets_index++];
