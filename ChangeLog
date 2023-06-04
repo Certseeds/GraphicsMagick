@@ -1,3 +1,7 @@
+2023-06-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/topol.c: More strict check of proper blob data size.
+
 2023-06-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/effect.c (GetBlurKernel): Use resource limited memory
