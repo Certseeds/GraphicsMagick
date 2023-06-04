@@ -2051,6 +2051,12 @@ Unable to sharpen image
 .
 
 MessageId       = +1
+SymbolicName    = OptionErrorUnableToSpreadImage
+Language        = English
+Unable to spread image
+.
+
+MessageId       = +1
 SymbolicName    = OptionErrorUnableToThresholdImage
 Language        = English
 Unable to threshold image

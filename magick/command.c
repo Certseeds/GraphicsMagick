@@ -6254,12 +6254,14 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
     ThrowConvertException(OptionError,MissingAnImageFilename,(char *) NULL);
   if (image == (Image *) NULL)
     {
-      status&=MogrifyImages(image_info,i-j,argv+j,&image_list);
+      if (!ping)
+        status&=MogrifyImages(image_info,i-j,argv+j,&image_list);
       GetImageException(image_list,exception);
     }
   else
     {
-      status&=MogrifyImages(image_info,i-j,argv+j,&image);
+      if (!ping)
+        status&=MogrifyImages(image_info,i-j,argv+j,&image);
       GetImageException(image,exception);
       AppendImageToList(&image_list,image);
     }
