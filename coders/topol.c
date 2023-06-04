@@ -551,7 +551,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   if (image_info->ping) goto DONE_READING;
 
   if(j>=512)
-      if(((magick_uint64_t)depth*Header.Cols*(magick_uint64_t)Header.Rows) / 8 > (magick_uint64_t)GetBlobSize(image))
+      if(((magick_uint64_t)(depth*Header.Cols+7)/8) * (magick_uint64_t)Header.Rows > (magick_uint64_t)GetBlobSize(image)-512)
         goto TOPOL_KO;    /* Check for forged image that overflows file size. */
 
   /* ----- Handle the reindexing mez file ----- */

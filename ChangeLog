@@ -1,9 +1,13 @@
+2023-06-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/topol.c: More strict check of proper blob data size.
+	
 2023-06-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (ConvertImageCommand): Skip MogrifyImages() if
 	in ping mode.  Addresses Sourceforge issue #704 "heap overflow in
 	gm (magick/effect.c:4417 in SpreadImage)".
-
+	
 	* magick/effect.c (SpreadImage): Assure that offsets_index is in
 	valid range.  Reject request if radius is larger than image.
 	Addresses SourceForge issue #705 "heap overflow in gm #2
