@@ -944,6 +944,9 @@ TIFFReadErrors(const char *module,const char *format,
   errno=0;
   (void) vsnprintf(message,MaxTextExtent-2,format,warning);
   message[MaxTextExtent-2]='\0';
+#define UNKNOWN_TAG_ERROR "Internal error, unknown tag"
+  if (LocaleNCompare(message,UNKNOWN_TAG_ERROR,sizeof(UNKNOWN_TAG_ERROR)-1) == 0)
+    return;
   (void) strlcat(message,".",MaxTextExtent);
   tiff_exception=(ExceptionInfo *) MagickTsdGetSpecific(tsd_key);
   ThrowException2(tiff_exception,CorruptImageError,message,module);
@@ -2356,9 +2359,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
              { TIFFTAG_MODEL, "model" },
              { TIFFTAG_PAGENAME, "label" },
              { TIFFTAG_SOFTWARE, "software" },
-#if 0
              { TIFFTAG_OPIIMAGEID, "imageid" }, /* Causes TIFFFieldWithTag() to return NULL */
-#endif
              { 33423, "kodak-33423" },
              { 36867, "kodak-36867" }
             };

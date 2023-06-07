@@ -1,3 +1,9 @@
+2023-06-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (TIFFReadErrors): Mask "Internal error, unknown
+	tag" errors from TIFFFieldWithTag() which block working with
+	anything but development libtiff.
+
 2023-06-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/topol.c: More strict check of proper blob data size.
