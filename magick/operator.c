@@ -550,6 +550,9 @@ QuantumDepthCB(void *mutable_data,
   unsigned int
     depth;
 
+  unsigned int
+    scale;
+
   register long
     i;
 
@@ -567,6 +570,8 @@ QuantumDepthCB(void *mutable_data,
 
   if (depth < QuantumDepth)
     {
+      scale=MaxRGB / (MaxRGB >> (QuantumDepth-depth));
+
       /*
         Build LUT for Q8 and Q16 builds
       */
@@ -576,10 +581,6 @@ QuantumDepthCB(void *mutable_data,
 #  endif
       if (mutable_context->channel_lut == (Quantum *) NULL)
         {
-          unsigned int
-            scale;
-
-          scale=MaxRGB / (MaxRGB >> (QuantumDepth-depth));
           mutable_context->channel_lut=MagickAllocateArray(Quantum *, MaxMap+1,sizeof(Quantum));
           if (mutable_context->channel_lut == (Quantum *) NULL)
             status=MagickFail;
