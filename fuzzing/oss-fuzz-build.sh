@@ -15,7 +15,7 @@ popd
 #echo "=== Building xz..."
 pushd "$SRC/xz"
 ./autogen.sh --no-po4a
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --disable-xz --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc --prefix="$WORK"
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure --disable-xz --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc --no-po4a --no-doxygen --prefix="$WORK"
 make -j$(nproc)
 make install
 popd

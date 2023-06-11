@@ -1,3 +1,8 @@
+2023-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Add --no-po4a --no-doxygen to 'xz'
+	build to hopefully get it building again in the oss-fuzz builds.
+
 2023-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/operator.c (QuantumDepthCB): Fix compilation failure in
