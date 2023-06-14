@@ -1373,9 +1373,9 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              " recognized eXIf chunk");
+                              "    recognized eXIf chunk");
 
-      profile=MagickAllocateMemory(unsigned char *,chunk->size+6);
+      profile=MagickAllocateMemory(unsigned char *,chunk->size+app1_hdr_size);
 
       if (profile == (unsigned char *) NULL)
         {
@@ -1447,7 +1447,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
        return(-1); /* Error return */
 
      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-             " recognized caNv chunk");
+             "    recognized caNv chunk");
 
      image=(Image *) png_get_user_chunk_ptr(ping);
 
@@ -1460,7 +1460,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
     }
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-         " unrecognized user chunk");
+         "    unrecognized user chunk: %s", chunk->name);
 
   return(0); /* Did not recognize */
 }
@@ -2994,6 +2994,26 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
   UnlockSemaphoreInfo(png_semaphore);
 #endif
+
+  /*
+    Retrieve image orientation from EXIF (if present) and store in
+    image.
+  */
+  const ImageAttribute
+    *attribute;
+
+  attribute = GetImageAttribute(image,"EXIF:Orientation");
+  if ((attribute != (const ImageAttribute *) NULL) &&
+      (attribute->value != (char *) NULL))
+  {
+    int
+      orientation;
+
+    orientation = MagickAtoI(attribute->value);
+    if ((orientation > UndefinedOrientation) &&
+        (orientation <= LeftBottomOrientation))
+      image->orientation=(OrientationType) orientation;
+  }
 
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
