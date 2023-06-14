@@ -37,6 +37,7 @@
   Include declarations.
 */
 #include "magick/studio.h"
+#include "magick/attribute.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/log.h"
@@ -361,6 +362,27 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
   pixels=(unsigned char *) NULL;
   MagickFreeResourceLimitedMemory(stream);
   CloseBlob(image);
+
+  /*
+    Retrieve image orientation from EXIF (if present) and store in
+    image.
+  */
+  const ImageAttribute
+    *attribute;
+
+  attribute = GetImageAttribute(image,"EXIF:Orientation");
+  if ((attribute != (const ImageAttribute *) NULL) &&
+      (attribute->value != (char *) NULL))
+  {
+    int
+      orientation;
+
+    orientation=MagickAtoI(attribute->value);
+    if ((orientation > UndefinedOrientation) &&
+        (orientation <= LeftBottomOrientation))
+      image->orientation=(OrientationType) orientation;
+  }
+
   StopTimer(&image->timer);
   return(image);
 }
