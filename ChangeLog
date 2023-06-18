@@ -1,3 +1,8 @@
+2023-06-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/heif.c (ReadMetadata): Retrieve image orientation from
+	EXIF and store in image.
+
 2023-06-18  Przemysław Sobala  <przemyslaw.sobala@gmail.com>
 
 	* coders/png.c (ReadOnePNGImage): Retrieve image orientation from

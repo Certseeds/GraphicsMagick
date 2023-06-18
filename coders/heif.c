@@ -21,6 +21,7 @@
 */
 
 #include "magick/studio.h"
+#include "magick/attribute.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/log.h"
@@ -267,6 +268,28 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
               p[5]='\0';
 
               SetImageProfile(image,"EXIF",profile,profile_size+exif_pad+4);
+
+              /*
+                Retrieve image orientation from EXIF and store in
+                image.
+              */
+              {
+                const ImageAttribute
+                  *attribute;
+
+                attribute = GetImageAttribute(image,"EXIF:Orientation");
+                if ((attribute != (const ImageAttribute *) NULL) &&
+                    (attribute->value != (char *) NULL))
+                  {
+                    int
+                      orientation;
+
+                    orientation=MagickAtoI(attribute->value);
+                    if ((orientation > UndefinedOrientation) &&
+                        (orientation <= LeftBottomOrientation))
+                      image->orientation=(OrientationType) orientation;
+                  }
+              }
             }
           else
             {
