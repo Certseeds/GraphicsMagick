@@ -1,3 +1,11 @@
+2023-06-18  Przemysław Sobala  <przemyslaw.sobala@gmail.com>
+
+	* coders/png.c (ReadOnePNGImage): Retrieve image orientation from
+	EXIF (if present) and store in image.
+
+	* coders/webp.c (ReadWEBPImage): Retrieve image orientation from
+	EXIF (if present) and store in image.
+
 2023-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Add --no-po4a --no-doxygen to 'xz'

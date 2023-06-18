@@ -2999,20 +2999,22 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     Retrieve image orientation from EXIF (if present) and store in
     image.
   */
-  const ImageAttribute
-    *attribute;
-
-  attribute = GetImageAttribute(image,"EXIF:Orientation");
-  if ((attribute != (const ImageAttribute *) NULL) &&
-      (attribute->value != (char *) NULL))
   {
-    int
-      orientation;
+    const ImageAttribute
+      *attribute;
 
-    orientation = MagickAtoI(attribute->value);
-    if ((orientation > UndefinedOrientation) &&
-        (orientation <= LeftBottomOrientation))
-      image->orientation=(OrientationType) orientation;
+    attribute = GetImageAttribute(image,"EXIF:Orientation");
+    if ((attribute != (const ImageAttribute *) NULL) &&
+        (attribute->value != (char *) NULL))
+      {
+        int
+          orientation;
+
+        orientation = MagickAtoI(attribute->value);
+        if ((orientation > UndefinedOrientation) &&
+            (orientation <= LeftBottomOrientation))
+          image->orientation=(OrientationType) orientation;
+      }
   }
 
   if (logging)
