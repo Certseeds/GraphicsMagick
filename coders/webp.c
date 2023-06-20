@@ -329,14 +329,19 @@ static Image *ReadWEBPImage(const ImageInfo *image_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),"EXIF Profile: %lu bytes",
                               (unsigned long) flag_data.size);
         if ((flag_data.bytes != NULL) && (flag_data.size > 0))
-
           {
-            size_t profile_size = flag_data.size+MAGICK_JPEG_APP1_EXIF_HEADER_SIZE;
+            const int has_app1_hdr=
+              (flag_data.size >= MAGICK_JPEG_APP1_EXIF_HEADER_SIZE) &&
+              (memcmp((const void *) flag_data.bytes,
+                      (const void *) MAGICK_JPEG_APP1_EXIF_HEADER,
+                      MAGICK_JPEG_APP1_EXIF_HEADER_SIZE) == 0);
+            const size_t header_size=has_app1_hdr ? 0 : MAGICK_JPEG_APP1_EXIF_HEADER_SIZE;
+            const size_t profile_size=flag_data.size+header_size;
             unsigned char *profile=MagickAllocateResourceLimitedMemory(unsigned char *,profile_size);
-            (void) memcpy((void *) profile, (const void *) MAGICK_JPEG_APP1_EXIF_HEADER,
-                          MAGICK_JPEG_APP1_EXIF_HEADER_SIZE);
-            (void) memcpy((void *) (profile+MAGICK_JPEG_APP1_EXIF_HEADER_SIZE),flag_data.bytes,
-                          flag_data.size);
+            if (has_app1_hdr == 0)
+              (void) memcpy((void *) profile, (const void *) MAGICK_JPEG_APP1_EXIF_HEADER,
+                            MAGICK_JPEG_APP1_EXIF_HEADER_SIZE);
+            (void) memcpy((void *) (profile+header_size),flag_data.bytes,flag_data.size);
             SetImageProfile(image,"EXIF",profile,profile_size);
             MagickFreeResourceLimitedMemory(profile);
           }
