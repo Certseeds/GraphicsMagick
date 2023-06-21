@@ -550,9 +550,8 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   /* If ping is true, then only set image size and colors without reading any image data. */
   if (image_info->ping) goto DONE_READING;
 
-  if(j>=512)
-      if(((magick_uint64_t)(depth*Header.Cols+7)/8) * (magick_uint64_t)Header.Rows > (magick_uint64_t)GetBlobSize(image)-512)
-        goto TOPOL_KO;    /* Check for forged image that overflows file size. */
+  if(((magick_uint64_t)(depth*Header.Cols+7)/8) * (magick_uint64_t)Header.Rows > (magick_uint64_t)GetBlobSize(image)-512)
+      goto TOPOL_KO;    /* Check for forged image that overflows file size. */
 
   /* ----- Handle the reindexing mez file ----- */
   j = image->colors;
@@ -730,8 +729,8 @@ NoPalette:
          ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
        }
 
-       for(TilY=0;TilY<Header.Rows;TilY+=Header.TileHeight)
-         for(TilX=0;TilX<TilesAcross;TilX++)
+       for(TilY=0; TilY<Header.Rows; TilY+=Header.TileHeight)	/* TilY counts per pixel.*/
+         for(TilX=0; TilX<TilesAcross; TilX++)			/* TilX counts per tile.*/
            {
            ldblk = Offsets[(TilY/Header.TileHeight)*TilesAcross+TilX];
            if(SeekBlob(image, ldblk, SEEK_SET) != ldblk)
@@ -760,7 +759,8 @@ NoPalette:
              }
              if(SkipBlk>0)
                SeekBlob(image, SkipBlk, SEEK_CUR);
-             if(InsertRow(depth, BImgBuff, i+TilY, image, TilX,
+             /*printf("Inserting x=%d; y=%d\n", TilX*Header.TileWidth, i+TilY);*/
+             if(InsertRow(depth, BImgBuff, i+TilY, image, TilX*Header.TileWidth,
                     (image->columns<Header.TileWidth)?image->columns:Header.TileWidth, &import_options))
              {
                MagickFreeResourceLimitedMemory(Offsets);
@@ -774,7 +774,6 @@ NoPalette:
        break;
       }
     }
-
 
   /* Finish: */
 DONE_READING:
