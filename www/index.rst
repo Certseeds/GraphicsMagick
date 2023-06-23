@@ -67,12 +67,12 @@ version of this page.
 .. _`Coverity Analysis Metrics` : https://scan.coverity.com/projects/graphicsmagick
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
-of 279K physical lines (according to David A. Wheeler's `SLOCCount`_)
-of source code in the base package (or 1,275K including 3rd party
-libraries) it provides a robust and efficient collection of tools and
-libraries which support reading, writing, and manipulating an image in
-over 92 major formats including important formats like DPX, GIF, JPEG,
-JPEG-2000, PNG, PDF, PNM, TIFF, and WebP.
+of 284K physical lines (according to David A. Wheeler's `SLOCCount`_)
+of source code in the base package, it provides a robust and efficient
+collection of tools and libraries which support reading, writing, and
+manipulating an image in over 92 major formats including important
+formats like DPX, GIF, JPEG, JPEG-2000, JXL, PNG, PDF, PNM, TIFF, and
+WebP.
 
 Image processing is multi-threaded using OpenMP_ (`read about OpenMP
 in GraphicsMagick`_) so that CPU-bound tasks scale linearly as
