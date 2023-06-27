@@ -1,3 +1,8 @@
+2023-06-27  Przemysław Sobala  <przemyslaw.sobala@gmail.com>
+
+	* magick/GraphicsMagick.pc.in (Libs.private): Fix pkg-config files
+	for static build.
+
 2023-06-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/topol.c: Fix tile positioning.
