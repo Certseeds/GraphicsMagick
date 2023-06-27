@@ -1,3 +1,8 @@
+2023-06-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac, coders/Makefile.am: Jasper is now optionally
+	dependent on libheif.
+
 2023-06-27  Przemysław Sobala  <przemyslaw.sobala@gmail.com>
 
 	* magick/GraphicsMagick.pc.in (Libs.private): Fix pkg-config files
