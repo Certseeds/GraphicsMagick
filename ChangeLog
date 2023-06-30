@@ -1,3 +1,8 @@
+2023-06-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Produce more build information in
+	fuzzing build.
+
 2023-06-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac, coders/Makefile.am: Jasper is now optionally
