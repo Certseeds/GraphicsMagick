@@ -1,5 +1,9 @@
 2023-06-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tga.c (LogTGAInfo): Avoid compiler warning about
+	orientation possibly being undefined.  Update source code to
+	conform to common style.
+
 	* fuzzing/oss-fuzz-build.sh: Produce more build information in
 	fuzzing build.
 

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 - 2022 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -115,11 +115,11 @@ typedef struct _TGAInfo
 
 typedef struct _TGAFooter
 {
-    magick_uint32_t ExtensionOffset;
-    magick_uint32_t DevelopperDirOffset;
-    char Signature[16+1];		/* 16 official bytes + zero terminator. */
-    char Dot;
-    char Terminator;
+  magick_uint32_t ExtensionOffset;
+  magick_uint32_t DeveloperDirOffset;
+  char Signature[16+1];               /* 16 official bytes + zero terminator. */
+  char Dot;
+  char Terminator;
 } TGAFooter;
 
 
@@ -128,20 +128,20 @@ typedef struct _TGADevel
     magick_uint16_t ExtensionSize;
     char Author[41];
     char Comments[324+1];
-    magick_uint16_t TimeStamp[6];    
+    magick_uint16_t TimeStamp[6];
     magick_uint16_t JobTime[3];
-    char JobNameID[41+1];			/* The last byte must be a binary zero. */
+    char JobNameID[41+1];                       /* The last byte must be a binary zero. */
     char SoftwareID[41];
     magick_uint16_t VersionNumber;
     unsigned char VersionLetter;
-    unsigned char KeyColor[4];			/* A:R:G:B */
+    unsigned char KeyColor[4];                  /* A:R:G:B */
     magick_uint16_t AspectRatio[2];
     magick_uint16_t Gamma[2];
     magick_uint32_t ColorCorrectionOffset;
     magick_uint32_t PostageStampOffset;
     magick_uint32_t ScanLineOffset;
-    unsigned char AttributesType;	/* 0: no Alpha; 1 undefined useless data in the Alpha; 
-					   2: undefined data in the Alpha might be retained; 
+    unsigned char AttributesType;       /* 0: no Alpha; 1 undefined useless data in the Alpha;
+                                           2: undefined data in the Alpha might be retained;
                                            3 useful Alpha channel; 4: pre-multiplied Alpha */
     /* Scan Line Table - Field 25 (Variable) */
     /* Postage Stamp Image - Field 26 (Variable) */
@@ -151,7 +151,7 @@ typedef struct _TGADevel
 
 static void LogTGAInfo(const TGAInfo *tga_info)
 {
-  OrientationType orientation;
+  OrientationType orientation = UndefinedOrientation;
   unsigned int attribute_bits;
 
   attribute_bits = tga_info->attributes & 0xf;
@@ -208,11 +208,11 @@ static void LogTGAFooter(const TGAFooter *ptga_footer)
  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Targa Footer:\n"
                         "    ExtensionOffset     : %u\n"
-                        "    DevelopperDirOffset : %u\n"
+                        "    DeveloperDirOffset : %u\n"
                         "    Signature           : %s",
                                ptga_footer->ExtensionOffset,
-                               ptga_footer->DevelopperDirOffset,
-			       ptga_footer->Signature);
+                               ptga_footer->DeveloperDirOffset,
+                               ptga_footer->Signature);
 }
 
 
@@ -250,41 +250,41 @@ static void LogTGADevel(const TGADevel *ptga_devel)
                                ptga_devel->ColorCorrectionOffset,
                                ptga_devel->PostageStampOffset,
                                ptga_devel->ScanLineOffset,
-			       (unsigned)ptga_devel->AttributesType);
+                               (unsigned)ptga_devel->AttributesType);
 }
 
 
 static int LoadHeaderTGA(TGAInfo *tga_info, Image *image)
 {
- tga_info->id_length = ReadBlobByte(image);
- tga_info->colormap_type = ReadBlobByte(image);
- tga_info->image_type = ReadBlobByte(image);
+  tga_info->id_length = ReadBlobByte(image);
+  tga_info->colormap_type = ReadBlobByte(image);
+  tga_info->image_type = ReadBlobByte(image);
 
- tga_info->colormap_index = ReadBlobLSBShort(image);
- tga_info->colormap_length = ReadBlobLSBShort(image) & 0xFFFF;
- tga_info->colormap_size = ReadBlobByte(image);
- tga_info->x_origin = ReadBlobLSBShort(image);
- tga_info->y_origin = ReadBlobLSBShort(image);
- tga_info->width = ReadBlobLSBShort(image) & 0xFFFF;
- tga_info->height = ReadBlobLSBShort(image) & 0xFFFF;
- tga_info->bits_per_pixel = ReadBlobByte(image);
- tga_info->attributes = ReadBlobByte(image);
-return 0;
+  tga_info->colormap_index = ReadBlobLSBShort(image);
+  tga_info->colormap_length = ReadBlobLSBShort(image) & 0xFFFF;
+  tga_info->colormap_size = ReadBlobByte(image);
+  tga_info->x_origin = ReadBlobLSBShort(image);
+  tga_info->y_origin = ReadBlobLSBShort(image);
+  tga_info->width = ReadBlobLSBShort(image) & 0xFFFF;
+  tga_info->height = ReadBlobLSBShort(image) & 0xFFFF;
+  tga_info->bits_per_pixel = ReadBlobByte(image);
+  tga_info->attributes = ReadBlobByte(image);
+  return 0;
 }
 
 
 
 static int ValidateHeaderTGA(const TGAInfo *tga_info)
 {
-  if(((tga_info->image_type != TGAColormap) &&
-           (tga_info->image_type != TGARGB) &&
-           (tga_info->image_type != TGAMonochrome) &&
-           (tga_info->image_type != TGARLEColormap) &&
-           (tga_info->image_type != TGARLERGB) &&
-           (tga_info->image_type != TGARLEMonochrome)) ||
-          (((tga_info->image_type == TGAColormap) ||
-            (tga_info->image_type == TGARLEColormap)) &&
-           (tga_info->colormap_type == 0))) return -1;
+  if (((tga_info->image_type != TGAColormap) &&
+       (tga_info->image_type != TGARGB) &&
+       (tga_info->image_type != TGAMonochrome) &&
+       (tga_info->image_type != TGARLEColormap) &&
+       (tga_info->image_type != TGARLERGB) &&
+       (tga_info->image_type != TGARLEMonochrome)) ||
+      (((tga_info->image_type == TGAColormap) ||
+        (tga_info->image_type == TGARLEColormap)) &&
+       (tga_info->colormap_type == 0))) return -1;
   return 0;
 }
 
@@ -345,8 +345,12 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
 
   TGAInfo
     tga_info;
-  TGAFooter tga_footer;
-  TGADevel tga_devel;
+
+  TGAFooter
+    tga_footer;
+
+  TGADevel
+    tga_devel;
 
   unsigned char
     runlength;
@@ -365,8 +369,11 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   unsigned int
     is_grayscale=MagickFalse;
 
-  unsigned char readbuffer[4];
-  char CommentAndBuffer[256];
+  unsigned char
+    readbuffer[4];
+
+  char
+    CommentAndBuffer[256];
 
   /*
     Open image file.
@@ -377,7 +384,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   assert(exception->signature == MagickSignature);
   image = AllocateImage(image_info);
   status = OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-  if(status == MagickFalse)
+  if (status == MagickFalse)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
 
   /*
@@ -385,103 +392,120 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   */
   memset(&tga_footer, 0, sizeof(tga_footer));
   memset(&tga_devel, 0, sizeof(tga_devel));
-  if(BlobIsSeekable(image))
-  {
-    if(SeekBlob(image,-26, SEEK_END) >= 3+15)
+  if (BlobIsSeekable(image))
     {
-      status = MagickTrue;
-      tga_footer.ExtensionOffset = ReadBlobLSBLong(image);
-      tga_footer.DevelopperDirOffset = ReadBlobLSBLong(image);
-      if(ReadBlob(image, 16, tga_footer.Signature) != 16) status=MagickFail;
-      else
-      {
-        if((tga_footer.Dot=ReadBlobByte(image)) != '.') status=MagickFail;
-        if((tga_footer.Terminator=ReadBlobByte(image)) != 0) status=MagickFail;
-      }
-
-      if(status == MagickTrue)
-      {
-        if(image->logging) LogTGAFooter(&tga_footer);
-        if(strncmp(tga_footer.Signature,"TRUEVISION-XFILE",16)) status=MagickFail;
-      }
-      if(status != MagickTrue)	/* Footer is invalid. */
-      {
-        memset(&tga_footer, 0, sizeof(tga_footer));
-      }
-
-      if(tga_footer.ExtensionOffset > 3)
-      {
-        if(SeekBlob(image,tga_footer.ExtensionOffset,SEEK_SET) == tga_footer.ExtensionOffset)
+      if (SeekBlob(image,-26, SEEK_END) >= 3+15)
         {
-          tga_devel.ExtensionSize = ReadBlobLSBShort(image);
-          if(tga_devel.ExtensionSize >= 495)
-          {
-            if(ReadBlob(image, 41, tga_devel.Author) != 41) status=MagickFail;
-            if(tga_devel.Author[40] != 0) tga_devel.Author[40]=0;
-            if(ReadBlob(image, 324, tga_devel.Comments) != 324) status=MagickFail;
-            if(tga_devel.Comments[323] != 0) tga_devel.Comments[323]=0;
-            for(i=0; i<6; i++)
+          status = MagickTrue;
+          tga_footer.ExtensionOffset = ReadBlobLSBLong(image);
+          tga_footer.DeveloperDirOffset = ReadBlobLSBLong(image);
+          if (ReadBlob(image, 16, tga_footer.Signature) != 16)
+            status=MagickFail;
+          else
             {
-              tga_devel.TimeStamp[i] = ReadBlobLSBShort(image);
+              if ((tga_footer.Dot=ReadBlobByte(image)) != '.')
+                status=MagickFail;
+              if ((tga_footer.Terminator=ReadBlobByte(image)) != 0)
+                status=MagickFail;
             }
-            if(ReadBlob(image, 41, tga_devel.JobNameID) != 41) status=MagickFail;
-            if(tga_devel.JobNameID[40] != 0) tga_devel.JobNameID[40]=0;
-            for(i=0; i<3; i++)
-            {
-              tga_devel.JobTime[i] = ReadBlobLSBShort(image);
-            }
-            if(ReadBlob(image, 41, tga_devel.SoftwareID) != 41) status=MagickFail;
-            if(tga_devel.SoftwareID[40] != 0) tga_devel.SoftwareID[40]=0;
-            tga_devel.VersionNumber = ReadBlobLSBShort(image);
-            tga_devel.VersionLetter = ReadBlobByte(image);
-            if(ReadBlob(image, 4, tga_devel.KeyColor) != 4) status=MagickFail;
-            for(i=0; i<2; i++)
-            {
-              tga_devel.AspectRatio[i] = ReadBlobLSBShort(image);
-            }
-            for(i=0; i<2; i++)
-            {
-              tga_devel.Gamma[i] = ReadBlobLSBShort(image);
-            }
-            tga_devel.ColorCorrectionOffset = ReadBlobLSBLong(image);
-            tga_devel.PostageStampOffset = ReadBlobLSBLong(image);
-            tga_devel.ScanLineOffset = ReadBlobLSBLong(image);
-            tga_devel.AttributesType = ReadBlobByte(image);
 
-            if(image->logging) LogTGADevel(&tga_devel);
-            if(status == MagickTrue)	/* TGA devel is valid */
+          if (status == MagickTrue)
             {
-              if(tga_devel.Comments[0] != 0)
-                  SetImageAttribute(image, "TGA:file.comment", tga_devel.Comments);
-              if(tga_devel.Author[0] != 0)
-                  SetImageAttribute(image, "creator", tga_devel.Author);
-              if(tga_devel.SoftwareID[0] != 0)
-                  SetImageAttribute(image, "software", tga_devel.SoftwareID);
-              if(tga_devel.JobNameID[0] != 0)
-                  SetImageAttribute(image, "TGA:file.JobName", tga_devel.JobNameID);
+              if (image->logging)
+                LogTGAFooter(&tga_footer);
+              if (strncmp(tga_footer.Signature,"TRUEVISION-XFILE",16))
+                status=MagickFail;
             }
-            else
-              tga_devel.ExtensionSize = 0;	/* Invalidate TGA developper area. */
-          }
+          if (status != MagickTrue)  /* Footer is invalid. */
+            {
+              memset(&tga_footer, 0, sizeof(tga_footer));
+            }
+
+          if (tga_footer.ExtensionOffset > 3)
+            {
+              if (SeekBlob(image,tga_footer.ExtensionOffset,SEEK_SET) == tga_footer.ExtensionOffset)
+                {
+                  tga_devel.ExtensionSize = ReadBlobLSBShort(image);
+                  if (tga_devel.ExtensionSize >= 495)
+                    {
+                      if (ReadBlob(image, 41, tga_devel.Author) != 41)
+                        status=MagickFail;
+                      if (tga_devel.Author[40] != 0)
+                        tga_devel.Author[40]=0;
+                      if (ReadBlob(image, 324, tga_devel.Comments) != 324)
+                        status=MagickFail;
+                      if (tga_devel.Comments[323] != 0)
+                        tga_devel.Comments[323]=0;
+                      for (i=0; i<6; i++)
+                        {
+                          tga_devel.TimeStamp[i] = ReadBlobLSBShort(image);
+                        }
+                      if (ReadBlob(image, 41, tga_devel.JobNameID) != 41)
+                        status=MagickFail;
+                      if (tga_devel.JobNameID[40] != 0)
+                        tga_devel.JobNameID[40]=0;
+                      for (i=0; i<3; i++)
+                        {
+                          tga_devel.JobTime[i] = ReadBlobLSBShort(image);
+                        }
+                      if (ReadBlob(image, 41, tga_devel.SoftwareID) != 41)
+                        status=MagickFail;
+                      if (tga_devel.SoftwareID[40] != 0)
+                        tga_devel.SoftwareID[40]=0;
+                      tga_devel.VersionNumber = ReadBlobLSBShort(image);
+                      tga_devel.VersionLetter = ReadBlobByte(image);
+                      if (ReadBlob(image, 4, tga_devel.KeyColor) != 4)
+                        status=MagickFail;
+                      for (i=0; i<2; i++)
+                        {
+                          tga_devel.AspectRatio[i] = ReadBlobLSBShort(image);
+                        }
+                      for (i=0; i<2; i++)
+                        {
+                          tga_devel.Gamma[i] = ReadBlobLSBShort(image);
+                        }
+                      tga_devel.ColorCorrectionOffset = ReadBlobLSBLong(image);
+                      tga_devel.PostageStampOffset = ReadBlobLSBLong(image);
+                      tga_devel.ScanLineOffset = ReadBlobLSBLong(image);
+                      tga_devel.AttributesType = ReadBlobByte(image);
+
+                      if (image->logging)
+                        LogTGADevel(&tga_devel);
+                      if (status == MagickTrue)    /* TGA devel is valid */
+                        {
+                          if (tga_devel.Comments[0] != 0)
+                            SetImageAttribute(image, "TGA:file.comment", tga_devel.Comments);
+                          if (tga_devel.Author[0] != 0)
+                            SetImageAttribute(image, "creator", tga_devel.Author);
+                          if (tga_devel.SoftwareID[0] != 0)
+                            SetImageAttribute(image, "software", tga_devel.SoftwareID);
+                          if (tga_devel.JobNameID[0] != 0)
+                            SetImageAttribute(image, "TGA:file.JobName", tga_devel.JobNameID);
+                        }
+                      else
+                        {
+                          tga_devel.ExtensionSize = 0;      /* Invalidate TGA developper area. */
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
 
-    status = MagickTrue;
-    if(SeekBlob(image,0,SEEK_SET) != 0)
-    {
-      ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+      status = MagickTrue;
+      if (SeekBlob(image,0,SEEK_SET) != 0)
+        {
+          ThrowReaderException(BlobError,UnableToSeekToOffset,image);
+        }
     }
-  }
 
   /*
     Read TGA header information.
   */
-  if(LoadHeaderTGA(&tga_info, image) < 0)
-      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+  if (LoadHeaderTGA(&tga_info, image) < 0)
+    ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
-  if(ValidateHeaderTGA(&tga_info) < 0)
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  if (ValidateHeaderTGA(&tga_info) < 0)
+    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
 
   do
     {
@@ -504,17 +528,17 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
       */
       alpha_bits = (tga_info.attributes & 0x0FU);
       image->matte = ((alpha_bits > 0) || (tga_info.bits_per_pixel == 32));
-      if(image->matte)
-      {
-        if(tga_footer.ExtensionOffset>3 && tga_devel.ExtensionSize >= 495) /* Valid footer and extended area. */
-        {					/* Please note that alpha channel could contain a garbage. */
-          if(tga_devel.AttributesType<3 || tga_devel.AttributesType>4)
-              image->matte = MagickFalse;	/* The attribute instruct NOT to use alpha channel. */
+      if (image->matte)
+        {
+          if (tga_footer.ExtensionOffset > 3 && tga_devel.ExtensionSize >= 495) /* Valid footer and extended area. */
+            {                                       /* Please note that alpha channel could contain a garbage. */
+              if (tga_devel.AttributesType < 3 || tga_devel.AttributesType > 4)
+                image->matte = MagickFalse;       /* The attribute instruct NOT to use alpha channel. */
+            }
         }
-      }
       image->columns = tga_info.width;
       image->rows = tga_info.height;
-      if((tga_info.image_type != TGAColormap) && (tga_info.image_type != TGARLEColormap))
+      if ((tga_info.image_type != TGAColormap) && (tga_info.image_type != TGARLEColormap))
         {
           /*
             TrueColor Quantum Depth
@@ -563,8 +587,8 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
               image->colors=tga_info.colormap_length;
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Using existing colormap with %u colors.",image->colors);
-              if(tga_info.bits_per_pixel==1 && image->colors<=1)
-		  ThrowReaderException(CoderError,ColorTypeNotSupported,image);
+              if (tga_info.bits_per_pixel==1 && image->colors<=1)
+                ThrowReaderException(CoderError,ColorTypeNotSupported,image);
             }
           else
             {
@@ -634,12 +658,12 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                     break;
                   }
                 case 24:
-                case 32:			/* TODO: J.Fojtik - is this true? 32 bits, but only 24 bits read. Possible bug! */
+                case 32:                        /* TODO: J.Fojtik - is this true? 32 bits, but only 24 bits read. Possible bug! */
                   {
                     /*
                       8 bits each of blue, green and red.
                     */
-                    if(ReadBlob(image, 3, readbuffer) != 3)
+                    if (ReadBlob(image, 3, readbuffer) != 3)
                       ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
                     pixel.blue = ScaleCharToQuantum(readbuffer[0]);
                     pixel.green = ScaleCharToQuantum(readbuffer[1]);
@@ -717,7 +741,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                       }
                     else
                       {
-                        pixel.blue=pixel.green=pixel.red = (index & 128)?MaxRGB:0;
+                        pixel.blue=pixel.green=pixel.red = (index & 128) ? MaxRGB : 0;
                       }
                     break;
 
@@ -754,7 +778,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                       pixel.green = ScaleCharToQuantum(ScaleColor5to8(pixel.green));
                       pixel.blue = packet & 0x1f;
                       pixel.blue = ScaleCharToQuantum(ScaleColor5to8(pixel.blue));
-                      if(image->matte)
+                      if (image->matte)
                         {
                           if ((packet >> 15) & 0x01)
                             pixel.opacity=OpaqueOpacity;
@@ -773,7 +797,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                     /*
                       8 bits each of blue green and red.
                     */
-                    if(ReadBlob(image, 3, readbuffer) != 3)
+                    if (ReadBlob(image, 3, readbuffer) != 3)
                       {
                         status=MagickFail;
                         break;
@@ -787,7 +811,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                       /*
                         8 bits each of blue green and red.
                       */
-                      if(ReadBlob(image, 4, readbuffer) != 4)
+                      if (ReadBlob(image, 4, readbuffer) != 4)
                         {
                           status=MagickFail;
                           break;
@@ -854,13 +878,15 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
         if (image->scene >= (image_info->subimage+image_info->subrange-1))
           break;
 
-      if(LoadHeaderTGA(&tga_info, image) < 0)
+      if (LoadHeaderTGA(&tga_info, image) < 0)
+        {
           status = MagickFalse;
+        }
       else
-      {
-        status = (ValidateHeaderTGA(&tga_info)<0) ? MagickFalse : MagickTrue;
-      }
-      if(!EOFBlob(image) && (status == MagickTrue))
+        {
+          status = (ValidateHeaderTGA(&tga_info)<0) ? MagickFalse : MagickTrue;
+        }
+      if (!EOFBlob(image) && (status == MagickTrue))
         {
           /*
             Allocate next image structure.
@@ -1013,7 +1039,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
     *p;
 
   /* register const IndexPacket
-     *indexes; */
+       *indexes; */
 
   register long
     x;

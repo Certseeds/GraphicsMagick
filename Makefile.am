@@ -263,8 +263,10 @@ helgrind:
 # suppression entries in the test log.  Tell valgrind about the
 # suppressions by creating a .valgrindrc file with content like:
 #   --memcheck:suppressions=mysupp.supp
+#
+# Removed --var-info=yes due to annoying warnings
 memcheck:
-	$(MAKE) MEMCHECK='valgrind --tool=memcheck --leak-check=full --read-var-info=yes \
+	$(MAKE) MEMCHECK='valgrind --tool=memcheck --leak-check=full \
 	--error-exitcode=2 --track-origins=yes --num-callers=12 \
 	--quiet $(VALGRIND_EXTRA_OPTS)' check
 
