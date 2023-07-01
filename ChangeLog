@@ -1,5 +1,8 @@
 2023-07-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* TclMagick/generic/Makefile.am: SourceForge patch #73 "TclMagick:
+	remove lib prefix from library files".
+
 	* TclMagick/unix/m4/tcl.m4: SourceForge patch #72 "TclMagick: fix
 	install for unix".
 
