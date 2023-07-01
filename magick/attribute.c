@@ -2528,7 +2528,22 @@ GetImageAttribute(const Image *image,const char *key)
 MagickExport const ImageAttribute *
 GetImageClippingPathAttribute(const Image *image)
 {
-  return(GetImageAttribute(image,"8BIM:1999,2998"));
+  /* Get the name of the clipping path, if any.  The clipping path
+     length is indicated by the first character of the Pascal
+     string. */
+  const ImageAttribute *path_name = GetImageAttribute(image, "8BIM:2999,2999");
+  if ((path_name != (const ImageAttribute *) NULL) &&
+      (path_name->length > 2) &&
+      ((size_t) path_name->value[0] < path_name->length))
+    {
+      static const char clip_prefix[] = "8BIM:1999,2998";
+      char attr_name[271];
+      /*sprintf(attr_name, "%s:%.255s", clip_prefix, path_name->value+1);*/
+      sprintf(attr_name, "%s:%.*s", clip_prefix, Min(255,(int) path_name->length-1),
+              path_name->value+1);
+      return GetImageAttribute(image, attr_name);
+    }
+  return NULL;
 }
 
 /*

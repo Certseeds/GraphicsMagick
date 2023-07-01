@@ -1,5 +1,11 @@
 2023-07-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/attribute.c: In GetImageClippingPathAttribute(), check
+	for the presence of the clipping path name (ID=2999). If that's
+	found, it searches for a path with that name. Otherwise, it
+	returns NULL.  Based (in spirit) on SourceForge #62 "Fix for
+	GetImageClippingPathAttribute".
+
 	* configure.ac (LIB_HEIF): SourceForge patch #71 "Use pkg-config
 	for libheif in configure".
 
