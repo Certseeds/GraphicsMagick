@@ -2649,9 +2649,16 @@ then
     AC_MSG_RESULT()
     failed=0
     passed=0
-    AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-    # heif always requires hwy no extra test needed
-    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lde265])
+    heif_libs=''
+    # Use pkg-config to handle different optional codec libs
+    # and if pkg-config is not available fallback to manual search.
+    PKG_CHECK_MODULES([HEIF], [libheif],
+        [heif_libs=$HEIF_LIBS; passed=1;],
+        [AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+        # Assume sensible default for codec; This will fail with a static
+        # libheif that contains a avif codec.
+        heif_libs="-lheif -lde265"])
+    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$heif_libs])
     AC_MSG_CHECKING([if HEIF package is complete])
     if test $passed -gt 0
     then
@@ -2660,7 +2667,7 @@ then
         AC_MSG_RESULT([no -- some components failed test])
         have_heif='no (failed tests)'
     else
-        LIB_HEIF='-lheif -lde265'
+        LIB_HEIF="$heif_libs"
         LIBS="$LIB_HEIF $LIBS"
         AC_DEFINE([HasHEIF],[1],[Define if you have HEIF library])
         AC_MSG_RESULT([yes])

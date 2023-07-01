@@ -1,5 +1,8 @@
 2023-07-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac (LIB_HEIF): SourceForge patch #71 "Use pkg-config
+	for libheif in configure".
+
 	* TclMagick/{configure.ac, generic/Makefile.am,
 	generic/pkgIndex.tcl.in, pkgIndex.tcl}: SourceForge patch #74
 	"TclMagick: generate generic/pkgIndex.tcl automatically and change

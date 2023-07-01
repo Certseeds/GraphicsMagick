@@ -739,6 +739,8 @@ xml2_config
 LIB_HEIF
 HasHEIF_FALSE
 HasHEIF_TRUE
+HEIF_LIBS
+HEIF_CFLAGS
 LIB_WEBP
 HasWEBP_FALSE
 HasWEBP_TRUE
@@ -1121,6 +1123,8 @@ PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
 FT_CFLAGS
 FT_LIBS
+HEIF_CFLAGS
+HEIF_LIBS
 XML_CFLAGS
 XML_LIBS'
 
@@ -1855,6 +1859,8 @@ Some influential environment variables:
               path overriding pkg-config's built-in search path
   FT_CFLAGS   C compiler flags for FT, overriding pkg-config
   FT_LIBS     linker flags for FT, overriding pkg-config
+  HEIF_CFLAGS C compiler flags for HEIF, overriding pkg-config
+  HEIF_LIBS   linker flags for HEIF, overriding pkg-config
   XML_CFLAGS  C compiler flags for XML, overriding pkg-config
   XML_LIBS    linker flags for XML, overriding pkg-config
 
@@ -27616,7 +27622,69 @@ $as_echo_n "checking for HEIF support ... " >&6; }
 $as_echo "" >&6; }
     failed=0
     passed=0
-    ac_fn_c_check_header_mongrel "$LINENO" "libheif/heif.h" "ac_cv_header_libheif_heif_h" "$ac_includes_default"
+    heif_libs=''
+    # Use pkg-config to handle different optional codec libs
+    # and if pkg-config is not available fallback to manual search.
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libheif" >&5
+$as_echo_n "checking for libheif... " >&6; }
+
+if test -n "$HEIF_CFLAGS"; then
+    pkg_cv_HEIF_CFLAGS="$HEIF_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libheif\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libheif") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_HEIF_CFLAGS=`$PKG_CONFIG --cflags "libheif" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$HEIF_LIBS"; then
+    pkg_cv_HEIF_LIBS="$HEIF_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libheif\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libheif") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_HEIF_LIBS=`$PKG_CONFIG --libs "libheif" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        HEIF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libheif" 2>&1`
+        else
+	        HEIF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libheif" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$HEIF_PKG_ERRORS" >&5
+
+	ac_fn_c_check_header_mongrel "$LINENO" "libheif/heif.h" "ac_cv_header_libheif_heif_h" "$ac_includes_default"
 if test "x$ac_cv_header_libheif_heif_h" = xyes; then :
   passed=`expr $passed + 1`
 else
@@ -27624,14 +27692,37 @@ else
 fi
 
 
-    # heif always requires hwy no extra test needed
+        # Assume sensible default for codec; This will fail with a static
+        # libheif that contains a avif codec.
+        heif_libs="-lheif -lde265"
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	ac_fn_c_check_header_mongrel "$LINENO" "libheif/heif.h" "ac_cv_header_libheif_heif_h" "$ac_includes_default"
+if test "x$ac_cv_header_libheif_heif_h" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+
+        # Assume sensible default for codec; This will fail with a static
+        # libheif that contains a avif codec.
+        heif_libs="-lheif -lde265"
+else
+	HEIF_CFLAGS=$pkg_cv_HEIF_CFLAGS
+	HEIF_LIBS=$pkg_cv_HEIF_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	heif_libs=$HEIF_LIBS; passed=1;
+fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for heif_context_alloc in -lheif" >&5
 $as_echo_n "checking for heif_context_alloc in -lheif... " >&6; }
 if ${ac_cv_lib_heif_heif_context_alloc+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lheif -lde265 $LIBS"
+LIBS="-lheif $heif_libs $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -27677,7 +27768,7 @@ $as_echo_n "checking if HEIF package is complete... " >&6; }
 $as_echo "no -- some components failed test" >&6; }
         have_heif='no (failed tests)'
     else
-        LIB_HEIF='-lheif -lde265'
+        LIB_HEIF="$heif_libs"
         LIBS="$LIB_HEIF $LIBS"
 
 $as_echo "#define HasHEIF 1" >>confdefs.h
