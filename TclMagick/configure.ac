@@ -117,4 +117,5 @@ TEA_PROG_WISH
 AC_OUTPUT([
 Makefile
 generic/Makefile
+generic/pkgIndex.tcl
 ])

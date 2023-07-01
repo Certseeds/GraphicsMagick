@@ -1,0 +1,7 @@
+package ifneeded @PACKAGE_NAME@ @PACKAGE_VERSION@ "
+[list load [file join $dir @PACKAGE_NAME@[info sharedlibextension]]]"
+
+package ifneeded TkMagick @PACKAGE_VERSION@ "
+package require Tk
+package require @PACKAGE_NAME@
+[list load [file join $dir TkMagick[info sharedlibextension]]]"

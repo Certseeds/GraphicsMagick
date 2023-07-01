@@ -1,5 +1,10 @@
 2023-07-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* TclMagick/{configure.ac, generic/Makefile.am,
+	generic/pkgIndex.tcl.in, pkgIndex.tcl}: SourceForge patch #74
+	"TclMagick: generate generic/pkgIndex.tcl automatically and change
+	pkgIndex.tcl".
+
 	* TclMagick/generic/Makefile.am: SourceForge patch #73 "TclMagick:
 	remove lib prefix from library files".
 
