@@ -1,3 +1,9 @@
+2023-07-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Add --disable-ifunc to xz build
+	options to avoid segmentation violation, matching options
+	successfully used by ImageMagick's oss-fuzz build.
+
 2023-07-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c: In GetImageClippingPathAttribute(), check
