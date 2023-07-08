@@ -1,5 +1,7 @@
 2023-07-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* fuzzing/oss-fuzz-build.sh: Fix typo which breaks oss-fuzz build.
+
 	* coders/jxl.c (WriteJXLImage): Port forward to latest development
 	0.9.0 API, which removes unused pixel_format from
 	JxlDecoderGetColorAsEncodedProfile(),

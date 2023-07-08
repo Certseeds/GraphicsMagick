@@ -21,7 +21,7 @@ make install
 popd
 
 # build zstd
-printf"==== Building zstd...\n"
+printf "==== Building zstd...\n"
 pushd "$SRC/zstd"
 make -j$(nproc) lib-release
 make install PREFIX="$WORK"
