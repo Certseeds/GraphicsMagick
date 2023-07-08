@@ -1,3 +1,11 @@
+2023-07-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jxl.c (WriteJXLImage): Port forward to latest development
+	0.9.0 API, which removes unused pixel_format from
+	JxlDecoderGetColorAsEncodedProfile(),
+	JxlDecoderGetICCProfileSize(), JxlDecoderGetColorAsICCProfile()
+	and silently drops JXL_ENC_NOT_SUPPORTED.
+
 2023-07-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Add --disable-ifunc to xz build
