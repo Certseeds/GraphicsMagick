@@ -848,10 +848,10 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
     char
       magick[MaxTextExtent];
 
-    for (i=0; i < 10; i++)
+    for (i=0; i < 10 && i < length; i++)
       magick[i]=GetCharacter(jpeg_info);
-    magick[10]='\0';
-    length-=10;
+    magick[i]='\0';
+    length-=i;
     if (LocaleCompare(magick,"Photoshop ") != 0)
       {
         /*
@@ -865,9 +865,9 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
   /*
     Remove the version number.
   */
-  for (i=0; i < 4; i++)
+  for (i=0; i < 4 && i < length; i++)
     (void) GetCharacter(jpeg_info);
-  length-=4;
+  length-=i;
   tag_length=0;
 #endif
   if (length <= 0)

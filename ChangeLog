@@ -1,3 +1,9 @@
+2023-07-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (ReadIPTCProfile): Fix malformed IPTC data
+	parsing.  SourceForge patch #78 "JPEG: fix malformed IPTC data
+	parsing" by Przemysław Sobala.
+
 2023-07-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Fix typo which breaks oss-fuzz build.
