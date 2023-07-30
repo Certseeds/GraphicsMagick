@@ -11,7 +11,7 @@ usage='Usage: GraphicsMagick-config [--cflags] [--cppflags] [--exec-prefix] [--l
 
  For example, "example.c" may be compiled to produce "example" as follows:
 
-  "gcc -o example example.c `GraphicsMagick-config --cppflags --cflags --ldflags --libs`"'
+  "@CC@ -o example example.c `GraphicsMagick-config --cppflags --cflags --ldflags --libs`"'
 
 if test $# -eq 0; then
       echo "${usage}" 1>&2
@@ -28,6 +28,9 @@ while test $# -gt 0; do
       ;;
     --version)
       echo @PACKAGE_VERSION@
+      ;;
+    --cc)
+      echo '@CC@'
       ;;
     --cflags)
       echo '@CFLAGS@'
@@ -48,4 +51,3 @@ while test $# -gt 0; do
   esac
   shift
 done
-
