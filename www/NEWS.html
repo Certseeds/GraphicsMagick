@@ -41,7 +41,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to January 14, 2023</p>
+<p>This file was last updated to reflect changes up to July 30, 2023</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -131,6 +131,10 @@ the oss-fuzz issues list for details.</p></li>
 <li><p>HEIF: Fix reading images with rotation/transformation.</p></li>
 <li><p>BMP: Do not decode primaries or gamma unless colorspace is LCS_CALIBRATED_RGB.</p></li>
 <li><p>MNG: Fixes for resizing using X_method 5.</p></li>
+<li><p>GM command (convert, montage, mogrify): Many command-line parser fixes/checks for invalid command line syntax which causes unexpected behavior, or core dumps.</p></li>
+<li><p>TopoL: Given that a writer is now provided, issues found in the reader (and writer) due to continual fuzz-testing have been fixed, as encountered.</p></li>
+<li><p>GetImageClippingPathAttribute(): Check for and use clipping path name (ID=2999) to get the real attribute name.</p></li>
+<li><p>ReadIPTCProfile(): Fix malformed IPTC data parsing.</p></li>
 </ul>
 <p>New Features:</p>
 <ul class="simple">
@@ -139,13 +143,21 @@ the oss-fuzz issues list for details.</p></li>
 <li><p>gm batch: Implement simple Test Anything Protocol (TAP) test counting and &quot;ok N&quot;/&quot;not ok N&quot; messaging.</p></li>
 <li><p>TIFF: Support '-define tiff:photometric=minisblack' and '-define tiff:photometric=miniswhite' to be able to adjust the sense used when writing bilevel TIFF images.</p></li>
 <li><p>TIFF: Require that TIFFTAG_EXTRASAMPLES be used appropriately to indicate the intention of extra channels.</p></li>
-<li><p>utilities/tests/gen-tiff-images/genimages: Script for writing thousands of TIFF format variants.</p></li>
+<li><p>utilities/tests/gen-tiff-images/genimages: Script for writing (and then reading) thousands (5568 permutations) of TIFF format variants.</p></li>
+<li><p>EXIF and PNG: Retrieve image orientation from EXIF (if present) and store in image.</p></li>
+<li><p>HEIF: Retrieve image orientation from EXIF and store in image.</p></li>
 </ul>
 <p>API Updates:</p>
 <p>Windows Delegate Updates/Additions:</p>
 <p>Build Changes:</p>
 <ul class="simple">
 <li><p>A CMake script is provided as an option for building the Visual Studio project generator, configure.exe.</p></li>
+<li><p>pkg-config files now consider static building.</p></li>
+<li><p>Unixish configure now uses Use pkg-config for libheif to ease static building.</p></li>
+<li><p>TclMagick: Integrated TclMagick build fixes (patches) targeting Unix-type systems.</p></li>
+<li><p>LibJXL: Compiles against development 0.9.0 API as existed on July 8, 2023.</p></li>
+<li><p>The GraphicsMagick++-config script provides a --cxx option to reproduce the name of the C++ compiler which was used.</p></li>
+<li><p>The GraphicsMagick-config script provides a --cc option to reproduce the name of the C compiler which was used.</p></li>
 </ul>
 <p>Behavior Changes:</p>
 </div>

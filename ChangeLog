@@ -1,3 +1,15 @@
+2023-07-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news!
+
+	* Magick++/bin/GraphicsMagick++-config.in: Remember the name of
+	the C++ compiler used, and suggest it in the usage message, as
+	well as reproduce it via the '--cxx' option.
+
+	* magick/GraphicsMagick-config.in: Remember the name of the C
+	compiler used, and suggest it in the usage message, as well as
+	reproduce it via the '--cc' option.
+
 2023-07-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jpeg.c (ReadIPTCProfile): Fix malformed IPTC data

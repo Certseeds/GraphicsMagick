@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to January 14, 2023
+This file was last updated to reflect changes up to July 30, 2023
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -62,6 +62,14 @@ Bug fixes:
 
 * MNG: Fixes for resizing using X_method 5.
 
+* GM command (convert, montage, mogrify): Many command-line parser fixes/checks for invalid command line syntax which causes unexpected behavior, or core dumps.
+
+* TopoL: Given that a writer is now provided, issues found in the reader (and writer) due to continual fuzz-testing have been fixed, as encountered.
+
+* GetImageClippingPathAttribute(): Check for and use clipping path name (ID=2999) to get the real attribute name.
+
+* ReadIPTCProfile(): Fix malformed IPTC data parsing.
+
 New Features:
 
 * TopoL: Now provides a writer.
@@ -74,7 +82,11 @@ New Features:
 
 * TIFF: Require that TIFFTAG_EXTRASAMPLES be used appropriately to indicate the intention of extra channels.
 
-* utilities/tests/gen-tiff-images/genimages: Script for writing thousands of TIFF format variants.
+* utilities/tests/gen-tiff-images/genimages: Script for writing (and then reading) thousands (5568 permutations) of TIFF format variants.
+
+* EXIF and PNG: Retrieve image orientation from EXIF (if present) and store in image.
+
+* HEIF: Retrieve image orientation from EXIF and store in image.
 
 API Updates:
 
@@ -83,6 +95,18 @@ Windows Delegate Updates/Additions:
 Build Changes:
 
 * A CMake script is provided as an option for building the Visual Studio project generator, configure.exe.
+
+* pkg-config files now consider static building.
+
+* Unixish configure now uses Use pkg-config for libheif to ease static building.
+
+* TclMagick: Integrated TclMagick build fixes (patches) targeting Unix-type systems.
+
+* LibJXL: Compiles against development 0.9.0 API as existed on July 8, 2023.
+
+* The GraphicsMagick++-config script provides a --cxx option to reproduce the name of the C++ compiler which was used.
+
+* The GraphicsMagick-config script provides a --cc option to reproduce the name of the C compiler which was used.
 
 Behavior Changes:
 
