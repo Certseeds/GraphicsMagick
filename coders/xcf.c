@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -28,7 +28,7 @@
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%
+% https://testing.developer.gimp.org/core/standards/xcf
 */
 
 /*
@@ -1730,6 +1730,11 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             foundAllLayers = MagickTrue;
           else
             number_layers++;
+
+          /* Check for too many layers */
+          if (number_layers == (unsigned long) LONG_MAX)
+            ThrowReaderException(CorruptImageError,CorruptImage,image);
+
           previous_offset=offset;
         } while ( !foundAllLayers );
 
@@ -1877,7 +1882,7 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             long
               j;
 
-            for (j=number_layers-1; j>=0; j--)
+            for (j=(long) (number_layers-1); j>=0; j--)
               {
                 /* BOGUS: need to consider layer blending modes!! */
                 if ( layer_info[j].visible )  /* only visible ones, please! */
@@ -1923,11 +1928,11 @@ static Image *ReadXCFImage(const ImageInfo *image_info,ExceptionInfo *exception)
             */
             image->next=layer_info[number_layers-2].image;
             layer_info[number_layers-2].image->previous=image;
-            for (j=(long) number_layers-2; j >= 0; j--)
+            for (j=(long) ((number_layers-2)); j >= 0; j--)
               {
                 if (j > 0)
                   layer_info[j].image->next=layer_info[j-1].image;
-                if (j < ((long) number_layers-1))
+                if (j < ((long) (number_layers-1)))
                   layer_info[j].image->previous=layer_info[j+1].image;
                 layer_info[j].image->page.x = layer_info[j].offset_x;
                 layer_info[j].image->page.y = layer_info[j].offset_y;

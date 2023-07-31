@@ -1,3 +1,11 @@
+2023-07-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/xcf.c (ReadXCFImage): Limit the maximum number of layers
+	to the range of 'long'.  Adjust arithmetic/cast to avoid undefined
+	behavior warning. Resolves SourceForge issue #713
+	"coders/xcf.c:1926:53: warning: iteration 9223372036854775806
+	invokes undefined behavior".
+
 2023-07-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update the news!
