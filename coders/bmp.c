@@ -1218,6 +1218,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     image->units=PixelsPerCentimeterResolution;
     image->x_resolution=bmp_info.x_pixels/100.0;
     image->y_resolution=bmp_info.y_pixels/100.0;
+    (void) memset(&quantum_bits,0,sizeof(PixelPacket));
+    (void) memset(&shift,0,sizeof(PixelPacket));
     /*
       Convert BMP raster image to pixel packets.
     */
@@ -1245,8 +1247,6 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Get shift and quantum bits info from bitfield masks.
         */
-        (void) memset(&shift,0,sizeof(PixelPacket));
-        (void) memset(&quantum_bits,0,sizeof(PixelPacket));
         if (bmp_info.red_mask != 0U)
           while ((shift.red < 32U) && (((bmp_info.red_mask << shift.red) & 0x80000000U) == 0))
             shift.red++;
