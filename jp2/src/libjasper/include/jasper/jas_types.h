@@ -86,19 +86,22 @@
 #define jas_longlong long long
 #define jas_ulonglong unsigned long long
 
+#if defined(_MSC_VER)
+ #ifndef _PFX_PTR
+  #ifdef _WIN64
+   #define _PFX_PTR  "ll"
+  #else
+   #define _PFX_PTR  "l"
+  #endif
+ #endif
+#endif
+
 #if defined(_MSC_VER) && (_MSC_VER < 1800)
 #define bool  int
 #define false 0
 #define true  1
 
 #include "../webp/src/webp/types.h"
-#ifndef _PFX_PTR
- #ifdef _WIN64
-  #define _PFX_PTR  "ll"
- #else
-  #define _PFX_PTR  "l"
- #endif
-#endif
 
 #ifndef PRIxFAST32
  #define PRIxFAST32 "x"

@@ -1,5 +1,8 @@
 2023-08-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* jp2/src/libjasper/include/jasper/jas_types.h: MSVC 17.6.5 needs
+	the _PFX_PTR definition.
+
 	* coders/bmp.c (ReadBMPImage): Fix GCC 13.1.0 warning about
 	quantum_bits being possibly used while uninitialized.  I don't see
 	how that is possible based on current logic, but avoid the
