@@ -1,3 +1,8 @@
+2023-08-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): Default field pass count to 1
+	since "Unsupported" tags return two arguments.
+
 2023-08-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* jp2/src/libjasper/include/jasper/jas_types.h: MSVC 17.6.5 needs

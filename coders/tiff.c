@@ -2341,6 +2341,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
       /*
         Convert TIFF tags to text attributes
+        https://gitlab.com/libtiff/libtiff/-/issues/575
       */
       {
         static const struct
@@ -2368,23 +2369,25 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           {
             const uint32 tag = text_tags[i].tag;
             const char *tag_name = text_tags[i].name;
-            int field_passcount;
+            int field_passcount=1; /* "Unsupported" tags return two arguments */
 #if TIFFLIB_VERSION <= 20111221
              /*
                Before tiff 4.0.0 (20111221), TIFFFieldWithTag returned
                TIFFFieldInfo * which provides field_passcount
              */
             const TIFFFieldInfo* tiff_field=TIFFFieldWithTag(tiff,tag);
-            field_passcount=tiff_field->field_passcount;
+            if (tiff_field != (const TIFFFieldInfo *))
+                field_passcount=tiff_field->field_passcount;
+            else
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFFieldWithTag() returns NULL for tag %u \"%s\"", tag, tag_name);
 #else
             const TIFFField *tiff_field=TIFFFieldWithTag(tiff,tag);
-            if (tiff_field == (const TIFFField *) NULL)
-              {
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "TIFFFieldWithTag() returns NULL for tag %u \"%s\"", tag, tag_name);
-                continue;
-              }
-            field_passcount=TIFFFieldPassCount(tiff_field);
+            if (tiff_field != (const TIFFField *) NULL)
+              field_passcount=TIFFFieldPassCount(tiff_field);
+            else
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFFieldWithTag() returns NULL for tag %u \"%s\"", tag, tag_name);
 #endif
 #if 0
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
