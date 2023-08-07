@@ -652,10 +652,16 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (logging && count == 2)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Magick: %c%c",
         magick[0],magick[1]);
-    if ((count != 2) || /* Found "BA" header from above above */
-        ((LocaleNCompare((char *) magick,"BM",2) != 0) && /* "BM" is Windows or OS/2 file. */
-         (LocaleNCompare((char *) magick,"CI",2) != 0)))  /* "CI" is OS/2 Color Icon */
+
+    if (count != 2)		/* Found "BA" header from above above */
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+     if((LocaleNCompare((char *) magick,"BM",2) != 0)	/* "BM" is Windows or OS/2 file. */
+     {
+       if(LocaleNCompare((char *) magick,"CI",2) != 0)) || )  /* "CI" is OS/2 Color Icon */
+          bmp_info.size!=12 && bmp_info.size!=40)	/* CI chunk must have biSize only 12 or 40 */
+             ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+     }
+
     bmp_info.file_size=ReadBlobLSBLong(image); /* File size in bytes */
     if (logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
