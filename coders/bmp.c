@@ -658,7 +658,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
      if(LocaleNCompare((char *) magick,"BM",2) != 0)	/* "BM" is Windows or OS/2 file. */
      {
        if((LocaleNCompare((char *) magick,"CI",2) != 0) ||  /* "CI" is OS/2 Color Icon */
-          bmp_info.size!=12 && bmp_info.size!=40)	/* CI chunk must have biSize only 12 or 40 */
+          (bmp_info.size!=12 && bmp_info.size!=40))	/* CI chunk must have biSize only 12 or 40 */
              ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
      }
 
