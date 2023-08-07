@@ -649,18 +649,13 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if ((count=ReadBlob(image,2,(char *) magick)) != 2)
         break;
     }
-    if (logging && count == 2)
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Magick: %c%c",
-        magick[0],magick[1]);
 
     if (count != 2)		/* Found "BA" header from above above */
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
-     if(LocaleNCompare((char *) magick,"BM",2) != 0)	/* "BM" is Windows or OS/2 file. */
-     {
-       if((LocaleNCompare((char *) magick,"CI",2) != 0) ||  /* "CI" is OS/2 Color Icon */
-          (bmp_info.size!=12 && bmp_info.size!=40))	/* CI chunk must have biSize only 12 or 40 */
-             ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
-     }
+
+    if (logging )
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),"  Magick: %c%c",
+        magick[0],magick[1]);
 
     bmp_info.file_size=ReadBlobLSBLong(image); /* File size in bytes */
     if (logging)
@@ -680,11 +675,14 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                             bmp_info.offset_bits,
                             bmp_info.ba_offset);
 
+    if(LocaleNCompare((char *) magick,"BM",2) != 0)	/* "BM" is Windows or OS/2 file. */
+    {
+      if((LocaleNCompare((char *) magick,"CI",2) != 0) ||  /* "CI" is OS/2 Color Icon */
+         (bmp_info.size!=12 && bmp_info.size!=40))	/* CI chunk must have biSize only 12 or 40 */
+             ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+     }
+
     if ((bmp_info.file_size != 0) && ((magick_off_t) bmp_info.file_size > file_size))
-      ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
-    if ((bmp_info.size != 12) && (bmp_info.size != 40) && (bmp_info.size != 108)
-        && (bmp_info.size != 124) &&
-        (!(bmp_info.size >= 12 && bmp_info.size <= 64)))
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
     if (bmp_info.offset_bits < bmp_info.size)
       ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -721,9 +719,16 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /*
           Microsoft Windows 3.X or later BMP image file.
         */
-        if (bmp_info.size < 40)
-          ThrowBMPReaderException(CorruptImageError,NonOS2HeaderSizeError,
-            image);
+        switch(bmp_info.size)
+        {
+          case 40:
+          case 56:
+          case 78:
+          case 108: break;
+          default: if(bmp_info.size <= 64)
+                     ThrowBMPReaderException(CorruptImageError, NonOS2HeaderSizeError, image);
+               break;
+        }
 
         /*
           BMP v3 defines width and hight as signed LONG (32 bit) values.  If
