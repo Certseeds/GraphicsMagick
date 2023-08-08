@@ -813,25 +813,13 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               "  Important colors: %u",bmp_info.colors_important);
           }
 
-        bmp_info.red_mask=ReadBlobLSBLong(image);
-        bmp_info.green_mask=ReadBlobLSBLong(image);
-        bmp_info.blue_mask=ReadBlobLSBLong(image);
-
-        if (bmp_info.size > 40)
+        if(bmp_info.size >= 52)
+        {
+          bmp_info.red_mask=ReadBlobLSBLong(image);
+          bmp_info.green_mask=ReadBlobLSBLong(image);
+          bmp_info.blue_mask=ReadBlobLSBLong(image);
+          if(bmp_info.size >= 56)
           {
-            /*
-              https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv4header
-            */
-            magick_uint32_t
-              v4_red_primary_x, v4_red_primary_y, v4_red_primary_z,
-              v4_green_primary_x, v4_green_primary_y, v4_green_primary_z,
-              v4_blue_primary_x, v4_blue_primary_y, v4_blue_primary_z,
-              v4_gamma_x, v4_gamma_y, v4_gamma_z;
-
-            double
-              bmp_gamma,
-              sum;
-
             /*
               Read color management information.
             */
@@ -840,26 +828,42 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "Alpha Mask: 0x%04x",
                                     bmp_info.alpha_mask);
-            bmp_info.colorspace=(magick_int32_t) ReadBlobLSBLong(image);
-            if (image->logging)
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+
+           if(bmp_info.size > 64)
+            {
+             /*
+              https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv4header
+            */
+              magick_uint32_t
+                v4_red_primary_x, v4_red_primary_y, v4_red_primary_z,
+                v4_green_primary_x, v4_green_primary_y, v4_green_primary_z,
+                v4_blue_primary_x, v4_blue_primary_y, v4_blue_primary_z,
+                v4_gamma_x, v4_gamma_y, v4_gamma_z;
+
+              double
+                bmp_gamma,
+                sum;
+
+              bmp_info.colorspace=(magick_int32_t) ReadBlobLSBLong(image);
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "BMP Colorspace: 0x%04x",
                                     bmp_info.colorspace);
 
-            v4_red_primary_x=ReadBlobLSBLong(image);
-            v4_red_primary_y=ReadBlobLSBLong(image);
-            v4_red_primary_z=ReadBlobLSBLong(image);
-            v4_green_primary_x=ReadBlobLSBLong(image);
-            v4_green_primary_y=ReadBlobLSBLong(image);
-            v4_green_primary_z=ReadBlobLSBLong(image);
-            v4_blue_primary_x=ReadBlobLSBLong(image);
-            v4_blue_primary_y=ReadBlobLSBLong(image);
-            v4_blue_primary_z=ReadBlobLSBLong(image);
-            v4_gamma_x = ReadBlobLSBLong(image);
-            v4_gamma_y = ReadBlobLSBLong(image);
-            v4_gamma_z = ReadBlobLSBLong(image);
+              v4_red_primary_x=ReadBlobLSBLong(image);
+              v4_red_primary_y=ReadBlobLSBLong(image);
+              v4_red_primary_z=ReadBlobLSBLong(image);
+              v4_green_primary_x=ReadBlobLSBLong(image);
+              v4_green_primary_y=ReadBlobLSBLong(image);
+              v4_green_primary_z=ReadBlobLSBLong(image);
+              v4_blue_primary_x=ReadBlobLSBLong(image);
+              v4_blue_primary_y=ReadBlobLSBLong(image);
+              v4_blue_primary_z=ReadBlobLSBLong(image);
+              v4_gamma_x = ReadBlobLSBLong(image);
+              v4_gamma_y = ReadBlobLSBLong(image);
+              v4_gamma_z = ReadBlobLSBLong(image);
 
-            if (LCS_CALIBRATED_RGB == bmp_info.colorspace)
+              if (LCS_CALIBRATED_RGB == bmp_info.colorspace)
               {
                 /*
                   Decode 2^30 fixed point formatted CIE primaries.
@@ -938,6 +942,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                             bmp_gamma, bmp_info.gamma_scale.x,
                                             bmp_info.gamma_scale.y, bmp_info.gamma_scale.z);
                   }
+                }
+              }
             }
           }
         if (bmp_info.size > 108)
