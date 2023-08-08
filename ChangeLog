@@ -1,6 +1,7 @@
 2023-08-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (ReadBMPImage): Re-indent/format for consistency.
+	(ReadBMPImage): Adjust expected bmp_info.size (change 64 to 120).
 
 2023-08-08  Fojtik Jaroslav  <JaFojtik@yandex.com>
 

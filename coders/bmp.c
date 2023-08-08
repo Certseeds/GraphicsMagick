@@ -650,7 +650,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
         }
 
-      if (count != 2)		/* Found "BA" header from above above */
+      if (count != 2)           /* Found "BA" header from above above */
         ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
 
       if (logging )
@@ -675,10 +675,10 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               bmp_info.offset_bits,
                               bmp_info.ba_offset);
 
-      if (LocaleNCompare((char *) magick,"BM",2) != 0)	/* "BM" is Windows or OS/2 file. */
+      if (LocaleNCompare((char *) magick,"BM",2) != 0)  /* "BM" is Windows or OS/2 file. */
         {
           if ((LocaleNCompare((char *) magick,"CI",2) != 0) ||  /* "CI" is OS/2 Color Icon */
-              (bmp_info.size!=12 && bmp_info.size!=40))	/* CI chunk must have biSize only 12 or 40 */
+              (bmp_info.size!=12 && bmp_info.size!=40)) /* CI chunk must have biSize only 12 or 40 */
             ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
         }
 
@@ -829,7 +829,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           "Alpha Mask: 0x%04x",
                                           bmp_info.alpha_mask);
 
-                  if (bmp_info.size > 64)
+                  if (bmp_info.size > 120)
                     {
                       /*
                         https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapv4header
@@ -998,6 +998,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (void) ReadBlobLSBLong(image);  /* Reserved byte */
             }
         }
+
+      if (EOFBlob(image))
+        ThrowBMPReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
       if (logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
