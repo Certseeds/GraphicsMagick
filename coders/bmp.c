@@ -678,7 +678,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (LocaleNCompare((char *) magick,"BM",2) != 0)  /* "BM" is Windows or OS/2 file. */
         {
           if ((LocaleNCompare((char *) magick,"CI",2) != 0) ||  /* "CI" is OS/2 Color Icon */
-              (bmp_info.size!=12 && bmp_info.size!=40)) /* CI chunk must have biSize only 12 or 40 */
+              (bmp_info.size!=12 && bmp_info.size!=40 && bmp_info.size!=64)) /* CI chunk must have biSize only 12 or 40 or 64 */
             ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
         }
 
@@ -725,7 +725,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             case 56:
             case 78:
             case 108: break;
-            default: if (bmp_info.size <= 64)
+            default: if (bmp_info.size < 64)
                 ThrowBMPReaderException(CorruptImageError, NonOS2HeaderSizeError, image);
               break;
             }
@@ -813,7 +813,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     "  Important colors: %u",bmp_info.colors_important);
             }
 
-          if (bmp_info.size >= 52)
+          if (bmp_info.size >= 52 && bmp_info.size!=64)
             {
               bmp_info.red_mask=ReadBlobLSBLong(image);
               bmp_info.green_mask=ReadBlobLSBLong(image);
