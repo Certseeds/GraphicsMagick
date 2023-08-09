@@ -97,7 +97,8 @@ static Image *ReadIdentityImage(const ImageInfo *image_info,
   image->columns=image->rows=order*order*order;
 
   if (image->columns*image->rows <= MaxColormapSize)
-    AllocateImageColormap(image,(const unsigned long) image->columns*image->rows);
+    if (!AllocateImageColormap(image,(const unsigned long) image->columns*image->rows))
+      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
