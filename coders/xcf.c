@@ -926,7 +926,9 @@ static MagickPassFail load_level (Image* image,
 #endif
         }
       DestroyImage(tile_image);
+#if !defined(__COVERITY__) /* 384797 Unused value */
       tile_image = (Image *) NULL;
+#endif /* if !defined(__COVERITY__) */
 
       /* adjust tile position */
       destLeft++;

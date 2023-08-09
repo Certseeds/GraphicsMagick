@@ -773,7 +773,9 @@ MagickExport Image *MontageImages(const Image *images,
           break;
         }
       DestroyImage(image);
+#if !defined(__COVERITY__) /* 384804 Unused value */
       image=(Image *) NULL;
+#endif /* if !defined(__COVERITY__) */
       tiles++;
     }
     if ((i+1) < (long) images_per_page)
