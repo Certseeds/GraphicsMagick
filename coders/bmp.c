@@ -723,10 +723,14 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
             case 40:
             case 56:
+            case 64:
             case 78:
             case 108: break;
             default: if (bmp_info.size < 64)
                 ThrowBMPReaderException(CorruptImageError, NonOS2HeaderSizeError, image);
+                        /* A value larger than 64 indicates a later version of the OS/2 BMP format.
+                           .... as far as OS/2 development caesed we could consider to
+                           close this Trojan's horse window in future. */
               break;
             }
 
