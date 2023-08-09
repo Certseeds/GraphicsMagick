@@ -831,11 +831,14 @@ MagickExport void ExpandFilename(char *filename)
       struct  passwd
         pwd;
 
+      long
+        pwnam_buf_len_s;
+
       size_t
         pwnam_buf_len;
 
       char
-        *pwnam_buf;
+        *pwnam_buf = (char *) NULL;
 #  endif /* if defined(HAVE_GETPWNAM_R) */
 
       struct passwd
@@ -851,7 +854,11 @@ MagickExport void ExpandFilename(char *filename)
 
 #  if defined(HAVE_GETPWNAM_R)
       entry=(struct passwd *) NULL;
-      pwnam_buf_len = sysconf(_SC_GETPW_R_SIZE_MAX);
+      errno = 0;
+      pwnam_buf_len_s = sysconf(_SC_GETPW_R_SIZE_MAX);
+      if (pwnam_buf_len_s <= 0)
+        return;
+      pwnam_buf_len = (size_t) pwnam_buf_len_s;
       pwnam_buf=MagickAllocateMemory(char *,pwnam_buf_len);
       if (pwnam_buf != (char *) NULL)
         (void) getpwnam_r(username,&pwd,pwnam_buf,pwnam_buf_len,&entry);
