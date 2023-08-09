@@ -2459,12 +2459,13 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     "%s compression requires 1 bits per sample!",
                                     CompressionTagToString(compress_tag));
               ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((PHOTOMETRIC_MINISBLACK != photometric) && (PHOTOMETRIC_MINISWHITE != photometric))
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "%s compression requires photometric of minisblack or miniswhite!",
                                     CompressionTagToString(compress_tag));
               ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
-            }
             }
         }
 #endif /* if defined(COMPRESSION_CCITTFAX3) */
