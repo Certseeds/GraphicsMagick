@@ -614,7 +614,11 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   progress_user_data.progress = 0;
 
   /* version 1 options */
-  decode_options->ignore_transformations = ignore_transformations == MagickTrue ? 1 : 0;
+#if LIBHEIF_NUMERIC_VERSION >= 0x01090000
+  decode_options->ignore_transformations = (ignore_transformations == MagickTrue) ? 1 : 0;
+#else
+  decode_options->ignore_transformations = 1;
+#endif
 #if HEIF_ENABLE_PROGRESS_MONITOR
   decode_options->start_progress = start_progress;
   decode_options->on_progress = on_progress;
