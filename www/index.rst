@@ -146,9 +146,9 @@ other popular software:
     control management tool which supports management of local
     changes.  The repository history goes back to 1998.
 
-  * GM has 0.00 (zero) defects per 1000 lines of code (332,315 total
-    lines included) according to `Coverity Analysis Metrics`_ on April
-    16, 2022.
+  * GM has 0.00 (zero) defects per 1000 lines of code (335,577 total
+    lines included) according to `Coverity Analysis Metrics`_ on
+    August 9, 2023.
 
   * GM developers contribute to other free projects for the public good.
 

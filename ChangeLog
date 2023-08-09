@@ -1,5 +1,7 @@
 2023-08-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* www/index.rst: Update Coverity metrics.
+
 	* coders/tiff.c (ReadTIFFImage): Fix garbled logic pertaining to
 	photometric checks.  Addresses Coverity 393177 "Structurally dead
 	code".
