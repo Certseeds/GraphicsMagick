@@ -315,6 +315,7 @@ MAGICK_NOINST_HDRS = \
 	magick/omp_data_view.h \
 	magick/pixel_cache-private.h \
 	magick/prefetch.h \
+	magick/profile-private.h \
 	magick/random-private.h \
 	magick/registry-private.h \
 	magick/render-private.h \

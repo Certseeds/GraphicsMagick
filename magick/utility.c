@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (c) 2000 Markus Friedl.  All rights reserved.
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
@@ -831,11 +831,14 @@ MagickExport void ExpandFilename(char *filename)
       struct  passwd
         pwd;
 
+      long
+        pwnam_buf_len_s;
+
       size_t
         pwnam_buf_len;
 
       char
-        *pwnam_buf;
+        *pwnam_buf = (char *) NULL;
 #  endif /* if defined(HAVE_GETPWNAM_R) */
 
       struct passwd
@@ -851,7 +854,11 @@ MagickExport void ExpandFilename(char *filename)
 
 #  if defined(HAVE_GETPWNAM_R)
       entry=(struct passwd *) NULL;
-      pwnam_buf_len = sysconf(_SC_GETPW_R_SIZE_MAX);
+      errno = 0;
+      pwnam_buf_len_s = sysconf(_SC_GETPW_R_SIZE_MAX);
+      if (pwnam_buf_len_s <= 0)
+        return;
+      pwnam_buf_len = (size_t) pwnam_buf_len_s;
       pwnam_buf=MagickAllocateMemory(char *,pwnam_buf_len);
       if (pwnam_buf != (char *) NULL)
         (void) getpwnam_r(username,&pwd,pwnam_buf,pwnam_buf_len,&entry);
@@ -1589,7 +1596,10 @@ MagickExport MagickPassFail GetExecutionPathUsingName(char *path)
 %  A description of each parameter follows:
 %
 %    o flags:  Method GetGeometry returns a bitmask that indicates
-%      which of the four values were located in the geometry string.
+%      which of the values from GeometryFlags (XValue, YValue, WidthValue,
+%      HeightValue, XNegative, YNegative, PercentValue, AspectValue, LessValue,
+%      GreaterValue, AreaValue, MinimumValue) were located in the geometry
+%      string.
 %
 %    o image_geometry:  Specifies a character string representing the geometry
 %      specification.
@@ -1602,6 +1612,8 @@ MagickExport MagickPassFail GetExecutionPathUsingName(char *path)
 %
 %
 */
+#define MagickULongRangeOk(double_val) ((double_val <= (double) ULONG_MAX) && (double_val >= 0.0))
+#define MagickLongRangeOk(double_val) ((double_val <= (double) LONG_MAX) && (double_val >= (double) LONG_MIN))
 MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
   unsigned long *width,unsigned long *height)
 {
@@ -1740,8 +1752,12 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
       count=MagickStrToD(p,&q,&double_val);
       if (count)
         {
-          bounds.width=(unsigned long) floor(double_val+0.5);
-          flags|=WidthValue;
+          double_val=floor(double_val+0.5);
+          if (MagickULongRangeOk(double_val))
+            {
+              bounds.width=(unsigned long) double_val;
+              flags|=WidthValue;
+            }
         }
       if ((*q == 'x') || (*q == 'X') || ((flags & AreaValue) && (*q == '\0')))
         p=q;
@@ -1750,9 +1766,13 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
           count=MagickStrToD(p,&p,&double_val);
           if (count)
             {
-              bounds.width=(unsigned long) floor(double_val+0.5);
-              bounds.height=bounds.width;
-              flags|=HeightValue;
+              double_val=floor(double_val+0.5);
+              if (MagickULongRangeOk(double_val))
+                {
+                  bounds.width=(unsigned long) double_val;
+                  bounds.height=bounds.width;
+                  flags|=HeightValue;
+                }
             }
         }
     }
@@ -1766,8 +1786,12 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
       count=MagickStrToD(p,&p,&double_val);
       if (count)
         {
-          bounds.height=(unsigned long) floor(double_val+0.5);
-          flags|=HeightValue;
+          double_val=floor(double_val+0.5);
+          if (MagickULongRangeOk(double_val))
+            {
+              bounds.height=(unsigned long) double_val;
+              flags|=HeightValue;
+            }
         }
     }
   if ((*p == '+') || (*p == '-'))
@@ -1780,7 +1804,15 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
           p++;
           q=p;
           count=MagickStrToD(p,&p,&double_val);
-          bounds.x=(long) ceil(double_val-0.5);
+          if (count)
+            {
+              double_val=ceil(double_val-0.5);
+              if (MagickLongRangeOk(double_val))
+                {
+                  bounds.x=(long) double_val;
+                  flags|=XValue;
+                }
+            }
         }
       else
         {
@@ -1789,12 +1821,15 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
           count=MagickStrToD(p,&p,&double_val);
           if (count)
             {
-              bounds.x=(long) ceil(-double_val-0.5);
-              flags|=XNegative;
+              double_val=ceil(-double_val-0.5);
+              if (MagickLongRangeOk(double_val))
+                {
+                  bounds.x=(long) double_val;
+                  flags|=XValue;
+                  flags|=XNegative;
+                }
             }
         }
-      if (count)
-        flags|=XValue;
       if ((*p == '+') || (*p == '-'))
         {
           /*
@@ -1805,7 +1840,15 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
               p++;
               q=p;
               count=MagickStrToD(p,&p,&double_val);
-              bounds.y=(long) ceil(double_val-0.5);
+              if (count)
+                {
+                  double_val = ceil(double_val-0.5);
+                  if (MagickLongRangeOk(double_val))
+                    {
+                      bounds.y=(long) double_val;
+                      flags|=YValue;
+                    }
+                }
             }
           else
             {
@@ -1814,12 +1857,15 @@ MagickExport int GetGeometry(const char *image_geometry,long *x,long *y,
               count=MagickStrToD(p,&p,&double_val);
               if (count)
                 {
-                  bounds.y=(long) ceil(-double_val-0.5);
-                  flags|=YNegative;
+                  double_val=ceil(-double_val-0.5);
+                  if (MagickLongRangeOk(double_val))
+                    {
+                      bounds.y=(long) ceil(double_val);
+                      flags|=YValue;
+                      flags|=YNegative;
+                    }
                 }
             }
-          if (count)
-            flags|=YValue;
         }
     }
   if (*p != '\0')
@@ -1876,7 +1922,7 @@ static int MagickStrToD(const char *start,char **end,double *value)
 
   char
     buff[MaxTextExtent],
-    *endptr;
+    *estr;
 
   int
     i,
@@ -1888,10 +1934,28 @@ static int MagickStrToD(const char *start,char **end,double *value)
     buff[i]=*p++;
   buff[i]=0;
   errno=0;
-  *value=strtod(buff,&endptr);
-  if ((errno == 0) && (buff != endptr))
-    n++;
-  *end=(char *) start+(endptr-buff);
+  *value=strtod(buff,&estr);
+  if (buff == estr)
+    {
+      *value=0.0;
+    }
+#if defined(INFINITY)
+  else if ((*value == +INFINITY) || (*value == -INFINITY))
+    {
+      *value=0.0;
+      errno=ERANGE;
+    }
+#endif
+  else if (isnan(*value))
+    {
+      *value=0.0;
+      errno=ERANGE;
+    }
+  else if (errno == 0)
+    {
+      n++;
+    }
+  *end=(char *) start+(estr-buff);
 
   return (n);
 }
@@ -3669,6 +3733,221 @@ MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *excepti
           break;
         }
       lval=(long) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to an int, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport int MagickDoubleToInt(const double dval/*, ExceptionInfo *exception*/)
+{
+  int lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=INT_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=INT_MIN;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) INT_MAX - 1))
+        {
+          lval=INT_MAX;
+          break;
+        }
+      if (ceil(dval) < ((double) INT_MIN + 1))
+        {
+          lval=INT_MIN;
+          break;
+        }
+      lval=(int) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to an unsigned long, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport unsigned long MagickDoubleToULong(const double dval/*, ExceptionInfo *exception*/)
+{
+  unsigned long lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=ULONG_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=0;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) ULONG_MAX - 1))
+        {
+          lval=ULONG_MAX;
+          break;
+        }
+      if (ceil(dval) < 0.0)
+        {
+          lval=0;
+          break;
+        }
+      lval=(unsigned long) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to an unsigned int, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport unsigned int MagickDoubleToUInt(const double dval/*, ExceptionInfo *exception*/)
+{
+  unsigned int lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=UINT_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=0;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) UINT_MAX - 1))
+        {
+          lval=UINT_MAX;
+          break;
+        }
+      if (ceil(dval) < 0.0)
+        {
+          lval=0;
+          break;
+        }
+      lval=(unsigned int) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to a short, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport short int MagickDoubleToShort(const double dval/*, ExceptionInfo *exception*/)
+{
+  short int lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=SHRT_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=SHRT_MIN;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) SHRT_MAX - 1))
+        {
+          lval=SHRT_MAX;
+          break;
+        }
+      if (ceil(dval) < ((double) SHRT_MIN + 1))
+        {
+          lval=SHRT_MIN;
+          break;
+        }
+      lval=(short int) dval;
+    } while (0);
+
+  return lval;
+}
+
+/*
+  Convert a double to an unsigned short, with clipping.
+  Someday a warning or an error may be produced here.
+*/
+MagickExport unsigned short int MagickDoubleToUShort(const double dval/*, ExceptionInfo *exception*/)
+{
+  unsigned short int lval;
+
+  do
+    {
+#if defined(INFINITY)
+      if (dval == +INFINITY)
+        {
+          lval=USHRT_MAX;
+          break;
+        }
+      if (dval == -INFINITY)
+        {
+          lval=0;
+          break;
+        }
+#endif
+      if (isnan(dval))
+        {
+          lval=0;
+          break;
+        }
+      if (floor(dval) > ((double) USHRT_MAX - 1))
+        {
+          lval=USHRT_MAX;
+          break;
+        }
+      if (ceil(dval) < 0.0)
+        {
+          lval=0;
+          break;
+        }
+      lval=(unsigned short int) dval;
     } while (0);
 
   return lval;
@@ -6062,8 +6341,10 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
     offset;
 
   assert(image != (Image *) NULL);
-  if ((formatted_text == (const char *) NULL) || (*formatted_text == '\0'))
+  if (formatted_text == (const char *) NULL)
     return((char *) NULL);
+  if (*formatted_text == '\0')
+    return AcquireString(formatted_text);
   text=(char *) formatted_text;
   /*
     Translate any embedded format characters.

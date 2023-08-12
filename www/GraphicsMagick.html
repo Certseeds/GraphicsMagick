@@ -1543,6 +1543,10 @@ sample order.  Use swap-samples-read when swapping should only occur
 in the reader, or swap-samples-write when swapping should only occur
 in the writer.
 </dd>
+<dt>heif:ignore-transformations={true|false}</dt>
+<dd>
+Return HEIF (e.g. HEIC/AVIF) image without any transformations (e.g. rotation) applied.
+</dd>
 <dt>gradient:direction={South|North|West|East|NorthWest|NorthEast|SouthWest|SouthEast}</dt>
 <dd>By default, the gradient coder produces a gradient from top to
 bottom ("South").  Since GraphicsMagick 1.3.35, the gradient direction
@@ -1562,7 +1566,7 @@ compression. If defined, this value overrides the -quality
 setting. The default quality setting of 75 results in a rate value of
 0.06641.
 </dd>
-<dt>jpeg:arithmetic={true|false}</dt>
+<dt>jpeg:arithmetic-coding={true|false}</dt>
 <dd>Enables or disables arithmetic encoding if the JPEG library
 supports it (default disabled).  When this is enabled, optimize-coding
 is necessarily disabled.
@@ -1688,6 +1692,14 @@ TIFF file.  This is useful in order to be able to read files which
 which otherwise fail to read due to problems with TIFF tags.  Note
 that some TIFF tags are required in order to be able to read the image
 data at all.
+</dd>
+<dt>tiff:photometric={minisblack|miniswhite}</dt>
+<dd>For grayscale and bilevel images, GraphicsMagick normally chooses
+the photometric based on bit depth and compression.  If the
+tiff:photometric key is defined, GraphicsMagick will use it to
+determine the photometric used while writing grayscale and bilevel
+images.  Normally bilevel images are miniswhite and grayscale images
+are minisblack.
 </dd>
 <dt>tiff:report-warnings={false|true}</dt>
 <dd>If the tiff:report-warnings key is defined and set to <strong>true</strong>,

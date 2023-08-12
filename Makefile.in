@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# Copyright (C) 2004-2022 GraphicsMagick Group
+# Copyright (C) 2004-2023 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -596,7 +596,8 @@ coders_jnx_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 @HasJPEG_TRUE@@WITH_MODULES_TRUE@am_coders_jnx_la_rpath = -rpath \
 @HasJPEG_TRUE@@WITH_MODULES_TRUE@	$(codersdir)
 coders_jp2_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_coders_jp2_la_OBJECTS = coders/jp2_la-jp2.lo
 coders_jp2_la_OBJECTS = $(am_coders_jp2_la_OBJECTS)
 coders_jp2_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -2404,6 +2405,8 @@ am__remove_distdir = \
   else :; fi
 am__post_remove_distdir = $(am__remove_distdir)
 GZIP_ENV = --best
+DIST_ARCHIVES = $(distdir).tar.xz
+DIST_TARGETS = dist-xz
 # Exists only to be overridden by the user if desired.
 AM_DISTCHECK_DVI_TARGET = dvi
 distuninstallcheck_listfiles = find . -type f -print
@@ -2473,6 +2476,8 @@ GSPDFDevice = @GSPDFDevice@
 GSPSDevice = @GSPSDevice@
 GSPaletteDevice = @GSPaletteDevice@
 GSVersion = @GSVersion@
+HEIF_CFLAGS = @HEIF_CFLAGS@
+HEIF_LIBS = @HEIF_LIBS@
 HG_BRANCH_TAG = @HG_BRANCH_TAG@
 HPGLDecodeDelegate = @HPGLDecodeDelegate@
 HTMLDecodeDelegate = @HTMLDecodeDelegate@
@@ -2548,6 +2553,7 @@ MAGICKLIB = @MAGICKLIB@
 MAGICKLIBDIR = @MAGICKLIBDIR@
 MAGICK_API_CFLAGS = @MAGICK_API_CFLAGS@
 MAGICK_API_CPPFLAGS = @MAGICK_API_CPPFLAGS@
+MAGICK_API_DEP_LIBS = @MAGICK_API_DEP_LIBS@
 MAGICK_API_LDFLAGS = @MAGICK_API_LDFLAGS@
 MAGICK_API_LIBS = @MAGICK_API_LIBS@
 MAGICK_API_PC_CPPFLAGS = @MAGICK_API_PC_CPPFLAGS@
@@ -2731,8 +2737,11 @@ xml2_config = @xml2_config@
 
 # Don't require all the GNU mandated files
 # Use XZ_OPT (a environment variable) to tune xz compression levels (e.g. XZ_OPT=-8e)
-# nostdinc
-AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-bzip2 dist-xz foreign dist-lzip
+# dist-bzip2 - Hook dist-bzip2 to dist.
+# no-dist-gzip - Do not hook dist-gzip to dist.
+# dist-lzip - Hook dist-lzip to dist.
+# dist-zstd - Hook dist-zstd to dist.
+AUTOMAKE_OPTIONS = 1.12 subdir-objects no-define nostdinc color-tests parallel-tests dist-xz foreign no-dist-gzip
 topincludedir = @includedir@/GraphicsMagick
 
 # CPPFLAGS required by all C/C++ code
@@ -3325,7 +3334,7 @@ coders_jpeg_la_LIBADD = $(LIBMAGICK) $(LIB_JPEG)
 coders_jp2_la_SOURCES = coders/jp2.c
 coders_jp2_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_jp2_la_LDFLAGS = $(MODULECOMMONFLAGS)
-coders_jp2_la_LIBADD = $(LIBMAGICK) $(LIB_JP2) $(LIB_JPEG) $(LIB_MATH)
+coders_jp2_la_LIBADD = $(LIBMAGICK) $(LIB_JP2) $(LIB_HEIF) $(LIB_JPEG) $(LIB_MATH)
 
 # JXL coder module
 coders_jxl_la_SOURCES = coders/jxl.c
@@ -4037,6 +4046,7 @@ MAGICK_NOINST_HDRS = \
 	magick/omp_data_view.h \
 	magick/pixel_cache-private.h \
 	magick/prefetch.h \
+	magick/profile-private.h \
 	magick/random-private.h \
 	magick/registry-private.h \
 	magick/render-private.h \
@@ -4815,7 +4825,9 @@ UTILITIES_EXTRA_DIST = \
 	utilities/tests/convert-cmds.txt \
 	utilities/tests/common.sh \
 	utilities/tests/sunrise.jpg \
-	utilities/tests/sunrise.miff
+	utilities/tests/sunrise.miff \
+	utilities/tests/gen-tiff-images/genimages \
+	utilities/tests/gen-tiff-images/README.txt
 
 UTILITIES_CLEANFILES = \
 	utilities/tests/*_out.icc \
@@ -4920,10 +4932,13 @@ DISTDIRS = locale scripts www PerlMagick TclMagick
 
 
 # Add zstd compression to output files
-DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip dist-zstd
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz \
-	$(distdir).tar.xz $(distdir).tar.zst
+#DIST_TARGETS = dist-lzip dist-xz dist-bzip2 dist-gzip dist-zstd
+#DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).tar.lz $(distdir).tar.xz $(distdir).tar.zst
 
+# Rules to build a .tar.zst tarball (zstd compression)
+#dist-zstd: distdir
+#	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-22} zstd --ultra -c >$(distdir).tar.zst
+#	$(am__post_remove_distdir)
 
 #
 # Build a validated snapshot release and move to the snapshots directory.
@@ -10055,14 +10070,20 @@ distdir-am: $(DISTFILES)
 dist-gzip: distdir
 	tardir=$(distdir) && $(am__tar) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).tar.gz
 	$(am__post_remove_distdir)
+
 dist-bzip2: distdir
 	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
 	$(am__post_remove_distdir)
+
 dist-lzip: distdir
 	tardir=$(distdir) && $(am__tar) | lzip -c $${LZIP_OPT--9} >$(distdir).tar.lz
 	$(am__post_remove_distdir)
 dist-xz: distdir
 	tardir=$(distdir) && $(am__tar) | XZ_OPT=$${XZ_OPT--e} xz -c >$(distdir).tar.xz
+	$(am__post_remove_distdir)
+
+dist-zstd: distdir
+	tardir=$(distdir) && $(am__tar) | zstd -c $${ZSTD_CLEVEL-$${ZSTD_OPT--19}} >$(distdir).tar.zst
 	$(am__post_remove_distdir)
 
 dist-tarZ: distdir
@@ -11383,8 +11404,10 @@ helgrind:
 # suppression entries in the test log.  Tell valgrind about the
 # suppressions by creating a .valgrindrc file with content like:
 #   --memcheck:suppressions=mysupp.supp
+#
+# Removed --var-info=yes due to annoying warnings
 memcheck:
-	$(MAKE) MEMCHECK='valgrind --tool=memcheck --leak-check=full --read-var-info=yes \
+	$(MAKE) MEMCHECK='valgrind --tool=memcheck --leak-check=full \
 	--error-exitcode=2 --track-origins=yes --num-callers=12 \
 	--quiet $(VALGRIND_EXTRA_OPTS)' check
 
@@ -11457,29 +11480,22 @@ $(DIST_WINDOWS_SRC_7ZIP) windows-dist:
 @HAS_RPM_TRUE@	@echo ==============================================================
 @HAS_RPM_TRUE@	@echo $(DIST_ARCHIVE_RPM) is ready for distribution.
 @HAS_RPM_TRUE@	@echo ==============================================================
-
-# Rules to build a .tar.zst tarball
-dist-zstd: distdir
-	tardir=$(distdir) && $(am__tar) | ZSTD_CLEVEL=$${ZSTD_CLEVEL-22} zstd --ultra -c >$(distdir).tar.zst
-	$(am__post_remove_distdir)
 # FIXME: Can use gpg --enarmor to produce asc files from sig files
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@snapshot: distcheck
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  rm -f $${file}.asc $${file}.sig ; \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  rm -f $${file}.asc ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  sha256sum $${file} > $${file}.sum ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc %s.sig " $$f $$f ; done` \
+@HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc " $$f $$f ; done` \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_TRUE@	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@snapshot: distcheck
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_ARCHIVE_SRPM)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  sha256sum $${file} > $${file}.sum ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	done
@@ -11487,7 +11503,6 @@ dist-zstd: distdir
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	$(RM) $(SNAPSHOT_DIRECTORY)/$(PACKAGE_NAME)-*-windows.7z*
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	mv $(SNAPSHOT_DIST_ARCHIVES) $(SNAPSHOT_DIRECTORY)/
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	for file in $(SNAPSHOT_DIST_ARCHIVES) ; do \
-@HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  mv $${file}.sig $(SNAPSHOT_DIRECTORY)/ ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	  mv $${file}.asc $(SNAPSHOT_DIRECTORY)/ ; \
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	done
 @HasGRAPHICSMAGICK_SNAPSHOT_COPY_FALSE@	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
@@ -11517,8 +11532,7 @@ gmsymbols:
 release: distcheck
 	$(MAKE) $(DIST_WINDOWS_SRC_7ZIP)
 	for file in $(DIST_ARCHIVES) $(DIST_WINDOWS_SRC_7ZIP) ; do \
-	  rm -f $${file}.asc $${file}.sig ; \
-	  $(GPG) --output $${file}.sig --detach-sig $${file} ; \
+	  rm -f $${file}.asc ; \
 	  $(GPG) --output $${file}.asc --armor --detach-sig $${file} ; \
 	  sha256sum $${file} > $${file}.sum ; \
 	done
@@ -11529,7 +11543,7 @@ release: distcheck
 # The project should have been configured to use clang.
 #	-enable-checker security.insecureAPI.DeprecatedOrUnsafeBufferHandling
 scan-build:
-	scan-build-12 -k --html-title='GraphicsMagick' \
+	scan-build-13 -k --html-title='GraphicsMagick' \
 	-maxloop 1000 \
 	-disable-checker deadcode.DeadStores \
 	-enable-checker security.insecureAPI.bcmp \

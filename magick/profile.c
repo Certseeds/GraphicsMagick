@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -272,8 +272,8 @@ DeleteImageProfile(Image *image,const char *name)
 %
 %    o image: The image.
 %
-%    o name: Profile name. Valid names are "8BIM", "ICM", "IPTC", "XMP" or any
-%                          unique text string.
+%    o name: Profile name. Valid names are "8BIM", "EXIF", "ICM", "IPTC",
+%              "XMP" or any unique text string.
 %
 %    o length: Updated with profile length if profile is present.  Set to NULL
 %              if length is not needed.
@@ -1202,8 +1202,8 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
 %
 %    o image: The image.
 %
-%    o name: Profile name. Valid names are "8BIM", "ICM", "IPTC", XMP, or any
-%                          unique text string.
+%    o name: Profile name. Valid names are "8BIM", EXIF, "ICM", "IPTC",
+%               XMP, or any unique text string.
 %
 %    o profile: Address of profile to add. Pass zero to remove an existing
 %               profile.

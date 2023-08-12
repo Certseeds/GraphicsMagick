@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -848,10 +848,10 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
     char
       magick[MaxTextExtent];
 
-    for (i=0; i < 10; i++)
+    for (i=0; i < 10 && i < length; i++)
       magick[i]=GetCharacter(jpeg_info);
-    magick[10]='\0';
-    length-=10;
+    magick[i]='\0';
+    length-=i;
     if (LocaleCompare(magick,"Photoshop ") != 0)
       {
         /*
@@ -865,9 +865,9 @@ static boolean ReadIPTCProfile(j_decompress_ptr jpeg_info)
   /*
     Remove the version number.
   */
-  for (i=0; i < 4; i++)
+  for (i=0; i < 4 && i < length; i++)
     (void) GetCharacter(jpeg_info);
-  length-=4;
+  length-=i;
   tag_length=0;
 #endif
   if (length <= 0)
@@ -954,7 +954,7 @@ EstimateJPEGQuality(const struct jpeg_decompress_struct *jpeg_info,
     i;
 
   save_quality=0;
-#ifdef D_LOSSLESS_SUPPORTED
+#if !defined(LIBJPEG_TURBO_VERSION_NUMBER) && defined(D_LOSSLESS_SUPPORTED)
   if (image->compression==LosslessJPEGCompression)
     {
       save_quality=100;
@@ -1461,7 +1461,9 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
     }
 #endif
 #if (JPEG_LIB_VERSION >= 61) && defined(D_PROGRESSIVE_SUPPORTED)
-#ifdef D_LOSSLESS_SUPPORTED
+#if !defined(LIBJPEG_TURBO_VERSION_NUMBER) && defined(D_LOSSLESS_SUPPORTED)
+  /* This code is based on a patch to IJG JPEG 6b, or somesuch.  Standard
+     library does not have a 'process' member. */
   image->interlace=
     jpeg_info.process == JPROC_PROGRESSIVE ? LineInterlace : NoInterlace;
   image->compression=jpeg_info.process == JPROC_LOSSLESS ?
@@ -1693,7 +1695,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
         }
     }
 
-  jpeg_pixels=MagickAllocateResourceLimitedArray(JSAMPLE *,
+  jpeg_pixels=MagickAllocateResourceLimitedClearedArray(JSAMPLE *,
                                   jpeg_info.output_components,
                                   MagickArraySize(image->columns,
                                                   sizeof(JSAMPLE)));
@@ -1702,9 +1704,6 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
       jpeg_destroy_decompress(&jpeg_info);
       ThrowJPEGReaderException(ResourceLimitError,MemoryAllocationFailed,image);
     }
-  (void) memset(jpeg_pixels,0,MagickArraySize(jpeg_info.output_components,
-                                              MagickArraySize(image->columns,
-                                                              sizeof(JSAMPLE))));
 
   /*
     Extended longjmp-based error handler (with jpeg_pixels)
@@ -2791,7 +2790,8 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
       "Image resolution: %ld,%ld",(long) image->x_resolution,
       (long) image->y_resolution);
-  if ((image->x_resolution != 0) && (image->y_resolution != 0))
+  if ((image->x_resolution >= 0) && (image->x_resolution < (double) SHRT_MAX) &&
+      (image->y_resolution >= 0) && (image->y_resolution < (double) SHRT_MAX))
     {
       /*
         Set image resolution.
@@ -2896,7 +2896,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   if ((image->compression == LosslessJPEGCompression) ||
       (quality > 100))
     {
-#if defined(C_LOSSLESS_SUPPORTED)
+#if !defined(LIBJPEG_TURBO_VERSION_NUMBER) && defined(C_LOSSLESS_SUPPORTED)
       if (quality < 100)
         ThrowException(&image->exception,CoderWarning,
                        LosslessToLossyJPEGConversion,(char *) NULL);

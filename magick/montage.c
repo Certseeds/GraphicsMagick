@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -269,7 +269,7 @@ MagickExport Image *MontageImages(const Image *images,
 
   char
     tile_geometry[MaxTextExtent],
-    *title = 0;
+    *title = (char *) NULL;
 
   const ImageAttribute
     *attribute;
@@ -417,6 +417,15 @@ MagickExport Image *MontageImages(const Image *images,
       tiles_per_column=number_images;
       /* flags= */ (void) GetGeometry(montage_info->tile,&x,&y,&tiles_per_row,
         &tiles_per_column);
+    }
+  if ((0 == tiles_per_row) || (0 == tiles_per_column))
+    {
+      for (tile=0; tile < number_images; tile++)
+        if (image_list[tile])
+          DestroyImage(image_list[tile]);
+      MagickFreeMemory(master_list);
+      ThrowException(exception,OptionError,GeometryDimensionsAreZero,"tile");
+      return((Image *) NULL);
     }
   /*
     Determine tile sizes.
@@ -764,7 +773,9 @@ MagickExport Image *MontageImages(const Image *images,
           break;
         }
       DestroyImage(image);
+#if !defined(__COVERITY__) /* 384804 Unused value */
       image=(Image *) NULL;
+#endif /* if !defined(__COVERITY__) */
       tiles++;
     }
     if ((i+1) < (long) images_per_page)

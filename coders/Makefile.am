@@ -488,7 +488,7 @@ coders_jpeg_la_LIBADD      = $(LIBMAGICK) $(LIB_JPEG)
 coders_jp2_la_SOURCES      = coders/jp2.c
 coders_jp2_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_jp2_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_jp2_la_LIBADD       = $(LIBMAGICK) $(LIB_JP2) $(LIB_JPEG) $(LIB_MATH)
+coders_jp2_la_LIBADD       = $(LIBMAGICK) $(LIB_JP2) $(LIB_HEIF) $(LIB_JPEG) $(LIB_MATH)
 
 # JXL coder module
 coders_jxl_la_SOURCES     = coders/jxl.c

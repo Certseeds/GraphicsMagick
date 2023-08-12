@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -146,10 +146,18 @@ MagickSetFileSystemBlockSize(const size_t block_size)
 %  should be invoked in the primary (original) thread of the application's
 %  process while shutting down, and only after any threads which might be
 %  using GraphicsMagick functions have terminated.  Since GraphicsMagick
-%  uses threads internally via OpenMP, it is also necessary for any function
-%  calls into GraphicsMagick to have already returned so that OpenMP worker
-%  threads are quiesced and won't be accessing any semaphores or data
-%  structures which are destroyed by this function.
+%  may use threads internally via OpenMP, it is also necessary for any
+%  function calls into GraphicsMagick to have already returned so that
+%  OpenMP worker threads are quiesced and won't be accessing any semaphores
+%  or data structures which are destroyed by this function.
+%
+%  The OpenMP implementation (if present) starts/stops any OpenMP worker
+%  threads and allocates/frees OpenMP resources using its own algorithms.
+%  This means that OpenMP worker threads and OpenMP resources are likely
+%  to remain allocated after DestroyMagick() returns.  Since OpenMP 5.0,
+%  invoking omp_pause_resource_all(omp_pause_hard) will assure that any
+%  resources allocated by OpenMP (threads, thread-specific memory, etc.)
+%  are freed, and this may be called after DestroyMagick() has returned.
 %
 %  The format of the DestroyMagick function is:
 %
@@ -1128,7 +1136,8 @@ InitializeMagick(const char *path)
 %
 %  InitializeMagickEx() initializes the GraphicsMagick environment,
 %  providing a bit more more control and visibility over initialization
-%  than the original InitializeMagick().
+%  than the original InitializeMagick().  Use DestroyMagick() to destroy
+%  the GraphicsMagick environment when it is not longer needed.
 %
 %  InitializeMagick() or InitializeMagickEx() MUST be invoked by the using
 %  program before making use of GraphicsMagick functions or else the library
@@ -1142,6 +1151,10 @@ InitializeMagick(const char *path)
 %  then that function should be invoked before InitializeMagickEx() since
 %  the memory allocation functions need to be consistent.
 %
+%  Available options are:
+%
+%    o MAGICK_OPT_NO_SIGNAL_HANDER - Don't register ANSI/POSIX signal handlers
+%
 %  The format of the InitializeMagickEx function is:
 %
 %      MagickPassFail InitializeMagickEx(const char *path,
@@ -1152,7 +1165,7 @@ InitializeMagick(const char *path)
 %
 %    o path: The execution path of the current GraphicsMagick client (or NULL)
 %
-%    o options: Options flags tailoring initializations performed
+%    o options: Options bit flags tailoring initializations performed
 %
 %    o exception: Information about initialization failure is reported here.
 %

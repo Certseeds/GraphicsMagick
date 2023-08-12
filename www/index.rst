@@ -28,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  ========================================================
-Current Release              1.3.40 (Released January 14, 2023) `download release`__
+Current Release              1.3.41 (Released August 12, 2023) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  ========================================================
@@ -67,12 +67,12 @@ version of this page.
 .. _`Coverity Analysis Metrics` : https://scan.coverity.com/projects/graphicsmagick
 
 GraphicsMagick is the swiss army knife of image processing. Comprised
-of 279K physical lines (according to David A. Wheeler's `SLOCCount`_)
-of source code in the base package (or 1,275K including 3rd party
-libraries) it provides a robust and efficient collection of tools and
-libraries which support reading, writing, and manipulating an image in
-over 92 major formats including important formats like DPX, GIF, JPEG,
-JPEG-2000, PNG, PDF, PNM, TIFF, and WebP.
+of 284K physical lines (according to David A. Wheeler's `SLOCCount`_)
+of source code in the base package, it provides a robust and efficient
+collection of tools and libraries which support reading, writing, and
+manipulating an image in over 92 major formats including important
+formats like DPX, GIF, JPEG, JPEG-2000, JXL, PNG, PDF, PNM, TIFF, and
+WebP.
 
 Image processing is multi-threaded using OpenMP_ (`read about OpenMP
 in GraphicsMagick`_) so that CPU-bound tasks scale linearly as
@@ -84,7 +84,7 @@ GraphicsMagick is quite portable, and compiles under almost every general
 purpose operating system that runs on 32-bit or 64-bit CPUs.
 GraphicsMagick is available for virtually any Unix or Unix-like system,
 including Linux. It also runs under `Windows <INSTALL-windows.html>`_
-Vista and later (Vista, 7, 8.X, 10), and MacOS-X.
+Vista and later (Vista, 7, 8.X, 10, 11), and MacOS-X.
 
 GraphicsMagick supports huge images and has been tested with
 gigapixel-size images. GraphicsMagick can create new images on the
@@ -146,9 +146,9 @@ other popular software:
     control management tool which supports management of local
     changes.  The repository history goes back to 1998.
 
-  * GM has 0.00 (zero) defects per 1000 lines of code (332,315 total
-    lines included) according to `Coverity Analysis Metrics`_ on April
-    16, 2022.
+  * GM has 0.00 (zero) defects per 1000 lines of code (335,577 total
+    lines included) according to `Coverity Analysis Metrics`_ on
+    August 9, 2023.
 
   * GM developers contribute to other free projects for the public good.
 

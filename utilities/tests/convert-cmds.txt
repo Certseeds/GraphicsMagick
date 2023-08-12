@@ -55,25 +55,25 @@
 -fill blue -stroke gold -draw 'polygon 400,200 1100,800 100,300'
 -fill none -stroke gold -draw 'Bezier 400,200 1100,800 100,300'
 -fill blue -stroke gold -draw 'Bezier 400,200 1100,800 100,300'
--draw 'image Over 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image In 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Out 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Atop 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Xor 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Plus 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Minus 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Over 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Add 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Subtract 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Difference 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Divide 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Multiply 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Bumpmap 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image Copy 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image CopyRed 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image CopyGreen 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image CopyBlue 120,150 0,0 "${SUNRISE_MIFF}"'
--draw 'image CopyOpacity 120,150 0,0 "${SUNRISE_MIFF}"'
+-draw 'image Over 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image In 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Out 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Atop 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Xor 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Plus 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Minus 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Over 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Add 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Subtract 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Difference 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Divide 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Multiply 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Bumpmap 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image Copy 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image CopyRed 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image CopyGreen 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image CopyBlue 120,150 0,0 \"${SUNRISE_MIFF}\"'
+-draw 'image CopyOpacity 120,150 0,0 \"${SUNRISE_MIFF}\"'
 -edge 0x1
 -emboss 0x1
 -enhance
@@ -148,6 +148,7 @@
 -recolor '0.9,0,0,0,0.9,0,0,0,1.2'
 -recolor '.22,.72,.07,.22,.72,.07,.22,.72,.07'
 -density 75x75 -resample 50x50
+-region 640x480+400+500 -blur 0x6
 -resize 10%
 -resize 50%
 -resize 150%

@@ -125,7 +125,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1030"/>
+				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool

@@ -1,0 +1,284 @@
+#!/bin/sh
+# Copyright (C) 2004-2023 GraphicsMagick Group
+#
+# This program is covered by multiple licenses, which are described in
+# Copyright.txt. You should have received a copy of Copyright.txt with this
+# package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
+#
+# Use GraphicsMagick to produce a wide-variety of uncompressed TIFF formats.
+#
+# A "Q32" build of GraphicsMagick is recommended in order to write
+# true deep images, although a "Q16" build should be able to do almost
+# everything (although not being able to produce true 32-bit data),
+# and even a "Q8" build of GraphicsMagick is able to read most of the
+# generated files.
+#
+# Many applications will be unable to read many of the generated TIFF files.
+
+# This script is not integrated into the GraphicsMagick test framework so
+# some editing may be desireable, such as to use a special GraphicsMagick
+# build or your favorite input image.
+
+# The output file "summary.txt" summarizes the files which were generated.
+
+#GM=${HOME}/build/GM-32-static/utilities/gm
+GM=gm
+GM_STD_OPT=""
+MASTER_IMAGE_ORIGINAL=../sunrise.miff  #${HOME}/Downloads/IMG_20170904_182108.jpg
+MASTER_IMAGE_GRAY=master_gray.miff
+MASTER_IMAGE_GRAY_PSEUDO='master_gray_pseudo_%02d.miff'
+MASTER_IMAGE_RGB=master_rgb.miff
+MASTER_IMAGE_RGB_PSEUDO='master_rgb_pseudo_%02d.miff'
+MASTER_IMAGE_CMYK=master_cmyk.miff
+COLUMNS=983 #73
+ROWS=887 #43  499
+
+GRAY_DEPTHS='1 2 4 6 8 10 12 14 16 24 32'
+PSEUDO_DEPTHS='2 3 4 8 12 16'  # 16 bit (65536 colors) will take a long time!
+FLOAT_DEPTHS='16 24 32 64'
+TRUE_COLORS='2 4 8 10 12 14 16 24 32'
+CMYK_COLORS='8 16'
+
+# FIXME: The maximum allowable amount of image difference before
+# reporting "Error!" should be based on the image properties.
+MAX_ERROR=0.052
+
+prefix=img
+
+SUMMARY=summary.txt
+printf "" > $SUMMARY
+
+if [ ! -f $MASTER_IMAGE_GRAY ]
+   then
+       printf "Creating ${MASTER_IMAGE_GRAY}...\n" | tee -a $SUMMARY
+       $GM convert $MASTER_IMAGE_ORIGINAL +profile '*' -depth 32 -type Grayscale -density 72x72 -operator All Noise-Gaussian '0.196078%' -geometry "!${COLUMNS}x${ROWS}" $MASTER_IMAGE_GRAY
+fi
+
+if [ ! -f $MASTER_IMAGE_RGB ]
+   then
+       printf "Creating ${MASTER_IMAGE_RGB}...\n" | tee -a $SUMMARY
+       $GM convert $MASTER_IMAGE_ORIGINAL +profile '*' -depth 32 -density 72x72 -operator All Noise-Gaussian '0.196078%' -geometry "!${COLUMNS}x${ROWS}" $MASTER_IMAGE_RGB
+fi
+
+if [ ! -f $MASTER_IMAGE_CMYK ]
+   then
+       printf "Creating ${MASTER_IMAGE_CMYK}...\n" | tee -a $SUMMARY
+       $GM convert $MASTER_IMAGE_ORIGINAL +profile '*' -colorspace cmyk -depth 32 -operator All Noise-Gaussian '0.196078%' -density 72x72 -geometry "!${COLUMNS}x${ROWS}" $MASTER_IMAGE_CMYK
+fi
+
+for depth in $PSEUDO_DEPTHS
+do
+    colors=`echo "2^${depth}" | bc`
+    if [ ! -f "$(printf "${MASTER_IMAGE_RGB_PSEUDO}" $depth)" ]
+       then
+           printf "Creating $(printf "${MASTER_IMAGE_RGB_PSEUDO}" $depth) (${colors} colors)...\n" | tee -a $SUMMARY
+           $GM convert $MASTER_IMAGE_RGB -colors $colors $(printf "${MASTER_IMAGE_RGB_PSEUDO}" $depth)
+    fi
+    if [ ! -f "$(printf "${MASTER_IMAGE_GRAY_PSEUDO}" $depth)" ]
+       then
+           printf "Creating $(printf "${MASTER_IMAGE_GRAY_PSEUDO}" $depth) (${colors} colors)...\n" | tee -a $SUMMARY
+           $GM convert $MASTER_IMAGE_GRAY -colors $colors $(printf "${MASTER_IMAGE_GRAY_PSEUDO}" $depth)
+    fi
+done
+
+for compress in none rle lzw zip zstd lzma
+do
+
+    # Fill Order (msb2lsb is normal for modern CPUs)
+    for fillorder in msb2lsb lsb2msb
+    do
+        case ${fillorder} in
+            lsb2msb)
+                fo=fl
+                ;;
+            *)
+                fo=fm
+                ;;
+        esac
+        # Word endianness (MSB is like Motorola 68K and Sun SPARC, LSB is like x86)
+        for endian in lsb msb
+        do
+            # Classic TIFF, or BigTIFF
+            for magick in tiff bigtiff
+            do
+                case ${magick} in
+                    bigtiff)
+                        offset=o64
+                        ;;
+                    *)
+                        offset=o32
+                        ;;
+                esac
+
+                # Gray strip minisblack images (minisblack control depends on GraphicsMagick newer than 2023-05-06)
+                for depth in $GRAY_DEPTHS
+                do
+                    outname=`printf "${magick}:${prefix}-u-minisblack-strip-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit minisblack strip ${magick} ${endian} ${fillorder} ${compress} gray image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_GRAY $GM_STD_OPT -type Grayscale -define tiff:photometric=minisblack -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth $outname
+                    # -maximum-error <limit>
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_GRAY $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Gray strip miniswhite images (miniswhite control depends on GraphicsMagick newer than 2023-05-06)
+                for depth in $GRAY_DEPTHS
+                do
+                    outname=`printf "${magick}:${prefix}-u-miniswhite-strip-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit miniswhite strip ${magick} ${endian} ${fillorder} ${compress} gray image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_GRAY $GM_STD_OPT -type Grayscale -define tiff:photometric=miniswhite -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth $outname
+                    # -maximum-error <limit>
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_GRAY $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Gray tiled minisblack images
+                for depth in $GRAY_DEPTHS
+                do
+                    outname=`printf "${magick}:${prefix}-u-minisblack-tile-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit minisblack tiled ${magick} ${endian} ${fillorder} ${compress} gray image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_GRAY $GM_STD_OPT -type Grayscale -define tiff:photometric=minisblack -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:tile-geometry=16x16 -define tiff:bits-per-sample=$depth $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_GRAY $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Gray tiled miniswhite images
+                for depth in $GRAY_DEPTHS
+                do
+                    outname=`printf "${magick}:${prefix}-u-miniswhite-tile-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit miniswhite tiled ${magick} ${endian} ${fillorder} ${compress} gray image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_GRAY $GM_STD_OPT -type Grayscale -define tiff:photometric=miniswhite -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:tile-geometry=16x16 -define tiff:bits-per-sample=$depth $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_GRAY $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Colormapped strip images
+                for depth in $PSEUDO_DEPTHS
+                do
+                    colors=`echo "2^${depth}" | bc`
+                    outname=`printf "${magick}:${prefix}-u-palette-strip-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n"  "$outname" "${COLUMNS}x${ROWS} int ${colors}-entry colormapped strip ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $(printf "${MASTER_IMAGE_RGB_PSEUDO}" $depth) $GM_STD_OPT -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -colors $colors $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $(printf "${MASTER_IMAGE_RGB_PSEUDO}" $depth) $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Colormapped tiled images
+                for depth in $PSEUDO_DEPTHS
+                do
+                    colors=`echo "2^${depth}" | bc`
+                    outname=`printf "${magick}:${prefix}-u-palette-tile-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int ${colors}-entry colormapped tiled ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $(printf "${MASTER_IMAGE_RGB_PSEUDO}" $depth) $GM_STD_OPT -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -colors $colors -define tiff:tile-geometry=16x16 $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $(printf "${MASTER_IMAGE_RGB_PSEUDO}" $depth) $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Truecolor strip contiguous images
+                for depth in $TRUE_COLORS
+                do
+                    outname=`printf "${magick}:${prefix}-u-rgb-strip-contig-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit contiguous RGB ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_RGB $GM_STD_OPT -type TrueColor -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_RGB $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Truecolor strip planar images
+                for depth in $TRUE_COLORS
+                do
+                    outname=`printf "${magick}:${prefix}-u-rgb-strip-planar-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit separated RGB ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_RGB $GM_STD_OPT -type TrueColor -interlace plane -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_RGB $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Truecolor tiled contiguous images
+                for depth in $TRUE_COLORS
+                do
+                    outname=`printf "${magick}:${prefix}-u-rgb-tile-contig-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit tiled contiguous RGB ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_RGB $GM_STD_OPT -type TrueColor -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:tile-geometry=16x16 -define tiff:bits-per-sample=$depth $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_RGB $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Truecolor tiled planar images
+                for depth in $TRUE_COLORS
+                do
+                    outname=`printf "${magick}:${prefix}-u-rgb-tile-planar-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit tiled separated RGB ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_RGB $GM_STD_OPT -type TrueColor -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:tile-geometry=16x16 -interlace plane -define tiff:bits-per-sample=$depth $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_RGB $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # CMYK strip images
+                for depth in $CMYK_COLORS
+                do
+                    outname=`printf "${magick}:${prefix}-u-separated-strip-contig-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit strip contiguous CMYK ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_CMYK $GM_STD_OPT -type ColorSeparation -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_CMYK $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # CMYK strip planar images
+                for depth in $CMYK_COLORS
+                do
+                    outname=`printf "${magick}:${prefix}-u-separated-strip-planar-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} int $depth-bit strip separated CMYK ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_CMYK $GM_STD_OPT -type ColorSeparation -interlace plane -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_CMYK $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                ######################
+
+                # Truecolor float strip contiguous images
+                for depth in $FLOAT_DEPTHS
+                do
+                    outname=`printf "${magick}:${prefix}-f-rgb-strip-contig-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} float $depth-bit contiguous RGB ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_RGB $GM_STD_OPT -type TrueColor -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth -define tiff:sample-format=ieeefp -define tiff:max-sample-value=1.0 -define tiff:min-sample-value=0.0 $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_RGB $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Truecolor float strip planar images
+                for depth in $FLOAT_DEPTHS
+                do
+                    outname=`printf "${magick}:${prefix}-f-rgb-strip-planar-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} float $depth-bit separated RGB ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_RGB $GM_STD_OPT -type TrueColor -interlace plane -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth -define tiff:sample-format=ieeefp -define tiff:max-sample-value=1.0 -define tiff:min-sample-value=0.0 $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_RGB $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Truecolor float tiled contiguous images
+                for depth in $FLOAT_DEPTHS
+                do
+                    outname=`printf "${magick}:${prefix}-f-rgb-tile-contig-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} float $depth-bit tiled contiguous RGB ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_RGB $GM_STD_OPT -type TrueColor -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:tile-geometry=16x16 -define tiff:bits-per-sample=$depth -define tiff:sample-format=ieeefp -define tiff:max-sample-value=1.0 -define tiff:min-sample-value=0.0 $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_RGB $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # Truecolor float tiled planar images
+                for depth in $FLOAT_DEPTHS
+                do
+                    outname=`printf "${magick}:${prefix}-f-rgb-tile-planar-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} float $depth-bit tiled separated RGB ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_RGB $GM_STD_OPT -type TrueColor -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:tile-geometry=16x16 -interlace plane -define tiff:bits-per-sample=$depth -define tiff:sample-format=ieeefp -define tiff:max-sample-value=1.0 -define tiff:min-sample-value=0.0 $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_RGB $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # CMYK strip float images
+                for depth in $CMYK_COLORS
+                do
+                    outname=`printf "${magick}:${prefix}-f-separated-strip-contig-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} float $depth-bit strip contiguous CMYK ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_CMYK $GM_STD_OPT -type ColorSeparation -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth -define tiff:sample-format=ieeefp -define tiff:max-sample-value=1.0 -define tiff:min-sample-value=0.0 $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_CMYK $outname || printf "Error!\n" | tee -a $SUMMARY
+                done
+
+                # CMYK strip float planar images
+                for depth in $CMYK_COLORS
+                do
+                    outname=`printf "${magick}:${prefix}-f-separated-strip-planar-${offset}-${endian}-${fo}-${compress}-%02d.tif" $depth`
+                    printf "%-56s %s\n" "$outname" "${COLUMNS}x${ROWS} float $depth-bit strip separated CMYK ${magick} ${endian} ${fillorder} ${compress} image" | tee -a $SUMMARY
+                    $GM convert -verbose $MASTER_IMAGE_CMYK $GM_STD_OPT -type ColorSeparation -interlace plane -endian ${endian} -define tiff:fill-order=${fillorder} -compress ${compress} -define tiff:bits-per-sample=$depth -define tiff:sample-format=ieeefp -define tiff:max-sample-value=1.0 -define tiff:min-sample-value=0.0 $outname
+                    $GM compare -metric mse -maximum-error $MAX_ERROR $MASTER_IMAGE_CMYK $outname || printf "Error!\n" | tee -a $SUMMARY | tee -a $SUMMARY
+                done
+            done
+        done
+    done
+done
+#rm -f $MASTER_IMAGE_GRAY $MASTER_IMAGE_RGB $MASTER_IMAGE_CMYK

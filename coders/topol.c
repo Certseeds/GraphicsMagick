@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -20,13 +20,13 @@
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                                2003 - 2018                                  %
+%                                2003 - 2023                                  %
 %                                                                             %
 %                                                                             %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%
+% Note: TopoL GIS is here: http://www.topol.eu/articles/about
 */
 
 /*
@@ -50,11 +50,10 @@ typedef struct
   magick_uint16_t Rows;
   magick_uint16_t Cols;
   magick_uint16_t FileType;     /* 0-binary, 1-8 bitu, 2-8 bits+PAL, 3-4 bits,
-                                   4-4 bits+PAL, 5-24 bits, 6-16 bits, 7-32
-                                   bits */
+                                   4-4 bits+PAL, 5-24 bits, 6-16 bits, 7-32 bits */
   magick_uint32_t Zoom;
   magick_uint16_t Version;
-  magick_uint16_t Komprese;             /* 0 - uncompressed (from release 1) */
+  magick_uint16_t Komprese;	/* 0 - uncompressed (from release 1) */
   magick_uint16_t Stav;
   double xRasMin;
   double yRasMin;
@@ -282,6 +281,83 @@ static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
 
   return 0;
 }
+
+
+static const char *ExplainFileType(magick_uint16_t FileType)
+{
+  switch(FileType)
+  {
+    case 0: return "binary";
+    case 1: return "8 bits gray";
+    case 2: return "8 bits + PALETTE";
+    case 3: return "4 bits gray";
+    case 4: return "4 bits + PALETTE";
+    case 5: return "24 bits RGB";
+    case 6: return "16 bits";
+    case 7: return "32 bits";
+  }
+  return "Unknown - invalid";
+}
+
+static void LogHeaderTopoL(RasHeader *pHeader)
+{
+ if(pHeader==NULL) return;
+ (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                        "TopoL Header:\n"
+                        "    Rows:		%u\n"
+                        "    Columns:		%u\n"
+                        "    FileType:		%u %s\n"
+                        "    Zoom:		%u\n"
+                        "    Version:		%u\n"
+                        "    Compression:	%u\n"
+                        "    Status:		%u",
+                               pHeader->Rows,
+			       pHeader->Cols,
+                               pHeader->FileType, ExplainFileType(pHeader->FileType),
+			       pHeader->Zoom,
+                               pHeader->Version,
+			       pHeader->Komprese,
+                               pHeader->Stav);
+}
+
+
+static ImageInfo *CheckFName(ImageInfo *clone_info, size_t *i)
+{
+size_t j;
+  if(clone_info==NULL || i==NULL) return NULL;
+
+  j = *i = strnlen(clone_info->filename, sizeof(clone_info->filename));
+  if(j>=sizeof(clone_info->filename) || j==0)
+  {
+    DestroyImageInfo(clone_info);
+    return NULL;
+  }
+
+  while(--j > 0)
+  {
+    const char c = clone_info->filename[j];
+    if(c == '.')
+    {
+      *i = j;
+      break;
+    }
+    if(c=='/' || c=='\\' || c==':')
+    {
+      j = *i;
+      break;	/* *i will remain intact. */
+    }
+  }
+
+  if(j <= 0)
+  {
+    DestroyImageInfo(clone_info);
+    return NULL;
+  }
+
+return clone_info;
+}
+
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -294,17 +370,17 @@ static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method ReadTOPOLImage reads an TOPOL X image file and returns it.  It
+%  Method ReadTopoLImage reads an TOPOL X image file and returns it.  It
 %  allocates the memory necessary for the new Image structure and returns a
 %  pointer to the new image.
 %
-%  The format of the ReadTOPOLImage method is:
+%  The format of the ReadTopoLImage method is:
 %
-%      Image *ReadTOPOLImage(const ImageInfo *image_info,ExceptionInfo *exception)
+%      Image *ReadTopoLImage(const ImageInfo *image_info,ExceptionInfo *exception)
 %
 %  A description of each parameter follows:
 %
-%    o image:  Method ReadTOPOLImage returns a pointer to the image after
+%    o image:  Method ReadTopoLImage returns a pointer to the image after
 %      reading. A null image is returned if there is a memory shortage or if
 %      the image cannot be read.
 %
@@ -325,7 +401,7 @@ static int ReadBlobDwordLSB(Image *image, size_t len, magick_uint32_t *data)
   ThrowReaderException(code_,reason_,image_); \
 }
 
-static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * exception)
+static Image *ReadTopoLImage(const ImageInfo * image_info, ExceptionInfo * exception)
 {
   Image
     *image,
@@ -343,10 +419,9 @@ static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * excep
     depth,
     status;
 
-  long
-    i,
-    j,
-    ldblk;
+  size_t i;
+  long j;
+  long ldblk;
 
   unsigned char
     *BImgBuff = NULL,
@@ -410,15 +485,16 @@ static Image *ReadTOPOLImage(const ImageInfo * image_info, ExceptionInfo * excep
       if (EOFBlob(image))
         ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image);
     }
+  if(image->logging) LogHeaderTopoL(&Header);
 
-  for (i = 0; i < (long) sizeof(Header.Name); i++)
+  for(i=0; i<sizeof(Header.Name); i++)
     {
       if (Header.Name[i] < ' ')
 TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImageHeader, image);
     }
   if (Header.Komprese != 0 || (Header.Version >= 2 && Header.TileCompression != 0))
     ThrowTOPOLReaderException(CorruptImageError, UnrecognizedImageCompression, image);
-  if (((Header.Rows == 0 || Header.Cols == 0)) ||
+  if(Header.Rows == 0 || Header.Cols == 0 ||
       ((Header.Version >= 2) &&
        (Header.TileWidth == 0 ||
         Header.TileHeight == 0 ||
@@ -464,43 +540,30 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   image->columns = Header.Cols;
   image->rows = Header.Rows;
 
-  i = GetBlobSize(image);
-  if(i>0)
-    if(((magick_uint64_t)8*Header.Cols*(magick_uint64_t)Header.Rows) / image->depth > (magick_uint64_t)GetBlobSize(image))
-      goto TOPOL_KO;    /* Check for forged image that overflows file size. */
+  j = GetBlobSize(image);
+  if(j<512)			// Header size=512bytes; negative number means failure.
+  {
+    fprintf(stderr,"TopoL: GetBlobSize() returned small or negative value %ld!",j);
+    goto TOPOL_KO;
+  }
 
   /* If ping is true, then only set image size and colors without reading any image data. */
   if (image_info->ping) goto DONE_READING;
 
+  if(((magick_uint64_t)(depth*Header.Cols+7)/8) * (magick_uint64_t)Header.Rows > (magick_uint64_t)GetBlobSize(image)-512)
+      goto TOPOL_KO;    /* Check for forged image that overflows file size. */
+
   /* ----- Handle the reindexing mez file ----- */
   j = image->colors;
   if(j<=0 || j>256) j=256;
-  for(i=0; i<j; i++)
+  for(i=0; i<(size_t) j; i++)
   {
-    MEZ[i] = (unsigned char)((i*256)/j);
+    MEZ[i] = (unsigned char)((i*255) / (j-1));
   }
 
   if(Header.FileType>=5) goto NoMEZ;
 
-  if ((clone_info=CloneImageInfo(image_info)) == NULL) goto NoMEZ;
-
-  i=(long) strlen(clone_info->filename);
-  j=i;
-  while(--i>0)
-    {
-      if(clone_info->filename[i]=='.')
-      {
-        break;
-      }
-      if(clone_info->filename[i]=='/' || clone_info->filename[i]=='\\' || clone_info->filename[i]==':' )
-      {
-        i=j;
-        break;
-      }
-    }
-
-  if (i <= 0)
-    goto NoPalette;
+  if((clone_info=CheckFName(CloneImageInfo(image_info),&i)) == NULL) goto NoMEZ;
 
   (void) strlcpy(clone_info->filename+i,".MEZ",sizeof(clone_info->filename)-i);
   if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
@@ -518,7 +581,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   status=OpenBlob(clone_info,palette,ReadBinaryBlobMode,exception);
   if (status == False) goto NoMEZ;
 
-  ldblk=(long) GetBlobSize(palette);
+  ldblk = (long)GetBlobSize(palette);
   if ( ldblk > (long) sizeof(MEZ))
     ldblk=sizeof(MEZ);
   (void) ReadBlob(palette, ldblk, MEZ);
@@ -533,26 +596,7 @@ NoMEZ:          /*Clean up palette and clone_info*/
 
   /* ----- Do something with palette ----- */
   if(Header.FileType==5) goto NoPalette;
-  if ((clone_info=CloneImageInfo(image_info)) == NULL) goto NoPalette;
-
-  i=(long) strlen(clone_info->filename);
-  j=i;
-  while(--i>0)
-    {
-      if(clone_info->filename[i]=='.')
-        {
-          break;
-        }
-      if(clone_info->filename[i]=='/' || clone_info->filename[i]=='\\' ||
-         clone_info->filename[i]==':' )
-        {
-          i=j;
-          break;
-        }
-    }
-
-  if (i <= 0)
-    goto NoPalette;
+  if ((clone_info=CheckFName(CloneImageInfo(image_info),&i)) == NULL) goto NoPalette;
 
   (void) strlcpy(clone_info->filename+i,".PAL",sizeof(clone_info->filename)-i);
   if ((clone_info->file=fopen(clone_info->filename,"rb"))==NULL)
@@ -585,10 +629,13 @@ NoMEZ:          /*Clean up palette and clone_info*/
     {
       ldblk=ReadBlobByte(palette);              /*size of palette*/
       if(ldblk==EOF) goto ErasePalette;
-      image->colors=ldblk+1;
-      if (!AllocateImageColormap(image, image->colors)) goto NoMemory;
+      if(ldblk==0)
+          image->colors = 256;
+      else
+          image->colors = ldblk+1;
+      if(!AllocateImageColormap(image, image->colors)) goto NoMemory;
 
-      for(i=0;i<=ldblk;i++)
+      for(i=0;i<=(size_t) ldblk;i++)
       {
         j = ReadBlobByte(palette);      /* Flag */
         if(j==EOF) break;               /* unexpected end of file */
@@ -622,7 +669,7 @@ NoPalette:
           ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
       }
 
-      for(i = 0; i < (long) image->colors; i++)
+      for(i = 0; i < image->colors; i++)
       {
         j = MEZ[i];
         image->colormap[i].red = ScaleCharToQuantum(j);
@@ -642,7 +689,7 @@ NoPalette:
      if (BImgBuff == NULL)
         ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
      (void) SeekBlob(image, 512 /*sizeof(Header)*/, SEEK_SET);
-     for (i = 0; i < (int) Header.Rows; i++)
+     for (i = 0; i < Header.Rows; i++)
      {
        if (ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
          ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image);
@@ -682,8 +729,8 @@ NoPalette:
          ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
        }
 
-       for(TilY=0;TilY<Header.Rows;TilY+=Header.TileHeight)
-         for(TilX=0;TilX<TilesAcross;TilX++)
+       for(TilY=0; TilY<Header.Rows; TilY+=Header.TileHeight)	/* TilY counts per pixel.*/
+         for(TilX=0; TilX<TilesAcross; TilX++)			/* TilX counts per tile.*/
            {
            ldblk = Offsets[(TilY/Header.TileHeight)*TilesAcross+TilX];
            if(SeekBlob(image, ldblk, SEEK_SET) != ldblk)
@@ -712,7 +759,8 @@ NoPalette:
              }
              if(SkipBlk>0)
                SeekBlob(image, SkipBlk, SEEK_CUR);
-             if(InsertRow(depth, BImgBuff, i+TilY, image, TilX,
+             /*printf("Inserting x=%d; y=%d\n", TilX*Header.TileWidth, i+TilY);*/
+             if(InsertRow(depth, BImgBuff, i+TilY, image, TilX*Header.TileWidth,
                     (image->columns<Header.TileWidth)?image->columns:Header.TileWidth, &import_options))
              {
                MagickFreeResourceLimitedMemory(Offsets);
@@ -726,7 +774,6 @@ NoPalette:
        break;
       }
     }
-
 
   /* Finish: */
 DONE_READING:
@@ -743,7 +790,266 @@ DONE_READING:
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   return (image);
 }
+
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   W r i t e T o p o L I m a g e                                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Function WriteTopoLImage writes an WPG image to a file.
+%
+%  The format of the WriteTopoLImage method is:
+%
+%      unsigned int WriteTopoLImage(const ImageInfo *image_info,Image *image)
+%
+%  A description of each parameter follows.
+%
+%    o status: Function WriteTopoLImage return True if the image is written.
+%      False is returned is there is a memory shortage or if the image file
+%      fails to write.
+%
+%    o image_info: Specifies a pointer to a ImageInfo structure.
+%
+%    o image:  A pointer to an Image structure.
+*/
+static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
+{
+  long y;
+  unsigned int status;
+  int logging;
+  unsigned char *pixels;
+  RasHeader Header;
+  size_t DataSize;
+  QuantumType qt;
+  int bpp;
+  ExportPixelAreaInfo export_info;
+
+	/* Open output image file. */
+  assert(image_info != (const ImageInfo *) NULL);
+  assert(image_info->signature == MagickSignature);
+  assert(image != (Image *)NULL);
+  assert(image->signature == MagickSignature);
+  logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter TopoL");
+
+  DataSize = 0;
+  memset(&Header,0,sizeof(Header));
+  memset(&Header.Name,' ',sizeof(Header.Name));
+  //Header.Version = 0;
+  Header.Cols = image->columns;
+  Header.Rows = image->rows;
+  if(image->colors>=1 && image->colors<=256)
+  {
+    if(image->colors <= 2)
+    {
+      Header.FileType = 0;
+      DataSize = (Header.Cols+7) / 8;
+      qt = GrayQuantum;
+      bpp =1;
+    } else if(image->colors <= 16)
+    {
+      Header.FileType = 4;
+      DataSize = (Header.Cols+1) / 2;
+      qt = IndexQuantum;
+      bpp = 4;
+    }
+    else
+    {
+      Header.FileType = 2;
+      DataSize = Header.Cols;
+      qt = IndexQuantum;
+      bpp = 8;
+    }
+  }
+  else		// RGB
+  {
+    Header.FileType = 5;
+    DataSize = 3*Header.Cols;
+    qt = RGBQuantum;
+    bpp = 8;
+  }
+
+  if(DataSize==0)
+    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+  pixels = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t) (DataSize));
+  if (pixels == (unsigned char *) NULL)
+    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+
+  status = OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
+  if(status == MagickFail)
+    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+
+	/* Write TopoL hader. */
+  WriteBlob(image, 20, Header.Name);
+  WriteBlobLSBShort(image, Header.Rows);
+  WriteBlobLSBShort(image, Header.Cols);
+  WriteBlobLSBShort(image, Header.FileType);
+  WriteBlobLSBLong(image, Header.Zoom);
+  WriteBlobLSBShort(image, Header.Version);
+  WriteBlobLSBShort(image, Header.Komprese);
+  WriteBlobLSBShort(image, Header.Stav);
+
+  WriteBlobLSBDouble(image, Header.xRasMin);
+  WriteBlobLSBDouble(image, Header.yRasMin);
+  WriteBlobLSBDouble(image, Header.xRasMax);
+  WriteBlobLSBDouble(image, Header.yRasMax);
+  WriteBlobLSBDouble(image, Header.Scale);
+	//from release 2
+  WriteBlobLSBShort(image, Header.TileWidth);
+  WriteBlobLSBShort(image, Header.TileHeight);
+  WriteBlobLSBLong(image, Header.TileOffsets);
+  WriteBlobLSBLong(image, Header.TileByteCounts);
+  WriteBlobByte(image, Header.TileCompression);
+
+  WriteBlob(image, 423, Header.Dummy);
+  if (GetBlobStatus(image))
+     ThrowWriterException(FileOpenError,UnableToWriteFile,image);
+
+	/* Store image data. */
+  for(y=0; y<(long)image->rows; y++)
+  {
+    if(AcquireImagePixels(image,0,y,image->columns,1,&image->exception)  == (const PixelPacket *)NULL)
+    {
+      status=MagickFail;
+      break;
+    }
+    if(ExportImagePixelArea(image,qt,bpp,pixels,0,&export_info) != MagickPass)
+    {
+      status = MagickFail;
+      break;
+    }
+    if (DataSize != export_info.bytes_exported)
+    {
+      status = MagickFail;
+      break;
+    }
+    if(WriteBlob(image,DataSize,pixels) != DataSize)
+    {
+      status = MagickFail;
+      break;
+    }
+  }
+
+  CloseBlob(image); /* valgrind reports write of unitialized data */
+  MagickFreeResourceLimitedMemory(pixels);
+
+  if (y != (long)image->rows)
+    ThrowWriterException(FileOpenError,UnableToWriteFile,image);
+
+
+	/* Palette */
+  if(qt == IndexQuantum)
+  {
+    ImageInfo *clone_info;
+    size_t i;
+    if((clone_info=CheckFName(CloneImageInfo(image_info),&i)) != NULL)
+    {
+      (void)strlcpy(clone_info->filename+i,".pal",sizeof(clone_info->filename)-i);
+      if((clone_info->file=fopen(clone_info->filename,"wb"))!=NULL)
+      {
+        Image *Palette;
+        if((Palette=AllocateImage(clone_info)) != NULL)
+        {
+          ExceptionInfo exception;
+          if(OpenBlob(clone_info,Palette,WriteBinaryBlobMode,&exception))
+          {
+            size_t j;
+            if(Header.FileType == 2)
+              j = 256;
+            else
+              j = 15;
+            WriteBlobByte(Palette,j);
+            for(i=0; i<j; i++)
+            {
+              WriteBlobByte(Palette, i&0xFF);
+              if(i<image->colors)
+              {
+                WriteBlobByte(Palette,i);
+                WriteBlobByte(Palette,i);
+                WriteBlobByte(Palette,i);
+              }
+              else
+              {
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].red));
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].green));
+                WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
+              }
+            }
+            CloseBlob(Palette);
+          }
+          DestroyImage(Palette);
+        }
+      }
+      DestroyImageInfo(clone_info);
+    }
+  }
+
+  if(logging)
+    (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return TopoL");
+
+  return(status);
+}
 
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   I s T o p o L                                                             %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Method IsTopoL returns True if the image format type, identified by the
+%  magick string, is TopoL.
+%
+%  The format of the IsTopoL method is:
+%
+%      unsigned int IsTopoL(const unsigned char *magick,const size_t length)
+%
+%  A description of each parameter follows:
+%
+%    o status:  Method IsTopoL returns True if the image format type is TopoL.
+%
+%    o magick: This string is generally the first few bytes of an image file
+%      or blob.
+%
+%    o length: Specifies the length of the magick string.*/
+static unsigned int IsTopoL(const unsigned char *magick, const size_t length)
+{
+int i;
+magick_uint16_t FileType;     /* 0-binary, 1-8 bitu, 2-8 bits+PAL, 3-4 bits,
+                                   4-4 bits+PAL, 5-24 bits, 6-16 bits, 7-32 bits */
+//magick_uint32_t Zoom;
+magick_uint16_t Version;
+magick_uint16_t Compression;	/* 0 - uncompressed (from release 1) */
+//magick_uint16_t Stav;
+
+  if (length < 34) return(False);
+  for(i=0; i<20; i++)
+      if(magick[i] != ' ') return(False);
+  if(magick[20]==0 && magick[21]==0) return(False);	// Zero rows
+  if(magick[22]==0 && magick[23]==0) return(False);	// Zero cols
+
+  FileType = magick[24] + 256*magick[25];
+  if(FileType > 7) return False;
+  Version = magick[30] + 256*magick[31];
+  if(Version > 2) return(False);
+  Compression = magick[32] + 256*magick[33];
+  if(Compression > 1) return(False);
+  if(Compression==1 && Version==0) return(False);
+
+  return(True);
+}
+
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -772,9 +1078,12 @@ ModuleExport void RegisterTOPOLImage(void)
   MagickInfo * entry;
 
   entry = SetMagickInfo("TOPOL");
-  entry->decoder = (DecoderHandler) ReadTOPOLImage;
+  entry->decoder = (DecoderHandler) ReadTopoLImage;
+  entry->encoder = (EncoderHandler) WriteTopoLImage;
+  entry->magick = (MagickHandler) IsTopoL;
   entry->seekable_stream = True;
-  entry->description = "TOPOL X Image";
+  entry->description = "TopoL X Image";
+  entry->adjoin=MagickFalse;
   entry->module = "TOPOL";
   (void) RegisterMagickInfo(entry);
 }

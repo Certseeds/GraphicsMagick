@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2020 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -78,7 +78,7 @@ static unsigned int
 typedef struct _ViffInfo
 {
   unsigned char
-  identifier,
+    identifier,
     file_type,
     release,
     version,
@@ -735,13 +735,8 @@ static Image *ReadVIFFImage(const ImageInfo *image_info,
       if (viff_info.map_scheme == VFF_MS_NONE)
         {
           value=(value-min_value)*scale_factor;
-          if (value > MaxRGB)
-            value=MaxRGB;
-          else
-            if (value < 0)
-              value=0;
         }
-      *p=(Quantum) value;
+      *p=RoundDoubleToQuantumN(value);
       p++;
     }
     /*

@@ -48,7 +48,9 @@ UTILITIES_EXTRA_DIST = \
 	utilities/tests/convert-cmds.txt \
 	utilities/tests/common.sh \
 	utilities/tests/sunrise.jpg \
-	utilities/tests/sunrise.miff
+	utilities/tests/sunrise.miff \
+	utilities/tests/gen-tiff-images/genimages \
+	utilities/tests/gen-tiff-images/README.txt
 
 UTILITIES_CLEANFILES = \
 	utilities/tests/*_out.icc \

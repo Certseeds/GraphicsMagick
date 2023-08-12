@@ -1,4 +1,4 @@
-.TH gm 1 "2022/05/02" "GraphicsMagick"
+.TH gm 1 "2023/05/11" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1296,6 +1296,15 @@ in the writer.
 
 .in 15
 .in 15
+.B "heif:ignore-transformations={true|false}"
+.in 20
+ \fR
+.in 20
+
+Return HEIF (e.g. HEIC/AVIF) image without any transformations (e.g. rotation) applied.
+
+.in 15
+.in 15
 .B "gradient:direction={South|North|West|East|NorthWest|NorthEast|SouthWest|SouthEast}"
 .in 20
  \fR
@@ -1325,7 +1334,7 @@ setting. The default quality setting of 75 results in a rate value of
 
 .in 15
 .in 15
-.B "jpeg:arithmetic={true|false}"
+.B "jpeg:arithmetic-coding={true|false}"
 .in 20
  \fR
 .in 20
@@ -1544,6 +1553,19 @@ TIFF file.  This is useful in order to be able to read files which
 which otherwise fail to read due to problems with TIFF tags.  Note
 that some TIFF tags are required in order to be able to read the image
 data at all.
+
+.in 15
+.in 15
+.B "tiff:photometric={minisblack|miniswhite}"
+.in 20
+ \fR
+.in 20
+For grayscale and bilevel images, GraphicsMagick normally chooses
+the photometric based on bit depth and compression.  If the
+tiff:photometric key is defined, GraphicsMagick will use it to
+determine the photometric used while writing grayscale and bilevel
+images.  Normally bilevel images are miniswhite and grayscale images
+are minisblack.
 
 .in 15
 .in 15

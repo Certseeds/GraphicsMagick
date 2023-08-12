@@ -515,8 +515,7 @@ AllocateThreadViewSet(Image *image,ExceptionInfo *exception)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToAllocateCacheView);
   view_set->nviews=nviews;
-  view_set->views=MagickAllocateMemory(ViewInfo *,
-                                       view_set->nviews*sizeof(ViewInfo *));
+  view_set->views=MagickAllocateArray(ViewInfo *,view_set->nviews,sizeof(ViewInfo *));
   if (view_set->views == (ViewInfo *) NULL)
     {
       ThrowException(exception,CacheError,UnableToAllocateCacheView,
@@ -4586,7 +4585,9 @@ ModifyCache(Image *image, ExceptionInfo *exception)
     if (destroy_cache)
       {
         DestroyCacheInfo(cache_info);
+#if !defined(__COVERITY__) /* 384801 Unused value */
         cache_info=(CacheInfo *) NULL;
+#endif /* if !defined(__COVERITY__) */
       }
 
     if (status != MagickFail)

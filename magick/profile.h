@@ -75,6 +75,12 @@ extern MagickExport MagickPassFail
 extern MagickExport void
   DeallocateImageProfileIterator(ImageProfileIterator profile_iterator);
 
+#if defined(MAGICK_IMPLEMENTATION)
+
+#  include "magick/profile-private.h"
+
+#endif /* defined(MAGICK_IMPLEMENTATION) */
+
 #if defined(__cplusplus) || defined(c_plusplus)
 }
 #endif /* defined(__cplusplus) || defined(c_plusplus) */

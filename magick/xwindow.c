@@ -4535,7 +4535,9 @@ MagickXGetWindowImage(Display *display,const Window window,
           }
         }
         XDestroyImage(ximage);
+#if !defined(__COVERITY__) /* 384805 Unused value */
         ximage=(XImage *) NULL;
+#endif /* if !defined(__COVERITY__) */
 
         /*
           Evaluate image depth.

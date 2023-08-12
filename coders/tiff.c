@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -736,6 +736,27 @@ PhotometricTagToString(unsigned int photometric)
   return result;
 }
 
+static const char *ExtraSampleToString(const unsigned int sample_info)
+{
+  const char
+    *result = "Unknown";
+
+  switch (sample_info)
+    {
+    case EXTRASAMPLE_UNSPECIFIED:
+      result="Unspecified data";
+      break;
+    case EXTRASAMPLE_ASSOCALPHA:
+      result="Associated alpha data (with pre-multiplied color)";
+      break;
+    case EXTRASAMPLE_UNASSALPHA:
+      result="Unassociated alpha data";
+      break;
+    }
+
+  return result;
+}
+
 /*
   Locate and store Photoshop or IPTC profiles.
 
@@ -923,6 +944,9 @@ TIFFReadErrors(const char *module,const char *format,
   errno=0;
   (void) vsnprintf(message,MaxTextExtent-2,format,warning);
   message[MaxTextExtent-2]='\0';
+#define UNKNOWN_TAG_ERROR "Internal error, unknown tag"
+  if (LocaleNCompare(message,UNKNOWN_TAG_ERROR,sizeof(UNKNOWN_TAG_ERROR)-1) == 0)
+    return;
   (void) strlcat(message,".",MaxTextExtent);
   tiff_exception=(ExceptionInfo *) MagickTsdGetSpecific(tsd_key);
   ThrowException2(tiff_exception,CorruptImageError,message,module);
@@ -1771,13 +1795,13 @@ DisassociateAlphaRegion(Image *image)
 /*
   Copy a possibly unterminated sized string to an image attribute.
 */
-#define CopySizedFieldToAttribute(key,count,text)                     \
-  do                                                                  \
-    {                                                                 \
-      char _attribute[MaxTextExtent];                                 \
-      (void) memcpy(_attribute,text,Min(sizeof(_attribute),count));   \
-      _attribute[Min(sizeof(_attribute)-1,count)]='\0';                \
-      (void) SetImageAttribute(image,key,_attribute);                 \
+#define CopySizedFieldToAttribute(key,count,text)                       \
+  do                                                                    \
+    {                                                                   \
+      char _attribute[MaxTextExtent];                                   \
+      (void) memcpy(_attribute,text,Min(sizeof(_attribute),count));     \
+      _attribute[Min(sizeof(_attribute)-1,count)]='\0';                 \
+      (void) SetImageAttribute(image,key,_attribute);                   \
     } while(0);
 
 
@@ -2225,35 +2249,38 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
           if (extra_samples != 0)
             {
-              alpha_type=AssociatedAlpha;
-              image->matte=True;
-
               if (sample_info[0] == EXTRASAMPLE_UNSPECIFIED)
-                alpha_type=UnspecifiedAlpha;
+                {
+                  alpha_type=UnspecifiedAlpha;
+                }
               else if (sample_info[0] == EXTRASAMPLE_UNASSALPHA)
-                alpha_type=UnassociatedAlpha;
+                {
+                  alpha_type=UnassociatedAlpha;
+                  image->matte=True;
+                }
               else if (sample_info[0] == EXTRASAMPLE_ASSOCALPHA)
-                alpha_type=AssociatedAlpha;
+                {
+                  alpha_type=AssociatedAlpha;
+                  image->matte=True;
+                }
             }
           if (image->logging)
             for (sample_index=0 ; sample_index < extra_samples; sample_index++)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "Extra sample %u contains %s alpha",sample_index+1,
-                                      ((sample_info[sample_index] == EXTRASAMPLE_ASSOCALPHA) ? "ASSOCIATED" :
-                                       (sample_info[sample_index] == EXTRASAMPLE_UNASSALPHA) ? "UNASSOCIATED" :
-                                       "UNSPECIFIED"));
+                                      "Extra sample %u contains %s",sample_index+1,
+                                      ExtraSampleToString(sample_info[sample_index]));
               }
         }
       /*
-        Handle RGBA images which are improperly marked.
+        Report RGBA images which may be improperly marked.
       */
-      if (extra_samples == 0)
+      if ((image->logging) && (extra_samples == 0))
         if ((photometric == PHOTOMETRIC_RGB) && (samples_per_pixel == 4))
           {
-            extra_samples=1;
-            alpha_type=AssociatedAlpha;
-            image->matte=MagickTrue;
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Photometric is RGB but %u samples/pixel and %u extra_samples provided!",
+                                  samples_per_pixel, extra_samples);
           }
 
       /*
@@ -2312,47 +2339,72 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           image->scene=pagenumber;
       }
 
-      if (TIFFGetField(tiff,TIFFTAG_ARTIST,&text) == 1)
-        (void) SetImageAttribute(image,"artist",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_COPYRIGHT,&text) == 1) /* TIFFTAG_COPYRIGHT */
-        (void) SetImageAttribute(image,"copyright",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_DATETIME,&text) == 1)
-        (void) SetImageAttribute(image,"timestamp",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_DOCUMENTNAME,&text) == 1)
-        (void) SetImageAttribute(image,"document",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_HOSTCOMPUTER,&text) == 1)
-        (void) SetImageAttribute(image,"hostcomputer",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_IMAGEDESCRIPTION,&text) == 1)
-        (void) SetImageAttribute(image,"comment",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_MAKE,&text) == 1)
-        (void) SetImageAttribute(image,"make",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_MODEL,&text) == 1)
-        (void) SetImageAttribute(image,"model",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_PAGENAME,&text) == 1)
-        (void) SetImageAttribute(image,"label",text);
-
-      if (TIFFGetField(tiff,TIFFTAG_SOFTWARE,&text) == 1)
-        (void) SetImageAttribute(image,"software",text);
-
       /*
-        "Unsupported" tags return two arguments.
+        Convert TIFF tags to text attributes
+        https://gitlab.com/libtiff/libtiff/-/issues/575
       */
-      if (TIFFGetField(tiff,TIFFTAG_OPIIMAGEID,&count,&text) == 1)
-        CopySizedFieldToAttribute("imageid",count,text);
+      {
+        static const struct
+        {
+          uint32 tag;
+          const char name[14];
+        } text_tags[] =
+            {
+             { TIFFTAG_ARTIST, "artist" },
+             { TIFFTAG_COPYRIGHT, "copyright" },
+             { TIFFTAG_DATETIME, "timestamp" },
+             { TIFFTAG_DOCUMENTNAME, "document" },
+             { TIFFTAG_HOSTCOMPUTER, "hostcomputer" },
+             { TIFFTAG_IMAGEDESCRIPTION, "comment" },
+             { TIFFTAG_MAKE, "make" },
+             { TIFFTAG_MODEL, "model" },
+             { TIFFTAG_PAGENAME, "label" },
+             { TIFFTAG_SOFTWARE, "software" },
+             { TIFFTAG_OPIIMAGEID, "imageid" }, /* Causes TIFFFieldWithTag() to return NULL */
+             { 33423, "kodak-33423" },
+             { 36867, "kodak-36867" }
+            };
 
-      if (TIFFGetField(tiff,33423,&count,&text) == 1)
-        CopySizedFieldToAttribute("kodak-33423",count,text);
-
-      if (TIFFGetField(tiff,36867,&count,&text) == 1)
-        CopySizedFieldToAttribute("kodak-36867",count,text);
+        for (i = 0; i < ArraySize(text_tags); i++)
+          {
+            const uint32 tag = text_tags[i].tag;
+            const char *tag_name = text_tags[i].name;
+            int field_passcount=1; /* "Unsupported" tags return two arguments */
+#if TIFFLIB_VERSION <= 20111221
+             /*
+               Before tiff 4.0.0 (20111221), TIFFFieldWithTag returned
+               TIFFFieldInfo * which provides field_passcount
+             */
+            const TIFFFieldInfo* tiff_field=TIFFFieldWithTag(tiff,tag);
+            if (tiff_field != (const TIFFFieldInfo *))
+                field_passcount=tiff_field->field_passcount;
+            else
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFFieldWithTag() returns NULL for tag %u \"%s\"", tag, tag_name);
+#else
+            const TIFFField *tiff_field=TIFFFieldWithTag(tiff,tag);
+            if (tiff_field != (const TIFFField *) NULL)
+              field_passcount=TIFFFieldPassCount(tiff_field);
+            else
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "TIFFFieldWithTag() returns NULL for tag %u \"%s\"", tag, tag_name);
+#endif
+#if 0
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Field pass count for tag %u \"%s\" is %d", tag, tag_name, field_passcount);
+#endif
+            if (field_passcount)
+              {
+                if ((TIFFGetField(tiff,tag,&count,&text) == 1) && (count) && (text != (const char*) NULL))
+                  CopySizedFieldToAttribute(tag_name,count,text);
+              }
+            else
+              {
+                if ((TIFFGetField(tiff,tag,&text) == 1) && (text != (const char*) NULL))
+                  (void) SetImageAttribute(image,tag_name,text);
+              }
+          }
+      }
 
       if ((photometric == PHOTOMETRIC_PALETTE) ||
           ((photometric == PHOTOMETRIC_MINISWHITE ||
@@ -2393,6 +2445,94 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         {
           ThrowTIFFReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
         }
+
+      /*
+        Verify that the bits per sample, samples per pixel, and
+        photometric are suitable for the claimed compressor
+      */
+#if defined(COMPRESSION_CCITTFAX3)
+      if (COMPRESSION_CCITTFAX3 == compress_tag)
+        {
+          if (1 != bits_per_sample)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 1 bits per sample!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((PHOTOMETRIC_MINISBLACK != photometric) && (PHOTOMETRIC_MINISWHITE != photometric))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires photometric of minisblack or miniswhite!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+        }
+#endif /* if defined(COMPRESSION_CCITTFAX3) */
+#if defined(COMPRESSION_CCITTFAX4)
+      if (COMPRESSION_CCITTFAX4 == compress_tag)
+        {
+          if (1 != bits_per_sample)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 1 bits per sample!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((PHOTOMETRIC_MINISBLACK != photometric) && (PHOTOMETRIC_MINISWHITE != photometric))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires photometric of minisblack or miniswhite!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+        }
+#endif /* if defined(COMPRESSION_CCITTFAX4) */
+#if defined(COMPRESSION_JBIG)
+      if (COMPRESSION_JBIG == compress_tag)
+        {
+          if (1 != bits_per_sample)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 1 bits per sample!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((PHOTOMETRIC_MINISBLACK != photometric) && (PHOTOMETRIC_MINISWHITE != photometric))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires photometric of minisblack or miniswhite!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+        }
+#endif /* if defined(COMPRESSION_JBIG) */
+#if defined(COMPRESSION_WEBP)
+      if (COMPRESSION_WEBP == compress_tag)
+        {
+          if (8 != bits_per_sample)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 8 bits per sample!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if ((3 != samples_per_pixel) && (4 != samples_per_pixel))
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires 3 or 4 samples per pixel!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+          if (PHOTOMETRIC_RGB != photometric)
+            {
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "%s compression requires photometric RGB!",
+                                    CompressionTagToString(compress_tag));
+              ThrowTIFFReaderException(CorruptImageError,ImproperImageHeader,image);
+            }
+        }
+#endif /* if defined(COMPRESSION_WEBP) */
 
       /*
         Check if the bits-per-sample value is supported by the
@@ -3734,6 +3874,44 @@ RegisterTIFFImage(void)
   MagickInfo
     *entry;
 
+  static const char
+    TIFFNote[] =
+    "Supported Compressions: "
+#if defined(COMPRESSION_NONE)
+    "None"
+#endif
+#if defined(COMPRESSION_CCITTFAX3)
+    ", Fax/Group3"
+#endif
+#if defined(COMPRESSION_CCITTFAX4)
+    ", Group4"
+#endif
+#if defined(COMPRESSION_JBIG)
+    ", JBIG"
+#endif
+#if defined(COMPRESSION_JPEG)
+    ", JPEG"
+#endif
+#if defined(COMPRESSION_LZW)
+    ", LZW"
+#endif
+#if defined(COMPRESSION_LZMA)
+    ", LZMA"
+#endif
+#if defined(COMPRESSION_PACKBITS)
+    ", RLE"
+#endif
+#if defined(COMPRESSION_ADOBE_DEFLATE)
+    ", ZIP"
+#endif
+#if defined(COMPRESSION_ZSTD)
+    ", ZSTD"
+#endif
+#if defined(COMPRESSION_WEBP)
+    ", WEBP"
+#endif
+    ;
+
   /*
     Initialize thread specific data key.
   */
@@ -3766,6 +3944,7 @@ RegisterTIFFImage(void)
   entry->encoder=(EncoderHandler) WriteTIFFImage;
   entry->seekable_stream=MagickTrue;
   entry->description=BIGTIFFDescription;
+  entry->note=TIFFNote;
   entry->module="TIFF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -3796,6 +3975,7 @@ RegisterTIFFImage(void)
   entry->encoder=(EncoderHandler) WritePTIFImage;
   entry->seekable_stream=MagickTrue;
   entry->description=PTIFDescription;
+  entry->note=TIFFNote;
   entry->module="TIFF";
   (void) RegisterMagickInfo(entry);
 
@@ -3810,6 +3990,7 @@ RegisterTIFFImage(void)
   entry->description=TIFFDescription;
   if (*version != '\0')
     entry->version=version;
+  entry->note=TIFFNote;
   entry->stealth=MagickTrue; /* Don't list in '-list format' output */
   entry->module="TIFF";
   entry->coder_class=PrimaryCoderClass;
@@ -3827,6 +4008,7 @@ RegisterTIFFImage(void)
   entry->description=TIFFDescription;
   if (*version != '\0')
     entry->version=version;
+  entry->note=TIFFNote;
   entry->module="TIFF";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
@@ -4649,6 +4831,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else if (characteristics.monochrome)
         {
           photometric=PHOTOMETRIC_MINISWHITE;
+          depth=1;
         }
       else if (characteristics.palette)
         {
@@ -4693,6 +4876,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else if (compress_tag == COMPRESSION_CCITTFAX3)
         {
           photometric=PHOTOMETRIC_MINISWHITE;
+          depth=1;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Using MINISWHITE photometric due to request"
@@ -4701,6 +4885,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else if (compress_tag == COMPRESSION_CCITTFAX4)
         {
           photometric=PHOTOMETRIC_MINISWHITE;
+          depth=1;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Using MINISWHITE photometric due to request"
@@ -4710,6 +4895,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       else if (compress_tag == COMPRESSION_JBIG)
         {
           photometric=PHOTOMETRIC_MINISWHITE;
+          depth=1;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "Using MINISWHITE photometric due to request"
@@ -4735,6 +4921,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
         case BilevelType:
           {
             photometric=PHOTOMETRIC_MINISWHITE;
+            depth=1;
             break;
           }
         case GrayscaleType:
@@ -4793,6 +4980,29 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
         }
 
       /*
+        Allow the user to over-ride the photometric for bilevel and
+        gray images since 'type' is insufficient for this.
+      */
+      if ((PHOTOMETRIC_MINISWHITE == photometric) ||
+          (PHOTOMETRIC_MINISBLACK == photometric))
+      {
+        const char *
+          value;
+
+        /*
+          Photometric
+        */
+        value=AccessDefinition(image_info,"tiff","photometric");
+        if (value)
+          {
+            if (LocaleCompare(value,"miniswhite") == 0)
+              photometric=PHOTOMETRIC_MINISWHITE;
+            else if (LocaleCompare(value,"minisblack") == 0)
+              photometric=PHOTOMETRIC_MINISBLACK;
+          }
+      }
+
+      /*
         If the user has selected something other than MINISWHITE,
         MINISBLACK, or RGB, then remove JPEG compression.  Also remove
         fax compression if photometric is not compatible.
@@ -4843,24 +5053,13 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #endif /* defined(COMPRESSION_JBIG) */
 
       /*
-        Bilevel presents a bit of a quandary since the user is free to
-        change the type so we don't want to set depth in advance.  So
-        we will intuit the depth here.  For the moment, we assume that
-        if the photometric is PHOTOMETRIC_MINISWHITE that we are
-        probably outputting bilevel.  Note that the user is still able
-        to override bits_per_sample.
-      */
-      if (PHOTOMETRIC_MINISWHITE == photometric)
-        depth=1;
-
-      /*
         Support writing bits per sample of 8, 16, & 32 by default.
       */
       for (bits_per_sample=8; bits_per_sample < depth; )
         bits_per_sample*=2;
 
       /*
-        Now chose appropriate settings for the photometric.
+        Now choose appropriate settings for the photometric.
       */
       switch (photometric)
         {
@@ -5825,6 +6024,8 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       */
       if (photometric == PHOTOMETRIC_MINISWHITE)
         export_options.grayscale_miniswhite=MagickTrue;
+      else if (photometric == PHOTOMETRIC_MINISBLACK)
+         export_options.grayscale_miniswhite=MagickFalse;
       /*
         Set extra export options for floating point.
       */

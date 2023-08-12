@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -1136,9 +1136,9 @@ static void GenerateCineonTimeStamp(char *date_str, size_t date_str_length, char
   (void) strftime(timestamp,MaxTextExtent,"%Y:%m:%d:%H:%M:%S%Z",t);
   timestamp[MaxTextExtent-1]='\0';
   (void) memset(date_str,0,date_str_length);
-  (void) strlcpy(date_str,timestamp,11);
+  (void) strlcpy(date_str,timestamp,date_str_length);
   (void) memset(time_str,0,time_str_length);
-  (void) strlcpy(time_str,timestamp+11,15);
+  (void) strlcpy(time_str,timestamp+11,time_str_length);
 }
 
 

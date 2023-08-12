@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -129,13 +129,19 @@ typedef int (*CommandLineParser)(FILE *in, int acmax, char **av);
 
 #define SIZE_OPTION_VALUE 256
 typedef struct _BatchOptions {
-  MagickBool        stop_on_error,
-                    is_feedback_enabled,
-                    is_echo_enabled;
-  char              prompt[SIZE_OPTION_VALUE],
-                    pass[SIZE_OPTION_VALUE],
-                    fail[SIZE_OPTION_VALUE];
-  CommandLineParser command_line_parser;
+  MagickBool
+    stop_on_error,
+    is_feedback_enabled,
+    is_echo_enabled,
+    is_tap_mode;
+
+  char
+    prompt[SIZE_OPTION_VALUE],
+    pass[SIZE_OPTION_VALUE],
+    fail[SIZE_OPTION_VALUE];
+
+  CommandLineParser
+    command_line_parser;
 } BatchOptions;
 
 typedef MagickPassFail (*CommandVectorHandler)(ImageInfo *image_info,
@@ -1547,6 +1553,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
   MagickBool hasInputFile;
   int ac;
   char *av[MAX_PARAM+1];
+  unsigned int line_no = 0;
 
 #if defined(MSWINDOWS)
   InitializeMagick((char *) NULL);
@@ -1600,9 +1607,15 @@ static MagickPassFail BatchCommand(int argc, char **argv)
       (void) fflush(stdout);
     }
 
+
   while (!(ferror(stdin) || ferror(stdout) || ferror(stderr) || feof(stdin)))
     {
-      if (batch_options.prompt[0])
+      if (batch_options.is_tap_mode)
+        {
+          (void) fputs("# ", stdout);
+          (void) fflush(stdout);
+        }
+      else if (batch_options.prompt[0])
         {
           (void) fputs(batch_options.prompt, stdout);
           (void) fflush(stdout);
@@ -1614,7 +1627,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
           result = MagickPass;
           break;
         };
-      if (batch_options.is_echo_enabled)
+      if (batch_options.is_tap_mode || batch_options.is_echo_enabled)
         {
           int i;
           for (i = 1; i < ac; i++)
@@ -1641,8 +1654,14 @@ static MagickPassFail BatchCommand(int argc, char **argv)
                            MAX_PARAM);
           result = MagickFail;
         }
+      ++line_no;
 
-      if (batch_options.is_feedback_enabled)
+      if (batch_options.is_tap_mode)
+        {
+          /* FIXME: Support TAP test description */
+          (void) fprintf(stdout, "%s %u\n", result ? "ok" : "not ok", line_no);
+        }
+      else if (batch_options.is_feedback_enabled)
         {
           (void) fputs(result ? batch_options.pass : batch_options.fail, stdout);
           (void) fputc('\n', stdout);
@@ -1654,7 +1673,7 @@ static MagickPassFail BatchCommand(int argc, char **argv)
         break;
     }
 
-  if (batch_options.prompt[0])
+  if (!batch_options.is_tap_mode && batch_options.prompt[0])
     {
       (void) fputs("\n", stdout);
       (void) fflush(stdout);
@@ -1702,6 +1721,12 @@ static void BatchOptionUsage(void)
          "  -stop-on-error on|off\n"
          "                       when turned on, batch execution quits prematurely when\n"
          "                       any command returns error\n"
+         "  -tap-mode on|off\n"
+         "                       when turned on, a simple implementation of Test Anything\n"
+         "                       Protocol (TAP) is enabled to produce \"ok N\" and \n"
+         "                       \"not ok N\" feedback to indicate the test number, and to\n"
+         "                       supplant the function of -fail, -pass, -feedback in order\n"
+         "                       to support simple TAP output messaging\n"
          "\n"
          "Unix escape allows the use backslash(\\), single quote(') and double quote(\") in\n"
          "the command line. Windows escape only uses double quote(\").  For example,\n"
@@ -3801,8 +3826,12 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
           break;
         if (LocaleCompare("noop",option+1) == 0)
           {
+            if (image == NULL)
+              ThrowCompositeException(OptionError,NoImagesDefined,
+                                      "no images in composite image list");
+
             status&=CompositeImageList(image_info,&image,composite_image,
-              mask_image,&option_info,exception);
+                                       mask_image,&option_info,exception);
             if (composite_image != (Image *) NULL)
               {
                 DestroyImageList(composite_image);
@@ -5595,6 +5624,11 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
                   ThrowConvertException(OptionError,MissingArgument,
                     option);
               }
+            else
+              {
+                ThrowConvertException(OptionError,MissingArgument,
+                                      option);
+              }
             break;
           }
         if (LocaleCompare("ordered-dither",option+1) == 0)
@@ -5783,7 +5817,7 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
             if (*option == '-')
               {
                 i++;
-                if ((i == (argc-1)) || !IsGeometry(argv[i]))
+                if ((i == argc) || !IsGeometry(argv[i]))
                   ThrowConvertException(OptionError,MissingArgument,option);
               }
             break;
@@ -6220,12 +6254,14 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
     ThrowConvertException(OptionError,MissingAnImageFilename,(char *) NULL);
   if (image == (Image *) NULL)
     {
-      status&=MogrifyImages(image_info,i-j,argv+j,&image_list);
+      if (!ping)
+        status&=MogrifyImages(image_info,i-j,argv+j,&image_list);
       GetImageException(image_list,exception);
     }
   else
     {
-      status&=MogrifyImages(image_info,i-j,argv+j,&image);
+      if (!ping)
+        status&=MogrifyImages(image_info,i-j,argv+j,&image);
       GetImageException(image,exception);
       AppendImageToList(&image_list,image);
     }
@@ -6487,7 +6523,7 @@ static void ConjureUsage(void)
   (void) puts("  -verbose             print detailed information about the image");
   (void) puts("  -version             print version information");
   (void) puts("");
-  (void) puts("In additiion, define any key value pairs required by your script.  For");
+  (void) puts("In addition, define any key value pairs required by your script.  For");
   (void) puts("example,");
   (void) puts("");
   (void) puts("    conjure -size 100x100 -color blue -foo bar script.msl");
@@ -6588,10 +6624,12 @@ MagickExport MagickPassFail ConjureImageCommand(ImageInfo *image_info,
           Persist key/value pair.
         */
         (void) SetImageAttribute(image_info->attributes,option+1,(char *) NULL);
-        status&=SetImageAttribute(image_info->attributes,option+1,argv[i+1]);
+        i++;
+        if (i == argc)
+          MagickFatalError(OptionFatalError,MissingArgument,option);
+        status&=SetImageAttribute(image_info->attributes,option+1,argv[i]);
         if (status == MagickFail)
           MagickFatalError(ImageFatalError,UnableToPersistKey,option);
-        i++;
         continue;
       }
     /*
@@ -9431,6 +9469,11 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             type=(*option);
             option=argv[++i];
             colorspace=StringToColorspaceType(option);
+            if (colorspace == UndefinedColorspace)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,"colorspace");
+                break;
+              }
             quantize_info.colorspace=colorspace;
             /* Never quantize in CMYK colorspace */
             if (IsCMYKColorspace(colorspace))
@@ -9691,7 +9734,12 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             */
             MagickFreeMemory(draw_info->primitive);
             draw_info->primitive=AmpersandTranslateText(clone_info,*image,argv[++i]);
-            (void) DrawImage(*image,draw_info);
+            if (draw_info->primitive == (char *) NULL)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option);
+                break;
+              }
+              (void) DrawImage(*image,draw_info);
             continue;
           }
         break;
@@ -10103,10 +10151,16 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             /*
               Local adaptive threshold image.
             */
-            offset=0;
-            height=3;
-            width=3;
-            (void) sscanf(argv[++i],"%lux%lu%lf",&width,&height,&offset);
+            if (sscanf(argv[++i],"%lux%lu%lf",&width,&height,&offset) != 3)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option);
+                break;
+              }
+            if ((width == 0) || (height == 0))
+              {
+                ThrowException3(&(*image)->exception,OptionError,UnableToThresholdImage,NonzeroWidthAndHeightRequired);
+                break;
+              }
             if (strchr(argv[i],'%') != (char *) NULL)
               offset*=((double) MaxRGB/100.0);
             threshold_image=AdaptiveThresholdImage(*image,width,height,offset,
@@ -10370,34 +10424,53 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
           }
         if (LocaleCompare("operator",option+1) == 0)
           {
-            ChannelType
-              channel;
+            if (*option == '-')
+              {
+                ChannelType
+                  channel;
 
-            QuantumOperator
-              quantum_operator;
+                QuantumOperator
+                  quantum_operator;
 
-            double
-              rvalue;
+                double
+                  rvalue;
 
-            /* channel */
-            channel=StringToChannelType(argv[++i]);
+                if (i+3 > argc)
+                  {
+                    ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                    break;
+                  }
 
-            /* operator id */
-            quantum_operator=StringToQuantumOperator(argv[++i]);
+                /* channel */
+                channel=StringToChannelType(argv[++i]);
 
-            /* rvalue */
-            option=argv[++i];
-            rvalue=StringToDouble(option,MaxRGB);
-            (void) QuantumOperatorImage(*image,channel,quantum_operator,
-               rvalue,&(*image)->exception);
+                /* operator id */
+                quantum_operator=StringToQuantumOperator(argv[++i]);
 
-            continue;
+                /* rvalue */
+                option=argv[++i];
+                rvalue=StringToDouble(option,MaxRGB);
+                (void) QuantumOperatorImage(*image,channel,quantum_operator,
+                                            rvalue,&(*image)->exception);
+
+                continue;
+              }
+            else
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                break;
+              }
           }
         if (LocaleCompare("ordered-dither",option+1) == 0)
           {
             /*
               Ordered-dither image.
             */
+            if (i+2 > argc)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                break;
+              }
             (void) RandomChannelThresholdImage(*image,argv[i+1],argv[i+2],
                 &(*image)->exception);
             i+=2;
@@ -10599,6 +10672,11 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
             /*
               Threshold image.
             */
+            if (i+2 > argc)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                break;
+              }
             (void) RandomChannelThresholdImage(*image,argv[i+1],argv[i+2],
                 &(*image)->exception);
             i+=2;
@@ -10695,6 +10773,7 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
                   region_geometry.y);
                 DestroyImage(*image);
                 *image=region_image;
+                region_image=(Image *) NULL;
               }
             if (*option == '+')
               continue;
@@ -10937,10 +11016,20 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
               *key,
               *value;
 
+            if (i+1 > argc)
+              {
+                ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                break;
+              }
             key=argv[++i];
             (void) SetImageAttribute(*image,key,(char *) NULL);
             if (*option == '-')
               {
+                if (i+1 > argc)
+                  {
+                    ThrowException(&(*image)->exception,OptionError,MissingArgument,option+1);
+                    break;
+                  }
                 value=argv[++i];
                 (void) SetImageAttribute(*image,key,value);
               }
@@ -11413,7 +11502,7 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
         break;
     }
   }
-  if (region_image != (Image *) NULL)
+  if ((region_image != (Image *) NULL) && (region_image != *image))
     {
       /*
         Composite transformed region onto image.
@@ -13224,6 +13313,11 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
                   ThrowMogrifyException(OptionError,MissingArgument,
                     option);
               }
+            else
+              {
+                ThrowMogrifyException(OptionError,MissingArgument,
+                    option);
+              }
             break;
           }
         if (LocaleCompare("ordered-dither",option+1) == 0)
@@ -13400,16 +13494,6 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
             if (*option == '-')
               {
                 i++;
-                if ((i == (argc-1)) || !IsGeometry(argv[i]))
-                  ThrowMogrifyException(OptionError,MissingArgument,option);
-              }
-            break;
-          }
-        if (LocaleCompare("resize",option+1) == 0)
-          {
-            if (*option == '-')
-              {
-                i++;
                 if ((i == argc) || !IsGeometry(argv[i]))
                   ThrowMogrifyException(OptionError,MissingArgument,option);
               }
@@ -13421,8 +13505,7 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
               {
                 i++;
                 if ((i == argc) || !IsGeometry(argv[i]))
-                  ThrowMogrifyException(OptionError,MissingArgument,
-                    option);
+                  ThrowMogrifyException(OptionError,MissingArgument,option);
               }
             break;
           }
@@ -14839,6 +14922,10 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
           break;
         ThrowMontageException(OptionError,UnrecognizedOption,option)
       }
+      case 'o':
+      {
+        ThrowMontageException(OptionError,UnrecognizedOption,option)
+      }
       case 'p':
       {
         if (LocaleCompare("page",option+1) == 0)
@@ -15127,7 +15214,11 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
               }
             break;
           }
-        ThrowMontageException(OptionError,UnrecognizedOption,option)
+        ThrowMontageException(OptionError,UnrecognizedOption,option);
+      }
+    case 'u':
+      {
+        ThrowMontageException(OptionError,UnrecognizedOption,option);
       }
       case 'v':
       {
@@ -16700,6 +16791,10 @@ static int ProcessBatchOptions(int argc, char **argv, BatchOptions *options)
           if (LocaleCompare(option = "-stop-on-error", p) == 0)
             status = GetOnOffOptionValue(option, argv[++i], &options->stop_on_error);
           break;
+        case 't':
+          if (LocaleCompare(option = "-tap-mode", p) == 0)
+            status = GetOnOffOptionValue(option, argv[++i], &options->is_tap_mode);
+          break;
         }
       if (status == OptionSuccess)
         continue;
@@ -16776,6 +16871,8 @@ static unsigned int SetCommand(ImageInfo *image_info,
   printf("stop-on-error : %s\n", on_off_option_values[batch_options.stop_on_error]);
   printf("pass          : %s\n", batch_options.pass);
   printf("prompt        : %s\n", batch_options.prompt);
+  printf("tap-mode      : %s\n", on_off_option_values[batch_options.is_tap_mode]);
+
   return MagickTrue;
 }
 

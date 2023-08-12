@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2022 GraphicsMagick Group
+% Copyright (C) 2023 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -21,6 +21,7 @@
 */
 
 #include "magick/studio.h"
+#include "magick/attribute.h"
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/log.h"
@@ -171,6 +172,7 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
         *profile_name;
 
       size_t
+        exif_pad = 0,
         profile_size;
 
       unsigned char
@@ -195,8 +197,11 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
 
       if (NULL != profile_name && profile_size > 0)
         {
+          if (strncmp(profile_name,"Exif",4) == 0)
+            exif_pad=2;
+
           /* Allocate memory for profile */
-          profile=MagickAllocateResourceLimitedArray(unsigned char*,profile_size,
+          profile=MagickAllocateResourceLimitedArray(unsigned char*,profile_size+exif_pad,
                                                      sizeof(*profile));
           if (profile == (unsigned char*) NULL)
             {
@@ -210,7 +215,7 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
             since they indicate the offset to the start of the TIFF
             header of the Exif data.
           */
-          err=heif_image_handle_get_metadata(heif_image_handle,ids[i],profile);
+          err=heif_image_handle_get_metadata(heif_image_handle,ids[i],profile+exif_pad);
 
           if (err.code != heif_error_Ok)
             {
@@ -226,12 +231,70 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
 
           if (strncmp(profile_name,"Exif",4) == 0 && profile_size > 4)
             {
-              /* skip TIFF-Header */
-              SetImageProfile(image,profile_name,profile+4,profile_size-4);
+              /* Parse and skip offset to TIFF header */
+              unsigned char *p = profile;
+              magick_uint32_t offset;
+
+              /* Big-endian offset decoding */
+              offset = p[exif_pad+0] << 24 |
+                       p[exif_pad+1] << 16 |
+                       p[exif_pad+2] << 8 |
+                       p[exif_pad+3];
+
+              /*
+                If the TIFF header offset is not zero, then need to
+                move the TIFF data forward to the correct offset.
+              */
+              profile_size -= 4;
+              if (offset > 0 && offset < profile_size)
+                {
+                  profile_size -= offset;
+
+                  /* Strip any EOI marker if payload starts with a JPEG marker */
+                  if (profile_size > 2 &&
+                      (memcmp(p+exif_pad+4,"\xff\xd8",2) == 0 ||
+                      memcmp(p+exif_pad+4,"\xff\xe1",2) == 0) &&
+                      memcmp(p+exif_pad+4+profile_size-2,"\xff\xd9",2) == 0)
+                    profile_size -= 2;
+
+                  (void) memmove(p+exif_pad+4,p+exif_pad+4+offset,profile_size);
+                }
+
+              p[0]='E';
+              p[1]='x';
+              p[2]='i';
+              p[3]='f';
+              p[4]='\0';
+              p[5]='\0';
+
+              SetImageProfile(image,"EXIF",profile,profile_size+exif_pad+4);
+
+              /*
+                Retrieve image orientation from EXIF and store in
+                image.
+              */
+              {
+                const ImageAttribute
+                  *attribute;
+
+                attribute = GetImageAttribute(image,"EXIF:Orientation");
+                if ((attribute != (const ImageAttribute *) NULL) &&
+                    (attribute->value != (char *) NULL))
+                  {
+                    int
+                      orientation;
+
+                    orientation=MagickAtoI(attribute->value);
+                    if ((orientation > UndefinedOrientation) &&
+                        (orientation <= LeftBottomOrientation))
+                      image->orientation=(OrientationType) orientation;
+                  }
+              }
             }
           else
             {
-              SetImageProfile(image,profile_name,profile,profile_size);
+              if (NULL != content_type && strncmp(content_type,"application/rdf+xml",19) == 0)
+                SetImageProfile(image,"XMP",profile,profile_size);
             }
           MagickFreeResourceLimitedMemory(profile);
         }
@@ -421,6 +484,9 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   PixelPacket
     *q;
 
+  MagickBool
+    ignore_transformations;
+
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
@@ -443,6 +509,21 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
 
   if (ReadBlob(image,in_len,in_buf) != in_len)
     ThrowHEIFReaderException(CorruptImageError, UnexpectedEndOfFile, image);
+
+#if LIBHEIF_NUMERIC_VERSION >= 0x01090000
+  ignore_transformations = MagickFalse;
+  {
+    const char
+      *value;
+
+    if ((value=AccessDefinition(image_info,"heif","ignore-transformations")))
+      if (LocaleCompare(value,"TRUE") == 0)
+        ignore_transformations = MagickTrue;
+  }
+#else
+  /* Older versions are missing required function to get real width/height. */
+  ignore_transformations = MagickTrue;
+#endif
 
   /* Init HEIF-Decoder handles */
   heif=heif_context_alloc();
@@ -476,6 +557,10 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       ThrowHEIFReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
     }
 
+  /*
+    Note: Those values are preliminary but likely the upper bound
+    The real image values might be rotated or cropped due to transformations
+  */
   image->columns=heif_image_handle_get_width(heif_image_handle);
   image->rows=heif_image_handle_get_height(heif_image_handle);
   if (heif_image_handle_has_alpha_channel(heif_image_handle))
@@ -503,7 +588,11 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       return NULL;
     }
 
-  if (image_info->ping)
+  /*
+    When apply transformations (the default) the whole image has to be
+    read to get the real dimensions.
+  */
+  if (image_info->ping && ignore_transformations)
     {
       image->depth = 8;
       HEIFReadCleanup();
@@ -525,7 +614,11 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   progress_user_data.progress = 0;
 
   /* version 1 options */
-  decode_options->ignore_transformations = 0;
+#if LIBHEIF_NUMERIC_VERSION >= 0x01090000
+  decode_options->ignore_transformations = (ignore_transformations == MagickTrue) ? 1 : 0;
+#else
+  decode_options->ignore_transformations = 1;
+#endif
 #if HEIF_ENABLE_PROGRESS_MONITOR
   decode_options->start_progress = start_progress;
   decode_options->on_progress = on_progress;
@@ -560,8 +653,26 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       ThrowHEIFReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
     }
 
+  /*
+    Update with final values, see preliminary note above
+
+    These functions are apparently added in libheif 1.9
+  */
+#if LIBHEIF_NUMERIC_VERSION >= 0x01090000
+  image->columns=heif_image_get_primary_width(heif_image);
+  image->rows=heif_image_get_primary_height(heif_image);
+
+  if (image_info->ping)
+    {
+      image->depth = 8;
+      HEIFReadCleanup();
+      CloseBlob(image);
+      return image;
+    }
+#endif
+
   image->depth=heif_image_get_bits_per_pixel(heif_image, heif_channel_interleaved);
-  /* the requested channel is interleaved there depth is a sum of all channels
+  /* The requested channel is interleaved there depth is a sum of all channels
      split it up again: */
   if (image->logging)
     {

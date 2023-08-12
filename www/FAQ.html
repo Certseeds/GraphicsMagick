@@ -152,16 +152,17 @@ cores are added is typical for CPU-bound algorithms on well-designed
 CPUs.  Regardless, <a class="reference external" href="http://en.wikipedia.org/wiki/Amdal%27s_law">Amdahl's law</a> is a significant factor
 in GraphicsMagick, with non-parallelizable code paths often dominating
 the time.</p>
-<p>It is my belief that stand-alone GPUs are a poor design (expensive,
-inefficient, failure-prone, bandwidth bottlenecked, lack
-functionality, are insecure, and are not supported in servers) and
-that multi-core CPUs will ultimately prevail.  Functionality which
-currently works best in a GPU will simply be integrated into
-tomorrow's multi-core CPUs and C compilers will naturally support that
-functionality.  Once GPU capabilities are integrated into CPUs, there
-will be no more need to develop specialized code for a GPU.  Today 16
-core CPUs are readily available for purchase in systems at reasonable
-prices, and this trend is certain to continue.</p>
+<p>It is my belief that stand-alone GPUs are a poor design for general
+computing tasks (expensive, inefficient, failure-prone, bandwidth
+bottlenecked, lack functionality, are insecure, and are not supported
+in servers) and that multi-core CPUs will continue to dominate the
+computing market.  Functionality which currently works best in a GPU
+will simply be integrated into tomorrow's multi-core CPUs and C
+compilers will naturally support that functionality.  Once GPU
+capabilities are integrated into CPUs, there will be no more need to
+develop specialized code for a GPU.  Today 16 core CPUs are readily
+available for purchase in systems at reasonable prices, and this trend
+is certain to continue.</p>
 <p>Future multi-core CPUs will use a similar amount of power to today's
 CPUs, will idle at very low power consumption levels, and will fit
 into a very small chassis.  Due to this trend, there is no value
@@ -665,7 +666,7 @@ image type may be specified as well.</p>
 <div class="section" id="what-does-identify-report">
 <h1><a class="toc-backref" href="#id34">What does <cite>identify</cite> report?</a></h1>
 <p>GraphicsMagick is sophisticated image handling software supporting
-perhaps a hundred formats, and hundreds of subformats, yet it needs to
+over a hundred formats, and hundreds of subformats, yet it needs to
 be able to apply image processing algorithms in a consistent way, and
 save to many output formats.  Some image types are radically different
 from others.  Due to this, GraphicsMagick normalizes images it reads

@@ -520,11 +520,13 @@ QuantumAssignCB(void *mutable_data,
 
   return (MagickPass);
 }
+#if 0
 #define ApplyChannelDepth(parameter)                                    \
   {                                                                     \
     for (i=0; i < npixels; i++)                                         \
       parameter=scale*((parameter)/scale);                              \
   }
+#endif
 #if MaxRGB > MaxMap
 #  define CrushChannelDepth(parameter) (scale*((parameter)/scale))
 #else
@@ -548,7 +550,7 @@ QuantumDepthCB(void *mutable_data,
   unsigned int
     depth;
 
-  register unsigned int
+  unsigned int
     scale;
 
   register long
@@ -585,8 +587,11 @@ QuantumDepthCB(void *mutable_data,
 
           if (mutable_context->channel_lut != (Quantum *) NULL)
             {
-              for (i=0; i <= (long) MaxMap; i++)
-                mutable_context->channel_lut[i] = scale*(i/scale);
+              unsigned int
+                li;
+
+              for (li=0; li <= MaxMap; li++)
+                mutable_context->channel_lut[li] = scale*(li/scale);
             }
         }
 

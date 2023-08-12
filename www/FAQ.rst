@@ -100,16 +100,17 @@ CPUs.  Regardless, `Amdahl's law
 in GraphicsMagick, with non-parallelizable code paths often dominating
 the time.
 
-It is my belief that stand-alone GPUs are a poor design (expensive,
-inefficient, failure-prone, bandwidth bottlenecked, lack
-functionality, are insecure, and are not supported in servers) and
-that multi-core CPUs will ultimately prevail.  Functionality which
-currently works best in a GPU will simply be integrated into
-tomorrow's multi-core CPUs and C compilers will naturally support that
-functionality.  Once GPU capabilities are integrated into CPUs, there
-will be no more need to develop specialized code for a GPU.  Today 16
-core CPUs are readily available for purchase in systems at reasonable
-prices, and this trend is certain to continue.
+It is my belief that stand-alone GPUs are a poor design for general
+computing tasks (expensive, inefficient, failure-prone, bandwidth
+bottlenecked, lack functionality, are insecure, and are not supported
+in servers) and that multi-core CPUs will continue to dominate the
+computing market.  Functionality which currently works best in a GPU
+will simply be integrated into tomorrow's multi-core CPUs and C
+compilers will naturally support that functionality.  Once GPU
+capabilities are integrated into CPUs, there will be no more need to
+develop specialized code for a GPU.  Today 16 core CPUs are readily
+available for purchase in systems at reasonable prices, and this trend
+is certain to continue.
 
 Future multi-core CPUs will use a similar amount of power to today's
 CPUs, will idle at very low power consumption levels, and will fit
@@ -491,7 +492,7 @@ How can I add one of those cool bevels to my image that I see used on the Web?
 
 There are four types of ornamental borders you can add to your image
 with GraphicsMagick. Each is listed below with the procedure to use
-them with your image. 
+them with your image.
 
 * Surround the image with a border of color
 
@@ -589,7 +590,7 @@ How can I convert my GIF animation sequence to individual image files?
 
 Use the scene embedded file format with convert_::
 
-    gm convert animation.gif +adjoin frame%02d.gif 
+    gm convert animation.gif +adjoin frame%02d.gif
 
 The resulting image files are titled frame01.gif, frame02.gif,
 frame03.gif, etc.
@@ -617,7 +618,7 @@ applied to another image..
 
 Use the -map option of the convert_ command::
 
-    gm convert -map netscape: alpha.gif beta.gif 
+    gm convert -map netscape: alpha.gif beta.gif
 
 Netscape predefines 216 colors for colormapped displays. Use the above
 command to ensure only these predefined colors are used. Otherwise
@@ -646,7 +647,7 @@ Unix does, causing the documented command to fail. The following
 command has been reported to work correctly (all on one line)::
 
     gm convert -font Arial -fill blue -draw "text 10,10 'your text here'" \
-       d:\test.tif png:d:\test.png 
+       d:\test.tif png:d:\test.png
 
 and here is another example which is reported to work (which relies
 on Ghostscript's 'gs' program to installed)::
@@ -734,7 +735,7 @@ What does `identify` report?
 ----------------------------
 
 GraphicsMagick is sophisticated image handling software supporting
-perhaps a hundred formats, and hundreds of subformats, yet it needs to
+over a hundred formats, and hundreds of subformats, yet it needs to
 be able to apply image processing algorithms in a consistent way, and
 save to many output formats.  Some image types are radically different
 from others.  Due to this, GraphicsMagick normalizes images it reads

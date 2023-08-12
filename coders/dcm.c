@@ -7370,7 +7370,9 @@ static MagickPassFail DCM_ReadNonNativeImages(Image **image,const ImageInfo *ima
           else if (next_image != (Image *) NULL)
             {
               DestroyImage(next_image);
+#if !defined(__COVERITY__) /* 384799 Unused value */
               next_image=(Image *) NULL;
+#endif /* if !defined(__COVERITY__) */
             }
         }
       (void) LiberateTemporaryFile(filename);

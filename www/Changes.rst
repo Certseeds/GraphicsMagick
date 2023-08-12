@@ -47,7 +47,7 @@ GraphicsMagick Change Logs
 
 The following are the ``GraphicsMagick`` change logs since 2001:
 
-  * 2023_ (1.3.40 released)
+  * 2023_ (1.3.40, 1.3.41 released)
 
   * 2022_ (1.3.38, 1.3.39 released)
 

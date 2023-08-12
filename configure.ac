@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2022 GraphicsMagick Group
+# Copyright (C) 2003-2023 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -2250,6 +2250,9 @@ then
         AC_DEFINE([HasJPEG],[1],[Define if you have JPEG library])
         AC_MSG_RESULT([yes])
         have_jpeg='yes'
+        # Test for interesting libjpeg-turbo 3.0 functions (which may also appear in other JPEG libraries)
+        AC_CHECK_FUNCS([jpeg_enable_lossless jpeg12_write_scanlines jpeg16_write_scanlines \
+                        jpeg12_read_scanlines jpeg16_read_scanlines])
     fi
     else
         AC_MSG_RESULT([no])
@@ -2646,9 +2649,16 @@ then
     AC_MSG_RESULT()
     failed=0
     passed=0
-    AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-    # heif always requires hwy no extra test needed
-    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lde265])
+    heif_libs=''
+    # Use pkg-config to handle different optional codec libs
+    # and if pkg-config is not available fallback to manual search.
+    PKG_CHECK_MODULES([HEIF], [libheif],
+        [heif_libs=$HEIF_LIBS; passed=1;],
+        [AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+        # Assume sensible default for codec; This will fail with a static
+        # libheif that contains a avif codec.
+        heif_libs="-lheif -lde265"])
+    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$heif_libs])
     AC_MSG_CHECKING([if HEIF package is complete])
     if test $passed -gt 0
     then
@@ -2657,7 +2667,7 @@ then
         AC_MSG_RESULT([no -- some components failed test])
         have_heif='no (failed tests)'
     else
-        LIB_HEIF='-lheif -lde265'
+        LIB_HEIF="$heif_libs"
         LIBS="$LIB_HEIF $LIBS"
         AC_DEFINE([HasHEIF],[1],[Define if you have HEIF library])
         AC_MSG_RESULT([yes])
@@ -3849,7 +3859,7 @@ if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JP2 $LIB_JPEG $LIB_JXL $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_JP2 $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JPEG $LIB_JXL $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
 AC_SUBST([MAGICK_DEP_LIBS])
@@ -3908,6 +3918,7 @@ AC_SUBST([MAGICK_API_CPPFLAGS])
 AC_SUBST([MAGICK_API_PC_CPPFLAGS])
 AC_SUBST([MAGICK_API_LDFLAGS])
 AC_SUBST([MAGICK_API_LIBS])
+AC_SUBST([MAGICK_API_DEP_LIBS])
 
 AC_CONFIG_FILES(\
         GraphicsMagick.spec \

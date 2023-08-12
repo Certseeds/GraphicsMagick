@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -160,6 +160,10 @@ MagickExport Image *AdaptiveThresholdImage(const Image * image,
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+
+  if ((width == 0) || (height == 0))
+    ThrowImageException3(OptionError, UnableToThresholdImage,
+                         NonzeroWidthAndHeightRequired);
 
   if ((image->columns < width) || (image->rows < height))
     ThrowImageException3(OptionError, UnableToThresholdImage,
@@ -790,7 +794,7 @@ static int GetBlurKernel(unsigned long width,const double sigma,double **kernel)
   */
   if (width == 0)
     width=3;
-  *kernel=MagickAllocateMemory(double *,width*sizeof(double));
+  *kernel=MagickAllocateResourceLimitedArray(double *,width,sizeof(double));
   if (*kernel == (double *) NULL)
     return(0);
   for (i=0; i < (long) width; i++)
@@ -967,21 +971,21 @@ BlurImage(const Image *original_image,const double radius,
       while ((long) (MaxRGB*kernel[0]) > 0)
         {
           if (last_kernel != (double *)NULL)
-            MagickFreeMemory(last_kernel);
+            MagickFreeResourceLimitedMemory(last_kernel);
           last_kernel=kernel;
           kernel=(double *) NULL;
           width=GetBlurKernel(width+2,sigma,&kernel);
         }
       if (last_kernel != (double *) NULL)
         {
-          MagickFreeMemory(kernel);
+          MagickFreeResourceLimitedMemory(kernel);
           width-=2;
           kernel=last_kernel;
         }
     }
   if (width < 3)
     {
-      MagickFreeMemory(kernel);
+      MagickFreeResourceLimitedMemory(kernel);
       ThrowImageException3(OptionError,UnableToBlurImage,
                            KernelRadiusIsTooSmall);
     }
@@ -1017,7 +1021,7 @@ BlurImage(const Image *original_image,const double radius,
     status&=BlurImageScanlines(blur_image,kernel,width,BlurImageRowsText,
                                exception);
 
-  MagickFreeMemory(kernel);
+  MagickFreeResourceLimitedMemory(kernel);
 
   if (blur_image != (Image *) NULL)
     blur_image->is_grayscale=original_image->is_grayscale;
@@ -4235,7 +4239,8 @@ MagickExport Image *SharpenImageChannel(const Image *image,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  SpreadImage() is a special effects method that randomly displaces each
-%  pixel in a block defined by the radius parameter.
+%  pixel in a block defined by the radius parameter.  Useful values are 1
+%  to than less than 100.
 %
 %  The format of the SpreadImage method is:
 %
@@ -4268,8 +4273,13 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
   assert(image->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  if ((image->columns < 3) || (image->rows < 3))
-    return((Image *) NULL);
+  if ((image->columns < 3) || (image->rows < 3) ||
+      ((image->columns < radius) && (image->rows < radius)))
+    {
+      ThrowImageException3(OptionError, UnableToSpreadImage,
+                           ImageSmallerThanRadius);
+    }
+
   /*
     Initialize spread image attributes.
   */
@@ -4381,6 +4391,8 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
                   tries;
 
                 tries=0;
+                if (offsets_index == OFFSETS_ENTRIES)
+                  offsets_index=0;
                 do
                   {
                     x_distance=offsets[offsets_index++];
@@ -4396,6 +4408,8 @@ MagickExport Image *SpreadImage(const Image *image,const unsigned int radius,
                   } while (((x+x_distance) < 0) ||
                            ((x+x_distance) >= (long) image->columns));
                 tries=0;
+                if (offsets_index == OFFSETS_ENTRIES)
+                  offsets_index=0;
                 do
                   {
                     y_distance=offsets[offsets_index++];

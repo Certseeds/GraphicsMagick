@@ -8,6 +8,7 @@ GraphicsMagick Download
 
 .. _Bob Friesenhahn : mailto:bfriesen@graphicsmagick.org
 .. _SourceForge Download : https://sourceforge.net/projects/graphicsmagick/files/
+.. _tar : https://en.wikipedia.org/wiki/Tar_(computing)
 
 .. contents::
   :local:
@@ -18,6 +19,60 @@ Download Sites
 The source distribution of GraphicsMagick as well as pre-compiled
 binaries may be downloaded from the `SourceForge Download`_ page.
 This is also where 'snapshot' distribution archives may be found.
+
+Download Formats
+================
+
+The GraphicsMagick source files may be available in several different
+archive formats:
+
+tar.gz
+------
+
+This is a POSIX tar_ file compressed using the legacy GNU gzip format ('gz'
+extension) by Jean-loup Gailly and Mark Adler. Gzip is available from
+https://www.gzip.org/.  Gzip is the the most readily available
+compressor on the planet.
+
+tar.bz2
+-------
+
+This is a POSIX tar_ file compressed using the legacy bzip2 format ('bz2'
+extension) by Julian Seward.  Bzip2 is available from http://sourceware.org/bzip2/.
+
+tar.xz
+------
+
+This is a POSIX tar_ file compressed using XZ Utils ('xz' extension) by
+Lasse Collin starting with Igor Pavlov's LZMA-SDK.  XZ Utils is
+available from https://tukaani.org/xz/.  XZ Utils is very popular and
+readily available.
+
+tar.zst
+-------
+
+This is a POSIX tar_ file compressed using Facebook's Zstandard format
+('zst' extension) by Yann Collet.  Zstd is available from
+https://facebook.github.io/zstd/.  While Zstd is not yet popular for
+source archive distribution, it is supported by Automake and GNU tar,
+and its compression ratio is very good.
+
+tar.lz
+------
+
+This is a POSIX tar_ file compressed using Lzip ('lz' extension).
+Lzip is available from https://lzip.nongnu.org/lzip.html.  In our
+experience, Lzip produces the smallest source archive files and uses a
+compact and portable implementation (as compared with 'xz', which is
+its primary competitor).
+
+7z
+---
+
+This is a 7-Zip archive file ('7z' extension) by Igor Pavlov.  7-Zip
+is available from https://www.7-zip.org/.  This format is used for the
+Microsoft Windows sources since 7-Zip is much more widely available
+under Windows than 'tar' is.
 
 Verifying The Download
 ======================
@@ -72,11 +127,11 @@ signature) or ".asc" (ASCII armored format signature) file.  The
 distribution file and a signature file must be
 downloaded. Verification is performed by doing this::
 
-  gpg --verify GraphicsMagick-1.3.37.tar.xz.sig
+  gpg --verify GraphicsMagick-1.3.40.tar.xz.sig GraphicsMagick-1.3.40.tar.xz
 
 and you should see output similar to::
 
-  gpg: assuming signed data in 'GraphicsMagick-1.3.37.tar.xz'
+  gpg: assuming signed data in 'GraphicsMagick-1.3.40.tar.xz'
   gpg: Signature made Sun Dec 12 15:30:02 2021 CST
   gpg:                using DSA key EBDFDB21B020EE8FD151A88DE301047DE1198975
   gpg: Good signature from "Bob Friesenhahn <bfriesen@simple.dallas.tx.us>" [ultimate]
@@ -96,11 +151,11 @@ https://sourceforge.net/p/graphicsmagick/mailman/graphicsmagick-announce/
 which you *should* subscribe to).  In this case you may do this for a
 SHA-256 checksum::
 
-  sha256sum GraphicsMagick-1.3.37.tar.xz
+  sha256sum GraphicsMagick-1.3.40.tar.xz
 
 and this for a SHA-1 (legacy) checksum::
 
-  sha1sum GraphicsMagick-1.3.37.tar.xz
+  sha1sum GraphicsMagick-1.3.40.tar.xz
 
 and then compare the generated checksum (hex format) with the checksum
 provided in the release announcement.  While this is much more secure

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -171,6 +171,8 @@ static void InsertComplexDoubleRow(double *p, long y, Image *image, double MinVa
     if (*p > 0)
     {
       f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);  /* first multiplier should be in a range <0;1> */
+      if (MAGICK_ISNAN(f))
+        f=0.0;
       /*if(f<0) f=0; */
       if (f + q->red >= MaxRGB)
         q->red = MaxRGB;
@@ -185,6 +187,8 @@ static void InsertComplexDoubleRow(double *p, long y, Image *image, double MinVa
     if (*p < 0)
     {
       f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* first multiplier should be in a range <0;1>; *p<0 and MinVal<0. */
+      if (MAGICK_ISNAN(f))
+        f=0.0;
       /*if(f<0) f=0; */
       if (f + q->blue >= MaxRGB)
         q->blue = MaxRGB;
@@ -230,6 +234,8 @@ static void InsertComplexFloatRow(float *p, long y, Image *image, double MinVal,
     if (*p > 0)
     {
       f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);
+      if (MAGICK_ISNAN(f))
+        f=0.0;
       /*if(f<0) f=0;    //Only for Assert, should be commented out */
       if (f + q->red < MaxRGB)
         q->red += (int)f;
@@ -244,6 +250,8 @@ static void InsertComplexFloatRow(float *p, long y, Image *image, double MinVal,
     if (*p < 0)
     {
       f = (*p / MinVal) * (Quantum)(MaxRGB - q->blue); /* f is positive only <0; inf> */
+      if (MAGICK_ISNAN(f))
+        f=0.0;
       /*if(f<0) f=0;    //Only for Assert, should be commented out */
       if (f + q->blue < MaxRGB)
         q->blue += (int) f;

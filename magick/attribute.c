@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -2156,6 +2156,7 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                   }
                 case EXIF_FMT_SINGLE:
                   {
+                    float fval;
                     if ((pval < tiffp) || ((pval+sizeof(float)) > tiffp_max))
                       {
                         if (logging)
@@ -2164,12 +2165,14 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                                                 (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
-                    FormatString(s,"%f",(double) *(float *) pval);
+                    (void) memcpy(&fval,pval,sizeof(fval));
+                    FormatString(s,"%f",(double) fval);
                     value=AllocateString(s);
                     break;
                   }
                 case EXIF_FMT_DOUBLE:
                   {
+                    double dval;
                     if ((pval < tiffp) || ((pval+sizeof(double)) > tiffp_max))
                       {
                         if (logging)
@@ -2178,7 +2181,8 @@ GenerateEXIFAttribute(Image *image,const char *specification)
                                                 (MAGICK_SSIZE_T) (pval-tiffp));
                         goto generate_attribute_failure;
                       }
-                    FormatString(s,"%f",*(double *) pval);
+                    (void) memcpy(&dval,pval,sizeof(dval));
+                    FormatString(s,"%f",dval);
                     value=AllocateString(s);
                     break;
                   }
@@ -2524,7 +2528,22 @@ GetImageAttribute(const Image *image,const char *key)
 MagickExport const ImageAttribute *
 GetImageClippingPathAttribute(const Image *image)
 {
-  return(GetImageAttribute(image,"8BIM:1999,2998"));
+  /* Get the name of the clipping path, if any.  The clipping path
+     length is indicated by the first character of the Pascal
+     string. */
+  const ImageAttribute *path_name = GetImageAttribute(image, "8BIM:2999,2999");
+  if ((path_name != (const ImageAttribute *) NULL) &&
+      (path_name->length > 2) &&
+      ((size_t) path_name->value[0] < path_name->length))
+    {
+      static const char clip_prefix[] = "8BIM:1999,2998";
+      char attr_name[271];
+      /*sprintf(attr_name, "%s:%.255s", clip_prefix, path_name->value+1);*/
+      sprintf(attr_name, "%s:%.*s", clip_prefix, Min(255,(int) path_name->length-1),
+              path_name->value+1);
+      return GetImageAttribute(image, attr_name);
+    }
+  return NULL;
 }
 
 /*
@@ -3178,9 +3197,6 @@ SetImageAttribute(Image *image,const char *key,const char *value)
   register ImageAttribute
     *p;
 
-  int
-    orientation;
-
   /*
     Initialize new attribute.
   */
@@ -3271,6 +3287,9 @@ SetImageAttribute(Image *image,const char *key,const char *value)
 
           if (LocaleCompare(attribute->key,"EXIF:Orientation") == 0)
             {
+              int
+                orientation = 0;
+
               /*
                 Special handling for EXIF orientation tag.
                 If new value differs from existing value,
@@ -3278,31 +3297,39 @@ SetImageAttribute(Image *image,const char *key,const char *value)
                 is valid. Don't append new value to existing value,
                 replace it instead.
               */
-              orientation = MagickAtoI(value);
-              if (orientation > 0 || orientation <= (int)LeftBottomOrientation)
-                SetEXIFOrientation(image, orientation);
-
-              /* Replace current attribute with new one */
-              attribute->next = p->next;
-              if (p->previous == (ImageAttribute *) NULL)
-                image->attributes=attribute;
-              else
-                p->previous->next = attribute;
-              DestroyImageAttribute(p);
+              if ((MagickAtoIChk(value, &orientation) == MagickPass) &&
+                  (orientation > 0 || orientation <= (int)LeftBottomOrientation))
+                {
+                  SetEXIFOrientation(image, orientation);
+                }
+              /* Assign changed value to attribute in list */
+              if (LocaleCompare(p->value, attribute->value) != 0)
+                {
+                  MagickFreeMemory(p->value);
+                  p->value=attribute->value;
+                  attribute->value = (char *) NULL;
+                }
+              DestroyImageAttribute(attribute);
               return(MagickPass);
             }
           else
             {
               /*
-                Extend existing text string.
+                Extend existing text string.  This functionality is deprecated!
               */
+              fprintf(stderr,
+                      "SetImageAttribute: Extending attribute value text is deprecated! (key=\"%s\")\n",
+                      attribute->key);
               min_l=p->length+attribute->length+1;
               for (realloc_l=2; realloc_l <= min_l; realloc_l *= 2)
                     { /* nada */};
               MagickReallocMemory(char *,p->value,realloc_l);
               if (p->value != (char *) NULL)
-                (void) strlcat(p->value+p->length,attribute->value,min_l);
-              p->length += attribute->length;
+                {
+                  (void) memcpy(p->value+p->length,attribute->value,min_l-p->length-1);
+                  p->length += attribute->length;
+                  p->value[p->length] = '\0';
+                }
               DestroyImageAttribute(attribute);
             }
           if (p->value != (char *) NULL)

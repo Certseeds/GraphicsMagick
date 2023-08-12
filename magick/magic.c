@@ -150,6 +150,7 @@ StaticMagic[] =
   MAGIC("SVG", 1, "?xml"),
   MAGIC("TIFF", 0, "\115\115\000\052"),
   MAGIC("TIFF", 0, "\111\111\052\000"),
+  MAGIC("TOPOL", 0, "                    "),
   MAGIC("BIGTIFF", 0, "\115\115\000\053\000\010\000\000"),
   MAGIC("BIGTIFF", 0, "\111\111\053\000\010\000\000\000"),
   MAGIC("VICAR", 0, "LBLSIZE"),

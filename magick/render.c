@@ -687,7 +687,9 @@ ConvertPathToPolygon(const PathInfo *path_info, ExceptionInfo *exception)
             polygon_info->edges[edge].bounds.y1=points[0].y;
             polygon_info->edges[edge].bounds.y2=points[n-1].y;
             points=(PointInfo *) NULL;
+#if !defined(__COVERITY__) /* 384800 Unused value */
             ghostline=MagickFalse;
+#endif /* if !defined(__COVERITY__) */
             edge++;
             polygon_info->number_edges=edge;
           }

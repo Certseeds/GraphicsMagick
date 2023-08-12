@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2002-2019 GraphicsMagick Group
+// Copyright (C) 2002-2023 GraphicsMagick Group
 //
 // This program is covered by multiple licenses, which are described in
 // Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -14,7 +14,6 @@
 #include "configure.h"
 #include "configure_wizard.h"
 #include "WaitDlg.h"
-//#include "CStringEx.h"
 
 #define SYMBOLS_ALWAYS 1
 

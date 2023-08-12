@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1367,13 +1367,15 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
       size_t
         i;
 
+      const size_t app1_hdr_size = MAGICK_JPEG_APP1_EXIF_HEADER_SIZE;
+
       image=(Image *) png_get_user_chunk_ptr(ping);
 
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              " recognized eXIf chunk");
+                              "    recognized eXIf chunk");
 
-      profile=MagickAllocateMemory(unsigned char *,chunk->size+6);
+      profile=MagickAllocateMemory(unsigned char *,chunk->size+app1_hdr_size);
 
       if (profile == (unsigned char *) NULL)
         {
@@ -1384,26 +1386,22 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
 
       p=profile;
 
-      /* Stored profile must start with "Exif\0\0" */
-      *p++ ='E';
-      *p++ ='x';
-      *p++ ='i';
-      *p++ ='f';
-      *p++ ='\0';
-      *p++ ='\0';
+      /* Stored profile should start with JPEG APP1 "Exif\0\0" header */
+      (void) memcpy(p,MAGICK_JPEG_APP1_EXIF_HEADER,app1_hdr_size);
+      p += app1_hdr_size;
 
       i=0;
       s=chunk->data;
 
-      if (chunk->size > 6 &&
-          (s[0] == 'E' || s[1] == 'x' || s[2] == 'i' ||
-           s[3] == 'f' || s[4] == '\0' || s[5] == '\0'))
+      if (chunk->size > app1_hdr_size &&
+          (memcmp((const void *) s,(const void *) MAGICK_JPEG_APP1_EXIF_HEADER,
+                  app1_hdr_size) == 0))
         {
           /*
             Skip over "Exif\0\0" if already present
           */
-          i=6;
-          s += 6;
+          i=app1_hdr_size;
+          s += app1_hdr_size;
         }
 
       /* copy chunk->data to profile */
@@ -1449,7 +1447,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
        return(-1); /* Error return */
 
      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-             " recognized caNv chunk");
+             "    recognized caNv chunk");
 
      image=(Image *) png_get_user_chunk_ptr(ping);
 
@@ -1462,7 +1460,7 @@ static int read_user_chunk_callback(png_struct *ping, png_unknown_chunkp chunk)
     }
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-         " unrecognized user chunk");
+         "    unrecognized user chunk: %s", chunk->name);
 
   return(0); /* Did not recognize */
 }
@@ -1569,7 +1567,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
     *q;
 
 #if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
-  png_byte unused_chunks[]=
+  static const png_byte unused_chunks[]=
     {
       104,  73,  83,  84, '\0',   /* hIST */
       105,  84,  88, 116, '\0',   /* iTXt */
@@ -1577,6 +1575,9 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       115,  67,  65,  76, '\0',   /* sCAL */
       115,  80,  76,  84, '\0',   /* sPLT */
       116,  73,  77,  69, '\0',   /* tIME */
+#ifdef PNG_READ_eXIf_SUPPORTED /* Enforce custom eXIf processing to override default one. */
+      101,  88,  73, 102, '\0',   /* eXIf*/
+#endif
 #ifdef PNG_APNG_SUPPORTED /* libpng was built with APNG patch; */
                           /* ignore the APNG chunks */
        97,  99,  84,  76, '\0',   /* acTL */
@@ -1959,7 +1960,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
                                 intent+1);
       }
   }
-#endif
+#endif /* if defined(PNG_READ_sRGB_SUPPORTED) */
   {
     double
       file_gamma;
@@ -2993,6 +2994,28 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
 #if defined(GMPNG_SETJMP_NOT_THREAD_SAFE)
   UnlockSemaphoreInfo(png_semaphore);
 #endif
+
+  /*
+    Retrieve image orientation from EXIF (if present) and store in
+    image.
+  */
+  {
+    const ImageAttribute
+      *attribute;
+
+    attribute = GetImageAttribute(image,"EXIF:Orientation");
+    if ((attribute != (const ImageAttribute *) NULL) &&
+        (attribute->value != (char *) NULL))
+      {
+        int
+          orientation;
+
+        orientation = MagickAtoI(attribute->value);
+        if ((orientation > UndefinedOrientation) &&
+            (orientation <= LeftBottomOrientation))
+          image->orientation=(OrientationType) orientation;
+      }
+  }
 
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -5847,6 +5870,35 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
             magnify the image.
 
             http://www.libpng.org/pub/mng/spec/mng-1.0-20010209-pdg.html#mng-MAGN
+
+            Extracted summary of magnification options:
+
+            X_method:       1 byte
+                            0 or omitted: No magnification
+                            1: Pixel replication of color and alpha samples.
+                            2: Magnified intervals with linear interpolation of
+                               color and alpha samples.
+                            3: Magnified intervals with replication of color and
+                               alpha samples from the closest pixel.
+                            4: Magnified intervals with linear interpolation of
+                               color samples and replication of alpha samples from
+                               the closest pixel.
+                            5: Magnified intervals with linear interpolation of
+                               alpha samples and replication of color samples from
+                               the closest pixel.
+            MX:             2 bytes. X magnification factor, range 1-65535.  If
+                              omitted, MX=1.  Ignored if X_method is 0 and assumed to
+                              be 1.
+            MY:             2 bytes. Y magnification factor.  If omitted, MY=MX.
+            ML:             2 bytes. Left X magnification factor.  If omitted, ML=MX.
+            MR:             2 bytes. Right X magnification factor.  If omitted, MR=MX.
+            MT:             2 bytes. Top Y magnification factor.  If omitted, MT=MY.
+                              Ignored if Y_method is 0 and assumed to be 1.
+            MB:             2 bytes. Bottom Y magnification factor.  If omitted,
+                              MB=MY.
+            Y_method:       1 byte.  If omitted, Y_method is the same as X_method.
+
+
           */
           if (((mng_info->magn_methx > 0) && (mng_info->magn_methx <= 5)) &&
               ((mng_info->magn_methy > 0) && (mng_info->magn_methy <= 5)))
@@ -6145,11 +6197,20 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                     *q=(*n);
                                   if (magn_methy == 5)
                                     {
-                                      (*q).opacity=(QM) (
+                                      if (i == 0)
+                                        {
+                                          /* Copy */
+                                          (*q).opacity=(*p).opacity;
+                                        }
+                                      else
+                                        {
+                                          /* Interpolate */
+                                          (*q).opacity=(QM) (
                                              ((long) (2*i*((*n).opacity
                                              -(*p).opacity)+m))/
                                              ((long) (m*2))+
                                              (*p).opacity);
+                                        }
                                     }
                                 }
                               n++;
@@ -6255,11 +6316,19 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                     *q=(*n);
                                   if (magn_methx == 5)
                                     {
-                                      /* Interpolate */
-                                      (*q).opacity=(QM) ((2*i*((*n).opacity /* oss-fuzz 31109 buffer over-read */
-                                                         -(*p).opacity)+m)/
-                                                         ((long) (m*2))
-                                                         +(*p).opacity);
+                                      if (i == 0)
+                                        {
+                                          /* Copy */
+                                          (*q).opacity=(*p).opacity;
+                                        }
+                                      else
+                                        {
+                                          /* Interpolate */
+                                          (*q).opacity=(QM) ((2*i*((*n).opacity
+                                                                   -(*p).opacity)+m)/
+                                                             ((long) (m*2))
+                                                             +(*p).opacity);
+                                        }
                                     }
                                 }
                               q++;
@@ -8139,20 +8208,20 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
       if (image->units == PixelsPerInchResolution)
         {
           unit_type=PNG_RESOLUTION_METER;
-          x_resolution=(png_uint_32) ((100.0*image->x_resolution+0.5)/2.54);
-          y_resolution=(png_uint_32) ((100.0*image->y_resolution+0.5)/2.54);
+          x_resolution=(png_uint_32) MagickDoubleToUInt((100.0*image->x_resolution+0.5)/2.54);
+          y_resolution=(png_uint_32) MagickDoubleToUInt((100.0*image->y_resolution+0.5)/2.54);
         }
       else if (image->units == PixelsPerCentimeterResolution)
         {
           unit_type=PNG_RESOLUTION_METER;
-          x_resolution=(png_uint_32) (100.0*image->x_resolution+0.5);
-          y_resolution=(png_uint_32) (100.0*image->y_resolution+0.5);
+          x_resolution=(png_uint_32) MagickDoubleToUInt(100.0*image->x_resolution+0.5);
+          y_resolution=(png_uint_32) MagickDoubleToUInt(100.0*image->y_resolution+0.5);
         }
       else
         {
           unit_type=PNG_RESOLUTION_UNKNOWN;
-          x_resolution=(png_uint_32) image->x_resolution;
-          y_resolution=(png_uint_32) image->y_resolution;
+          x_resolution=(png_uint_32) MagickDoubleToUInt(image->x_resolution);
+          y_resolution=(png_uint_32) MagickDoubleToUInt(image->y_resolution);
         }
 
       png_set_pHYs(ping,ping_info,x_resolution,y_resolution,unit_type);
@@ -8162,9 +8231,9 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
              "    Setting up pHYs chunk");
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-             "      x_resolution=%lu",(unsigned long) x_resolution);
+             "      x_resolution=%u",(unsigned int) x_resolution);
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-             "      y_resolution=%lu",(unsigned long) y_resolution);
+             "      y_resolution=%u",(unsigned int) y_resolution);
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
              "      unit_type=%lu",(unsigned long) unit_type);
       }
@@ -8306,7 +8375,7 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
           */
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "  Setting up gAMA chunk");
+                                  "  Setting up gAMA chunk gamma=%f", image->gamma);
           png_set_gAMA(ping,ping_info,image->gamma);
         }
       if (!mng_info->have_write_global_chrm &&

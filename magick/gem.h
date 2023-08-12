@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003-2009 GraphicsMagick Group
+  Copyright (C) 2003-2023 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -21,7 +21,7 @@ extern "C" {
   Graphic gems define declarations.
 */
 extern MagickExport double
-  ExpandAffine(const AffineMatrix *),
+  ExpandAffine(const AffineMatrix *) MAGICK_FUNC_PURE,
   GenerateDifferentialNoise(const Quantum pixel,const NoiseType noise_type,
     MagickRandomKernel *kernel);
 

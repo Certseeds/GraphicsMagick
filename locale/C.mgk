@@ -1124,6 +1124,9 @@
       <Message name="UnableToSharpenImage">
         Unable to sharpen image
       </Message>
+      <Message name="UnableToSpreadImage">
+        Unable to spread image
+      </Message>
       <Message name="UnableToThresholdImage">
         Unable to threshold image
       </Message>

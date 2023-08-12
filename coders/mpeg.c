@@ -300,7 +300,9 @@ static unsigned int WriteMPEGParameterFiles(const ImageInfo *image_info,
           }
         }
       (void) fclose(parameter_file);
+#if !defined(__COVERITY__) /* 384796 Unused value */
       parameter_file=(FILE *) NULL;
+#endif /* if !defined(__COVERITY__) */
     }
   if (image_info->quality == DefaultCompressionQuality)
     (void) fprintf(file,"-\n");  /* default non intra quant matrix */

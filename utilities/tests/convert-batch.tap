@@ -1,0 +1,25 @@
+#!/bin/sh
+# -*- shell-script -*-
+# Copyright (C) 2020-2023 GraphicsMagick Group
+# Test many 'convert' command-lines using 'gm batch'
+# This is not yet a proper TAP test.
+. ./common.shi
+. ${top_srcdir}/utilities/tests/common.sh
+
+commands=${top_srcdir}/utilities/tests/convert-cmds.txt
+
+# Count how many commands there are
+count=`sed -n '$=' ${commands}`
+
+# Number of tests we plan to execute
+test_plan_fn ${count}
+
+cat ${commands} | sed -e "s;\${SUNRISE_MIFF};${SUNRISE_MIFF};g" | while read subcommand
+do
+    #set -x
+    # identity:10 produces a 1000x1000 image
+    # Removed -segment 0.5x0.25 since it can not work with such images
+    subcommande1=$(printf '%s' "${subcommand}" | sed "s/'/\\\'/g")
+    printf "convert identity:10 -comment \"%s\" %s -format '%s' info:-\n" "${subcommand}" "${subcommand}" '%r %g %# %c'
+    #set +x
+done | gm batch -tap-mode on -prompt '# '  #-echo on -prompt off -feedback on -pass PASS -fail FAIL

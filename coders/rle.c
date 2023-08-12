@@ -547,6 +547,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
             offset=(((size_t) image->rows-y-1)*image->columns*number_planes)+x*(size_t) number_planes+plane;
             operand++;
+            if ((SIZE_MAX - (size_t) rle_pixels) < offset)
+              ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             p=rle_pixels+offset;
             for (i=0; i < (unsigned int) operand; i++)
               {
@@ -581,6 +583,8 @@ static Image *ReadRLEImage(const ImageInfo *image_info,ExceptionInfo *exception)
             (void) ReadBlobByte(image);
             operand++;
             offset=(((size_t) image->rows-y-1)*image->columns*number_planes)+x*(size_t) number_planes+plane;
+            if ((SIZE_MAX - (size_t) rle_pixels) < offset)
+              ThrowRLEReaderException(CorruptImageError,UnableToRunlengthDecodeImage,image);
             p=rle_pixels+offset;
             for (i=0; i < (unsigned int) operand; i++)
               {

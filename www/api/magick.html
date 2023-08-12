@@ -73,10 +73,17 @@ allocated semaphores, memory, and temporary files.  This function
 should be invoked in the primary (original) thread of the application's
 process while shutting down, and only after any threads which might be
 using GraphicsMagick functions have terminated.  Since GraphicsMagick
-uses threads internally via OpenMP, it is also necessary for any function
-calls into GraphicsMagick to have already returned so that OpenMP worker
-threads are quiesced and won't be accessing any semaphores or data
-structures which are destroyed by this function.</p>
+may use threads internally via OpenMP, it is also necessary for any
+function calls into GraphicsMagick to have already returned so that
+OpenMP worker threads are quiesced and won't be accessing any semaphores
+or data structures which are destroyed by this function.</p>
+<p>The OpenMP implementation (if present) starts/stops any OpenMP worker
+threads and allocates/frees OpenMP resources using its own algorithms.
+This means that OpenMP worker threads and OpenMP resources are likely
+to remain allocated after DestroyMagick() returns.  Since OpenMP 5.0,
+invoking omp_pause_resource_all(omp_pause_hard) will assure that any
+resources allocated by OpenMP (threads, thread-specific memory, etc.)
+are freed, and this may be called after DestroyMagick() has returned.</p>
 <p>The format of the DestroyMagick function is:</p>
 <pre class="literal-block">DestroyMagick( void );</pre>
 </div>
@@ -223,7 +230,8 @@ the memory allocation functions need to be consistent.</p>
 <h2>Description</h2>
 <p>InitializeMagickEx() initializes the GraphicsMagick environment,
 providing a bit more more control and visibility over initialization
-than the original InitializeMagick().</p>
+than the original InitializeMagick().  Use DestroyMagick() to destroy
+the GraphicsMagick environment when it is not longer needed.</p>
 <p>InitializeMagick() or InitializeMagickEx() MUST be invoked by the using
 program before making use of GraphicsMagick functions or else the library
 will be unusable and any usage is likely to cause a crash.</p>
@@ -233,6 +241,8 @@ of program initialization.</p>
 <p>If alternate memory allocations are provided via MagickAllocFunctions()
 then that function should be invoked before InitializeMagickEx() since
 the memory allocation functions need to be consistent.</p>
+<p>Available options are:</p>
+<p>o MAGICK_OPT_NO_SIGNAL_HANDER - Don't register ANSI/POSIX signal handlers</p>
 <p>The format of the InitializeMagickEx function is:</p>
 <pre class="literal-block">MagickPassFail InitializeMagickEx( const char *path, unsigned int options,
                                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
@@ -241,7 +251,7 @@ the memory allocation functions need to be consistent.</p>
 <dd><p>The execution path of the current GraphicsMagick client (or NULL)</p>
 </dd>
 <dt>options:</dt>
-<dd><p>Options flags tailoring initializations performed</p>
+<dd><p>Options bit flags tailoring initializations performed</p>
 </dd>
 <dt>exception:</dt>
 <dd><p>Information about initialization failure is reported here.</p>

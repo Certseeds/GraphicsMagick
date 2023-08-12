@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to January 14, 2023
+This file was last updated to reflect changes up to August 12, 2023
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -18,6 +18,137 @@ release and not attempt to patch older releases.
 
 .. contents::
   :local:
+
+1.3.41 (August 12, 2023)
+=========================
+
+Special Issues:
+
+* GraphicsMagick really does need some additional productive
+  volunteers.  For several years now, the burden has entirely been on
+  me (Bob Friesenhahn).  I have been sheparding the project for 22
+  years already (and contributed to ImageMagick and GraphicsMagick
+  combined for 27 years already).  It is not reasonable to expect
+  someone with a full time job (and expecting to retire in a few
+  years) to do all of the work.
+
+Security Fixes:
+
+* GraphicsMagick is participating in Google's oss-fuzz project since
+  February 4 2018 due to the contributions and assistance of Alex
+  Gaynor and Paul Kehrer. The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
+
+* GraphicsMagick has been participating in Synopsys's Coverity program
+  for free software projects since 2015.  There has been a continuing
+  objective to keep outstanding defects at 0, or very close to 0.
+  Information about the Coverity status may be found at
+  https://scan.coverity.com/projects/graphicsmagick.
+
+Bug fixes:
+
+* Blob: Immediately reject attempts to write blobs to formats which
+  can not support blobs.
+
+* TranslateTextEx(): An empty string argument should return an empty
+  string rather than a NULL string.
+
+* SetImageAttribute(): Fix bounds issue when concatenating string.
+
+* JPEG: Do not set image resolution if the values provided are outside
+  of the valid range.
+
+* Fixes for NaN when reading formats based on floating point.
+
+* HEIF: Fix reading images with rotation/transformation.
+
+* BMP: Do not decode primaries or gamma unless colorspace is
+  LCS_CALIBRATED_RGB.  Add/correct bmp_info.size "biSize" logic which
+  decides if header chunks are present (or invalid).
+
+* MNG: Fixes for resizing using X_method 5.
+
+* GM command (convert, montage, mogrify): Many command-line parser
+  fixes/checks for invalid command line syntax which causes unexpected
+  behavior, or core dumps.
+
+* TopoL: Given that a writer is now provided, issues found in the
+  reader (and writer) due to continual fuzz-testing have been fixed,
+  as encountered.
+
+* GetImageClippingPathAttribute(): Check for and use clipping path
+  name (ID=2999) to get the real attribute name.
+
+* ReadIPTCProfile(): Fix malformed IPTC data parsing.
+
+New Features:
+
+* TopoL: Now provides a writer.
+
+* WPG: Now provides a writer.
+
+* gm batch: Implement simple Test Anything Protocol (TAP) test
+  counting and "ok N"/"not ok N" messaging.
+
+* TIFF: Support '-define tiff:photometric=minisblack' and '-define
+  tiff:photometric=miniswhite' to be able to adjust the sense used
+  when writing bilevel TIFF images.
+
+* TIFF: Require that TIFFTAG_EXTRASAMPLES be used appropriately to
+  indicate the intention of extra channels.
+
+* utilities/tests/gen-tiff-images/genimages: Script for writing (and
+  then reading) thousands (5568 permutations) of TIFF format variants.
+
+* EXIF and PNG: Retrieve image orientation from EXIF (if present) and
+  store in image.
+
+* HEIF: Retrieve image orientation from EXIF and store in image.
+
+API Updates:
+
+* None
+
+Windows Delegate Updates/Additions:
+
+* None
+
+Build Changes:
+
+* A CMake script is provided as an option for building the Visual
+  Studio project generator, configure.exe.
+
+* pkg-config files now consider static building.
+
+* Unixish configure now uses Use pkg-config for libheif to ease static
+  building.
+
+* TclMagick: Integrated TclMagick build fixes (patches) targeting
+  Unix-type systems.
+
+* LibJXL: Compiles against development 0.9.0 API as existed on July
+  8, 2023.
+
+* The GraphicsMagick++-config script provides a --cxx option to
+  reproduce the name of the C++ compiler which was used.
+
+* The GraphicsMagick-config script provides a --cc option to reproduce
+  the name of the C compiler which was used.
+
+Behavior Changes:
+
+* The ability to extend existing image attribute text by calling
+  SetImageAttribute() multiple times with the same key is now
+  deprecated, and will soon be removed.  In the mean time, the
+  annoying message "SetImageAttribute: Extending attribute value text
+  is deprecated!"  is printed to the standard error output to help
+  expose code which is using this feature.
+
 
 1.3.40 (January 14, 2023)
 =========================

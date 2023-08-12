@@ -2235,7 +2235,17 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
     *blob;
 
   unsigned int
+    i,
     status;
+
+  static const char no_blob_support[][6] =
+    {
+     "CACHE",
+     "MPC",
+     "MPR",
+     "MPRI",
+     "X"
+    };
 
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
@@ -2244,15 +2254,29 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
   assert(exception != (ExceptionInfo *) NULL);
 
   if (image->blob->logging)
-    (void) LogMagickEvent(BlobEvent,GetMagickModule(),"Entering ImageToBlob");
+    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                          "Entering ImageToBlob (image magick=\"%s\")",
+                          image->magick);
   /* SetExceptionInfo(exception,UndefinedException); */
+  for (i = 0; i < ArraySize(no_blob_support); i++)
+    {
+      if (LocaleCompare(image->magick,no_blob_support[i]) == 0)
+        {
+          ThrowException(exception,MissingDelegateError,
+                         NoEncodeDelegateForThisImageFormat,image->magick);
+          if (image->blob->logging)
+            (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                  "Exiting ImageToBlob");
+          return((void *) NULL);
+        }
+    }
   clone_info=CloneImageInfo(image_info);
   (void) strlcpy(clone_info->magick,image->magick,MaxTextExtent);
   magick_info=GetMagickInfo(clone_info->magick,exception);
   if (magick_info == (const MagickInfo *) NULL)
     {
       ThrowException(exception,MissingDelegateError,
-                     NoDecodeDelegateForThisImageFormat,clone_info->magick);
+                     NoEncodeDelegateForThisImageFormat,clone_info->magick);
       DestroyImageInfo(clone_info);
       if (image->blob->logging)
         (void) LogMagickEvent(BlobEvent,GetMagickModule(),
@@ -5434,6 +5458,7 @@ MagickExport MagickPassFail WriteBlobFile(Image *image,const char *filename)
 */
 MagickExport size_t WriteBlobLSBLong(Image *image,const magick_uint32_t value)
 {
+#if defined(WORDS_BIGENDIAN)
   unsigned char
     buffer[4];
 
@@ -5444,6 +5469,12 @@ MagickExport size_t WriteBlobLSBLong(Image *image,const magick_uint32_t value)
   buffer[2]=(unsigned char) (value >> 16);
   buffer[3]=(unsigned char) (value >> 24);
   return(WriteBlob(image,4,buffer));
+#else
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  assert(sizeof(value) == 4);
+  return(WriteBlob(image,4,&value));
+#endif
 }
 
 /*
@@ -5578,6 +5609,21 @@ MagickExport size_t WriteBlobLSBSignedShort(Image *image,const magick_int16_t va
   buffer[1]=(unsigned char) (uvalue.uint16 >> 8);
   return(WriteBlob(image,2,buffer));
 }
+
+
+MagickExport size_t WriteBlobLSBDouble(Image *image, double d)
+{
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  assert(sizeof(d) == 8);
+
+#if defined(WORDS_BIGENDIAN)
+  MagickSwabDouble(&d);
+#endif
+  return(WriteBlob(image,8,&d));
+}
+
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -5630,6 +5676,7 @@ MagickExport size_t ReadBlobLSBShorts(Image *image, size_t octets,
 
   return octets_read;
 }
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

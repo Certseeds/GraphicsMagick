@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2020 GraphicsMagick Group
+  Copyright (C) 2003 - 2023 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
   Copyright 1991-1999 E. I. du Pont de Nemours and Company
 
@@ -31,7 +31,12 @@ extern MagickExport MagickPassFail MagickAtoIChk(const char *str, int *value);
 extern MagickExport MagickPassFail MagickAtoUIChk(const char *str, unsigned int *value);
 extern MagickExport MagickPassFail MagickAtoLChk(const char *str, long *value);
 extern MagickExport MagickPassFail MagickAtoULChk(const char *str, unsigned long *value);
+extern MagickExport unsigned long MagickDoubleToULong(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
+extern MagickExport unsigned int MagickDoubleToUInt(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
 extern MagickExport long MagickDoubleToLong(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
+extern MagickExport int MagickDoubleToInt(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
+extern MagickExport unsigned short int MagickDoubleToUShort(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
+extern MagickExport short int MagickDoubleToShort(const double dval/*, ExceptionInfo *exception*/) MAGICK_FUNC_CONST;
 
 extern MagickExport size_t
   MagickStripSpacesFromString(char *string),
