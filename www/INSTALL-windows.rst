@@ -270,8 +270,8 @@ Important Notes
   optimization, and the problem is likely to go away (but with less
   performance).
 
-Windows XP, Vista, 7 Visual C++ 6.0 through 19.0 Compilation
-------------------------------------------------------------
+Windows XP, Vista, 7 Visual C++ 6.0 through 17.6.5 Compilation
+--------------------------------------------------------------
 
   The Visual C++ distribution targeted at Windows 2000 through Windows
   10 does not provide any stock workspace (DSW) or project files (DSP)
