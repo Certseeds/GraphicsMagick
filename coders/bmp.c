@@ -1255,6 +1255,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       /*
         Convert BMP raster image to pixel packets.
       */
+/*
       if (bmp_info.compression == BI_RGB)
         {
           bmp_info.alpha_mask=(image->matte ? 0xff000000U : 0U);
@@ -1263,18 +1264,35 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           bmp_info.blue_mask=0x000000ffU;
           if (bmp_info.bits_per_pixel == 16)
             {
-              /*
-                RGB555.
-              */
+              // RGB555.   JFO: Please consider whether this is correct ?? I guess RGB 565!
               bmp_info.red_mask=0x00007c00U;
               bmp_info.green_mask=0x000003e0U;
               bmp_info.blue_mask=0x0000001fU;
             }
         }
+*/
       if ((bmp_info.bits_per_pixel == 16) || (bmp_info.bits_per_pixel == 32))
         {
           register magick_uint32_t
             sample;
+
+              /* Use defaults fot 40 bytes header and also remember to a culture of sloth. */
+           if(bmp_info.red_mask==0 && bmp_info.green_mask==0 && bmp_info.blue_mask==0 && bmp_info.alpha_mask==0)
+           {
+             if(bmp_info.bits_per_pixel == 16)		/* USE BMP 565 */
+             {
+               bmp_info.red_mask=0x0000F800U;
+               bmp_info.green_mask=0x000007e0U;
+               bmp_info.blue_mask=0x0000001fU;
+             }
+             if(bmp_info.bits_per_pixel == 32)
+             {
+               bmp_info.alpha_mask=(image->matte ? 0xff000000U : 0U);
+               bmp_info.red_mask=0x00ff0000U;
+               bmp_info.green_mask=0x0000ff00U;
+               bmp_info.blue_mask=0x000000ffU;
+             }
+           }
 
           /*
             Get shift and quantum bits info from bitfield masks.
@@ -1424,18 +1442,18 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     pixel=(*p++);
                     pixel|=(*p++) << 8;
                     red=((pixel & bmp_info.red_mask) << shift.red) >> 16;
-                    if (quantum_bits.red == 8)
+                    if (quantum_bits.red <= 8)		/* TODO: this is ugly, but better than nothing. Should be reworked. */
                       red|=(red >> 8);
                     green=((pixel & bmp_info.green_mask) << shift.green) >> 16;
-                    if (quantum_bits.green == 8)
+                    if (quantum_bits.green <= 8)
                       green|=(green >> 8);
                     blue=((pixel & bmp_info.blue_mask) << shift.blue) >> 16;
-                    if (quantum_bits.blue == 8)
+                    if (quantum_bits.blue <= 8)
                       blue|=(blue >> 8);
                     if (image->matte != False)
                       {
                         opacity=((pixel & bmp_info.alpha_mask) << shift.opacity) >> 16;
-                        if (quantum_bits.opacity == 8)
+                        if (quantum_bits.opacity <= 8)
                           opacity|=(opacity >> 8);
                         q->opacity=MaxRGB-ScaleShortToQuantum(opacity);
                       }
