@@ -4,8 +4,7 @@
 
 2023-08-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/tiff.c  Fix compillation problem in MSVC.
-
+	* coders/tiff.c  Fix compilation problem in MSVC.
 
 2023-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
