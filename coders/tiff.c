@@ -5143,13 +5143,14 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           /*
             Image has a matte channel.  Mark it correctly.
           */
-          alpha_type=UnassociatedAlpha;
           uint16
             extra_samples,
             sample_info[1];
 
           const char *
             value;
+
+          alpha_type=UnassociatedAlpha;
 
           if ((value=AccessDefinition(image_info,"tiff","alpha")))
             {
