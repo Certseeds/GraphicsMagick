@@ -1,3 +1,13 @@
+2023-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Default the alpha channel to
+	type EXTRASAMPLE_UNASSALPHA(2).  The default was
+	EXTRASAMPLE_UNSPECIFIED(0), which is particularly unfortunate
+	given that GraphicsMagick 1.3.41 now silently ignores such
+	channels. Patch by Markus Mützel.  Addresses SourceForge issue
+	#718 "Set reasonable defaults when writing TIFF with
+	transparency".
+
 2023-08-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated for 1.3.41 release.
