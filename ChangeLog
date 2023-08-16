@@ -1,3 +1,12 @@
+2023-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): For common formats with the
+	required number of channels, but one is an 'unspecified' channel,
+	promote unspecified alpha to unassociated alpha so that the alpha
+	channel is not ignored. Addresses the remainder of SourceForge
+	issue #718 "Set reasonable defaults when writing TIFF with
+	transparency".
+
 2023-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Makefile.am (CHANGELOGS): Changelogs ChangeLog.2021 and

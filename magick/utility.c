@@ -1951,6 +1951,10 @@ static int MagickStrToD(const char *start,char **end,double *value)
       *value=0.0;
       errno=ERANGE;
     }
+  /*
+    Warning: Visual Studio 2008 64-bit returns errno 34 "Result too
+    large", even though a correct value is returned!
+  */
   else if (errno == 0)
     {
       n++;

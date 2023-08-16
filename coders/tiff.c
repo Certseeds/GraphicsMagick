@@ -2239,6 +2239,7 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
       /*
         Obtain information about any extra samples.
+        FIXME samples_per_pixel = 4 and 1 extra sample which is 'unspecified'
       */
       extra_samples=0;
       if (TIFFGetField(tiff,TIFFTAG_EXTRASAMPLES,&extra_samples,
@@ -2256,12 +2257,10 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               else if (sample_info[0] == EXTRASAMPLE_UNASSALPHA)
                 {
                   alpha_type=UnassociatedAlpha;
-                  image->matte=True;
                 }
               else if (sample_info[0] == EXTRASAMPLE_ASSOCALPHA)
                 {
                   alpha_type=AssociatedAlpha;
-                  image->matte=True;
                 }
             }
           if (image->logging)
@@ -2276,13 +2275,30 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
         Report RGBA images which may be improperly marked.
       */
       if ((image->logging) && (extra_samples == 0))
-        if ((photometric == PHOTOMETRIC_RGB) && (samples_per_pixel == 4))
+        if (((PHOTOMETRIC_RGB == photometric) && (samples_per_pixel == 4)) ||
+            (((PHOTOMETRIC_MINISWHITE == photometric) || (PHOTOMETRIC_MINISBLACK == photometric)) && (samples_per_pixel == 2)))
           {
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Photometric is RGB but %u samples/pixel and %u extra_samples provided!",
-                                  samples_per_pixel, extra_samples);
+                                  "Photometric is %s but %u samples/pixel and %u extra_samples provided!",
+                                  PhotometricTagToString(photometric),samples_per_pixel, extra_samples);
           }
-
+      /*
+        Deal with files which are marked as unspecified alpha, but
+        they should be unassociated alpha.
+       */
+      if (((extra_samples == 1) && (sample_info[0] == EXTRASAMPLE_UNSPECIFIED)) &&
+          (
+           ((samples_per_pixel == 2) && ((PHOTOMETRIC_MINISWHITE == photometric) || (PHOTOMETRIC_MINISBLACK == photometric))) ||
+           ((samples_per_pixel == 4) && (PHOTOMETRIC_RGB == photometric)) ||
+           ((samples_per_pixel == 5) && (PHOTOMETRIC_SEPARATED == photometric))
+           )
+          )
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Promoting UnspecifiedAlpha to UnassociatedAlpha");
+          alpha_type=UnassociatedAlpha;
+          image->matte=True;
+        }
       /*
         Allow the user to over-ride the alpha channel type.
       */
@@ -2297,6 +2313,23 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
               else if (LocaleCompare(definition_value,"unassociated") == 0)
                 alpha_type=UnassociatedAlpha;
             }
+        }
+
+      /*
+        Does alpha type deserve a matte channel?
+      */
+      switch(alpha_type)
+        {
+        case UnspecifiedAlpha:
+          break;
+        case UnassociatedAlpha:
+          image->matte=True;
+          break;
+        case AssociatedAlpha:
+          image->matte=True;
+          break;
+        default:
+          break;
         }
 
       /*
