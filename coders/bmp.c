@@ -1277,7 +1277,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             sample;
 
           /* Use defaults for 40 bytes header and also a reminder of a culture of sloth. */
-          if (bmp_info.red_mask==0 && bmp_info.green_mask==0 && bmp_info.blue_mask==0 && bmp_info.alpha_mask==0)
+          if(bmp_info.compression == BI_RGB ||
+             (bmp_info.red_mask==0 && bmp_info.green_mask==0 && bmp_info.blue_mask==0 && bmp_info.alpha_mask==0))
             {
               if (bmp_info.bits_per_pixel == 16)          /* USE BMP 565 */
                 {
