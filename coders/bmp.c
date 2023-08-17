@@ -1441,8 +1441,13 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
                 for (x=0; x < (long) image->columns; x++)
                   {
+#ifdef WORDS_BIGENDIAN
                     pixel=(*p++);
                     pixel|=(*p++) << 8;
+#else
+                    pixel = *(magick_uint16_t*)p;
+                    p += 2;
+#endif
                     red=((pixel & bmp_info.red_mask) << shift.red) >> 16;
                     if (quantum_bits.red <= 8)          /* TODO: this is ugly, but better than nothing. Should be reworked. */
                       red|=(red >> 8);
@@ -1534,10 +1539,15 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   break;
                 for (x=0; x < (long) image->columns; x++)
                   {
+#ifdef WORDS_BIGENDIAN
                     pixel =((magick_uint32_t) *p++);
                     pixel|=((magick_uint32_t) *p++ << 8);
                     pixel|=((magick_uint32_t) *p++ << 16);
                     pixel|=((magick_uint32_t) *p++ << 24);
+#else
+                    pixel = *(magick_uint32_t*)p;
+                    p += 4;
+#endif
                     red=((pixel & bmp_info.red_mask) << shift.red) >> 16;
                     if (quantum_bits.red <= 8)
                       red|=(red >> 8);
