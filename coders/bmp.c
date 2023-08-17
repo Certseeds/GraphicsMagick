@@ -1287,7 +1287,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 }
               if ( bmp_info.bits_per_pixel == 32)
                 {
-                  bmp_info.alpha_mask=(image->matte ? 0xff000000U : 0U);
+                  image->matte = 1;
+                  bmp_info.alpha_mask=0xff000000U;
                   bmp_info.red_mask=0x00ff0000U;
                   bmp_info.green_mask=0x0000ff00U;
                   bmp_info.blue_mask=0x000000ffU;
