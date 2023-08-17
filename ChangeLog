@@ -4,7 +4,7 @@
 	bpp than 8. It overcomes quantum scalling error in gm. Code should
 	be redesigned, but it is better than previous state.
 
-        Enforce default color masks when bmp_info.compression==BI_RGB
+	Enforce default color masks when bmp_info.compression==BI_RGB
 	Existing masks will be ignored.
 
 2023-08-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
