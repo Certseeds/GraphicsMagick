@@ -1287,7 +1287,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 }
               if ( bmp_info.bits_per_pixel == 32)
                 {
-                  image->matte = 1;
+                  image->matte = True;
                   bmp_info.alpha_mask=0xff000000U;
                   bmp_info.red_mask=0x00ff0000U;
                   bmp_info.green_mask=0x0000ff00U;
@@ -1514,6 +1514,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           }
         case 32:
           {
+             /* char ZeroOpacity = 1; */
             /*
               Convert bitfield encoded DirectColor scanline.
             */
@@ -1537,18 +1538,19 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     pixel|=((magick_uint32_t) *p++ << 16);
                     pixel|=((magick_uint32_t) *p++ << 24);
                     red=((pixel & bmp_info.red_mask) << shift.red) >> 16;
-                    if (quantum_bits.red == 8)
+                    if (quantum_bits.red <= 8)
                       red|=(red >> 8);
                     green=((pixel & bmp_info.green_mask) << shift.green) >> 16;
-                    if (quantum_bits.green == 8)
+                    if (quantum_bits.green <= 8)
                       green|=(green >> 8);
                     blue=((pixel & bmp_info.blue_mask) << shift.blue) >> 16;
-                    if (quantum_bits.blue == 8)
+                    if (quantum_bits.blue <= 8)
                       blue|=(blue >> 8);
                     if (image->matte != False)
                       {
                         opacity=((pixel & bmp_info.alpha_mask) << shift.opacity) >> 16;
-                        if (quantum_bits.opacity == 8)
+                        /* if(opacity!=0) ZeroOpacity=0; */
+                        if (quantum_bits.opacity <= 8)
                           opacity|=(opacity >> 8);
                         q->opacity=MaxRGB-ScaleShortToQuantum(opacity);
                       }
@@ -1570,6 +1572,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         break;
                     }
               }
+            /* if(ZeroOpacity) image->matte = False; */
             break;
           }
         default:
