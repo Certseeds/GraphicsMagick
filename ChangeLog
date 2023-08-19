@@ -1,3 +1,7 @@
+2023-08-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c Reveal a contents of OS22XBITMAPHEADER.
+
 2023-08-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/bmp.c Do not throttle on native low endian systems.

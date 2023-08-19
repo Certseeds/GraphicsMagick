@@ -817,6 +817,41 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     "  Important colors: %u",bmp_info.colors_important);
             }
 
+          if(bmp_info.size==64)
+            {				/* OS22XBITMAPHEADER */
+              magick_uint16_t   Units;            /* Type of units used to measure resolution */
+              magick_uint16_t   Reserved;         /* Pad structure to 4-byte boundary */
+              magick_uint16_t   Recording;        /* Recording algorithm */
+              magick_uint16_t   Rendering;        /* Halftoning algorithm used */
+              magick_uint32_t  Size1;            /* Reserved for halftoning algorithm use */
+              magick_uint32_t  Size2;            /* Reserved for halftoning algorithm use */
+              magick_uint32_t  ColorEncoding;    /* Color model used in bitmap */
+              magick_uint32_t  Identifier;       /* Reserved for application use */
+              Units = ReadBlobLSBShort(image);
+              Reserved = ReadBlobLSBShort(image);
+              Recording = ReadBlobLSBShort(image);
+              Rendering = ReadBlobLSBShort(image);
+              Size1 = ReadBlobLSBLong(image);
+              Size2 = ReadBlobLSBLong(image);
+              ColorEncoding = ReadBlobLSBLong(image);
+              Identifier = ReadBlobLSBLong(image);
+
+              if(logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "  OS22XBITMAPHEADER header: %u\n"
+                              "    Units: %u\n"
+                              "    Reserved: %u"
+                              "    Recording: %u\n"
+                              "    Rendering: %u\n"
+                              "    Size1: %u\n"
+                              "    Size2: %u\n"
+                              "    ColorEncoding: %u\n"
+                              "    Identifier: %u",
+                              Units, Reserved, Recording, Rendering,
+                              Size1, Size2, ColorEncoding, Identifier);
+
+            }
+
           if (bmp_info.size >= 52 && bmp_info.size!=64)
             {
               bmp_info.red_mask=ReadBlobLSBLong(image);
