@@ -25,7 +25,7 @@
 #define WEBP_INLINE
 #endif
 #else
-#if _MSC_VER > 1500
+#if _MSC_VER > 1600
   #include <stdint.h>
   #include <inttypes.h>
 #else
