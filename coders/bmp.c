@@ -1983,7 +1983,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
           bmp_info.number_colors=0;
           bmp_info.bits_per_pixel=((type > 3) && image->matte) ? 32 : 24;
           bmp_info.compression=
-            (type > 3) && image->matte ?  BI_BITFIELDS : BI_RGB;
+            (type > 3) && image->matte ?  BI_ALPHABITFIELDS : BI_RGB;
         }
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Final: Scene %lu, storage_class %s, colors %u",
@@ -2295,6 +2295,12 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "   Compression=BI_BITFIELDS");
+                break;
+              }
+            case BI_ALPHABITFIELDS:
+              {
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "   Compression=BI_ALPHABITFIELDS");
                 break;
               }
             default:
