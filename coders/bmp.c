@@ -57,6 +57,9 @@
 #define BI_JPEG  4
 #undef BI_PNG
 #define BI_PNG  5
+#ifndef BI_ALPHABITFIELDS
+ #define BI_ALPHABITFIELDS 6
+#endif
 #if !defined(MSWINDOWS) || defined(__MINGW32__)
 #undef BI_RGB
 #define BI_RGB  0
@@ -805,6 +808,12 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           "  Compression: BI_JPEG");
                     break;
                   }
+                case BI_ALPHABITFIELDS:
+                  {
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "  Compression: BI_ALPHABITFIELDS");
+                    break;
+                  }
                 default:
                   {
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -867,6 +876,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "Alpha Mask: 0x%04x",
                                           bmp_info.alpha_mask);
+                      /* Discard alpha mask, if not BI_ALPHABITFIELDS is signalised. */
+                  if(bmp_info.compression != BI_ALPHABITFIELDS)
+                      bmp_info.alpha_mask=0;
 
                   if (bmp_info.size > 120)
                     {
@@ -1077,28 +1089,29 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (bmp_info.number_colors > (1UL << bmp_info.bits_per_pixel))
             ThrowBMPReaderException(CorruptImageError,UnrecognizedNumberOfColors,image);
         }
-      if (bmp_info.compression > 3)
-        ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image);
       if ((bmp_info.compression == 1) && (bmp_info.bits_per_pixel != 8))
         ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
       if ((bmp_info.compression == 2) && (bmp_info.bits_per_pixel != 4))
         ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
       if ((bmp_info.compression == 3) && (bmp_info.bits_per_pixel < 16))
         ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
+      // J.Fojtik - TEST IS DUPLICATED, PLEASE REMOVE!
+      //if (bmp_info.compression>BI_BITFIELDS && bmp_info.compression!=BI_ALPHABITFIELDS)
+      //  ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image);
       switch ((unsigned int) bmp_info.compression)
         {
         case BI_RGB:
         case BI_RLE8:
         case BI_RLE4:
         case BI_BITFIELDS:
+        case BI_ALPHABITFIELDS:
           break;
         case BI_JPEG:
           ThrowBMPReaderException(CoderError,JPEGCompressionNotSupported,image)
         case BI_PNG:
           ThrowBMPReaderException(CoderError,PNGCompressionNotSupported,image)
         default:
-          ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,
-                                  image)
+          ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)
             }
       image->columns=bmp_info.width;
       image->rows=AbsoluteValue(bmp_info.height);
@@ -1317,14 +1330,28 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             {
               if (bmp_info.bits_per_pixel == 16)          /* USE BMP 565 */
                 {
-                  bmp_info.red_mask=0x0000F800U;
-                  bmp_info.green_mask=0x000007e0U;
-                  bmp_info.blue_mask=0x0000001fU;
+                  if(bmp_info.compression==BI_ALPHABITFIELDS)
+                  {
+                    image->matte = True;
+                    bmp_info.alpha_mask=0x00008000U;
+                    bmp_info.red_mask=0x00007c00U;
+                    bmp_info.green_mask=0x000003e0U;
+                    bmp_info.blue_mask=0x0000001fU;
+                  }
+                  else
+                  {
+                    bmp_info.red_mask=0x0000F800U;
+                    bmp_info.green_mask=0x000007e0U;
+                    bmp_info.blue_mask=0x0000001fU;
+                  }
                 }
               if ( bmp_info.bits_per_pixel == 32)
                 {
-                  image->matte = True;
-                  bmp_info.alpha_mask=0xff000000U;
+                  if(bmp_info.compression==BI_RGB || bmp_info.compression==BI_ALPHABITFIELDS)
+                  {
+                    image->matte = True;
+                    bmp_info.alpha_mask=0xff000000U;
+                  }
                   bmp_info.red_mask=0x00ff0000U;
                   bmp_info.green_mask=0x0000ff00U;
                   bmp_info.blue_mask=0x000000ffU;
