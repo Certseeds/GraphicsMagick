@@ -1236,7 +1236,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         We do this before allocating raster memory to avoid DOS.
       */
       if ((bmp_info.compression == BI_RGB) ||
-          (bmp_info.compression == BI_BITFIELDS))
+          (bmp_info.compression == BI_BITFIELDS) ||
+          (bmp_info.compression == BI_ALPHABITFIELDS))
         {
           /*
             Not compressed.
@@ -1270,7 +1271,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (pixels == (unsigned char *) NULL)
         ThrowBMPReaderException(ResourceLimitError,MemoryAllocationFailed,image);
       if ((bmp_info.compression == BI_RGB) ||
-          (bmp_info.compression == BI_BITFIELDS))
+          (bmp_info.compression == BI_BITFIELDS) ||
+          (bmp_info.compression == BI_ALPHABITFIELDS))
         {
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1328,17 +1330,17 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if(bmp_info.compression == BI_RGB ||
              (bmp_info.red_mask==0 && bmp_info.green_mask==0 && bmp_info.blue_mask==0 && bmp_info.alpha_mask==0))
             {
-              if (bmp_info.bits_per_pixel == 16)          /* USE BMP 565 */
+              if (bmp_info.bits_per_pixel == 16)
                 {
                   if(bmp_info.compression==BI_ALPHABITFIELDS)
-                  {
+                  {                                   /* USE ARGB 1555 */
                     image->matte = True;
                     bmp_info.alpha_mask=0x00008000U;
                     bmp_info.red_mask=0x00007c00U;
                     bmp_info.green_mask=0x000003e0U;
                     bmp_info.blue_mask=0x0000001fU;
                   }
-                  else
+                  else                                /* USE RGB 565 */
                   {
                     bmp_info.red_mask=0x0000F800U;
                     bmp_info.green_mask=0x000007e0U;
@@ -1491,7 +1493,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Convert bitfield encoded 16-bit PseudoColor scanline.
             */
             if (bmp_info.compression != BI_RGB &&
-                bmp_info.compression != BI_BITFIELDS)
+                bmp_info.compression != BI_BITFIELDS &&
+                bmp_info.compression != BI_ALPHABITFIELDS)
               ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)
                 bytes_per_line=2*(image->columns+image->columns%2);
             image->storage_class=DirectClass;
@@ -1586,8 +1589,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             /*
               Convert bitfield encoded DirectColor scanline.
             */
-            if ((bmp_info.compression != BI_RGB) &&
-                (bmp_info.compression != BI_BITFIELDS))
+            if(bmp_info.compression != BI_RGB &&
+               bmp_info.compression != BI_BITFIELDS &&
+               bmp_info.compression != BI_ALPHABITFIELDS)
               ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)
                 bytes_per_line=4*(image->columns);
             for (y=(long) image->rows-1; y >= 0; y--)
