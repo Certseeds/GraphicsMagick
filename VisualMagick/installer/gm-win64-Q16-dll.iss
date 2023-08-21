@@ -14,6 +14,7 @@
 #define  public QuantumDepth "16"
 #define  public WIN64 1
 #define  public InstallPerlMagick 0
+
 #include "inc\body.isx"
 
 #ifdef Debug

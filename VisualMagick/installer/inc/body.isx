@@ -131,6 +131,7 @@ const
   INSTALLSTATE_DEFAULT = 5;      // The product is installed for the current user.
 
   // Microsoft Visual C++ Redistributable Package is installed at "c:\WINDOWS\WinSxS\"
+  // https://qtechbabble.wordpress.com/2017/08/08/microsoft-visual-c-redistributables-msi-product-codes/
   VC_2005_REDIST_X86                  = '{A49F249F-0C91-497F-86DF-B2585E8E76B7}';
   VC_2005_REDIST_X64                  = '{6E8E85E8-CE4B-4FF5-91F7-04999C9FAE6A}';
   VC_2005_REDIST_IA64                 = '{03ED71EA-F531-4927-AABD-1C31BCE8E187}';
@@ -162,6 +163,12 @@ const
   VC_2010_SP1_REDIST_X64              = '{1D8E6291-B0D5-35EC-8441-6616F567A0F7}';
   VC_2010_SP1_REDIST_IA64             = '{88C73C1C-2DE5-3B01-AFB8-B46EF4AB41CD}';
 
+  VC_2013_REDIST_X86                  = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
+  VC_2013_REDIST_X86_                 = '{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}';
+  VC_2013_REDIST_X64                  = '{929FBD26-9020-399B-9A7A-751D61F0B942}';
+  VC_2013_REDIST_X64_                 = '{A749D8E6-B613-3BE3-8F5F-045C84EBA29B}';
+
+
 function MsiQueryProductState(szProduct: string): INSTALLSTATE; 
   external 'MsiQueryProductState{#AW}@msi.dll stdcall';
 
@@ -179,14 +186,25 @@ begin
   // this statement, the following won't install your VC redist only when
   // the Visual C++ 2010 Redist (x86) and Visual C++ 2010 SP1 Redist(x86)
   // are installed for the current user
-#ifdef WIN64
+#ifdef VC_2010
+ #ifdef WIN64
+  r1 := VCVersionInstalled(VC_2010_REDIST_X64);
+  r2 := VCVersionInstalled(VC_2010_SP1_REDIST_X64);
+ #else
+  r1 := VCVersionInstalled(VC_2010_REDIST_X86);
+  r2 := VCVersionInstalled(VC_2010_SP1_REDIST_X86);
+ #endif
+  r3 := r1;
+#else
+ #ifdef WIN64
   r1 := VCVersionInstalled(VC_2008_REDIST_X64);
   r2 := VCVersionInstalled(VC_2008_SP1_REDIST_X64);
   r3 := VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X64);
-#else
+ #else
   r1 := VCVersionInstalled(VC_2008_REDIST_X86);
   r2 := VCVersionInstalled(VC_2008_SP1_REDIST_X86_);
   r3 := VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X86);
+ #endif
 #endif
   Result := not ((r1 and r2) or r3);
 end;
