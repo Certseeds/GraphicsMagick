@@ -847,7 +847,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
               if(logging)
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "  OS22XBITMAPHEADER header: %u\n"
+                              "  OS22XBITMAPHEADER header:\n"
                               "    Units: %u\n"
                               "    Reserved: %u"
                               "    Recording: %u\n"
