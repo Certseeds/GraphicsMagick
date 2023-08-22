@@ -196,14 +196,25 @@ begin
  #endif
   r3 := r1;
 #else
- #ifdef WIN64
-  r1 := VCVersionInstalled(VC_2008_REDIST_X64);
-  r2 := VCVersionInstalled(VC_2008_SP1_REDIST_X64);
-  r3 := VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X64);
+ #ifdef VC_2013
+  #ifdef WIN64
+   r1 := VCVersionInstalled(VC_2013_REDIST_X64);
+   r2 := VCVersionInstalled(VC_2013_REDIST_X64_);
+  #else
+   r1 := VCVersionInstalled(VC_2013_REDIST_X86);
+   r2 := VCVersionInstalled(VC_2013_REDIST_X86_);
+  #endif
+  r3 := r1;
  #else
-  r1 := VCVersionInstalled(VC_2008_REDIST_X86);
-  r2 := VCVersionInstalled(VC_2008_SP1_REDIST_X86_);
-  r3 := VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X86);
+  #ifdef WIN64
+   r1 := VCVersionInstalled(VC_2008_REDIST_X64);
+   r2 := VCVersionInstalled(VC_2008_SP1_REDIST_X64);
+   r3 := VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X64);
+  #else
+   r1 := VCVersionInstalled(VC_2008_REDIST_X86);
+   r2 := VCVersionInstalled(VC_2008_SP1_REDIST_X86_);
+   r3 := VCVersionInstalled(VC_2008_SP1_MFC_SEC_UPD_REDIST_X86);
+  #endif
  #endif
 #endif
   Result := not ((r1 and r2) or r3);

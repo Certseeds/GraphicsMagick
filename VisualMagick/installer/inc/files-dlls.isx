@@ -15,7 +15,11 @@
  #ifdef VC_2010
   Source: "redist\VC2010SP1\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall
  #else
-  Source: "redist\VC2008SP1\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall
+  #ifdef VC_2013
+   Source: "redist\VC2013\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall
+  #else
+   Source: "redist\VC2008SP1\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall
+  #endif
  #endif
 #else
   #define  public CPUARCH "x86"
