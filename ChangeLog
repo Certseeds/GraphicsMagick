@@ -1,11 +1,15 @@
 2023-08-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
-        * VisualMagick\installer\inc\files-dlls.isx
-        * VisualMagick\installer\inc\body.isx
+	
+	* VisualMagick\installer\inc\files-dlls.isx
+	* VisualMagick\installer\inc\body.isx
+	
 	Prepare installation script for MSVC2013 runtime.
 
 2023-08-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
-        * VisualMagick\installer\inc\files-dlls.isx
-        * VisualMagick\installer\inc\body.isx
+	
+	* VisualMagick\installer\inc\files-dlls.isx
+	* VisualMagick\installer\inc\body.isx
+	
 	Prepare installation script for MSVC2010 runtime.
 
 2023-08-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
@@ -18,9 +22,8 @@
 	* tiff/libtiff/stdbool2.h MSVC2010 does not have stdbool.h nor inttypes.h
 
 	* coders/bmp.c Added support for BI_ALPHABITFIELDS compression.
-        https://learn.microsoft.com/en-us/previous-versions/windows/embedded/aa452885(v=msdn.10)
-        Remove unwanted duplicite check condition of biCompression.
-
+	https://learn.microsoft.com/en-us/previous-versions/windows/embedded/aa452885(v=msdn.10)
+	Remove unwanted duplicite check condition of biCompression.
 
 2023-08-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
