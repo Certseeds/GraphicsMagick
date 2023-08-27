@@ -1,3 +1,11 @@
+2023-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (TranslateTextEx): Restore previous
+	functionality in which a NULL pointer is returned instead of an
+	empty string. Some algorithms are depending on this!  Addresses
+	SourceForge issue #722 v1.3.41 "PerlMagick montage.t fails
+	completely".
+
 2023-08-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
 	
 	* VisualMagick\installer\inc\files-dlls.isx
