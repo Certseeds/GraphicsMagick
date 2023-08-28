@@ -527,6 +527,74 @@ static const char *DecodeBiCompression(const int BiCompression)
   return "UNKNOWN";
 }
 
+
+static Image *ExtractBlobJPG(Image * image, const ImageInfo * image_info, ExceptionInfo * exception)
+{
+  size_t
+    alloc_size;
+  unsigned char
+    *blob;
+
+  alloc_size = GetBlobSize(image) - TellBlob(image);
+
+  if(alloc_size > 0 &&
+     (blob = MagickAllocateResourceLimitedMemory(unsigned char *,alloc_size)) != NULL)
+  {
+      /* Copy JPG to memory blob */
+     if(ReadBlob(image,alloc_size,blob) == alloc_size)
+     {
+        Image *image2;
+        ImageInfo *clone_info;
+
+        //FILE *F = fopen("o:\\temp\\27\\pokus.jpg","wb");
+        //if(F) {fwrite(blob,alloc_size,1,F);fclose(F);}
+
+        clone_info = CloneImageInfo(image_info);
+
+              /* BlobToFile("/tmp/jnx-tile.jpg", blob,alloc_size,exception); */
+
+         (void) strlcpy(clone_info->filename,"JPEG:",sizeof(clone_info->filename));
+         if ((image2 = BlobToImage(clone_info,blob,alloc_size,exception))
+                  != NULL)
+         {
+                  /*
+                    Replace current image with new image while copying
+                    base image attributes.
+                  */
+                  (void) strlcpy(image2->filename, image->filename,
+                                 sizeof(image2->filename));
+                  (void) strlcpy(image2->magick_filename, image->magick_filename,
+                                 sizeof(image2->magick_filename));
+                  (void) strlcpy(image2->magick, image->magick,
+                                 sizeof(image2->magick));
+                  DestroyBlob(image2);
+                  image2->blob = ReferenceBlob(image->blob);
+
+                  if ((image->rows == 0) || (image->columns == 0))
+                    DeleteImageFromList(&image);
+
+                  AppendImageToList(&image, image2);
+         }
+         DestroyImageInfo(clone_info);
+         clone_info = (ImageInfo *) NULL;
+         MagickFreeResourceLimitedMemory(blob);
+      }
+      else
+      {
+        MagickFreeResourceLimitedMemory(blob);
+              /* Failed to read enough data from input */
+        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile, image->filename);
+      }
+  }
+  else
+  {
+      /* Failed to allocate memory */
+      ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
+                     image->filename);
+  }
+  return(image);
+}
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1047,6 +1115,41 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowBMPReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
       if ((bmp_info.height < 0) && (bmp_info.compression !=0))
         ThrowBMPReaderException(CorruptImageError,CompressionNotValid,image);
+      // J.Fojtik - TEST IS DUPLICATED, PLEASE REMOVE!
+      //if (bmp_info.compression>BI_BITFIELDS && bmp_info.compression!=BI_ALPHABITFIELDS)
+      //  ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image);
+      switch ((unsigned int) bmp_info.compression)
+        {
+        case BI_RGB:
+        case BI_RLE8:
+        case BI_RLE4:
+        case BI_BITFIELDS:
+        case BI_ALPHABITFIELDS:
+          break;
+        case BI_JPEG:
+          offset = start_position + 14 + bmp_info.size;
+          if(logging)
+              (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Seek offset %" MAGICK_OFF_F "d",
+                                  (magick_off_t) offset);
+          if((offset < start_position) ||
+              (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))
+              ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+          {
+            MonitorHandler previous_handler;
+            previous_handler = SetMonitorHandler(0);
+            image = ExtractBlobJPG(image, image_info, exception);
+            (void) SetMonitorHandler(previous_handler);
+            if (exception->severity >= ErrorException)
+                ThrowBMPReaderException(CoderError,JPEGCompressionNotSupported,image)
+          }
+          goto ExitLoop;	/* I need to break a loop. Other BMPs in a chain are ignorred. */
+        case BI_PNG:
+          ThrowBMPReaderException(CoderError,PNGCompressionNotSupported,image)
+        default:
+          ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)
+        }
+
       if (bmp_info.planes != 1)
         ThrowBMPReaderException(CorruptImageError,StaticPlanesValueNotEqualToOne,
                                 image);
@@ -1065,24 +1168,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
       if ((bmp_info.compression == 3) && (bmp_info.bits_per_pixel < 16))
         ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
-      // J.Fojtik - TEST IS DUPLICATED, PLEASE REMOVE!
-      //if (bmp_info.compression>BI_BITFIELDS && bmp_info.compression!=BI_ALPHABITFIELDS)
-      //  ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image);
-      switch ((unsigned int) bmp_info.compression)
-        {
-        case BI_RGB:
-        case BI_RLE8:
-        case BI_RLE4:
-        case BI_BITFIELDS:
-        case BI_ALPHABITFIELDS:
-          break;
-        case BI_JPEG:
-          ThrowBMPReaderException(CoderError,JPEGCompressionNotSupported,image)
-        case BI_PNG:
-          ThrowBMPReaderException(CoderError,PNGCompressionNotSupported,image)
-        default:
-          ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)
-            }
+
       image->columns=bmp_info.width;
       image->rows=AbsoluteValue(bmp_info.height);
       image->depth=8;
@@ -1691,6 +1777,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             break;
         }
     } while (IsBMP(magick,2));
+ExitLoop:
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
