@@ -510,6 +510,23 @@ static unsigned int IsBMP(const unsigned char *magick,const size_t length)
     return(True);
   return(False);
 }
+
+
+static const char *DecodeBiCompression(const int BiCompression)
+{
+  switch(BiCompression)
+  {
+    case BI_RGB:  return "BI_RGB";	/* uncompressed */
+    case BI_RLE4: return "BI_RLE4";	/* 4 bit RLE */
+    case BI_RLE8: return "BI_RLE8";	/* 8 bit RLE */
+    case BI_BITFIELDS: return "BI_BITFIELDS";
+    case BI_PNG:  return  "BI_PNG";
+    case BI_JPEG: return "BI_JPEG";
+    case BI_ALPHABITFIELDS: return "BI_ALPHABITFIELDS";
+  }
+  return "UNKNOWN";
+}
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -767,59 +784,12 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                     "  Planes: %u",bmp_info.planes);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "  Bits per pixel: %u",bmp_info.bits_per_pixel);
-              switch ((int) bmp_info.compression)
-                {
-                case BI_RGB:
-                  {
-                    /* uncompressed */
-                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "  Compression: BI_RGB");
-                    break;
-                  }
-                case BI_RLE4:
-                  {
-                    /* 4 bit RLE */
-                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "  Compression: BI_RLE4");
-                    break;
-                  }
-                case BI_RLE8:
-                  {
-                    /* 8 bit RLE */
-                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "  Compression: BI_RLE8");
-                    break;
-                  }
-                case BI_BITFIELDS:
-                  {
-                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "  Compression: BI_BITFIELDS");
-                    break;
-                  }
-                case BI_PNG:
-                  {
-                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "  Compression: BI_PNG");
-                    break;
-                  }
-                case BI_JPEG:
-                  {
-                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "  Compression: BI_JPEG");
-                    break;
-                  }
-                case BI_ALPHABITFIELDS:
-                  {
-                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "  Compression: BI_ALPHABITFIELDS");
-                    break;
-                  }
-                default:
-                  {
-                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+              if(bmp_info.compression <= BI_ALPHABITFIELDS)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "  Compression: %s", DecodeBiCompression(bmp_info.compression));
+              else
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "  Compression: UNKNOWN (%u)",bmp_info.compression);
-                  }
-                }
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "  Number of colors: %u",bmp_info.number_colors);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -2277,39 +2247,12 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "   BMP file_size=%" MAGICK_SIZE_T_F "u bytes",
                                 (MAGICK_SIZE_T) bmp_info.file_size);
-          switch (bmp_info.compression)
-            {
-            case BI_RGB:
-              {
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "   Compression=BI_RGB");
-                break;
-              }
-            case BI_RLE8:
-              {
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "   Compression=BI_RLE8");
-                break;
-              }
-            case BI_BITFIELDS:
-              {
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "   Compression=BI_BITFIELDS");
-                break;
-              }
-            case BI_ALPHABITFIELDS:
-              {
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "   Compression=BI_ALPHABITFIELDS");
-                break;
-              }
-            default:
-              {
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+          if(bmp_info.compression <=BI_ALPHABITFIELDS)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "   Compression=%s", DecodeBiCompression(bmp_info.compression));
+          else
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "   Compression=UNKNOWN (%u)",bmp_info.compression);
-                break;
-              }
-            }
           if (bmp_info.number_colors == 0)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "   Number_colors=unspecified");
