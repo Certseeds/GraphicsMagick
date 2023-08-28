@@ -2665,6 +2665,8 @@ GetImageInfoAttribute(const ImageInfo *image_info,const Image *image,
       {
         if (LocaleNCompare("name",key,2) == 0)
           {
+            /* What should this really be? */
+            GetPathComponent(image->magick_filename,BasePath,filename);
             (void) strlcpy(attribute,filename,MaxTextExtent);
             break;
           }
