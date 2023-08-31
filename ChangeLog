@@ -2,9 +2,9 @@
 
 	* coders/bmp.c BMP with 2bpp is a legal BMP variant.
 	https://en.wikipedia.org/wiki/BMP_file_format
-	Quote: "The 2-bit per pixel (2bpp) format supports 4 distinct colors and stores 
-        4 pixels per 1 byte, the left-most pixel being in the two most significant bits 
-        (Windows CE only)."
+	Quote: "The 2-bit per pixel (2bpp) format supports 4 distinct colors and stores
+	4 pixels per 1 byte, the left-most pixel being in the two most significant bits
+	(Windows CE only)."
 
 	Partial revert: BITMAPV2INFOHEADER: RGB bit field masks,
 	                BITMAPV3INFOHEADER+: RGBA
@@ -12,7 +12,7 @@
 
 2023-08-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c First attempt to read BMP with BI_JPEG compression 
+	* coders/bmp.c First attempt to read BMP with BI_JPEG compression
 	inside.
 
 2023-08-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
