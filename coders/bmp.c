@@ -512,16 +512,19 @@ static unsigned int IsBMP(const unsigned char *magick,const size_t length)
 }
 
 
-static const char *DecodeBiCompression(const int BiCompression)
+static const char *DecodeBiCompression(const magick_uint32_t BiCompression, const magick_uint32_t BiSize)
 {
   switch(BiCompression)
   {
     case BI_RGB:  return "BI_RGB";	/* uncompressed */
     case BI_RLE4: return "BI_RLE4";	/* 4 bit RLE */
     case BI_RLE8: return "BI_RLE8";	/* 8 bit RLE */
-    case BI_BITFIELDS: return "BI_BITFIELDS";
-    case BI_PNG:  return  "BI_PNG";
-    case BI_JPEG: return "BI_JPEG";
+    case BI_BITFIELDS: 
+                  if(BiSize==64) return "OS/2 Huffman 1D";
+                            else return "BI_BITFIELDS";
+    case BI_JPEG: if(BiSize==64) return "OS/2 RLE-24";
+                            else return "BI_JPEG";
+    case BI_PNG: return  "BI_PNG";
     case BI_ALPHABITFIELDS: return "BI_ALPHABITFIELDS";
   }
   return "UNKNOWN";
@@ -841,24 +844,24 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           profile_size=0;
           if (logging)
             {
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "  Format: MS Windows bitmap 3.X");
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "  Geometry: %dx%d",bmp_info.width,bmp_info.height);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "  Planes: %u",bmp_info.planes);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "  Bits per pixel: %u",bmp_info.bits_per_pixel);
+              (void) LogMagickEvent(CoderEvent, GetMagickModule(),
+                                    "  Format: MS Windows bitmap 3.X\n"
+                                    "    Geometry: %dx%d\n"
+                                    "    Planes: %u\n"
+                                    "    Bits per pixel: %u",
+                                      bmp_info.width, bmp_info.height,
+                                      bmp_info.planes,
+                                      bmp_info.bits_per_pixel);
               if(bmp_info.compression <= BI_ALPHABITFIELDS)
                   (void) LogMagickEvent(CoderEvent, GetMagickModule(),
                                           "  Compression: %s", DecodeBiCompression(bmp_info.compression,bmp_info.size));
               else
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "  Compression: UNKNOWN (%u)",bmp_info.compression);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "  Number of colors: %u",bmp_info.number_colors);
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "  Important colors: %u",bmp_info.colors_important);
+              (void) LogMagickEvent(CoderEvent, GetMagickModule(),
+                                    "  Number of colors: %u\n"
+                                    "  Important colors: %u",
+                                    bmp_info.number_colors, bmp_info.colors_important);
             }
 
           if(bmp_info.size==64)
@@ -884,7 +887,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "  OS22XBITMAPHEADER header:\n"
                               "    Units: %u\n"
-                              "    Reserved: %u"
+                              "    Reserved: %u\n"
                               "    Recording: %u\n"
                               "    Rendering: %u\n"
                               "    Size1: %u\n"
@@ -896,7 +899,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
             }
 
-          if (bmp_info.size >= 52 && bmp_info.size!=64)
+          if (bmp_info.size>=52 && bmp_info.size!=64)
             {
               bmp_info.red_mask=ReadBlobLSBLong(image);
               bmp_info.green_mask=ReadBlobLSBLong(image);
@@ -2331,7 +2334,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                                 (MAGICK_SIZE_T) bmp_info.file_size);
           if(bmp_info.compression <=BI_ALPHABITFIELDS)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "   Compression=%s", DecodeBiCompression(bmp_info.compression));
+                                      "   Compression=%s", DecodeBiCompression(bmp_info.compression,40));
           else
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "   Compression=UNKNOWN (%u)",bmp_info.compression);
