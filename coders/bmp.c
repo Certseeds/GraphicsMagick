@@ -546,9 +546,6 @@ static Image *ExtractBlobJPG(Image * image, const ImageInfo * image_info, Except
         Image *image2;
         ImageInfo *clone_info;
 
-        //FILE *F = fopen("o:\\temp\\27\\pokus.jpg","wb");
-        //if(F) {fwrite(blob,alloc_size,1,F);fclose(F);}
-
         clone_info = CloneImageInfo(image_info);
 
               /* BlobToFile("/tmp/jnx-tile.jpg", blob,alloc_size,exception); */
@@ -1153,7 +1150,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (bmp_info.planes != 1)
         ThrowBMPReaderException(CorruptImageError,StaticPlanesValueNotEqualToOne,
                                 image);
-      if ((bmp_info.bits_per_pixel != 1) && (bmp_info.bits_per_pixel != 4) &&
+      if ((bmp_info.bits_per_pixel != 1) && (bmp_info.bits_per_pixel != 2) && (bmp_info.bits_per_pixel != 4) &&
           (bmp_info.bits_per_pixel != 8) && (bmp_info.bits_per_pixel != 16) &&
           (bmp_info.bits_per_pixel != 24) && (bmp_info.bits_per_pixel != 32))
         ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
@@ -1479,6 +1476,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               }
             break;
           }
+        case 2:
         case 4:
           {
             /*
