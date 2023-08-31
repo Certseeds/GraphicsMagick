@@ -6,6 +6,10 @@
         4 pixels per 1 byte, the left-most pixel being in the two most significant bits 
         (Windows CE only)."
 
+	Partial revert: BITMAPV2INFOHEADER: RGB bit field masks,
+	                BITMAPV3INFOHEADER+: RGBA
+	The opacity channel handling is even more complex.
+
 2023-08-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/bmp.c First attempt to read BMP with BI_JPEG compression 

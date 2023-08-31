@@ -850,8 +850,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "  Bits per pixel: %u",bmp_info.bits_per_pixel);
               if(bmp_info.compression <= BI_ALPHABITFIELDS)
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                          "  Compression: %s", DecodeBiCompression(bmp_info.compression));
+                  (void) LogMagickEvent(CoderEvent, GetMagickModule(),
+                                          "  Compression: %s", DecodeBiCompression(bmp_info.compression,bmp_info.size));
               else
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "  Compression: UNKNOWN (%u)",bmp_info.compression);
@@ -911,9 +911,6 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                           "Alpha Mask: 0x%04x",
                                           bmp_info.alpha_mask);
-                      /* Discard alpha mask, if not BI_ALPHABITFIELDS is signalised. */
-                  if(bmp_info.compression != BI_ALPHABITFIELDS)
-                      bmp_info.alpha_mask=0;
 
                   if (bmp_info.size > 120)
                     {
