@@ -775,7 +775,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (bmp_info.offset_bits < bmp_info.size)
         ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
 
-      if (bmp_info.size == 12)
+      if(bmp_info.size == 12)
         {
           /*
             Windows 2.X or OS/2 BMP image file.
@@ -809,16 +809,32 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           */
           switch(bmp_info.size)
             {
-            case 40:
-            case 56:
-            case 64:
+            case 40: if(logging)
+                         (void) LogMagickEvent(CoderEvent, GetMagickModule(), "Format: MS Windows bitmap 3.X");
+                     break;
+            case 52: if(logging)
+                         (void) LogMagickEvent(CoderEvent, GetMagickModule(), "Format: MS Windows bitmap 3.X V2");
+                     break;
+            case 56:if(logging)
+                         (void) LogMagickEvent(CoderEvent, GetMagickModule(), "Format: MS Windows bitmap 3.X V3");
+                     break;
+            case 64: if(logging)
+                         (void) LogMagickEvent(CoderEvent, GetMagickModule(), "Format: OS22XBITMAPHEADER");
+                     break;
             case 78:
-            case 108: break;
+            case 108: if (logging)
+                         (void) LogMagickEvent(CoderEvent, GetMagickModule(), "Format: MS Windows bitmap 3.X V4");
+                     break;
+            case 124: if(logging)
+                         (void) LogMagickEvent(CoderEvent, GetMagickModule(), "Format: MS Windows bitmap 3.X V5");
+                     break;
             default: if (bmp_info.size < 64)
                 ThrowBMPReaderException(CorruptImageError, NonOS2HeaderSizeError, image);
               /* A value larger than 64 indicates a later version of the OS/2 BMP format.
                  .... as far as OS/2 development caesed we could consider to
                  close this Trojan's horse window in future. */
+                     if(logging)
+                         (void) LogMagickEvent(CoderEvent, GetMagickModule(), "Format: MS Windows bitmap 3.X ?");
               break;
             }
 
@@ -845,7 +861,6 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if (logging)
             {
               (void) LogMagickEvent(CoderEvent, GetMagickModule(),
-                                    "  Format: MS Windows bitmap 3.X\n"
                                     "    Geometry: %dx%d\n"
                                     "    Planes: %u\n"
                                     "    Bits per pixel: %u",
@@ -885,7 +900,6 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
               if(logging)
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "  OS22XBITMAPHEADER header:\n"
                               "    Units: %u\n"
                               "    Reserved: %u\n"
                               "    Recording: %u\n"
