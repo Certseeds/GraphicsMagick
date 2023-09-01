@@ -1,3 +1,9 @@
+2023-09-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (MogrifyImage): Use MaxRGBDouble double
+	constant rather than integral MaxRGB as argument to
+	StringToDouble().
+
 2023-09-01  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/bmp.c Bitmap header with size 52 bytes is also valid.

@@ -10449,7 +10449,7 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
 
                 /* rvalue */
                 option=argv[++i];
-                rvalue=StringToDouble(option,MaxRGB);
+                rvalue=StringToDouble(option,MaxRGBDouble);
                 (void) QuantumOperatorImage(*image,channel,quantum_operator,
                                             rvalue,&(*image)->exception);
 
