@@ -1,3 +1,13 @@
+2023-09-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resize.c (ResizeImage): Restore vertical/horizontal
+	filter order decision logic which was in place before the 1.3.41
+	release since it may result in tiny changes to low order bits in
+	16-bit/sample images, which may be concerning to some.  Resolves
+	SourceForge issue #723 "montage result differ between 1.3.40 and
+	1.3.41". The provided test-case showed that the filter filter
+	order changed from "Vertical/Horizontal" to "Horizontal/Vertical".
+
 2023-09-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (MogrifyImage): Use MaxRGBDouble double

@@ -37,6 +37,18 @@
 </div>
 
 <div class="document">
+<p>2023-09-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/resize.c (ResizeImage): Restore vertical/horizontal
+filter order decision logic which was in place before the 1.3.41
+release since it may result in tiny changes to low order bits in
+16-bit/sample images, which may be concerning to some.  Resolves
+SourceForge issue #723 &quot;montage result differ between 1.3.40 and
+1.3.41&quot;. The provided test-case showed that the filter filter
+order changed from &quot;Vertical/Horizontal&quot; to &quot;Horizontal/Vertical&quot;.</p></li>
+</ul>
+</blockquote>
 <p>2023-09-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -72,7 +84,7 @@ Quote: &quot;The 2-bit per pixel (2bpp) format supports 4 distinct colors and st
 </dd>
 </dl>
 <div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<span class="docutils literal">&lt;string&gt;</span>, line 26)</p>
+<p class="system-message-title">System Message: WARNING/2 (<span class="docutils literal">&lt;string&gt;</span>, line 36)</p>
 <p>Definition list ends without a blank line; unexpected unindent.</p>
 </div>
 <p>The opacity channel handling is even more complex.</p>

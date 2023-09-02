@@ -1460,7 +1460,7 @@ MagickExport Image *ResizeImage(const Image *image,const unsigned long columns,
   if (resize_image == (Image *) NULL)
     return ((Image *) NULL);
 
-  order=(((double) columns*((size_t) image->rows+rows)) >=
+  order=(((double) columns*((size_t) image->rows+rows)) >
          ((double) rows*((size_t) image->columns+columns)));
   if (order)
     source_image=CloneImage(resize_image,columns,image->rows,True,exception);
