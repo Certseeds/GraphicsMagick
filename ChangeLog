@@ -1,7 +1,7 @@
 2023-09-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Sorry for previous commit. After some 
-	investigations it seems that bit fieal masks are behind header
+	* coders/bmp.c Sorry for previous commit. After some
+	investigations it seems that bit field masks are behind header
 	when BI_SIZE=40.
 
 2023-09-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
