@@ -910,7 +910,6 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "    Identifier: %u",
                               Units, Reserved, Recording, Rendering,
                               Size1, Size2, ColorEncoding, Identifier);
-
             }
 
           if (bmp_info.size>=52 && bmp_info.size!=64)
@@ -1131,12 +1130,32 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       //  ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image);
       switch ((unsigned int) bmp_info.compression)
         {
+        case BI_BITFIELDS:
+          if(bmp_info.size==40)
+            {
+                 /* TODO: check for gap size >=12*/
+              bmp_info.red_mask=ReadBlobLSBLong(image);
+              bmp_info.green_mask=ReadBlobLSBLong(image);
+              bmp_info.blue_mask=ReadBlobLSBLong(image);
+            }
+          break;
+        case BI_ALPHABITFIELDS:
+          if(bmp_info.size==40)
+            {
+                 /* TODO: check for gap size >=12*/
+              bmp_info.red_mask=ReadBlobLSBLong(image);
+              bmp_info.green_mask=ReadBlobLSBLong(image);
+              bmp_info.blue_mask=ReadBlobLSBLong(image);
+                 /* TODO: check for gap size >=16*/
+              bmp_info.alpha_mask=ReadBlobLSBLong(image);
+            }
+          break;
+
         case BI_RGB:
         case BI_RLE8:
         case BI_RLE4:
-        case BI_BITFIELDS:
-        case BI_ALPHABITFIELDS:
           break;
+
         case BI_JPEG:
           offset = start_position + 14 + bmp_info.size;
           if(logging)
@@ -1238,7 +1257,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
               image->colormap[i].green=ScaleCharToQuantum(*p++);
               image->colormap[i].red=ScaleCharToQuantum(*p++);
               if (packet_size == 4)
-                p++;
+              p++;
             }
           MagickFreeResourceLimitedMemory(bmp_colormap);
         }
@@ -1416,24 +1435,14 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 }
               if ( bmp_info.bits_per_pixel == 32)
                 {
-                  if(bmp_info.size<=52 && bmp_info.compression==BI_BITFIELDS)
+                  if(bmp_info.compression==BI_RGB || bmp_info.compression==BI_ALPHABITFIELDS)
                   {
-                    bmp_info.blue_mask=0xFF0000;
-                    bmp_info.green_mask=0xFF0;		/* This is crazy :(. */
-                    bmp_info.red_mask=0xFF000000;
-                    /*bmp_info.alpha_mask=0x0; */
+                    image->matte = True;
+                    bmp_info.alpha_mask=0xff000000U;
                   }
-                  else
-                  {
-                    if(bmp_info.compression==BI_RGB || bmp_info.compression==BI_ALPHABITFIELDS)
-                    {
-                      image->matte = True;
-                      bmp_info.alpha_mask=0xff000000U;
-                    }
-                    bmp_info.red_mask=0x00ff0000U;
-                    bmp_info.green_mask=0x0000ff00U;
-                    bmp_info.blue_mask=0x000000ffU;
-                  }
+                  bmp_info.red_mask=0x00ff0000U;
+                  bmp_info.green_mask=0x0000ff00U;
+                  bmp_info.blue_mask=0x000000ffU;
                 }
             }
 
