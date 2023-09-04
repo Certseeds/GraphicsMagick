@@ -1,3 +1,9 @@
+2023-09-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c Default bit split for older BMPs with 32bpp and
+        BI_BITFIELDS set is crazy. Verified against IrFanView and 
+        bmpsuite-2.7.zip - image g/rgb32bf.bmp.
+
 2023-09-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/resize.c (ResizeImage): Restore vertical/horizontal

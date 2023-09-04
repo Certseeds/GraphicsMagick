@@ -1416,14 +1416,24 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 }
               if ( bmp_info.bits_per_pixel == 32)
                 {
-                  if(bmp_info.compression==BI_RGB || bmp_info.compression==BI_ALPHABITFIELDS)
+                  if(bmp_info.size<=52 && bmp_info.compression==BI_BITFIELDS)
                   {
-                    image->matte = True;
-                    bmp_info.alpha_mask=0xff000000U;
+                    bmp_info.blue_mask=0xFF0000;
+                    bmp_info.green_mask=0xFF0;		/* This is crazy :(. */
+                    bmp_info.red_mask=0xFF000000;
+                    /*bmp_info.alpha_mask=0x0; */
                   }
-                  bmp_info.red_mask=0x00ff0000U;
-                  bmp_info.green_mask=0x0000ff00U;
-                  bmp_info.blue_mask=0x000000ffU;
+                  else
+                  {
+                    if(bmp_info.compression==BI_RGB || bmp_info.compression==BI_ALPHABITFIELDS)
+                    {
+                      image->matte = True;
+                      bmp_info.alpha_mask=0xff000000U;
+                    }
+                    bmp_info.red_mask=0x00ff0000U;
+                    bmp_info.green_mask=0x0000ff00U;
+                    bmp_info.blue_mask=0x000000ffU;
+                  }
                 }
             }
 
