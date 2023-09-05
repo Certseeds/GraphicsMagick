@@ -1125,9 +1125,6 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         ThrowBMPReaderException(CorruptImageError,NegativeOrZeroImageSize,image);
       if ((bmp_info.height < 0) && (bmp_info.compression !=0))
         ThrowBMPReaderException(CorruptImageError,CompressionNotValid,image);
-      // J.Fojtik - TEST IS DUPLICATED, PLEASE REMOVE!
-      //if (bmp_info.compression>BI_BITFIELDS && bmp_info.compression!=BI_ALPHABITFIELDS)
-      //  ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image);
       switch ((unsigned int) bmp_info.compression)
         {
         case BI_BITFIELDS:
@@ -2071,7 +2068,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
           bmp_info.number_colors=0;
           bmp_info.bits_per_pixel=((type > 3) && image->matte) ? 32 : 24;
           bmp_info.compression=
-            (type > 3) && image->matte ?  BI_ALPHABITFIELDS : BI_RGB;
+            (type > 3) && image->matte ?  BI_BITFIELDS : BI_RGB;
         }
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Final: Scene %lu, storage_class %s, colors %u",

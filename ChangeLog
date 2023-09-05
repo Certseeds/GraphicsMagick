@@ -1,3 +1,8 @@
+2023-09-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c Reverting to BI_BITFIELD. BI_ALPHABITFIELDS
+	seems to be very rare.
+
 2023-09-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wmf.c (ipa_draw_text): Treat pointer inputs as if they
@@ -8,7 +13,7 @@
 
 2023-09-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Sorry for previous commit. After some
+	* coders/bmp.c Sorry for a previous commit. After some
 	investigations it seems that bit field masks are behind header
 	when BI_SIZE=40.
 
