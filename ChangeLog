@@ -1,7 +1,17 @@
+2023-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (SetImageAttribute): Disable attribute
+	extension deprecation warning printf.  It may be that eliminating
+	support for attribute value extension will never happen due to
+	subtly entrenched internal usage.
+
+	* coders/pnm.c (ReadPNMImage): Fix reading comments from PAM
+	format.
+
 2023-09-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Reverting to BI_BITFIELD. BI_ALPHABITFIELDS
-	seems to be very rare.
+	* coders/bmp.c Reverting to BI_BITFIELD. BI_ALPHABITFIELDS seems
+	to be very rare.
 
 2023-09-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -57,7 +67,7 @@
 	(Windows CE only)."
 
 	Partial revert: BITMAPV2INFOHEADER: RGB bit field masks,
-	                BITMAPV3INFOHEADER+: RGBA
+	BITMAPV3INFOHEADER+: RGBA
 	The opacity channel handling is even more complex.
 
 2023-08-29  Fojtik Jaroslav  <JaFojtik@yandex.com>

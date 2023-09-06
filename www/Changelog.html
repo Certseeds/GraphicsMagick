@@ -37,6 +37,24 @@
 </div>
 
 <div class="document">
+<p>2023-09-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/attribute.c (SetImageAttribute): Disable attribute
+extension deprecation warning printf.  It may be that eliminating
+support for attribute value extension will never happen due to
+subtly entrenched internal usage.</p></li>
+<li><p>coders/pnm.c (ReadPNMImage): Fix reading comments from PAM
+format.</p></li>
+</ul>
+</blockquote>
+<p>2023-09-06  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/bmp.c Reverting to BI_BITFIELD. BI_ALPHABITFIELDS seems
+to be very rare.</p></li>
+</ul>
+</blockquote>
 <p>2023-09-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -50,7 +68,7 @@ am unable to reproduce it.</p></li>
 <p>2023-09-05  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c Sorry for previous commit. After some
+<li><p>coders/bmp.c Sorry for a previous commit. After some
 investigations it seems that bit field masks are behind header
 when BI_SIZE=40.</p></li>
 </ul>
@@ -104,16 +122,9 @@ StringToDouble().</p></li>
 Quote: &quot;The 2-bit per pixel (2bpp) format supports 4 distinct colors and stores
 4 pixels per 1 byte, the left-most pixel being in the two most significant bits
 (Windows CE only).&quot;</p>
-<dl class="simple">
-<dt>Partial revert: BITMAPV2INFOHEADER: RGB bit field masks,</dt>
-<dd><p>BITMAPV3INFOHEADER+: RGBA</p>
-</dd>
-</dl>
-<div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<span class="docutils literal">&lt;string&gt;</span>, line 56)</p>
-<p>Definition list ends without a blank line; unexpected unindent.</p>
-</div>
-<p>The opacity channel handling is even more complex.</p>
+<p>Partial revert: BITMAPV2INFOHEADER: RGB bit field masks,
+BITMAPV3INFOHEADER+: RGBA
+The opacity channel handling is even more complex.</p>
 </li>
 </ul>
 </blockquote>
