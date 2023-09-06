@@ -1,5 +1,7 @@
 2023-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Updated the News.
+
 	* magick/attribute.c (SetImageAttribute): Disable attribute
 	extension deprecation warning printf.  It may be that eliminating
 	support for attribute value extension will never happen due to

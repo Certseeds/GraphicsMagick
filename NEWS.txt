@@ -19,6 +19,74 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
+1.3.42 (???, 2023)
+=========================
+
+Special Issues:
+
+* GraphicsMagick really does need some additional productive
+  volunteers.  For several years now, the burden has entirely been on
+  me (Bob Friesenhahn).  I have been sheparding the project for 22
+  years already (and contributed to ImageMagick and GraphicsMagick
+  combined for 27 years already).  It is not reasonable to expect
+  someone with a full time job (and expecting to retire in a few
+  years) to do all of the work.
+
+Security Fixes:
+
+* GraphicsMagick is participating in Google's oss-fuzz project since
+  February 4 2018 due to the contributions and assistance of Alex
+  Gaynor and Paul Kehrer. The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
+
+* GraphicsMagick has been participating in Synopsys's Coverity program
+  for free software projects since 2015.  There has been a continuing
+  objective to keep outstanding defects at 0, or very close to 0.
+  Information about the Coverity status may be found at
+  https://scan.coverity.com/projects/graphicsmagick.
+
+Bug fixes:
+
+* TIFF: Default the alpha channel to type EXTRASAMPLE_UNASSALPHA(2).
+
+* BMP: Many fixes for reading esoteric BMP sub-formats.
+
+* TranslateTextEx(): Revert change so now a NULL pointer is returned
+  when given an empty string.  Some algorithms (e.g. montage) were
+  depending on this!.
+
+* PNG: Added Add missing module aliases "PNG00", "PNG48", "PNG64", so
+  it is again possible to request these subformats directly.
+
+New Features:
+
+* BMP: Added the ability to read BMP which uses JPEG compression.
+
+API Updates:
+
+*
+
+Windows Delegate Updates/Additions:
+
+*
+
+Build Changes:
+
+* Inno-Setup installer script now also supports MSVC 2010 and 2013
+  runtimes.
+
+Behavior Changes:
+
+* Decided to *not* deprecate the ability to extend existing image
+  attribute text by calling SetImageAttribute() multiple times. There
+  are too many subtle usages of this feature.  The annoying printf
+  introduced in 1.3.41 has been disabled.
+
 1.3.41 (August 12, 2023)
 =========================
 
