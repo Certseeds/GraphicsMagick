@@ -1,3 +1,8 @@
+2023-09-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (SetImageAttribute): Remove
+	SetImageAttribute() Extending attribute value text code entirely.
+
 2023-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated the News.

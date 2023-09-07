@@ -3317,7 +3317,7 @@ SetImageAttribute(Image *image,const char *key,const char *value)
           else
             {
               /*
-                Extend existing text string.  This functionality is deprecated!
+                Extend existing text string.
               */
               min_l=p->length+attribute->length+1;
               for (realloc_l=2; realloc_l <= min_l; realloc_l *= 2)
@@ -3328,12 +3328,6 @@ SetImageAttribute(Image *image,const char *key,const char *value)
                   (void) memcpy(p->value+p->length,attribute->value,min_l-p->length-1);
                   p->length += attribute->length;
                   p->value[p->length] = '\0';
-#if defined(MAGICK_ENABLE_DEPRECATION_WARNINGS) && MAGICK_ENABLE_DEPRECATION_WARNINGS
-                  /* It is likely that this deprecation will never happen */
-                  fprintf(stderr,
-                          "SetImageAttribute: Extending attribute value text is deprecated! (key=\"%s\", value=%.30s...)\n",
-                          attribute->key, p->value);
-#endif
                 }
               DestroyImageAttribute(attribute);
             }
