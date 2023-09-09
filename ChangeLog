@@ -1,3 +1,7 @@
+2023-09-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/xtrn.c Fixed crash on dereferenced NULL pointer.
+
 2023-09-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/attribute.c (SetImageAttribute): Remove

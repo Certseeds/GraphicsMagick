@@ -143,7 +143,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
 
       (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%" MAGICK_SIZE_T_F "x",(MAGICK_SIZE_T *) &param1, (MAGICK_SIZE_T *) &param2);
       image_ptr=(Image **) param2;
-      if (*image_ptr != (Image *)NULL)
+      if(image_ptr!=NULL && *image_ptr!=(Image *)NULL)
         image=CloneImage(*image_ptr,0,0,False,&(*image_ptr)->exception);
 #ifdef ALL_IMAGEINFO
       image_info_ptr=(ImageInfo **) param1;
