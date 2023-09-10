@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 int main ( int argc, char **argv )
 {
@@ -62,6 +63,17 @@ int main ( int argc, char **argv )
 
   ExceptionInfo
     exception;
+
+  /*
+    Initialize locale from environment variables (LANG, LC_CTYPE,
+    LC_NUMERIC, LC_TIME, LC_COLLATE, LC_MONETARY, LC_MESSAGES,
+    LC_ALL), but require that LC_NUMERIC use common conventions.  The
+    LC_NUMERIC variable affects the decimal point character and
+    thousands separator character for the formatted input/output
+    functions and string conversion functions.
+  */
+  (void) setlocale(LC_ALL,"");
+  (void) setlocale(LC_NUMERIC,"C");
 
   if (LocaleNCompare("rwblob",argv[0],7) == 0)
     InitializeMagick((char *) NULL);

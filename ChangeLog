@@ -1,3 +1,12 @@
+2023-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Initialize
+	locale settings the same as the 'gm' utility.
+
+	* magick/{drawing_wand.c, drawtest.c, magick_wand.c, pixel_wand.c,
+	wandtest.c}: Initialize locale settings the same as the 'gm'
+	utility.
+
 2023-09-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/xtrn.c Fixed crash on dereferenced NULL pointer.

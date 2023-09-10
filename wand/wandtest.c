@@ -75,6 +75,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <wand/magick_wand.h>
+#include <locale.h>
 
 #define False  0
 #define True  1
@@ -118,6 +119,17 @@ int main(int argc,char **argv)
     rows;
 
   (void) argc;
+
+  /*
+    Initialize locale from environment variables (LANG, LC_CTYPE,
+    LC_NUMERIC, LC_TIME, LC_COLLATE, LC_MONETARY, LC_MESSAGES,
+    LC_ALL), but require that LC_NUMERIC use common conventions.  The
+    LC_NUMERIC variable affects the decimal point character and
+    thousands separator character for the formatted input/output
+    functions and string conversion functions.
+  */
+  (void) setlocale(LC_ALL,"");
+  (void) setlocale(LC_NUMERIC,"C");
 
   InitializeMagick(*argv);
   magick_wand=NewMagickWand();
