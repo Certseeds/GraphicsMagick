@@ -86,7 +86,7 @@ The source code for *ImageMagickObject* is available from *GraphicsMagick*
 CVS, or as part of the *GraphicsMagick* Windows source package. Once the
 source code has been retrieved and extracted, the source for
 *ImageMagickObject* may be found hidden in the directory
-"``GraphicsMagick\contrib\win32\ATL7ImageMagickObject``", however,
+"``GraphicsMagick\contrib\win32\ATL7\ImageMagickObject``", however,
 *GraphicsMagick* itself must be built using the "static-multithread"
 (VisualStaticMT) build configuration. Building *ImageMagickObject*
 requires Microsoft Visual C++ 7.0 as delivered with Microsoft's Visual
