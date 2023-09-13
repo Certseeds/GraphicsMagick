@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -194,7 +194,9 @@ static const struct
   STATICM("XCF",RegisterXCFImage,UnregisterXCFImage),
   STATICM("XPM",RegisterXPMImage,UnregisterXPMImage),
 #if defined(_VISUALC_)
+#if defined(EnableXTRNCoder)
   STATICM("XTRN",RegisterXTRNImage,UnregisterXTRNImage),
+#endif /* if defined(EnableXTRNCoder) */
 #endif /* defined(_VISUALC_) */
 #if defined(HasX11)
   STATICM("XWD",RegisterXWDImage,UnregisterXWDImage),

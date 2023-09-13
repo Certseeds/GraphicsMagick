@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -51,6 +51,7 @@
 */
 #if defined(_VISUALC_)
 #include "magick/studio.h"
+#if defined(EnableXTRNCoder)
 #include "magick/blob.h"
 #include "magick/constitute.h"
 #include "magick/delegate.h"
@@ -225,6 +226,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
     StopTimer(&image->timer);
   return(image);
 }
+#endif /* if defined(EnableXTRNCoder) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,6 +253,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
 */
 ModuleExport void RegisterXTRNImage(void)
 {
+#if defined(EnableXTRNCoder)
   MagickInfo
     *entry;
 
@@ -289,6 +292,7 @@ ModuleExport void RegisterXTRNImage(void)
   entry->description="External transfer via a smart array interface";
   entry->module="XTRN";
   RegisterMagickInfo(entry);
+#endif /* if defined(EnableXTRNCoder) */
 }
 
 /*
@@ -312,11 +316,14 @@ ModuleExport void RegisterXTRNImage(void)
 */
 ModuleExport void UnregisterXTRNImage(void)
 {
+#if defined(EnableXTRNCoder)
   UnregisterMagickInfo("XTRNFILE");
   UnregisterMagickInfo("XTRNIMAGE");
   UnregisterMagickInfo("XTRNBLOB");
   UnregisterMagickInfo("XTRNARRAY");
+#endif /* if defined(EnableXTRNCoder) */
 }
+#if defined(EnableXTRNCoder)
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -531,4 +538,5 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
     }
   return(True);
 }
+#endif /* if defined(EnableXTRNCoder) */
 #endif /* defined(_VISUALC_) */

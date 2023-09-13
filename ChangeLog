@@ -1,3 +1,12 @@
+2023-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* VisualMagick/magick/magick_config.h.in: Block building the XTRN
+	coder unless the user enables EnableXTRNCoder.  The XTRN coder is
+	primarily used by the optional contributed ImageMagickObject COM+
+	DLL object, but it might be used for a similar purpose.  The XTRN
+	coder serves no purpose unless invoked from the address space of a
+	program using GraphicsMagick.
+
 2023-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Initialize

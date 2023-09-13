@@ -122,6 +122,16 @@ $$QuantumDepth
 // which may handle untrusted inputs such as file uploads from the Internet.
 #undef EnableBrokenCoders
 
+/////////////
+//
+// EnableXTRNCoder
+//
+// Enable building the XTRN coder, which is needed by the Microsoft
+// Windows ImageMagickObject COM+ DLL, or may be used for similar
+// dedicated purposes where a Windows program wants to pass data
+// to/from GraphicsMagick via filenmames containing encoded memory
+// pointers.
+#undef EnableXTRNCoder
 
 /////////////
 //
