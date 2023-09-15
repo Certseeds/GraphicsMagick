@@ -310,12 +310,12 @@ typedef enum
 static int PNMReadThreads(const Image* image, const size_t bytes_per_row)
 {
   const int omp_max_threads = omp_get_max_threads();
-  long threads;
+  int threads;
   ARG_NOT_USED(image);
-  threads=(Min(bytes_per_row/4096UL,(unsigned long) omp_max_threads));
+  threads=(int)(Min(bytes_per_row/4096U,(size_t) Max(0,omp_max_threads)));
   if (0 == threads)
     threads=1;
-  return (int) threads;
+  return threads;
 }
 #endif /* defined(HAVE_OPENMP) */
 

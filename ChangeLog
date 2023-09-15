@@ -1,5 +1,8 @@
 2023-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/pnm.c (PNMReadThreads): Fix compiler warning regarding
+	overflow.
+
 	* coders/sun.c (WriteSUNImage): Test for sun_info.length overflow
 	in a way which should not provoke a compiler warning.
 
