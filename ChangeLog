@@ -1,3 +1,8 @@
+2023-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/sun.c (WriteSUNImage): Test for sun_info.length overflow
+	in a way which should not provoke a compiler warning.
+
 2023-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* VisualMagick/magick/magick_config.h.in: Block building the XTRN

@@ -1070,9 +1070,9 @@ static unsigned int WriteSUNImage(const ImageInfo *image_info,Image *image)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Bytes per image: %" MAGICK_SIZE_T_F "u",
                               (MAGICK_SIZE_T) bytes_per_image);
-      sun_info.length=bytes_per_image;
-      if (sun_info.length != bytes_per_image)
+      if ((size_t) ((magick_uint32_t) bytes_per_image) != bytes_per_image)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      sun_info.length=(magick_uint32_t) bytes_per_image;
 
       /*
         Allocate memory for pixels.
