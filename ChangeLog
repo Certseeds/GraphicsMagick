@@ -1,5 +1,8 @@
 2023-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wmf.c (ipa_bmp_draw): Print bmp.data as the pointer it is
+	rather than casting to a 'long'.
+
 	* coders/pnm.c (PNMReadThreads): Fix compiler warning regarding
 	overflow.
 

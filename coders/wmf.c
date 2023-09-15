@@ -505,7 +505,7 @@ static void ipa_bmp_draw(wmfAPI *API, wmfBMP_Draw_t *bmp_draw)
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "ipa_bmp_draw\n"
-                            "    bmp_draw->bmp.data   = 0x%lx\n"
+                            "    bmp_draw->bmp.data   = 0x%px\n"
                             /* "    registry id          = %li\n" */
                             "    pixel_width          = %.4g\n"
                             "    pixel_height         = %.4g\n"
@@ -513,7 +513,7 @@ static void ipa_bmp_draw(wmfAPI *API, wmfBMP_Draw_t *bmp_draw)
                             "    bmp_draw->crop WxH   = %ix%i\n"
                             "    bmp_draw->crop x,y   = %i,%i\n"
                             "    image size WxH       = %lux%lu",
-                            (long) bmp_draw->bmp.data,
+                            bmp_draw->bmp.data,
                             /* id, */
                             bmp_draw->pixel_width,
                             bmp_draw->pixel_height,
