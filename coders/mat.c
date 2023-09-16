@@ -515,7 +515,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     HDR.Type[3] = ldblk % 10;   ldblk /= 10;    /* T digit */
     HDR.Type[2] = ldblk % 10;   ldblk /= 10;    /* P digit */
     HDR.Type[1] = ldblk % 10;   ldblk /= 10;    /* O digit */
-    HDR.Type[0] = ldblk;                        /* M digit */
+    HDR.Type[0] = (unsigned char)ldblk;         /* M digit */
 
     if(HDR.Type[3]!=0) RET_CHECK(image);  /* Data format */
     if(HDR.Type[2]!=0) RET_CHECK(image);  /* Always 0 */

@@ -1,3 +1,6 @@
+2023-09-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
+        * coders/mat.c Cleanup one unneeded warning.
+
 2023-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* VisualMagick/magick/magick_config.h.in: Update the copyright
