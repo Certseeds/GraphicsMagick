@@ -1,5 +1,10 @@
+2023-09-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* VisualMagick/magick/magick_config.h.in Expose ENABLE_SVG_WRITER.
+	For debugging purpose this should be always enabled. Only for
+	final release you can disable it.
+
 2023-09-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
-        * coders/mat.c Cleanup one unneeded warning.
+	* coders/mat.c Cleanup one unneeded warning.
 
 2023-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
