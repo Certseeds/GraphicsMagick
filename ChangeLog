@@ -1,3 +1,8 @@
+2023-09-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c Ability to write JPG encoded image.
+	Using a new command line switch: -define bmp:allow-jpeg
+
 2023-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jp2.c (BlobRead): For old libJasper, return 0 for size

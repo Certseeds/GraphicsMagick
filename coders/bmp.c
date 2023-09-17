@@ -1899,6 +1899,43 @@ ModuleExport void UnregisterBMPImage(void)
   (void) UnregisterMagickInfo("BMP2");
   (void) UnregisterMagickInfo("BMP3");
 }
+
+
+static int StoreBlobJPG(Image * image, const ImageInfo * image_info)
+{
+ImageInfo *jpeg_image_info;
+Image *jpeg_image;
+void *Data;
+size_t DataSize = 0;
+
+  jpeg_image_info = (ImageInfo *)CloneImageInfo(image_info);
+  if(jpeg_image_info == (ImageInfo *) NULL)
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed, image);
+  if(image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "  Creating jpeg_image.");
+
+  jpeg_image = CloneImage(image,0,0,MagickTrue,&image->exception);
+
+  (void)strlcpy(jpeg_image_info->magick,"JPEG",MaxTextExtent);
+  (void)strlcpy(jpeg_image_info->filename,"JPEG:",MaxTextExtent);
+  (void)strlcpy(jpeg_image->magick,"JPEG",MaxTextExtent);
+  (void)strlcpy(jpeg_image->filename,"JPEG:",MaxTextExtent);
+
+  Data = ImageToBlob(jpeg_image_info,jpeg_image,&DataSize,&image->exception);
+  if(Data!=NULL)
+  {
+    WriteBlob(image,DataSize,Data);
+    MagickFreeMemory(Data);
+  }
+
+      /* Destroy JPEG image and image_info */
+  DestroyImage(jpeg_image);
+  DestroyImageInfo(jpeg_image_info);
+
+return 0;
+}
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1971,6 +2008,10 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
     scene,
     type;
 
+  ExportPixelAreaOptions
+    export_options;
+
+
   /*   const unsigned char */
   /*     *color_profile=0; */
 
@@ -2005,6 +2046,8 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
   scene=0;
   adjoin=image_info->adjoin;
 
+  ExportPixelAreaOptionsInit(&export_options);
+
   /*
     Retrieve color profile from Image (if any)
     FIXME: is color profile support writing not properly implemented?
@@ -2031,7 +2074,25 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
       bmp_info.compression=BI_RGB;
       if ((image->storage_class != DirectClass) && (image->colors > 256))
         (void) SetImageType(image,TrueColorType);
-      if (image->storage_class != DirectClass)
+
+      if(type>2 && AccessDefinition(image_info,"bmp","allow-jpeg"))
+        {
+          image->compression = JPEGCompression;
+          bmp_info.number_colors = 0;
+          bmp_info.bits_per_pixel = 0;
+          bmp_info.compression = BI_JPEG;
+        }
+      else if (image->storage_class == DirectClass)
+        {
+          /*
+            Full color BMP raster.
+          */
+          bmp_info.number_colors=0;
+          bmp_info.bits_per_pixel=((type > 3) && image->matte) ? 32 : 24;
+          bmp_info.compression=
+            (type > 3) && image->matte ?  BI_BITFIELDS : BI_RGB;
+        }
+      else  /* image->storage_class != DirectClass*/
         {
           /*
             Colormapped BMP raster.
@@ -2060,16 +2121,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                   }
               }
         }
-      if (image->storage_class == DirectClass)
-        {
-          /*
-            Full color BMP raster.
-          */
-          bmp_info.number_colors=0;
-          bmp_info.bits_per_pixel=((type > 3) && image->matte) ? 32 : 24;
-          bmp_info.compression=
-            (type > 3) && image->matte ?  BI_BITFIELDS : BI_RGB;
-        }
+
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Final: Scene %lu, storage_class %s, colors %u",
                             scene,
@@ -2079,17 +2131,26 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
         Below emulates:
         bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
       */
-      bytes_per_line=MagickArraySize(image->columns,bmp_info.bits_per_pixel);
-      if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
-        bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
-      if (bytes_per_line == 0)
-        ThrowWriterException(CoderError,ArithmeticOverflow,image);
-      image_size=MagickArraySize(bytes_per_line,image->rows);
-      if ((image_size == 0) || ((image_size & 0xffffffff) != image_size))
-        ThrowWriterException(CoderError,ArithmeticOverflow,image);
-      bmp_info.ba_offset=0;
-      have_color_info=(int) ((image->rendering_intent != UndefinedIntent) ||
+      if(bmp_info.compression == BI_JPEG)
+      {
+        bytes_per_line = 0;
+        image_size = 0;
+        have_color_info = 0;
+      }
+      else
+      {
+        bytes_per_line=MagickArraySize(image->columns,bmp_info.bits_per_pixel);
+        if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
+          bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
+        if (bytes_per_line==0)
+          ThrowWriterException(CoderError,ArithmeticOverflow,image);
+        image_size=MagickArraySize(bytes_per_line,image->rows);
+        if ((image_size == 0) || ((image_size & 0xffffffff) != image_size))
+          ThrowWriterException(CoderError,ArithmeticOverflow,image);
+        have_color_info=(int) ((image->rendering_intent != UndefinedIntent) ||
                              (color_profile_length != 0) || (image->gamma != 0.0));
+      }
+      bmp_info.ba_offset=0;
       if (type == 2)
         bmp_info.size=12;
       else
@@ -2153,9 +2214,14 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
       /*
         Convert MIFF to BMP raster pixels.
       */
-      pixels=MagickAllocateResourceLimitedMemory(unsigned char *,bmp_info.image_size);
-      if (pixels == (unsigned char *) NULL)
-        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      if(bmp_info.compression == BI_JPEG)
+        pixels=NULL;
+      else
+      {
+        pixels=MagickAllocateResourceLimitedMemory(unsigned char *,bmp_info.image_size);
+        if (pixels == (unsigned char *) NULL)
+          ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      }
       switch (bmp_info.bits_per_pixel)
         {
         case 1:
@@ -2482,56 +2548,62 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
               (void) WriteBlobLSBLong(image,0x0);  /* reserved */
             }
         }
-      if (image->storage_class == PseudoClass)
+        if(pixels==NULL)
         {
-          unsigned char
-            *bmp_colormap;
+          StoreBlobJPG(image,image_info);
+        }
+        else
+        {
+          if (image->storage_class==PseudoClass)
+            {
+            unsigned char
+              *bmp_colormap;
 
           /*
             Dump colormap to file.
           */
-          if (logging)
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+            if (logging)
+              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "  Colormap: %u entries",image->colors);
-          bmp_colormap=MagickAllocateResourceLimitedArray(unsigned char *,4,
+            bmp_colormap=MagickAllocateResourceLimitedArray(unsigned char *,4,
                                                           (size_t) (1L << bmp_info.bits_per_pixel));
-          if (bmp_colormap == (unsigned char *) NULL)
-            {
-              MagickFreeResourceLimitedMemory(pixels);
-              ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
-                                   image);
-            }
-          q=bmp_colormap;
-          for (i=0; i < Min(image->colors,bmp_info.number_colors); i++)
-            {
-              *q++=ScaleQuantumToChar(image->colormap[i].blue);
-              *q++=ScaleQuantumToChar(image->colormap[i].green);
-              *q++=ScaleQuantumToChar(image->colormap[i].red);
-              if (type > 2)
+            if (bmp_colormap == (unsigned char *) NULL)
+              {
+                MagickFreeResourceLimitedMemory(pixels);
+                ThrowWriterException(ResourceLimitError,MemoryAllocationFailed, image);
+              }
+            q=bmp_colormap;
+            for (i=0; i < Min(image->colors,bmp_info.number_colors); i++)
+              {
+                *q++=ScaleQuantumToChar(image->colormap[i].blue);
+                *q++=ScaleQuantumToChar(image->colormap[i].green);
+                *q++=ScaleQuantumToChar(image->colormap[i].red);
+                if (type > 2)
+                  *q++=(Quantum) 0x0;
+              }
+            for ( ; i < (1UL << bmp_info.bits_per_pixel); i++)
+              {
+              *q++=(Quantum) 0x0;
                 *q++=(Quantum) 0x0;
-            }
-          for ( ; i < (1UL << bmp_info.bits_per_pixel); i++)
-            {
-              *q++=(Quantum) 0x0;
-              *q++=(Quantum) 0x0;
-              *q++=(Quantum) 0x0;
-              if (type > 2)
                 *q++=(Quantum) 0x0;
-            }
-          if (type <= 2)
-            (void) WriteBlob(image,3*(1UL << bmp_info.bits_per_pixel),
+                if (type > 2)
+                  *q++=(Quantum) 0x0;
+                }
+            if (type <= 2)
+              (void) WriteBlob(image,3*(1UL << bmp_info.bits_per_pixel),
                              (char *) bmp_colormap);
-          else
-            (void) WriteBlob(image,4*(1UL << bmp_info.bits_per_pixel),
+            else
+              (void) WriteBlob(image,4*(1UL << bmp_info.bits_per_pixel),
                              (char *) bmp_colormap);
-          MagickFreeResourceLimitedMemory(bmp_colormap);
-        }
-      if (logging)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+            MagickFreeResourceLimitedMemory(bmp_colormap);
+          }
+        if (logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "  Pixels:  %" MAGICK_SIZE_T_F "u bytes",
                               (MAGICK_SIZE_T) bmp_info.image_size);
-      (void) WriteBlob(image,bmp_info.image_size,(char *) pixels);
-      MagickFreeResourceLimitedMemory(pixels);
+        (void) WriteBlob(image,bmp_info.image_size,(char *) pixels);
+        MagickFreeResourceLimitedMemory(pixels);
+      }
       if (image->next == (Image *) NULL)
         {
           if (logging)
