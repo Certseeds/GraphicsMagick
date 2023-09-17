@@ -1,5 +1,10 @@
 2023-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jp2.c (BlobRead): For old libJasper, return 0 for size
+	value if the actual value does not fit in an 'int'.
+	* coders/jp2.c (BlobWrite): For old libJasper, return 0 for size
+	value if the actual value does not fit in an 'int'.
+
 	* magick/command.c (MagickCommand): Eliminate duplicate utility
 	name output in error messages when utility is executed via a
 	magick compatibility link.  For example via symbolic link from

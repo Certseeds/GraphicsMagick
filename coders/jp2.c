@@ -354,7 +354,13 @@ static int BlobRead(jas_stream_obj_t *obj, char *buf, unsigned cnt)
     *source = (StreamManager *) obj;
 
   count=ReadBlob(source->image,(size_t) cnt,(void *) buf);
+#if defined(HAVE_JAS_STREAM_IO_V3)
   return (count);
+#else
+  if ((size_t)((int) count) != count)
+    count = 0;
+  return ((int) count);
+#endif
 }
 
 /* Write characters to a file object. */
@@ -372,7 +378,13 @@ static int BlobWrite(jas_stream_obj_t *obj, const char *buf, unsigned cnt)
     *source = (StreamManager *) obj;
 
   count=WriteBlob(source->image,(size_t) cnt,(void *) buf);
+#if defined(HAVE_JAS_STREAM_IO_V3)
   return(count);
+#else
+  if ((size_t)((int) count) != count)
+    count = 0;
+  return ((int) count);
+#endif
 }
 
 /* Set the position for a file object. */
