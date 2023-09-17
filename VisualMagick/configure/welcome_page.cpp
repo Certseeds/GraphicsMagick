@@ -58,9 +58,10 @@ BOOL CWelcomePage::OnInitDialog()
 	m_welcomeText += "When the build environment has been created you can build the system in ";
 	m_welcomeText += "the Visual Studio IDE.\n\n";
 
-	m_welcomeText += "NOTE: Please be advised that support for Visual Studio 6.0 will not be ";
-	m_welcomeText += "actively supported very soon. VS7 has been out for a year now and all ";
-	m_welcomeText += "current work takes place in this environment.\n\n";
+	m_welcomeText += "NOTE: You cannot compile GraphicsMagick with Visual Studio older than 2008. ";
+	m_welcomeText += "Support for Visual Studio 6.0 is not possible. ";
+	m_welcomeText += "VS7 has been out for a year now and all current work takes place in this";
+	m_welcomeText += "environment.\n\n";
 
 	m_welcomeText += "Good Luck - and thanks for all the fish!";
 

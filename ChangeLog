@@ -1,4 +1,7 @@
 2023-09-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* VisualMagick/configure/welcome_page.cpp Notify user that MSVC 
+	older than 2008 is not supported.
+
 	* VisualMagick/magick/magick_config.h.in Expose ENABLE_SVG_WRITER.
 	For debugging purpose this should be always enabled. Only for
 	final release you can disable it.
