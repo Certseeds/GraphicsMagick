@@ -8990,12 +8990,9 @@ MagickExport MagickPassFail MagickCommand(ImageInfo *image_info,
           char
             command_name[MaxTextExtent];
 
-          const char
-            *pos;
-
           /*
-            Append subcommand name to existing client name if end of
-            existing client name is not identical to subcommand name.
+            Append subcommand name to existing client name if existing
+            client name is not identical to subcommand name.
           */
           LockSemaphoreInfo(command_semaphore);
           if (run_mode == BatchMode)
@@ -9003,9 +9000,7 @@ MagickExport MagickPassFail MagickCommand(ImageInfo *image_info,
           else
             {
               GetPathComponent(GetClientName(),BasePath,command_name);
-              pos=strrchr(command_name,' ');
-              if ((pos == (const char *) NULL) ||
-                  (LocaleCompare(commands[i].command,pos+1) != 0))
+              if (LocaleCompare(commands[i].command,command_name) != 0)
                 {
                   char
                     client_name[MaxTextExtent];

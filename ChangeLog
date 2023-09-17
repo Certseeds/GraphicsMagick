@@ -1,5 +1,12 @@
 2023-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/command.c (MagickCommand): Eliminate duplicate utility
+	name output in error messages when utility is executed via a
+	magick compatibility link.  For example via symbolic link from
+	'convert' to 'gm'.  This problem was added when the initial batch
+	mode implementation was submitted.  Addresses SourceForge issue
+	#727 "convert convert" in error messages.
+
 	* VisualMagick/configure/welcome_page.cpp: Update configure
 	welcome text based on my current understanding.
 
