@@ -1,5 +1,10 @@
+2023-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* VisualMagick/configure/welcome_page.cpp: Update configure
+	welcome text based on my current understanding.
+
 2023-09-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	* VisualMagick/configure/welcome_page.cpp Notify user that MSVC 
+	* VisualMagick/configure/welcome_page.cpp Notify user that MSVC
 	older than 2008 is not supported.
 
 	* VisualMagick/magick/magick_config.h.in Expose ENABLE_SVG_WRITER.
