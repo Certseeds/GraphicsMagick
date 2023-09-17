@@ -2008,10 +2008,6 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
     scene,
     type;
 
-  ExportPixelAreaOptions
-    export_options;
-
-
   /*   const unsigned char */
   /*     *color_profile=0; */
 
@@ -2045,8 +2041,6 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
       type=3;
   scene=0;
   adjoin=image_info->adjoin;
-
-  ExportPixelAreaOptionsInit(&export_options);
 
   /*
     Retrieve color profile from Image (if any)
