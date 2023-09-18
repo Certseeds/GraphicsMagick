@@ -1,4 +1,4 @@
-.TH gm 1 "2023/05/11" "GraphicsMagick"
+.TH gm 1 "2023/09/18" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1212,6 +1212,19 @@ The following definitions may be created:
 
 .in 15
 
+.in 15
+.B "bmp:allow-jpeg={true|false}"
+.in 20
+ \fR
+.in 20
+If the bmp:allow-jpeg value is set to true, then enable BMP files
+using JPEG compression, under control of the compression option (which
+may be JPEG already if the input file is JPEG).  JPEG-compressed BMP
+files are very rare so this option acts as a safeguard to assure that
+the current compression setting does not accidentally produce
+JPEG-compressed BMP files which most other software is unable to read.
+
+.in 15
 .in 15
 .B "cineon:colorspace={rgb|cineonlog}"
 .in 20
