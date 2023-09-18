@@ -1,3 +1,8 @@
+2023-09-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/tests/runtest.bat VID is not a regular image format.
+	Do not use batch test for it.
+
 2023-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* doc/options.imdoc: Add documentation for -define bmp:allow-jpeg.

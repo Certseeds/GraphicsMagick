@@ -346,7 +346,8 @@ call :_dorwtest both VDA
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both VICAR
 if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both VID
+@rem VID is not a regular image format.
+@rem call :_dorwtest both VID
 @rem if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both VIFF
 if not %COUNT% EQU 6 goto :_failed
