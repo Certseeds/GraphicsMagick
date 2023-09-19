@@ -5,6 +5,11 @@
 
 2023-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/Makefile.am (coders_bmp_la_LIBADD): The BMP coder module
+	now optionally depends on libjpeg.
+
+2023-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
 	* doc/options.imdoc: Add documentation for -define bmp:allow-jpeg.
 
 2023-09-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
