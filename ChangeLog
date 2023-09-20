@@ -1,8 +1,12 @@
 2023-09-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* coders/bmp.c Only 16bpp and 32bpp is supported for BI_BITFIELDS
-	compression type. 8bpp is not implemented.
+	compression type. 8bpp is not implemented.  This fixes oss-fuzz
+	issue 62519: "graphicsmagick:coder_BMP_fuzzer:
+	Use-of-uninitialized-value in WriteBMPImage".
 
 2023-09-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* coders/bmp.c Remove duplicity, same information has been logged twice.
 	22:54:49 0:0.002746  0.000u 9688 bmp.c/ReadBMPImage/750/Coder:
 	File size: Claimed=8, Actual=1129
