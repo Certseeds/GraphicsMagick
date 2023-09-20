@@ -177,10 +177,10 @@ int main ( int argc, char **argv )
       goto program_exit;
     }
 
-  (void) strncpy(infile, argv[arg], MaxTextExtent );
+  (void) strncpy(infile, argv[arg], MaxTextExtent-1 );
   infile[MaxTextExtent-1]='\0';
   arg++;
-  (void) strncpy( map, argv[arg], MaxTextExtent );
+  (void) strncpy( map, argv[arg], MaxTextExtent-1 );
   map[MaxTextExtent-1]='\0';
 
 /*   for (arg=0; arg < argc; arg++) */

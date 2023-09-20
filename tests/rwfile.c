@@ -207,10 +207,10 @@ int main ( int argc, char **argv )
       goto program_exit;
     }
 
-  (void) strncpy(infile, argv[arg], MaxTextExtent );
+  (void) strncpy(infile, argv[arg], MaxTextExtent-1 );
   infile[MaxTextExtent-1]='\0';
   arg++;
-  (void) strncpy( format, argv[arg], MaxTextExtent );
+  (void) strncpy( format, argv[arg], MaxTextExtent-1 );
   format[MaxTextExtent-1]='\0';
 
   magick_info=GetMagickInfo(format,&exception);

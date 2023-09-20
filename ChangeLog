@@ -1,3 +1,8 @@
+2023-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Fix GCC 13
+	warning.
+
 2023-09-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat VID is not a regular image format.

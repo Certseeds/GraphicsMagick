@@ -360,7 +360,7 @@ int main ( int argc, char **argv )
       exit( 1 );
     }
 
-  (void) strncpy( outfile, argv[1], MaxTextExtent);
+  (void) strncpy( outfile, argv[1], MaxTextExtent-1);
   outfile[MaxTextExtent-1]='\0';
 
   /*
