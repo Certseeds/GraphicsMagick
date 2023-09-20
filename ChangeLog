@@ -1,4 +1,5 @@
 2023-09-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	*PerlMagick/t/input_JPEG.bmp Added BMP sample with JPEG encoding.
 
 	* coders/bmp.c Only 16bpp and 32bpp is supported for BI_BITFIELDS
 	compression type. 8bpp is not implemented.  This fixes oss-fuzz
