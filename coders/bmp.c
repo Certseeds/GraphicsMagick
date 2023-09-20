@@ -1101,11 +1101,6 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
       if (EOFBlob(image))
         ThrowBMPReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
-      if (logging)
-        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "  File size: Claimed=%" MAGICK_SIZE_T_F "u, Actual=%"
-                              MAGICK_OFF_F "d",
-                              (MAGICK_SIZE_T) bmp_info.file_size, file_size);
       /*
         It seems that some BMPs claim a file size two bytes larger than
         they actually are so allow some slop before warning about file
