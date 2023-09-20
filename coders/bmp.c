@@ -1125,22 +1125,27 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         case BI_BITFIELDS:
           if(bmp_info.size==40)
             {
-                 /* TODO: check for gap size >=12*/
+              if(bmp_info.ba_offset>0 && bmp_info.ba_offset<52)
+                 ThrowBMPReaderException(CorruptImageError,CorruptImage,image);	/* check for gap size >=12*/
               bmp_info.red_mask=ReadBlobLSBLong(image);
               bmp_info.green_mask=ReadBlobLSBLong(image);
               bmp_info.blue_mask=ReadBlobLSBLong(image);
             }
-          break;
+          goto CheckBitSize;
         case BI_ALPHABITFIELDS:
           if(bmp_info.size==40)
             {
-                 /* TODO: check for gap size >=12*/
+              if(bmp_info.ba_offset>0 && bmp_info.ba_offset<56)
+                 ThrowBMPReaderException(CorruptImageError,CorruptImage,image);	/* check for gap size >=16*/
               bmp_info.red_mask=ReadBlobLSBLong(image);
               bmp_info.green_mask=ReadBlobLSBLong(image);
               bmp_info.blue_mask=ReadBlobLSBLong(image);
                  /* TODO: check for gap size >=16*/
               bmp_info.alpha_mask=ReadBlobLSBLong(image);
             }
+CheckBitSize:
+          if(!(bmp_info.bits_per_pixel==16 || bmp_info.bits_per_pixel==32))
+              ThrowBMPReaderException(CorruptImageError,CorruptImage,image);
           break;
 
         case BI_RGB:
