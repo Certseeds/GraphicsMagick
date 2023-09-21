@@ -1125,25 +1125,38 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
         case BI_BITFIELDS:
           if(bmp_info.size==40)
             {
-              if(bmp_info.ba_offset>0 && bmp_info.ba_offset<52)
-                 ThrowBMPReaderException(CorruptImageError,CorruptImage,image);	/* check for gap size >=12*/
+              if(bmp_info.ba_offset==0) bmp_info.ba_offset=52;
+              if(bmp_info.ba_offset<52)		/* check for gap size >=12*/
+                 ThrowBMPReaderException(CorruptImageError,CorruptImage,image);
               bmp_info.red_mask=ReadBlobLSBLong(image);
               bmp_info.green_mask=ReadBlobLSBLong(image);
               bmp_info.blue_mask=ReadBlobLSBLong(image);
+              goto CheckBitSize;
             }
-          goto CheckBitSize;
+          goto CheckAlphaBitSize;
         case BI_ALPHABITFIELDS:
           if(bmp_info.size==40)
             {
-              if(bmp_info.ba_offset>0 && bmp_info.ba_offset<56)
-                 ThrowBMPReaderException(CorruptImageError,CorruptImage,image);	/* check for gap size >=16*/
+              if(bmp_info.ba_offset==0) bmp_info.ba_offset=56;
+              if(bmp_info.ba_offset<56)		/* check for gap size >=16*/
+                 ThrowBMPReaderException(CorruptImageError,CorruptImage,image);
               bmp_info.red_mask=ReadBlobLSBLong(image);
               bmp_info.green_mask=ReadBlobLSBLong(image);
               bmp_info.blue_mask=ReadBlobLSBLong(image);
-                 /* TODO: check for gap size >=16*/
               bmp_info.alpha_mask=ReadBlobLSBLong(image);
             }
+CheckAlphaBitSize:
+            if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Alpha Mask: 0x%04x",
+                                        bmp_info.alpha_mask);
 CheckBitSize:
+            if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Red Mask: 0x%04x\n"
+                                        "Green Mask: 0x%04x\n"
+                                        "Blue Mask: 0x%04x",
+                                            bmp_info.red_mask, bmp_info.green_mask, bmp_info.blue_mask);
           if(!(bmp_info.bits_per_pixel==16 || bmp_info.bits_per_pixel==32))
               ThrowBMPReaderException(CorruptImageError,CorruptImage,image);
           break;

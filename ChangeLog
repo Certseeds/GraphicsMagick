@@ -1,3 +1,7 @@
+2023-09-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c Display bitmasks into optional log.
+
 2023-09-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* PerlMagick/t/jpeg/read.t: Add test for JPEG-compressed BMP.
