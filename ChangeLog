@@ -1,4 +1,12 @@
+2023-09-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/t/jpeg/read.t: Add test for JPEG-compressed BMP.
+	Moved input reference file to PerlMagick/t/jpeg/input_JPEG.bmp and
+	reference output file is
+	PerlMagick/t/reference/jpeg/input_JPEG.bmp.miff.
+
 2023-09-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	*PerlMagick/t/input_JPEG.bmp Added BMP sample with JPEG encoding.
 
 	* coders/bmp.c Only 16bpp and 32bpp is supported for BI_BITFIELDS
