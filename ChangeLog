@@ -1,3 +1,9 @@
+2023-09-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c Emit error when OS/2 bitmap with compression BI_JPEG
+	or BI_PNG is detected.
+	Read files compressed with BI_PNG.
+
 2023-09-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/bmp.c: Display bitmasks into optional log.

@@ -531,7 +531,7 @@ static const char *DecodeBiCompression(const magick_uint32_t BiCompression, cons
 }
 
 
-static Image *ExtractBlobJPG(Image * image, const ImageInfo * image_info, ExceptionInfo * exception)
+static Image *ExtractNestedBlob(Image * image, const ImageInfo * image_info, int ImgType, ExceptionInfo * exception)
 {
   size_t
     alloc_size;
@@ -553,7 +553,7 @@ static Image *ExtractBlobJPG(Image * image, const ImageInfo * image_info, Except
 
               /* BlobToFile("/tmp/jnx-tile.jpg", blob,alloc_size,exception); */
 
-         (void) strlcpy(clone_info->filename,"JPEG:",sizeof(clone_info->filename));
+         (void) strlcpy(clone_info->filename, (ImgType==BI_JPEG)?"JPEG:":"PNG:", sizeof(clone_info->filename));
          if ((image2 = BlobToImage(clone_info,blob,alloc_size,exception))
                   != NULL)
          {
@@ -561,19 +561,19 @@ static Image *ExtractBlobJPG(Image * image, const ImageInfo * image_info, Except
                     Replace current image with new image while copying
                     base image attributes.
                   */
-                  (void) strlcpy(image2->filename, image->filename,
+            (void) strlcpy(image2->filename, image->filename,
                                  sizeof(image2->filename));
-                  (void) strlcpy(image2->magick_filename, image->magick_filename,
+            (void) strlcpy(image2->magick_filename, image->magick_filename,
                                  sizeof(image2->magick_filename));
-                  (void) strlcpy(image2->magick, image->magick,
+            (void) strlcpy(image2->magick, image->magick,
                                  sizeof(image2->magick));
-                  DestroyBlob(image2);
-                  image2->blob = ReferenceBlob(image->blob);
+            DestroyBlob(image2);
+           image2->blob = ReferenceBlob(image->blob);
 
-                  if ((image->rows == 0) || (image->columns == 0))
-                    DeleteImageFromList(&image);
+            if ((image->rows == 0) || (image->columns == 0))
+               DeleteImageFromList(&image);
 
-                  AppendImageToList(&image, image2);
+            AppendImageToList(&image, image2);
          }
          DestroyImageInfo(clone_info);
          clone_info = (ImageInfo *) NULL;
@@ -881,10 +881,10 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
           if(bmp_info.size==64)
             {				/* OS22XBITMAPHEADER */
-              magick_uint16_t   Units;            /* Type of units used to measure resolution */
-              magick_uint16_t   Reserved;         /* Pad structure to 4-byte boundary */
-              magick_uint16_t   Recording;        /* Recording algorithm */
-              magick_uint16_t   Rendering;        /* Halftoning algorithm used */
+              magick_uint16_t  Units;            /* Type of units used to measure resolution */
+              magick_uint16_t  Reserved;         /* Pad structure to 4-byte boundary */
+              magick_uint16_t  Recording;        /* Recording algorithm */
+              magick_uint16_t  Rendering;        /* Halftoning algorithm used */
               magick_uint32_t  Size1;            /* Reserved for halftoning algorithm use */
               magick_uint32_t  Size2;            /* Reserved for halftoning algorithm use */
               magick_uint32_t  ColorEncoding;    /* Color model used in bitmap */
@@ -910,6 +910,9 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                               "    Identifier: %u",
                               Units, Reserved, Recording, Rendering,
                               Size1, Size2, ColorEncoding, Identifier);
+                  /* OS/2 does not recognise JPEG nor PNG. */
+              if(bmp_info.compression==BI_JPEG || bmp_info.compression==BI_PNG)
+                  ThrowBMPReaderException(CoderError,CompressionNotValid,image)
             }
 
           if (bmp_info.size>=52 && bmp_info.size!=64)
@@ -1178,14 +1181,32 @@ CheckBitSize:
           {
             MonitorHandler previous_handler;
             previous_handler = SetMonitorHandler(0);
-            image = ExtractBlobJPG(image, image_info, exception);
+            image = ExtractNestedBlob(image, image_info, bmp_info.compression, exception);
             (void) SetMonitorHandler(previous_handler);
             if (exception->severity >= ErrorException)
                 ThrowBMPReaderException(CoderError,JPEGCompressionNotSupported,image)
           }
           goto ExitLoop;	/* I need to break a loop. Other BMPs in a chain are ignorred. */
+
         case BI_PNG:
-          ThrowBMPReaderException(CoderError,PNGCompressionNotSupported,image)
+          offset = start_position + 14 + bmp_info.size;
+          if(logging)
+              (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Seek offset %" MAGICK_OFF_F "d",
+                                  (magick_off_t) offset);
+          if((offset < start_position) ||
+              (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))
+              ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+          {
+            MonitorHandler previous_handler;
+            previous_handler = SetMonitorHandler(0);
+            image = ExtractNestedBlob(image, image_info, bmp_info.compression, exception);
+            (void) SetMonitorHandler(previous_handler);
+            if (exception->severity >= ErrorException)
+                ThrowBMPReaderException(CoderError,PNGCompressionNotSupported,image)
+          }
+          goto ExitLoop;	/* I need to break a loop. Other BMPs in a chain are ignorred. */
+
         default:
           ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)
         }
