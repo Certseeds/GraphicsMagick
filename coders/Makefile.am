@@ -302,7 +302,7 @@ coders_avs_la_LIBADD       = $(LIBMAGICK)
 coders_bmp_la_SOURCES      = coders/bmp.c
 coders_bmp_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_bmp_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_bmp_la_LIBADD       = $(LIBMAGICK) $(LIB_JPEG)
+coders_bmp_la_LIBADD       = $(LIBMAGICK) $(LIB_PNG) $(LIB_JPEG) $(LIB_ZLIB) $(LIB_MATH)
 
 # Braille coder module
 coders_braille_la_SOURCES  = coders/braille.c
