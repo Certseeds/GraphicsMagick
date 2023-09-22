@@ -1,7 +1,8 @@
 2023-09-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* coders/Makefile.am (coders_bmp_la_LIBADD): BMP coder is now also
-	dependent on everything that PNG coder depends on.
+	* coders/Makefile.am (coders_bmp_la_LIBADD): Extra modules are not
+	needed because the dependencies are taken care of by loading other
+	modules.
 
 2023-09-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
