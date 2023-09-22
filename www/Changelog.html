@@ -37,6 +37,12 @@
 </div>
 
 <div class="document">
+<p>2023-09-22  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/bmp.c: Display bitmasks into optional log.</p></li>
+</ul>
+</blockquote>
 <p>2023-09-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -48,11 +54,9 @@ PerlMagick/t/reference/jpeg/input_JPEG.bmp.miff.</p></li>
 </blockquote>
 <p>2023-09-21  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<blockquote>
-<p>*PerlMagick/t/input_JPEG.bmp Added BMP sample with JPEG encoding.</p>
-</blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c Only 16bpp and 32bpp is supported for BI_BITFIELDS
+<li><p>PerlMagick/t/input_JPEG.bmp: Added BMP sample with JPEG encoding.</p></li>
+<li><p>coders/bmp.c: Only 16bpp and 32bpp is supported for BI_BITFIELDS
 compression type. 8bpp is not implemented.  This fixes oss-fuzz
 issue 62519: &quot;graphicsmagick:coder_BMP_fuzzer:
 Use-of-uninitialized-value in WriteBMPImage&quot;.</p></li>
@@ -60,12 +64,14 @@ Use-of-uninitialized-value in WriteBMPImage&quot;.</p></li>
 </blockquote>
 <p>2023-09-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<ul class="simple">
-<li><p>coders/bmp.c Remove duplicity, same information has been logged twice.
-22:54:49 0:0.002746  0.000u 9688 bmp.c/ReadBMPImage/750/Coder:
-File size: Claimed=8, Actual=1129
-22:54:49 0:0.002906  0.000u 9688 bmp.c/ReadBMPImage/1105/Coder:
-File size: Claimed=8, Actual=1129</p></li>
+<ul>
+<li><p>coders/bmp.c: Remove duplicity, same information has been logged
+twice.</p>
+<p>22:54:49 0:0.002746  0.000u 9688 bmp.c/ReadBMPImage/750/Coder:
+File size: Claimed=8, Actual=1129</p>
+<p>22:54:49 0:0.002906  0.000u 9688 bmp.c/ReadBMPImage/1105/Coder:
+File size: Claimed=8, Actual=1129</p>
+</li>
 </ul>
 </blockquote>
 <p>2023-09-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -78,7 +84,7 @@ warning.</p></li>
 <p>2023-09-19  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/tests/runtest.bat VID is not a regular image format.
+<li><p>VisualMagick/tests/runtest.bat: VID is not a regular image format.
 Do not use batch test for it.</p></li>
 </ul>
 </blockquote>
@@ -98,7 +104,7 @@ now optionally depends on libjpeg.</p></li>
 <p>2023-09-18  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c Ability to write JPG encoded image.
+<li><p>coders/bmp.c: Ability to write JPG encoded image.
 Using a new command line switch: -define bmp:allow-jpeg</p></li>
 </ul>
 </blockquote>
@@ -119,22 +125,22 @@ mode implementation was submitted.  Addresses SourceForge issue
 welcome text based on my current understanding.</p></li>
 </ul>
 </blockquote>
-<dl class="simple">
-<dt>2023-09-17  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
-<dd><ul class="simple">
-<li><p>VisualMagick/configure/welcome_page.cpp Notify user that MSVC
+<p>2023-09-17  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/configure/welcome_page.cpp: Notify user that MSVC
 older than 2008 is not supported.</p></li>
 <li><p>VisualMagick/magick/magick_config.h.in Expose ENABLE_SVG_WRITER.
 For debugging purpose this should be always enabled. Only for
 final release you can disable it.</p></li>
 </ul>
-</dd>
-<dt>2023-09-16  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
-<dd><ul class="simple">
-<li><p>coders/mat.c Cleanup one unneeded warning.</p></li>
+</blockquote>
+<p>2023-09-16  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/mat.c: Cleanup one unneeded warning.</p></li>
 </ul>
-</dd>
-</dl>
+</blockquote>
 <p>2023-09-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -178,7 +184,7 @@ utility.</p></li>
 <p>2023-09-09  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/xtrn.c Fixed crash on dereferenced NULL pointer.</p></li>
+<li><p>coders/xtrn.c: Fixed crash on dereferenced NULL pointer.</p></li>
 </ul>
 </blockquote>
 <p>2023-09-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -203,7 +209,7 @@ format.</p></li>
 <p>2023-09-06  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c Reverting to BI_BITFIELD. BI_ALPHABITFIELDS seems
+<li><p>coders/bmp.c: Reverting to BI_BITFIELD. BI_ALPHABITFIELDS seems
 to be very rare.</p></li>
 </ul>
 </blockquote>
@@ -220,7 +226,7 @@ am unable to reproduce it.</p></li>
 <p>2023-09-05  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c Sorry for a previous commit. After some
+<li><p>coders/bmp.c: Sorry for a previous commit. After some
 investigations it seems that bit field masks are behind header
 when BI_SIZE=40.</p></li>
 </ul>
@@ -228,7 +234,7 @@ when BI_SIZE=40.</p></li>
 <p>2023-09-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c Default bit split for older BMPs with 32bpp and
+<li><p>coders/bmp.c: Default bit split for older BMPs with 32bpp and
 BI_BITFIELDS set is crazy. Verified against IrFanView and
 bmpsuite-2.7.zip - image g/rgb32bf.bmp.</p></li>
 </ul>
@@ -269,11 +275,11 @@ StringToDouble().</p></li>
 <p>2023-08-31  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul>
-<li><p>coders/bmp.c BMP with 2bpp is a legal BMP variant.
-<a class="reference external" href="https://en.wikipedia.org/wiki/BMP_file_format">https://en.wikipedia.org/wiki/BMP_file_format</a>
-Quote: &quot;The 2-bit per pixel (2bpp) format supports 4 distinct colors and stores
-4 pixels per 1 byte, the left-most pixel being in the two most significant bits
-(Windows CE only).&quot;</p>
+<li><p>coders/bmp.c: BMP with 2bpp is a legal BMP variant.
+<a class="reference external" href="https://en.wikipedia.org/wiki/BMP_file_format">https://en.wikipedia.org/wiki/BMP_file_format</a> Quote: &quot;The 2-bit
+per pixel (2bpp) format supports 4 distinct colors and stores 4
+pixels per 1 byte, the left-most pixel being in the two most
+significant bits (Windows CE only).&quot;</p>
 <p>Partial revert: BITMAPV2INFOHEADER: RGB bit field masks,
 BITMAPV3INFOHEADER+: RGBA
 The opacity channel handling is even more complex.</p>
@@ -283,14 +289,14 @@ The opacity channel handling is even more complex.</p>
 <p>2023-08-29  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c First attempt to read BMP with BI_JPEG compression
+<li><p>coders/bmp.c: First attempt to read BMP with BI_JPEG compression
 inside.</p></li>
 </ul>
 </blockquote>
 <p>2023-08-28  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c Remove code duplicity and evaluate BiCompression
+<li><p>coders/bmp.c: Remove code duplicity and evaluate BiCompression
 only on one place.</p></li>
 </ul>
 </blockquote>
@@ -328,7 +334,7 @@ completely&quot;.</p></li>
 <p>2023-08-21  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c When alpha is to be used, writer must not use
+<li><p>coders/bmp.c: When alpha is to be used, writer must not use
 BI_BITFIELDS compression that instructs to strip alpha.</p></li>
 </ul>
 </blockquote>
@@ -336,7 +342,7 @@ BI_BITFIELDS compression that instructs to strip alpha.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>tiff/libtiff/stdbool2.h MSVC2010 does not have stdbool.h nor inttypes.h</p></li>
-<li><p>coders/bmp.c Added support for BI_ALPHABITFIELDS compression.
+<li><p>coders/bmp.c: Added support for BI_ALPHABITFIELDS compression.
 <a class="reference external" href="https://learn.microsoft.com/en-us/previous-versions/windows/embedded/aa452885(v=msdn.10">https://learn.microsoft.com/en-us/previous-versions/windows/embedded/aa452885(v=msdn.10</a>)
 Remove unwanted duplicite check condition of biCompression.</p></li>
 </ul>
@@ -350,13 +356,13 @@ Remove unwanted duplicite check condition of biCompression.</p></li>
 <p>2023-08-17  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c Do not throttle on native low endian systems.</p></li>
+<li><p>coders/bmp.c: Do not throttle on native low endian systems.</p></li>
 </ul>
 </blockquote>
 <p>2023-08-16  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul>
-<li><p>coders/bmp.c  Populate upper byte to lower byte even for lower
+<li><p>coders/bmp.c: Populate upper byte to lower byte even for lower
 bpp than 8. It overcomes quantum scalling error in gm. Code should
 be redesigned, but it is better than previous state.</p>
 <p>Enforce default color masks when bmp_info.compression==BI_RGB
@@ -367,7 +373,7 @@ Existing masks will be ignored.</p>
 <p>2023-08-17  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c  Enforce default matte for 40 byte header &amp; 32bpp.</p></li>
+<li><p>coders/bmp.c:  Enforce default matte for 40 byte header &amp; 32bpp.</p></li>
 </ul>
 </blockquote>
 <p>2023-08-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -391,13 +397,13 @@ ChangeLog.2022 where missing from the distribution.</p></li>
 <p>2023-08-15  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/bmp.c  Fix reading corruption 16bpp.</p></li>
+<li><p>coders/bmp.c:  Fix reading corruption 16bpp.</p></li>
 </ul>
 </blockquote>
 <p>2023-08-15  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tiff.c  Fix compilation problem in MSVC.</p></li>
+<li><p>coders/tiff.c:  Fix compilation problem in MSVC.</p></li>
 </ul>
 </blockquote>
 <p>2023-08-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>

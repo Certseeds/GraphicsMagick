@@ -1,6 +1,6 @@
 2023-09-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Display bitmasks into optional log.
+	* coders/bmp.c: Display bitmasks into optional log.
 
 2023-09-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -11,18 +11,21 @@
 
 2023-09-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	*PerlMagick/t/input_JPEG.bmp Added BMP sample with JPEG encoding.
+	* PerlMagick/t/input_JPEG.bmp: Added BMP sample with JPEG encoding.
 
-	* coders/bmp.c Only 16bpp and 32bpp is supported for BI_BITFIELDS
+	* coders/bmp.c: Only 16bpp and 32bpp is supported for BI_BITFIELDS
 	compression type. 8bpp is not implemented.  This fixes oss-fuzz
 	issue 62519: "graphicsmagick:coder_BMP_fuzzer:
 	Use-of-uninitialized-value in WriteBMPImage".
 
 2023-09-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Remove duplicity, same information has been logged twice.
+	* coders/bmp.c: Remove duplicity, same information has been logged
+	twice.
+	
 	22:54:49 0:0.002746  0.000u 9688 bmp.c/ReadBMPImage/750/Coder:
 	File size: Claimed=8, Actual=1129
+
 	22:54:49 0:0.002906  0.000u 9688 bmp.c/ReadBMPImage/1105/Coder:
 	File size: Claimed=8, Actual=1129
 
@@ -33,7 +36,7 @@
 
 2023-09-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat VID is not a regular image format.
+	* VisualMagick/tests/runtest.bat: VID is not a regular image format.
 	Do not use batch test for it.
 
 2023-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -47,7 +50,7 @@
 
 2023-09-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Ability to write JPG encoded image.
+	* coders/bmp.c: Ability to write JPG encoded image.
 	Using a new command line switch: -define bmp:allow-jpeg
 
 2023-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -68,7 +71,8 @@
 	welcome text based on my current understanding.
 
 2023-09-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	* VisualMagick/configure/welcome_page.cpp Notify user that MSVC
+
+	* VisualMagick/configure/welcome_page.cpp: Notify user that MSVC
 	older than 2008 is not supported.
 
 	* VisualMagick/magick/magick_config.h.in Expose ENABLE_SVG_WRITER.
@@ -76,7 +80,8 @@
 	final release you can disable it.
 
 2023-09-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	* coders/mat.c Cleanup one unneeded warning.
+
+	* coders/mat.c: Cleanup one unneeded warning.
 
 2023-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -116,7 +121,7 @@
 
 2023-09-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/xtrn.c Fixed crash on dereferenced NULL pointer.
+	* coders/xtrn.c: Fixed crash on dereferenced NULL pointer.
 
 2023-09-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -137,7 +142,7 @@
 
 2023-09-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Reverting to BI_BITFIELD. BI_ALPHABITFIELDS seems
+	* coders/bmp.c: Reverting to BI_BITFIELD. BI_ALPHABITFIELDS seems
 	to be very rare.
 
 2023-09-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -150,13 +155,13 @@
 
 2023-09-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Sorry for a previous commit. After some
+	* coders/bmp.c: Sorry for a previous commit. After some
 	investigations it seems that bit field masks are behind header
 	when BI_SIZE=40.
 
 2023-09-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Default bit split for older BMPs with 32bpp and
+	* coders/bmp.c: Default bit split for older BMPs with 32bpp and
 	BI_BITFIELDS set is crazy. Verified against IrFanView and
 	bmpsuite-2.7.zip - image g/rgb32bf.bmp.
 
@@ -187,11 +192,11 @@
 
 2023-08-31  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c BMP with 2bpp is a legal BMP variant.
-	https://en.wikipedia.org/wiki/BMP_file_format
-	Quote: "The 2-bit per pixel (2bpp) format supports 4 distinct colors and stores
-	4 pixels per 1 byte, the left-most pixel being in the two most significant bits
-	(Windows CE only)."
+	* coders/bmp.c: BMP with 2bpp is a legal BMP variant.
+	https://en.wikipedia.org/wiki/BMP_file_format Quote: "The 2-bit
+	per pixel (2bpp) format supports 4 distinct colors and stores 4
+	pixels per 1 byte, the left-most pixel being in the two most
+	significant bits (Windows CE only)."
 
 	Partial revert: BITMAPV2INFOHEADER: RGB bit field masks,
 	BITMAPV3INFOHEADER+: RGBA
@@ -199,12 +204,12 @@
 
 2023-08-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c First attempt to read BMP with BI_JPEG compression
+	* coders/bmp.c: First attempt to read BMP with BI_JPEG compression
 	inside.
 
 2023-08-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Remove code duplicity and evaluate BiCompression
+	* coders/bmp.c: Remove code duplicity and evaluate BiCompression
         only on one place.
 
 2023-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -235,14 +240,14 @@
 
 2023-08-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c When alpha is to be used, writer must not use
+	* coders/bmp.c: When alpha is to be used, writer must not use
 	BI_BITFIELDS compression that instructs to strip alpha.
 
 2023-08-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* tiff/libtiff/stdbool2.h MSVC2010 does not have stdbool.h nor inttypes.h
 
-	* coders/bmp.c Added support for BI_ALPHABITFIELDS compression.
+	* coders/bmp.c: Added support for BI_ALPHABITFIELDS compression.
 	https://learn.microsoft.com/en-us/previous-versions/windows/embedded/aa452885(v=msdn.10)
 	Remove unwanted duplicite check condition of biCompression.
 
@@ -252,11 +257,11 @@
 
 2023-08-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c Do not throttle on native low endian systems.
+	* coders/bmp.c: Do not throttle on native low endian systems.
 
 2023-08-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c  Populate upper byte to lower byte even for lower
+	* coders/bmp.c: Populate upper byte to lower byte even for lower
 	bpp than 8. It overcomes quantum scalling error in gm. Code should
 	be redesigned, but it is better than previous state.
 
@@ -265,7 +270,7 @@
 
 2023-08-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c  Enforce default matte for 40 byte header & 32bpp.
+	* coders/bmp.c:  Enforce default matte for 40 byte header & 32bpp.
 
 2023-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -283,11 +288,11 @@
 
 2023-08-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c  Fix reading corruption 16bpp.
+	* coders/bmp.c:  Fix reading corruption 16bpp.
 
 2023-08-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/tiff.c  Fix compilation problem in MSVC.
+	* coders/tiff.c:  Fix compilation problem in MSVC.
 
 2023-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
