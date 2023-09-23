@@ -250,6 +250,3 @@ $$QuantumDepth
 
 /* Define to 1 if you have the `xmlNanoHTTPOpen' function. */
 #define HAVE_XMLNANOHTTPOPEN 1
-
-/* Enable buggy SVG writter. */
-#define ENABLE_SVG_WRITER 1
