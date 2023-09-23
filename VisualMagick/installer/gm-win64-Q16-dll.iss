@@ -15,7 +15,7 @@
 #define  public WIN64 1
 #define  public InstallPerlMagick 0
 ;#define  public VC_2010
-;#define  public VC_2013
+#define  public VC_2013
 
 #include "inc\body.isx"
 
