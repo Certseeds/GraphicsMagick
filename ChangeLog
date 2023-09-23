@@ -1,3 +1,9 @@
+2023-09-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* VisualMagick/installer/redist/VC2013/note.txt: Add note about
+	where to get Visual Studio 2013 redistributables.  File also
+	serves to create the needed directory.
+
 2023-09-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/Makefile.am (coders_bmp_la_LIBADD): Extra modules are not
