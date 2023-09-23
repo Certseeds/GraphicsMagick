@@ -27,7 +27,7 @@ PACKAGE_STRING="$PACKAGE_NAME $PACKAGE_VERSION"
 #
 # Formal Package release date
 # Set to string "unreleased" if package is not a formal release.
-PACKAGE_RELEASE_DATE="2023-08-23"
+PACKAGE_RELEASE_DATE="2023-09-23"
 #PACKAGE_RELEASE_DATE="unreleased"
 
 #
