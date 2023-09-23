@@ -2665,6 +2665,8 @@ GetImageInfoAttribute(const ImageInfo *image_info,const Image *image,
       {
         if (LocaleNCompare("name",key,2) == 0)
           {
+            /* What should this really be? */
+            GetPathComponent(image->magick_filename,BasePath,filename);
             (void) strlcpy(attribute,filename,MaxTextExtent);
             break;
           }
@@ -3315,11 +3317,8 @@ SetImageAttribute(Image *image,const char *key,const char *value)
           else
             {
               /*
-                Extend existing text string.  This functionality is deprecated!
+                Extend existing text string.
               */
-              fprintf(stderr,
-                      "SetImageAttribute: Extending attribute value text is deprecated! (key=\"%s\")\n",
-                      attribute->key);
               min_l=p->length+attribute->length+1;
               for (realloc_l=2; realloc_l <= min_l; realloc_l *= 2)
                     { /* nada */};

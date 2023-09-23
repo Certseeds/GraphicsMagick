@@ -92,7 +92,7 @@ struct _PixelWand
 
   ColorspaceType
     colorspace;
-                                                                                
+
   unsigned int
     matte;
 
@@ -157,7 +157,7 @@ ClonePixelWand(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  ClonePixelWands creates a deep-copy an array of PixelWands. 
+%  ClonePixelWands creates a deep-copy an array of PixelWands.
 %
 %  The format of the ClonePixelWands method is:
 %
@@ -179,15 +179,15 @@ ClonePixelWands(const PixelWand **wands,const unsigned long number_wands)
 
   unsigned long
     i;
-  
+
   assert(wands != (const PixelWand **) NULL);
   assert(number_wands > 0);
 
   clone_wands=MagickAllocateArray(PixelWand **,
-				  sizeof(PixelWand *),number_wands);
+                                  sizeof(PixelWand *),number_wands);
   if (clone_wands == (PixelWand **) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-		      UnableToAllocateWand);
+                      UnableToAllocateWand);
 
   for (i=0; i < number_wands; i++)
     clone_wands[i]=ClonePixelWand(wands[i]);
@@ -252,12 +252,23 @@ WandExport PixelWand *NewPixelWand(void)
   /*
     Initialize GraphicsMagick in case it is not already initialized.
   */
+  /*
+    Initialize locale from environment variables (LANG, LC_CTYPE,
+    LC_NUMERIC, LC_TIME, LC_COLLATE, LC_MONETARY, LC_MESSAGES,
+    LC_ALL), but require that LC_NUMERIC use common conventions.  The
+    LC_NUMERIC variable affects the decimal point character and
+    thousands separator character for the formatted input/output
+    functions and string conversion functions.
+  */
+  (void) setlocale(LC_ALL,"");
+  (void) setlocale(LC_NUMERIC,"C");
+
   InitializeMagick(NULL);
 
   wand=MagickAllocateMemory(struct _PixelWand *,sizeof(struct _PixelWand));
   if (wand == (PixelWand *) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-		      UnableToAllocateWand);
+                      UnableToAllocateWand);
   (void) memset(wand,0,sizeof(PixelWand));
   GetExceptionInfo(&wand->exception);
   wand->colorspace=RGBColorspace;
@@ -299,7 +310,7 @@ WandExport PixelWand **NewPixelWands(const unsigned long number_wands)
                              (size_t) number_wands*sizeof(struct _PixelWand *));
   if (wands == (PixelWand **) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
-		      UnableToAllocateWand);
+                      UnableToAllocateWand);
   for (i=0; i < (long) number_wands; i++)
     wands[i]=NewPixelWand();
   return(wands);

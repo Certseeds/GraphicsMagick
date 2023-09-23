@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -134,6 +134,41 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
   unsigned long
     value;
 
+  /*
+    Skip any leading whitespace.
+  */
+  do
+  {
+    c=ReadBlobByte(image);
+    if (c == EOF)
+      return(0);
+  } while (!isdigit(c));
+  if (base == 2)
+    return(c-'0');
+  /*
+    Evaluate number.
+  */
+  value=0;
+  do
+  {
+    value*=10;
+    value+=c-'0';
+    c=ReadBlobByte(image);
+    if (c == EOF)
+      return(value);
+  }
+  while (isdigit(c));
+  return(value);
+}
+
+static unsigned int PNMIntegerOrComment(Image *image,const unsigned int base)
+{
+  int
+    c;
+
+  unsigned long
+    value;
+
   static const char P7Comment[] = "END_OF_COMMENTS\n";
 
   /*
@@ -214,6 +249,7 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
         if (LocaleCompare(q,P7Comment) == 0)
           *q='\0';
         /*
+          FIXME:
           Implicitly extend existing comment attribute since comments
           can span multiple lines.
         */
@@ -274,12 +310,12 @@ typedef enum
 static int PNMReadThreads(const Image* image, const size_t bytes_per_row)
 {
   const int omp_max_threads = omp_get_max_threads();
-  long threads;
+  int threads;
   ARG_NOT_USED(image);
-  threads=(Min(bytes_per_row/4096UL,(unsigned long) omp_max_threads));
+  threads=(int)(Min(bytes_per_row/4096U,(size_t) Max(0,omp_max_threads)));
   if (0 == threads)
     threads=1;
-  return (int) threads;
+  return threads;
 }
 #endif /* defined(HAVE_OPENMP) */
 
@@ -369,7 +405,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
         case '7':
           {
             if ((ReadBlobByte(image) == ' ') &&
-                (PNMInteger(image,10) == 332))
+                (PNMIntegerOrComment(image,10) == 332))
               format=XV_332_Format;
             else
               format=PAM_Format;
@@ -412,7 +448,11 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 {
                   if (isalnum(c) || ('#' == c))
                     if ((p-keyword) < (MaxTextExtent-1))
-                      *p++=c;
+                      {
+                        *p++=c;
+                        if ('#' == c)
+                          break;
+                      }
                   c=ReadBlobByte(image);
                 } while (isalnum(c) || ('#' == c));
               *p='\0';
@@ -427,7 +467,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 }
               else if (LocaleCompare(keyword,"HEIGHT") == 0)
                 {
-                  image->rows=PNMInteger(image,10);
+                  image->rows=PNMIntegerOrComment(image,10);
                 }
               else if (LocaleCompare(keyword,"WIDTH") == 0)
                 {
@@ -491,7 +531,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 }
               else if (LocaleNCompare(keyword,"#",1) == 0)
                 {
-                  /* Skip white space */
+                  /* Skip leading white space */
                   do
                     {
                       c=ReadBlobByte(image);
@@ -501,13 +541,24 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
                   /* Comment */
                   p=keyword;
-                  do
+                  while ((p-keyword) < (MaxTextExtent-2))
                     {
-                      if ((p-keyword) < (MaxTextExtent-1))
-                        *p++=c;
+                      *p++=c;
                       c=ReadBlobByte(image);
-                    } while (('\n' != c) && (EOF != c));
+                      if (c == '\n')
+                        {
+                          *p++=c;
+                          break;
+                        }
+                      if (c == EOF)
+                        break;
+                    }
                   *p='\0';
+                  /*
+                    FIXME:
+                    Implicitly extend existing comment attribute since comments
+                    can span multiple lines.
+                  */
                   (void) SetImageAttribute(image,"comment",keyword);
                   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                         "Comment: \"%s\"",keyword);
@@ -537,7 +588,7 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             4 4
             15
           */
-          image->columns=PNMInteger(image,10);
+          image->columns=PNMIntegerOrComment(image,10);
           image->rows=PNMInteger(image,10);
 
           if ((format == PBM_ASCII_Format) || (format == PBM_RAW_Format))

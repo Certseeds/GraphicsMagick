@@ -1,0 +1,8 @@
+VisualMagick/installer/redist/VC2013/vcredist_x64.exe must be downloaded from www
+VisualMagick/installer/redist/VC2013/vcredist_x86.exe must be downloaded from www
+
+https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
+https://support.microsoft.com/en-us/topic/update-for-visual-c-2013-redistributable-package-d8ccd6a5-4e26-c290-517b-8da6cfdf4f10
+
+vcredist_x86.exe -- https://aka.ms/highdpimfc2013x86enu
+vcredist_x64.exe -- https://aka.ms/highdpimfc2013x64enu

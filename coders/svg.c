@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -61,13 +61,6 @@
 #  include <libxml/parserInternals.h>
 #  include <libxml/xmlerror.h>
 #endif
-
-/*
-  Disable SVG writer by default since it rarely works correctly.
-*/
-#if !defined(ENABLE_SVG_WRITER)
-#  define ENABLE_SVG_WRITER 0
-#endif /* if !defined(ENABLE_SVG_WRITER) */
 
 /* Enable support for XML internal subset */
 #define ENABLE_XML_INTERNAL_SUBSET 1
@@ -185,10 +178,10 @@ typedef struct _SVGInfo
 /*
   Forward declarations.
 */
-#if ENABLE_SVG_WRITER
+#if defined(ENABLE_SVG_WRITER) && ENABLE_SVG_WRITER
 static unsigned int
   WriteSVGImage(const ImageInfo *,Image *);
-#endif /* if ENABLE_SVG_WRITER */
+#endif /* if defined(ENABLE_SVG_WRITER) && ENABLE_SVG_WRITER */
 
 #if defined(HasXML)
 /*
@@ -4237,6 +4230,8 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
 %  whether the format supports native in-memory I/O, and a brief
 %  description of the format.
 %
+%  The SVG writer is disabled by default since it does not work.
+%
 %  The format of the RegisterSVGImage method is:
 %
 %      RegisterSVGImage(void)
@@ -4258,9 +4253,9 @@ RegisterSVGImage(void)
 #if defined(HasXML)
   entry->decoder=(DecoderHandler) ReadSVGImage;
 #endif /* defined(HasXML) */
-#if ENABLE_SVG_WRITER
+#if defined(ENABLE_SVG_WRITER) && ENABLE_SVG_WRITER
   entry->encoder=(EncoderHandler) WriteSVGImage;
-#endif /* if ENABLE_SVG_WRITER */
+#endif /* if defined(ENABLE_SVG_WRITER) && ENABLE_SVG_WRITER */
   entry->description="Scalable Vector Graphics";
 #if defined(HAS_VERSION)
     entry->version=version;
@@ -4272,9 +4267,9 @@ RegisterSVGImage(void)
 #if defined(HasXML)
   entry->decoder=(DecoderHandler) ReadSVGImage;
 #endif /* defined(HasXML) */
-#if ENABLE_SVG_WRITER
+#if defined(ENABLE_SVG_WRITER) && ENABLE_SVG_WRITER
   entry->encoder=(EncoderHandler) WriteSVGImage;
-#endif /* if ENABLE_SVG_WRITER */
+#endif /* if defined(ENABLE_SVG_WRITER) && ENABLE_SVG_WRITER */
   entry->description="Scalable Vector Graphics (ZIP compressed)";
 #if defined(HAS_VERSION)
     entry->version=version;
@@ -4313,7 +4308,7 @@ UnregisterSVGImage(void)
   (void) UnregisterMagickInfo("SVGZ");
 }
 
-#if ENABLE_SVG_WRITER
+#if defined(ENABLE_SVG_WRITER) && ENABLE_SVG_WRITER
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -5577,4 +5572,4 @@ WriteSVGImage(const ImageInfo *image_info,Image *image)
   return(status);
 }
 #endif
-#endif /* if ENABLE_SVG_WRITER */
+#endif /* if defined(ENABLE_SVG_WRITER) && ENABLE_SVG_WRITER */

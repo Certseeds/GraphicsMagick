@@ -1951,6 +1951,10 @@ static int MagickStrToD(const char *start,char **end,double *value)
       *value=0.0;
       errno=ERANGE;
     }
+  /*
+    Warning: Visual Studio 2008 64-bit returns errno 34 "Result too
+    large", even though a correct value is returned!
+  */
   else if (errno == 0)
     {
       n++;
@@ -6214,8 +6218,9 @@ MagickExport int Tokenizer(TokenInfo *token_info,unsigned flag,char *token,
 %
 %  A description of each parameter follows:
 %
-%    o translated_text:  Method TranslateText returns the translated
-%      text string.
+%    o translated_text:  Method TranslateText returns a new allocation
+%      containing the translated text string.  If the translated text
+%      string would be empty, a NULL pointer is returned instead.
 %
 %    o image_info: The imageInfo (may be NULL!).
 %
@@ -6303,8 +6308,9 @@ MagickExport char *TranslateText(const ImageInfo *image_info,
 %
 %  A description of each parameter follows:
 %
-%    o translated_text:  Method TranslateText returns the translated
-%      text string.
+%    o translated_text:  Method TranslateTextEx returns a new allocation
+%      containing the translated text string.  If the translated text
+%      string would be empty, a NULL pointer is returned instead.
 %
 %    o image_info: The imageInfo (may be NULL!).
 %
@@ -6341,23 +6347,19 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
     offset;
 
   assert(image != (Image *) NULL);
-  if (formatted_text == (const char *) NULL)
+  if ((formatted_text == (const char *) NULL) || (*formatted_text == '\0'))
     return((char *) NULL);
-  if (*formatted_text == '\0')
-    return AcquireString(formatted_text);
   text=(char *) formatted_text;
   /*
     Translate any embedded format characters.
   */
-  length=strlen(text)+MaxTextExtent;
-  translated_text=MagickAllocateMemory(char *,length);
+  length=strlen(text);
+  translated_text=MagickAllocateMemory(char *,length+MaxTextExtent);
   if (translated_text == (char *) NULL)
     return NULL;
-  /*
-    FIXME: Overlapping memory detected here where memory should not be overlapping.
-  */
-  (void) strlcpy(translated_text,text,length);
-  /* (void) memmove(translated_text,text,strlen(text)+1); */
+  (void) memcpy(translated_text,text,length);
+  translated_text[length]='\0';
+  length=length+MaxTextExtent;
   p=text;
   for (q=translated_text; *p != '\0'; p++)
   {

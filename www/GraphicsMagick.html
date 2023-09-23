@@ -1496,6 +1496,14 @@ that name. This is used to control on/off options. Use <tt>+define
 The following definitions may be created:</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 <dl>
+<dt>bmp:allow-jpeg={true|false}</dt>
+<dd>If the bmp:allow-jpeg value is set to true, then enable BMP files
+using JPEG compression, under control of the compression option (which
+may be JPEG already if the input file is JPEG).  JPEG-compressed BMP
+files are very rare so this option acts as a safeguard to assure that
+the current compression setting does not accidentally produce
+JPEG-compressed BMP files which most other software is unable to read.
+</dd>
 <dt>cineon:colorspace={rgb|cineonlog}</dt>
 <dd>Use the cineon:colorspace option when reading a Cineon file to
 specify the colorspace the Cineon file uses. This overrides the colorspace

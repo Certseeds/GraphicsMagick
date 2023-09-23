@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -51,6 +51,7 @@
 */
 #if defined(_VISUALC_)
 #include "magick/studio.h"
+#if defined(EnableXTRNCoder) && EnableXTRNCoder
 #include "magick/blob.h"
 #include "magick/constitute.h"
 #include "magick/delegate.h"
@@ -143,7 +144,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
 
       (void) sscanf(clone_info->filename,"%" MAGICK_SIZE_T_F "x,%" MAGICK_SIZE_T_F "x",(MAGICK_SIZE_T *) &param1, (MAGICK_SIZE_T *) &param2);
       image_ptr=(Image **) param2;
-      if (*image_ptr != (Image *)NULL)
+      if(image_ptr!=NULL && *image_ptr!=(Image *)NULL)
         image=CloneImage(*image_ptr,0,0,False,&(*image_ptr)->exception);
 #ifdef ALL_IMAGEINFO
       image_info_ptr=(ImageInfo **) param1;
@@ -225,6 +226,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
     StopTimer(&image->timer);
   return(image);
 }
+#endif /* if defined(EnableXTRNCoder) && EnableXTRNCoder */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,6 +253,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
 */
 ModuleExport void RegisterXTRNImage(void)
 {
+#if defined(EnableXTRNCoder) && EnableXTRNCoder
   MagickInfo
     *entry;
 
@@ -289,6 +292,7 @@ ModuleExport void RegisterXTRNImage(void)
   entry->description="External transfer via a smart array interface";
   entry->module="XTRN";
   RegisterMagickInfo(entry);
+#endif /* if defined(EnableXTRNCoder) && EnableXTRNCoder */
 }
 
 /*
@@ -312,11 +316,14 @@ ModuleExport void RegisterXTRNImage(void)
 */
 ModuleExport void UnregisterXTRNImage(void)
 {
+#if defined(EnableXTRNCoder) && EnableXTRNCoder
   UnregisterMagickInfo("XTRNFILE");
   UnregisterMagickInfo("XTRNIMAGE");
   UnregisterMagickInfo("XTRNBLOB");
   UnregisterMagickInfo("XTRNARRAY");
+#endif /* if defined(EnableXTRNCoder) && EnableXTRNCoder */
 }
+#if defined(EnableXTRNCoder) && EnableXTRNCoder
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -531,4 +538,5 @@ static unsigned int WriteXTRNImage(const ImageInfo *image_info,Image *image)
     }
   return(True);
 }
+#endif /* if defined(EnableXTRNCoder) && EnableXTRNCoder */
 #endif /* defined(_VISUALC_) */

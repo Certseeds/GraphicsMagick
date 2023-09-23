@@ -82,16 +82,18 @@ just a few megabytes.
 Building ImageMagickObject From Source
 ======================================
 
-The source code for *ImageMagickObject* is available from *GraphicsMagick*
-CVS, or as part of the *GraphicsMagick* Windows source package. Once the
-source code has been retrieved and extracted, the source for
-*ImageMagickObject* may be found hidden in the directory
-"``GraphicsMagick\contrib\win32\ATL7ImageMagickObject``", however,
-*GraphicsMagick* itself must be built using the "static-multithread"
-(VisualStaticMT) build configuration. Building *ImageMagickObject*
-requires Microsoft Visual C++ 7.0 as delivered with Microsoft's Visual
-Studio .net package. See the Windows compilation instructions in order to
-get *GraphicsMagick* itself built before building *ImageMagickObject*.
+The source code for *ImageMagickObject* is available from
+*GraphicsMagick* Mercurial, or as part of the *GraphicsMagick* Windows
+source package. Once the source code has been retrieved and extracted,
+the source for *ImageMagickObject* may be found hidden in the
+directory "``GraphicsMagick\contrib\win32\ATL7\ImageMagickObject``",
+however, *GraphicsMagick* itself must be built using the
+"static-multithread" (VisualStaticMT) build configuration, and the
+'EnableXTRNCoder' define must be enabled in the build by editing
+'magick_config.h'. Building *ImageMagickObject* requires Microsoft
+Visual C++ 7.0 (or later) as delivered with Microsoft's Visual Studio
+.net package. See the Windows compilation instructions in order to get
+*GraphicsMagick* itself built before building *ImageMagickObject*.
 
 Once the VisualStaticMT project has been built, *ImageMagickObject* may
 be built by following the procedure::

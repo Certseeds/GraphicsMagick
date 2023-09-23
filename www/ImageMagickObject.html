@@ -90,16 +90,18 @@ just a few megabytes.</p>
 </div>
 <div class="section" id="building-imagemagickobject-from-source">
 <h1>Building ImageMagickObject From Source</h1>
-<p>The source code for <em>ImageMagickObject</em> is available from <em>GraphicsMagick</em>
-CVS, or as part of the <em>GraphicsMagick</em> Windows source package. Once the
-source code has been retrieved and extracted, the source for
-<em>ImageMagickObject</em> may be found hidden in the directory
-&quot;<span class="docutils literal">GraphicsMagick\contrib\win32\ATL7ImageMagickObject</span>&quot;, however,
-<em>GraphicsMagick</em> itself must be built using the &quot;static-multithread&quot;
-(VisualStaticMT) build configuration. Building <em>ImageMagickObject</em>
-requires Microsoft Visual C++ 7.0 as delivered with Microsoft's Visual
-Studio .net package. See the Windows compilation instructions in order to
-get <em>GraphicsMagick</em> itself built before building <em>ImageMagickObject</em>.</p>
+<p>The source code for <em>ImageMagickObject</em> is available from
+<em>GraphicsMagick</em> Mercurial, or as part of the <em>GraphicsMagick</em> Windows
+source package. Once the source code has been retrieved and extracted,
+the source for <em>ImageMagickObject</em> may be found hidden in the
+directory &quot;<span class="docutils literal">GraphicsMagick\contrib\win32\ATL7\ImageMagickObject</span>&quot;,
+however, <em>GraphicsMagick</em> itself must be built using the
+&quot;static-multithread&quot; (VisualStaticMT) build configuration, and the
+'EnableXTRNCoder' define must be enabled in the build by editing
+'magick_config.h'. Building <em>ImageMagickObject</em> requires Microsoft
+Visual C++ 7.0 (or later) as delivered with Microsoft's Visual Studio
+.net package. See the Windows compilation instructions in order to get
+<em>GraphicsMagick</em> itself built before building <em>ImageMagickObject</em>.</p>
 <p>Once the VisualStaticMT project has been built, <em>ImageMagickObject</em> may
 be built by following the procedure:</p>
 <pre class="literal-block">cd  GraphicsMagick\contrib\win32\ATL7ImageMagickObject

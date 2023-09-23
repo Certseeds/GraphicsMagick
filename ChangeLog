@@ -1,3 +1,332 @@
+2023-09-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* version.sh : Updates for the 1.3.42 release.
+
+	* NEWS.txt: Update the news for the 1.3.42 release.
+
+	* VisualMagick/installer/redist/VC2013/note.txt: Add note about
+	where to get Visual Studio 2013 redistributables.  File also
+	serves to create the needed directory.
+
+2023-09-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/Makefile.am (coders_bmp_la_LIBADD): Extra modules are not
+	needed because the dependencies are taken care of by loading other
+	modules.
+
+2023-09-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Emit error when OS/2 bitmap with compression BI_JPEG
+	or BI_PNG is detected.
+
+	Read files compressed with BI_PNG.
+
+2023-09-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Display bitmasks into optional log.
+
+2023-09-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/t/jpeg/read.t: Add test for JPEG-compressed BMP.
+	Moved input reference file to PerlMagick/t/jpeg/input_JPEG.bmp and
+	reference output file is
+	PerlMagick/t/reference/jpeg/input_JPEG.bmp.miff.
+
+2023-09-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* PerlMagick/t/input_JPEG.bmp: Added BMP sample with JPEG encoding.
+
+	* coders/bmp.c: Only 16bpp and 32bpp is supported for BI_BITFIELDS
+	compression type. 8bpp is not implemented.  This fixes oss-fuzz
+	issue 62519: "graphicsmagick:coder_BMP_fuzzer:
+	Use-of-uninitialized-value in WriteBMPImage".
+
+2023-09-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Remove duplicity, same information has been logged
+	twice.
+	
+	22:54:49 0:0.002746  0.000u 9688 bmp.c/ReadBMPImage/750/Coder:
+	File size: Claimed=8, Actual=1129
+
+	22:54:49 0:0.002906  0.000u 9688 bmp.c/ReadBMPImage/1105/Coder:
+	File size: Claimed=8, Actual=1129
+
+2023-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Fix GCC 13
+	warning.
+
+2023-09-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/tests/runtest.bat: VID is not a regular image format.
+	Do not use batch test for it.
+
+2023-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/Makefile.am (coders_bmp_la_LIBADD): The BMP coder module
+	now optionally depends on libjpeg.
+
+2023-09-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/options.imdoc: Add documentation for -define bmp:allow-jpeg.
+
+2023-09-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Ability to write JPG encoded image.
+	Using a new command line switch: -define bmp:allow-jpeg
+
+2023-09-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jp2.c (BlobRead): For old libJasper, return 0 for size
+	value if the actual value does not fit in an 'int'.
+	* coders/jp2.c (BlobWrite): For old libJasper, return 0 for size
+	value if the actual value does not fit in an 'int'.
+
+	* magick/command.c (MagickCommand): Eliminate duplicate utility
+	name output in error messages when utility is executed via a
+	magick compatibility link.  For example via symbolic link from
+	'convert' to 'gm'.  This problem was added when the initial batch
+	mode implementation was submitted.  Addresses SourceForge issue
+	#727 "convert convert" in error messages.
+
+	* VisualMagick/configure/welcome_page.cpp: Update configure
+	welcome text based on my current understanding.
+
+2023-09-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/configure/welcome_page.cpp: Notify user that MSVC
+	older than 2008 is not supported.
+
+	* VisualMagick/magick/magick_config.h.in Expose ENABLE_SVG_WRITER.
+	For debugging purpose this should be always enabled. Only for
+	final release you can disable it.
+
+2023-09-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/mat.c: Cleanup one unneeded warning.
+
+2023-09-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* VisualMagick/magick/magick_config.h.in: Update the copyright
+	year range.
+
+	* Copyright.txt: Update the copyright year.
+
+2023-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wmf.c (ipa_bmp_draw): Print bmp.data as the pointer it is
+	rather than casting to a 'long'.
+
+	* coders/pnm.c (PNMReadThreads): Fix compiler warning regarding
+	overflow.
+
+	* coders/sun.c (WriteSUNImage): Test for sun_info.length overflow
+	in a way which should not provoke a compiler warning.
+
+2023-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* VisualMagick/magick/magick_config.h.in: Block building the XTRN
+	coder unless the user enables EnableXTRNCoder.  The XTRN coder is
+	primarily used by the optional contributed ImageMagickObject COM+
+	DLL object, but it might be used for a similar purpose.  The XTRN
+	coder serves no purpose unless invoked from the address space of a
+	program using GraphicsMagick.
+
+2023-09-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/{constitute.c, drawtest.c, rwblob.c, rwfile.c}: Initialize
+	locale settings the same as the 'gm' utility.
+
+	* magick/{drawing_wand.c, drawtest.c, magick_wand.c, pixel_wand.c,
+	wandtest.c}: Initialize locale settings the same as the 'gm'
+	utility.
+
+2023-09-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/xtrn.c: Fixed crash on dereferenced NULL pointer.
+
+2023-09-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (SetImageAttribute): Remove
+	SetImageAttribute() Extending attribute value text code entirely.
+
+2023-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Updated the News.
+
+	* magick/attribute.c (SetImageAttribute): Disable attribute
+	extension deprecation warning printf.  It may be that eliminating
+	support for attribute value extension will never happen due to
+	subtly entrenched internal usage.
+
+	* coders/pnm.c (ReadPNMImage): Fix reading comments from PAM
+	format.
+
+2023-09-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Reverting to BI_BITFIELD. BI_ALPHABITFIELDS seems
+	to be very rare.
+
+2023-09-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wmf.c (ipa_draw_text): Treat pointer inputs as if they
+	may be NULL.  Change live printfs to traces.  Adjust white-space
+	in whole module to current conventions.  Addresses SourceForge
+	issue #724 "Old WMF display: assert fails in draw.c", although I
+	am unable to reproduce it.
+
+2023-09-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Sorry for a previous commit. After some
+	investigations it seems that bit field masks are behind header
+	when BI_SIZE=40.
+
+2023-09-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Default bit split for older BMPs with 32bpp and
+	BI_BITFIELDS set is crazy. Verified against IrFanView and
+	bmpsuite-2.7.zip - image g/rgb32bf.bmp.
+
+2023-09-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resize.c (ResizeImage): Restore vertical/horizontal
+	filter order decision logic which was in place before the 1.3.41
+	release since it may result in tiny changes to low order bits in
+	16-bit/sample images, which may be concerning to some.  Resolves
+	SourceForge issue #723 "montage result differ between 1.3.40 and
+	1.3.41". The provided test-case showed that the filter filter
+	order changed from "Vertical/Horizontal" to "Horizontal/Vertical".
+
+2023-09-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/command.c (MogrifyImage): Use MaxRGBDouble double
+	constant rather than integral MaxRGB as argument to
+	StringToDouble().
+
+2023-09-01  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c Bitmap header with size 52 bytes is also valid.
+
+2023-08-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/module_aliases.h: Add missing module aliases "PNG00",
+	"PNG48", "PNG64".
+
+2023-08-31  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: BMP with 2bpp is a legal BMP variant.
+	https://en.wikipedia.org/wiki/BMP_file_format Quote: "The 2-bit
+	per pixel (2bpp) format supports 4 distinct colors and stores 4
+	pixels per 1 byte, the left-most pixel being in the two most
+	significant bits (Windows CE only)."
+
+	Partial revert: BITMAPV2INFOHEADER: RGB bit field masks,
+	BITMAPV3INFOHEADER+: RGBA
+	The opacity channel handling is even more complex.
+
+2023-08-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: First attempt to read BMP with BI_JPEG compression
+	inside.
+
+2023-08-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Remove code duplicity and evaluate BiCompression
+        only on one place.
+
+2023-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/attribute.c (GetImageInfoAttribute): For the "name" key,
+	return the input file base name, until reason is found to do
+	otherwise.
+
+	* magick/utility.c (TranslateTextEx): Restore previous
+	functionality in which a NULL pointer is returned instead of an
+	empty string. Some algorithms are depending on this!  Addresses
+	SourceForge issue #722 v1.3.41 "PerlMagick montage.t fails
+	completely".
+
+2023-08-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	
+	* VisualMagick\installer\inc\files-dlls.isx
+	* VisualMagick\installer\inc\body.isx
+	
+	Prepare installation script for MSVC2013 runtime.
+
+2023-08-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	
+	* VisualMagick\installer\inc\files-dlls.isx
+	* VisualMagick\installer\inc\body.isx
+	
+	Prepare installation script for MSVC2010 runtime.
+
+2023-08-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: When alpha is to be used, writer must not use
+	BI_BITFIELDS compression that instructs to strip alpha.
+
+2023-08-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* tiff/libtiff/stdbool2.h MSVC2010 does not have stdbool.h nor inttypes.h
+
+	* coders/bmp.c: Added support for BI_ALPHABITFIELDS compression.
+	https://learn.microsoft.com/en-us/previous-versions/windows/embedded/aa452885(v=msdn.10)
+	Remove unwanted duplicite check condition of biCompression.
+
+2023-08-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c Reveal a contents of OS22XBITMAPHEADER.
+
+2023-08-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Do not throttle on native low endian systems.
+
+2023-08-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Populate upper byte to lower byte even for lower
+	bpp than 8. It overcomes quantum scalling error in gm. Code should
+	be redesigned, but it is better than previous state.
+
+	Enforce default color masks when bmp_info.compression==BI_RGB
+	Existing masks will be ignored.
+
+2023-08-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c:  Enforce default matte for 40 byte header & 32bpp.
+
+2023-08-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (ReadTIFFImage): For common formats with the
+	required number of channels, but one is an 'unspecified' channel,
+	promote unspecified alpha to unassociated alpha so that the alpha
+	channel is not ignored. Addresses the remainder of SourceForge
+	issue #718 "Set reasonable defaults when writing TIFF with
+	transparency".
+
+2023-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am (CHANGELOGS): Changelogs ChangeLog.2021 and
+	ChangeLog.2022 where missing from the distribution.
+
+2023-08-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c:  Fix reading corruption 16bpp.
+
+2023-08-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tiff.c:  Fix compilation problem in MSVC.
+
+2023-08-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Default the alpha channel to
+	type EXTRASAMPLE_UNASSALPHA(2).  The default was
+	EXTRASAMPLE_UNSPECIFIED(0), which is particularly unfortunate
+	given that GraphicsMagick 1.3.41 now silently ignores such
+	channels. Patch by Markus Mützel.  Addresses SourceForge issue
+	#718 "Set reasonable defaults when writing TIFF with
+	transparency".
+
 2023-08-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Updated for 1.3.41 release.

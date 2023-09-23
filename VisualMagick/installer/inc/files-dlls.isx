@@ -1,6 +1,6 @@
 #ifdef COPYRIGHT
 ;
-; Copyright (C) 2003 - 2012 GraphicsMagick Group
+; Copyright (C) 2003 - 2023 GraphicsMagick Group
 ;
 ; This program is covered by multiple licenses, which are described in
 ; Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -11,8 +11,16 @@
 ;#define  public MSVCRedist "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\redist"
 
 #ifdef WIN64
-  #define  public CPUARCH "amd64"
-  Source: "redist\VC2008SP1\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall
+ #define  public CPUARCH "amd64"
+ #ifdef VC_2010
+  Source: "redist\VC2010SP1\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall
+ #else
+  #ifdef VC_2013
+   Source: "redist\VC2013\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall
+  #else
+   Source: "redist\VC2008SP1\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall
+  #endif
+ #endif
 #else
   #define  public CPUARCH "x86"
   Source: "redist\VC2008SP1\vcredist_x86.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Check: VCRedistNeedsInstall

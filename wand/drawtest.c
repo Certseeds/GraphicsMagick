@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <wand/magick_wand.h>
+#include <locale.h>
 
 static MagickPassFail
 ScribbleImage (MagickWand *canvas)
@@ -403,6 +404,17 @@ int main ( int argc, char **argv )
 
   outfile[MaxTextExtent-1]='\0';
   (void) strncpy( outfile, argv[1], MaxTextExtent-1 );
+
+  /*
+    Initialize locale from environment variables (LANG, LC_CTYPE,
+    LC_NUMERIC, LC_TIME, LC_COLLATE, LC_MONETARY, LC_MESSAGES,
+    LC_ALL), but require that LC_NUMERIC use common conventions.  The
+    LC_NUMERIC variable affects the decimal point character and
+    thousands separator character for the formatted input/output
+    functions and string conversion functions.
+  */
+  (void) setlocale(LC_ALL,"");
+  (void) setlocale(LC_NUMERIC,"C");
 
   InitializeMagick(*argv);
 
