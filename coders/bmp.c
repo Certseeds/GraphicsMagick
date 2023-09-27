@@ -1935,7 +1935,18 @@ ModuleExport void UnregisterBMPImage(void)
 }
 
 
-static int StoreBlobJPG(Image * image, const ImageInfo * image_info)
+typedef struct
+{
+    const char *FormatName;
+    const char *FormatNameDDot;
+    const char *Desc;
+} TForeignFormatDesc;
+
+const TForeignFormatDesc StoreDescJPG = {"JPEG", "JPEG:", "  Creating jpeg_image."};
+const TForeignFormatDesc StoreDescPNG = {"PNG", "PNG:", "  Creating png_image."};
+
+
+static int StoreAlienBlob(Image * image, const ImageInfo * image_info, const TForeignFormatDesc *pFormatDesc)
 {
 ImageInfo *jpeg_image_info;
 Image *jpeg_image;
@@ -1946,15 +1957,14 @@ size_t DataSize = 0;
   if(jpeg_image_info == (ImageInfo *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed, image);
   if(image->logging)
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "  Creating jpeg_image.");
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(), pFormatDesc->Desc);
 
   jpeg_image = CloneImage(image,0,0,MagickTrue,&image->exception);
 
-  (void)strlcpy(jpeg_image_info->magick,"JPEG",MaxTextExtent);
+  (void)strlcpy(jpeg_image_info->magick, pFormatDesc->FormatName, MaxTextExtent);
   (void)strlcpy(jpeg_image_info->filename,"JPEG:",MaxTextExtent);
-  (void)strlcpy(jpeg_image->magick,"JPEG",MaxTextExtent);
-  (void)strlcpy(jpeg_image->filename,"JPEG:",MaxTextExtent);
+  (void)strlcpy(jpeg_image->magick, pFormatDesc->FormatName, MaxTextExtent);
+  (void)strlcpy(jpeg_image->filename, pFormatDesc->FormatNameDDot, MaxTextExtent);
 
   Data = ImageToBlob(jpeg_image_info,jpeg_image,&DataSize,&image->exception);
   if(Data!=NULL)
@@ -2110,6 +2120,13 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
           bmp_info.bits_per_pixel = 0;
           bmp_info.compression = BI_JPEG;
         }
+      else if(type>2 && AccessDefinition(image_info,"bmp","allow-png"))
+        {
+          image->compression = ZipCompression;
+          bmp_info.number_colors = 0;
+          bmp_info.bits_per_pixel = 0;
+          bmp_info.compression = BI_PNG;
+        }
       else if (image->storage_class == DirectClass)
         {
           /*
@@ -2159,7 +2176,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
         Below emulates:
         bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
       */
-      if(bmp_info.compression == BI_JPEG)
+      if(bmp_info.compression==BI_JPEG || bmp_info.compression==BI_PNG)
       {
         bytes_per_line = 0;
         image_size = 0;
@@ -2242,7 +2259,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
       /*
         Convert MIFF to BMP raster pixels.
       */
-      if(bmp_info.compression == BI_JPEG)
+      if(bmp_info.compression==BI_JPEG || bmp_info.compression==BI_PNG)
         pixels=NULL;
       else
       {
@@ -2578,7 +2595,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
         }
         if(pixels==NULL)
         {
-          StoreBlobJPG(image,image_info);
+          StoreAlienBlob(image,image_info, (bmp_info.compression==BI_JPEG)? &StoreDescJPG : &StoreDescPNG);
         }
         else
         {
