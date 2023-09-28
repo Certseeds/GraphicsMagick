@@ -1957,7 +1957,7 @@ size_t DataSize = 0;
   if(jpeg_image_info == (ImageInfo *) NULL)
       ThrowWriterException(ResourceLimitError,MemoryAllocationFailed, image);
   if(image->logging)
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(), pFormatDesc->Desc);
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(), "%s", pFormatDesc->Desc);
 
   jpeg_image = CloneImage(image,0,0,MagickTrue,&image->exception);
 

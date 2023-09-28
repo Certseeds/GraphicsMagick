@@ -1,6 +1,11 @@
+2023-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (StoreAlienBlob): Fix compilation warning in log
+	statement.
+
 2023-09-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* PerlMagick/t/png/input_PNG.bmp Add a BMP sample with BI_PNG
+	* PerlMagick/t/png/input_PNG.bmp: Add a BMP sample with BI_PNG
 	compression.
 
 2023-09-27  Fojtik Jaroslav  <JaFojtik@yandex.com>
