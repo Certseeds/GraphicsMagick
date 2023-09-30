@@ -90,6 +90,24 @@
 #undef LCS_GM_ABS_COLORIMETRIC
 #define LCS_GM_ABS_COLORIMETRIC  8  /* Absolute */
 #endif /* !defined(MSWINDOWS) || defined(__MINGW32__) */
+
+#if (QuantumDepth == 8)
+  #define MS_VAL16_TO_QUANTUM(_value)	((_value>=8192)?255:(_value>>5))
+#elif (QuantumDepth == 16)
+  #define MS_VAL16_TO_QUANTUM(_value)	((_value>=8192)?65535:(_value*8))
+#elif (QuantumDepth == 32)
+  #define MS_VAL16_TO_QUANTUM(_value)	((_value>=8192)?4294443007:(_value*524288))
+#else
+# error Unsupported quantum depth.
+#endif
+
+
+#ifdef WORDS_BIGENDIAN
+  #define LD_UINT16_LSB(_pixel, _ptr) _pixel=(magick_uint16_t)*_ptr++; _pixel|=(magick_uint16_t)*_ptr++ << 8
+#else
+  #define LD_UINT16_LSB(_pixel, _ptr) _pixel=*(magick_uint16_t*)_ptr; _ptr+=2
+#endif
+
 
 /*
   Typedef declarations.
@@ -1751,23 +1769,25 @@ CheckBitSize:
           }
         case 64:
           {
-            register magick_uint16_t *p16;
+            magick_uint16_t val_16;
             /*
               Convert DirectColor scanline.
             */
-            bytes_per_line = 4*((image->columns*64+31)/32);
             for(y=(long) image->rows-1; y >= 0; y--)
               {
-                p16 = pixels+(image->rows-y-1)*bytes_per_line;
+                p = pixels+(image->rows-y-1)*bytes_per_line;
                 q = SetImagePixels(image,0,y,image->columns,1);
                 if(q == (PixelPacket *) NULL)
                   break;
                 for(x=0; x < (long) image->columns; x++)
                   {
-                    q->blue=ScaleShortToQuantum(*p16++);
-                    q->green=ScaleShortToQuantum(*p16++);
-                    q->red=ScaleShortToQuantum(*p16++);
-                    p16++;	/* TODO: add alpha*/
+                    LD_UINT16_LSB(val_16,p);
+                    q->blue = MS_VAL16_TO_QUANTUM(val_16);
+                    LD_UINT16_LSB(val_16,p);
+                    q->green = MS_VAL16_TO_QUANTUM(val_16);
+                    LD_UINT16_LSB(val_16,p);
+                    q->red = MS_VAL16_TO_QUANTUM(val_16);
+                    p+=2;		/* TODO: add alpha*/
                     q++;
                   }
                 if(!SyncImagePixels(image))

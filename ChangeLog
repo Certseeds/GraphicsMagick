@@ -1,3 +1,8 @@
+2023-10-01  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Fix BMP 64bpp reader. See this URL:
+	https://stackoverflow.com/questions/20778227/get-64bpp-image-color
+
 2023-09-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/bmp.c: Attempt to read BMP with 64bpp.
