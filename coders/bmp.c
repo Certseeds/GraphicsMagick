@@ -1519,34 +1519,6 @@ CheckBitSize:
       switch (bmp_info.bits_per_pixel)
         {
         case 1:
-          {
-            /*
-              Convert bitmap scanline.
-            */
-            for (y=(long) image->rows-1; y >= 0; y--)
-              {
-                p=pixels+(image->rows-y-1)*bytes_per_line;
-                q=SetImagePixels(image,0,y,image->columns,1);
-                if (q == (PixelPacket *) NULL)
-                  break;
-                if (ImportImagePixelArea(image,IndexQuantum,bmp_info.bits_per_pixel,p,0,0)
-                    == MagickFail)
-                  break;
-                if (!SyncImagePixels(image))
-                  break;
-                if (image->previous == (Image *) NULL)
-                  if (QuantumTick(y,image->rows))
-                    {
-                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
-                                                    exception,LoadImageText,
-                                                    image->filename,
-                                                    image->columns,image->rows);
-                      if (status == False)
-                        break;
-                    }
-              }
-            break;
-          }
         case 2:
         case 4:
           {
