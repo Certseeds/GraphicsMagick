@@ -1216,7 +1216,7 @@ CheckBitSize:
                                 image);
       if ((bmp_info.bits_per_pixel != 1) && (bmp_info.bits_per_pixel != 2) && (bmp_info.bits_per_pixel != 4) &&
           (bmp_info.bits_per_pixel != 8) && (bmp_info.bits_per_pixel != 16) &&
-          (bmp_info.bits_per_pixel != 24) && (bmp_info.bits_per_pixel != 32))
+          (bmp_info.bits_per_pixel != 24) && (bmp_info.bits_per_pixel != 32) && (bmp_info.bits_per_pixel != 64))
         ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
       if (bmp_info.bits_per_pixel < 16)
         {
@@ -1232,7 +1232,14 @@ CheckBitSize:
 
       image->columns=bmp_info.width;
       image->rows=AbsoluteValue(bmp_info.height);
+#if (QuantumDepth == 8)
       image->depth=8;
+#else
+      if(bmp_info.bits_per_pixel == 64)
+          image->depth=16;
+      else
+          image->depth=8;
+#endif
       /*
         Image has alpha channel if alpha mask is specified, or is
         uncompressed and 32-bits per pixel
@@ -1768,6 +1775,42 @@ CheckBitSize:
                     }
               }
             /* if(ZeroOpacity) image->matte = False; */
+            break;
+          }
+        case 64:
+          {
+            register magick_uint16_t *p16;
+            /*
+              Convert DirectColor scanline.
+            */
+            bytes_per_line = 4*((image->columns*64+31)/32);
+            for(y=(long) image->rows-1; y >= 0; y--)
+              {
+                p16 = pixels+(image->rows-y-1)*bytes_per_line;
+                q = SetImagePixels(image,0,y,image->columns,1);
+                if(q == (PixelPacket *) NULL)
+                  break;
+                for(x=0; x < (long) image->columns; x++)
+                  {
+                    q->blue=ScaleShortToQuantum(*p16++);
+                    q->green=ScaleShortToQuantum(*p16++);
+                    q->red=ScaleShortToQuantum(*p16++);
+                    p16++;	/* TODO: add alpha*/
+                    q++;
+                  }
+                if(!SyncImagePixels(image))
+                  break;
+                if(image->previous == (Image *) NULL)
+                  if(QuantumTick(y,image->rows))
+                    {
+                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                                                    exception,LoadImageText,
+                                                    image->filename,
+                                                    image->columns,image->rows);
+                      if(status == False)
+                        break;
+                    }
+              }
             break;
           }
         default:

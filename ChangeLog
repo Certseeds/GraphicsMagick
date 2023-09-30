@@ -1,3 +1,7 @@
+2023-09-30  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Attempt to read BMP with 64bpp.
+
 2023-09-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/bmp.c (StoreAlienBlob): Fix compilation warning in log
