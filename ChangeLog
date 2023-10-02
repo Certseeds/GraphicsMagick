@@ -1,3 +1,7 @@
+2023-10-02  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Attempt to read BMP with 48bpp.
+
 2023-10-01  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/bmp.c: Fix BMP 64bpp reader. See this URL:

@@ -1234,7 +1234,8 @@ CheckBitSize:
                                 image);
       if ((bmp_info.bits_per_pixel != 1) && (bmp_info.bits_per_pixel != 2) && (bmp_info.bits_per_pixel != 4) &&
           (bmp_info.bits_per_pixel != 8) && (bmp_info.bits_per_pixel != 16) &&
-          (bmp_info.bits_per_pixel != 24) && (bmp_info.bits_per_pixel != 32) && (bmp_info.bits_per_pixel != 64))
+          (bmp_info.bits_per_pixel != 24) && (bmp_info.bits_per_pixel != 32) &&
+          (bmp_info.bits_per_pixel != 48) && (bmp_info.bits_per_pixel != 64))
         ThrowBMPReaderException(CorruptImageError,UnrecognizedBitsPerPixel,image);
       if (bmp_info.bits_per_pixel < 16)
         {
@@ -1253,7 +1254,7 @@ CheckBitSize:
 #if (QuantumDepth == 8)
       image->depth=8;
 #else
-      if(bmp_info.bits_per_pixel == 64)
+      if(bmp_info.bits_per_pixel==48 || bmp_info.bits_per_pixel==64)
           image->depth=16;
       else
           image->depth=8;
@@ -1767,6 +1768,45 @@ CheckBitSize:
             /* if(ZeroOpacity) image->matte = False; */
             break;
           }
+
+        case 48:
+          {
+            magick_uint16_t val_16;
+            /*
+              Convert DirectColor scanline.
+            */
+            for(y=(long) image->rows-1; y >= 0; y--)
+              {
+                p = pixels+(image->rows-y-1)*bytes_per_line;
+                q = SetImagePixels(image,0,y,image->columns,1);
+                if(q == (PixelPacket *) NULL)
+                  break;
+                for(x=0; x < (long) image->columns; x++)
+                  {
+                    LD_UINT16_LSB(val_16,p);
+                    q->blue = MS_VAL16_TO_QUANTUM(val_16);
+                    LD_UINT16_LSB(val_16,p);
+                    q->green = MS_VAL16_TO_QUANTUM(val_16);
+                    LD_UINT16_LSB(val_16,p);
+                    q->red = MS_VAL16_TO_QUANTUM(val_16);
+                    q++;
+                  }
+                if(!SyncImagePixels(image))
+                  break;
+                if(image->previous == (Image *) NULL)
+                  if(QuantumTick(y,image->rows))
+                    {
+                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                                                    exception,LoadImageText,
+                                                    image->filename,
+                                                    image->columns,image->rows);
+                      if(status == False)
+                        break;
+                    }
+              }
+            break;
+          }
+
         case 64:
           {
             magick_uint16_t val_16;
