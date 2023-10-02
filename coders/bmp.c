@@ -1915,8 +1915,39 @@ CheckBitSize:
         }
     } while (IsBMP(magick,2));
 ExitLoop:
+
+  {
+    Image *p;
+    long scene=0;
+
+    /*
+      Rewind list, removing any empty images while rewinding.
+    */
+    p=image;
+    image=NULL;
+    while (p != (Image *)NULL)
+      {
+        Image *tmp=p;
+        if ((p->rows == 0) || (p->columns == 0)) {
+          p=p->previous;
+          DeleteImageFromList(&tmp);
+        } else {
+          image=p;
+          p=p->previous;
+        }
+      }
+
+    /*
+      Fix scene numbers
+    */
+    for (p=image; p != (Image *) NULL; p=p->next)
+      p->scene=scene++;
+  }
+
+/*
   while (image->previous != (Image *) NULL)
     image=image->previous;
+*/
   CloseBlob(image);
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
