@@ -304,6 +304,43 @@ typedef enum
     XV_332_Format /* P7 332 */
   } PNMSubformat;
 
+static const char *PNMSubformatToString(const PNMSubformat f)
+{
+  const char *s = "unknown";
+
+  switch (f)
+    {
+    case Undefined_PNM_Format:
+      s = "Undefined";
+      break;
+    case PBM_ASCII_Format: /* P1 */
+      s = "PBM ASCII";
+      break;
+    case PGM_ASCII_Format: /* P2 */
+      s = "PGM ASCII";
+      break;
+    case PPM_ASCII_Format: /* P3 */
+      s = "PPM ASCII";
+      break;
+    case PBM_RAW_Format: /* P4 */
+      s = "PBM RAW";
+      break;
+    case PGM_RAW_Format: /* P5 */
+      s = "PGM RAW";
+      break;
+    case PPM_RAW_Format: /* P6 */
+      s = "PPM RAW";
+      break;
+    case PAM_Format: /* P7 */
+      s = "PAM";
+      break;
+    case XV_332_Format: /* P7 332 */
+      s = "XV 332 icon";
+      break;
+    }
+  return s;
+}
+
 #if defined(HAVE_OPENMP)
 #  define PNMReadUseOpenMP 1
 
@@ -721,6 +758,8 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
             register PixelPacket
               *q;
 
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Reading %s pixel data",PNMSubformatToString(format));
             for (y=0; y < (long) image->rows; y++)
               {
                 q=SetImagePixels(image,0,y,image->columns,1);
@@ -772,6 +811,8 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               is_grayscale,
               is_monochrome;
 
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Reading %s pixel data",PNMSubformatToString(format));
             is_grayscale=MagickTrue;
             is_monochrome=MagickTrue;
             for (y=0; y < (long) image->rows; y++)
@@ -849,6 +890,8 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               is_grayscale,
               is_monochrome;
 
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Reading %s pixel data",PNMSubformatToString(format));
             is_grayscale=MagickTrue;
             is_monochrome=MagickTrue;
             for (y=0; y < (long) image->rows; y++)
@@ -934,7 +977,8 @@ static Image *ReadPNMImage(const ImageInfo *image_info,ExceptionInfo *exception)
               pnm_read_threads;
 #endif
 
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Reading PAM");
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Reading %s pixel data",PNMSubformatToString(format));
 
             ImportPixelAreaOptionsInit(&import_options);
 

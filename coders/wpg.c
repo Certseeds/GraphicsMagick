@@ -1604,7 +1604,7 @@ UnpackRaster:
                  ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);
 
               image->colors=WPG_Palette.NumOfEntries;
-              if (!AllocateImageColormap(image,image->colors))
+              if (!AllocateImageColormap(image,image->colors)) /* FIXME: Oss-fuzz 61394, Trashes image->storage_class of previous image, which might be from ExtractPostscript()! */
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
               for (i=WPG_Palette.StartIndex;

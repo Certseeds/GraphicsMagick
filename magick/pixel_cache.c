@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -123,6 +123,14 @@ extern "C" {
                         const unsigned long length,
                         ExceptionInfo *exception);
 
+
+/*
+  Indexes are valid if the image storage class is PseudoClass or the
+  colorspace is CMYK.
+*/
+#define PixelCacheImageIndexesValid(image)      \
+  ((image->storage_class == PseudoClass) ||     \
+   (image->colorspace == CMYKColorspace))
 
 /*
   Enum declaractions.
@@ -918,11 +926,20 @@ SetCacheNexus(Image *image,const long x,const long y,
     if ((cache_info->reference_count != 1) || (cache_info->read_only))
       fprintf(stderr,"SetCacheNexus: Thread %d enters (cache_info = %p, reference_count=%lu, read_only=%u)\n",
               omp_get_thread_num(),image->cache, cache_info->reference_count, cache_info->read_only);
+#if 0
     if (cache_info->type == UndefinedCache)
       fprintf(stderr,"SetCacheNexus: Pixel cache is not open!\n");
-    if ((image->storage_class != cache_info->storage_class) ||
+#endif
+    if ((cache_info->storage_class != UndefinedClass) &&
+        (image->storage_class != cache_info->storage_class))
+      fprintf(stderr,"SetCacheNexus: Pixel cache storage class mis-match! (image: %s, cache: %s)\n",
+              ClassTypeToString(image->storage_class),ClassTypeToString(cache_info->storage_class));
+#if 0
+    if ((cache_info->colorspace != UndefinedColorspace) &&
         (image->colorspace != cache_info->colorspace))
-      fprintf(stderr,"SetCacheNexus: Pixel cache storage class or colorspace mis-match!\n");
+      fprintf(stderr,"SetCacheNexus: Pixel cache colorspace mis-match! (image: %s, cache: %s)\n",
+              ColorspaceTypeToString(image->colorspace), ColorspaceTypeToString(cache_info->colorspace));
+#endif
   }
 #endif
 
@@ -2446,6 +2463,23 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
           }
         }
     }
+#if 0
+  /*
+    Trace image-directed changes to cache storage class or color space
+  */
+  if ((cache_info->storage_class != UndefinedClass) &&
+      (image->storage_class != cache_info->storage_class))
+    (void) LogMagickEvent(CacheEvent,GetMagickModule(),
+                          "storage_class %.1024s %s --> %s",
+                          cache_info->filename, ClassTypeToString(cache_info->storage_class),
+                          ClassTypeToString(image->storage_class));
+  if ((cache_info->colorspace != UndefinedColorspace) &&
+      (image->colorspace != cache_info->colorspace))
+    (void) LogMagickEvent(CacheEvent,GetMagickModule(),
+                          "colorspace %.1024s %s --> %s",
+                          cache_info->filename, ColorspaceTypeToString(cache_info->colorspace),
+                          ColorspaceTypeToString(image->colorspace));
+#endif
 
   /*
     Save the open mode.
@@ -2456,8 +2490,7 @@ OpenCache(Image *image,const MapMode mode,ExceptionInfo *exception)
     Indexes are valid if the image storage class is PseudoClass or the
     colorspace is CMYK.
   */
-  cache_info->indexes_valid=((image->storage_class == PseudoClass) ||
-                             (image->colorspace == CMYKColorspace));
+  cache_info->indexes_valid=PixelCacheImageIndexesValid(image);
 
   if (image->ping)
     {
@@ -2705,9 +2738,9 @@ AccessCacheViewPixels(const ViewInfo *view)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  AccessImmutableIndexes() returns the colormap indexes associated with
-%  the last call to AcquireImagePixels(). NULL is returned if colormap
-%  indexes are not available.
+%  AccessImmutableIndexes() returns the read-only colormap indexes
+%  associated with the last call to AcquireImagePixels(). NULL is
+%  returned if colormap indexes are not available.
 %
 %  The format of the AccessImmutableIndexes() method is:
 %
@@ -2727,7 +2760,7 @@ AccessImmutableIndexes(const Image *image)
 {
   assert(image != (const Image *) NULL);
   assert(image->signature == MagickSignature);
-  return GetCacheViewIndexes(AccessDefaultCacheView(image));
+ return AcquireCacheViewIndexes((ViewInfo *) AccessDefaultCacheView(image));
 }
 
 /*
@@ -2741,11 +2774,11 @@ AccessImmutableIndexes(const Image *image)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  AccessMutableIndexes() returns the colormap indexes associated with
-%  the last call to SetImagePixels() or GetImagePixels(). NULL is returned
-%  if colormap indexes are not available.
+%  AccessMutableIndexes() returns the writeable colormap indexes associated
+%  with the last call to SetImagePixels() or GetImagePixels(). NULL is
+%  returned if colormap indexes are not available.
 %
-%  The format of the AccessMutagleIndexes() method is:
+%  The format of the AccessMutableIndexes() method is:
 %
 %      IndexPacket *AccessMutableIndexes(Image *image)
 %
@@ -2911,9 +2944,9 @@ AcquireCacheViewIndexes(const ViewInfo *view)
 %  file. The returned pointer should *never* be deallocated by the user.
 %
 %  Pixels accessed via the returned pointer represent a simple array of type
-%  PixelPacket. If the image storage class is PsudeoClass, call GetIndexes()
-%  after invoking GetImagePixels() to obtain the colormap indexes (of type
-%  IndexPacket) corresponding to the region.
+%  PixelPacket. If the image storage class is PsudeoClass, call
+%  AccessImmutableIndexes() after invoking GetImagePixels() to obtain the
+%  colormap indexes (of type IndexPacket) corresponding to the region.
 %
 %  If you plan to modify the pixels, use GetImagePixels() instead.
 %
@@ -3997,11 +4030,12 @@ GetCacheViewRegion(const ViewInfo *view)
 %  should *never* be deallocated by the user.
 %
 %  Pixels accessed via the returned pointer represent a simple array of type
-%  PixelPacket. If the image storage class is PsudeoClass, call GetIndexes()
-%  after invoking GetImagePixels() to obtain the colormap indexes (of type
-%  IndexPacket) corresponding to the region.  Once the PixelPacket (and/or
-%  IndexPacket) array has been updated, the changes must be saved back to
-%  the underlying image using SyncImagePixels() or they may be lost.
+%  PixelPacket. If the image storage class is PsudeoClass, call
+%  AccessMutableIndexes() after invoking GetImagePixels() to obtain the
+%  colormap indexes (of type IndexPacket) corresponding to the region.  Once
+%  the PixelPacket (and/or IndexPacket) array has been updated, the changes
+%  must be saved back to the underlying image using SyncImagePixels() or they
+%  may be lost.
 %
 %  The format of the GetImagePixels() method is:
 %
@@ -4126,9 +4160,13 @@ GetImageVirtualPixelMethod(const Image *image)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  GetIndexes() returns the colormap indexes associated with the last call to
-%  SetImagePixels() or GetImagePixels(). NULL is returned if colormap indexes
-%  are not available.
+%  GetIndexes() returns the writeable colormap indexes associated with the
+%  last call to SetImagePixels() or GetImagePixels(). NULL is returned if
+%  colormap indexes are not available.
+%
+%  This function is deprecated since November 7, 2008.  Please use
+%  AccessMutableIndexes() or AccessImmutableIndexes() instead of this
+%  function.
 %
 %  The format of the GetIndexes() method is:
 %
@@ -4944,11 +4982,12 @@ SetCacheViewPixels(ViewInfo *view,const long x,const long y,
 %  by the user.
 %
 %  Pixels accessed via the returned pointer represent a simple array of type
-%  PixelPacket. If the image storage class is PsudeoClass, call GetIndexes()
-%  after invoking GetImagePixels() to obtain the colormap indexes (of type
-%  IndexPacket) corresponding to the region.  Once the PixelPacket (and/or
-%  IndexPacket) array has been updated, the changes must be saved back to
-%  the underlying image using SyncCacheNexus() or they may be lost.
+%  PixelPacket. If the image storage class is PsudeoClass, call
+%  AccessMutableIndexes() after invoking GetImagePixels() to obtain
+%  the colormap indexes (of type IndexPacket) corresponding to the region.
+%  Once the PixelPacket (and/or IndexPacket) array has been updated, the
+%  changes must be saved back to the underlying image using SyncCacheNexus()
+%  or they may be lost.
 %
 %  The format of the SetImagePixels() method is:
 %

@@ -549,68 +549,71 @@ static const char *DecodeBiCompression(const magick_uint32_t BiCompression, cons
 }
 
 
-static Image *ExtractNestedBlob(Image * image, const ImageInfo * image_info, int ImgType, ExceptionInfo * exception)
+static Image *ExtractNestedBlob(Image ** image, const ImageInfo * image_info, int ImgType, ExceptionInfo * exception)
 {
   size_t
     alloc_size;
+
   unsigned char
     *blob;
 
-  alloc_size = GetBlobSize(image) - TellBlob(image);
+  alloc_size = GetBlobSize(*image) - TellBlob(*image);
 
-  if(alloc_size > 0 &&
-     (blob = MagickAllocateResourceLimitedMemory(unsigned char *,alloc_size)) != NULL)
-  {
+  if (alloc_size > 0 &&
+      (blob = MagickAllocateResourceLimitedMemory(unsigned char *,alloc_size)) != NULL)
+    {
       /* Copy JPG to memory blob */
-     if(ReadBlob(image,alloc_size,blob) == alloc_size)
-     {
-        Image *image2;
-        ImageInfo *clone_info;
+      if (ReadBlob(*image,alloc_size,blob) == alloc_size)
+        {
+          Image *image2;
+          ImageInfo *clone_info;
 
-        clone_info = CloneImageInfo(image_info);
+          clone_info = CloneImageInfo(image_info);
+          (void) strlcpy(clone_info->magick, (ImgType==BI_JPEG)?"JPEG":"PNG", sizeof(clone_info->magick));
 
-              /* BlobToFile("/tmp/jnx-tile.jpg", blob,alloc_size,exception); */
+          /* BlobToFile("/tmp/jnx-tile.jpg", blob,alloc_size,exception); */
 
-         (void) strlcpy(clone_info->filename, (ImgType==BI_JPEG)?"JPEG:":"PNG:", sizeof(clone_info->filename));
-         if ((image2 = BlobToImage(clone_info,blob,alloc_size,exception))
-                  != NULL)
-         {
-                  /*
-                    Replace current image with new image while copying
-                    base image attributes.
-                  */
-            (void) strlcpy(image2->filename, image->filename,
-                                 sizeof(image2->filename));
-            (void) strlcpy(image2->magick_filename, image->magick_filename,
-                                 sizeof(image2->magick_filename));
-            (void) strlcpy(image2->magick, image->magick,
-                                 sizeof(image2->magick));
+          /* (void) strlcpy(clone_info->filename, (ImgType==BI_JPEG)?"JPEG:":"PNG:", sizeof(clone_info->filename)); */
+          FormatString(clone_info->filename,"%sblob-%px", ImgType==BI_JPEG?"JPEG:":"PNG:", blob);
+          if ((image2 = BlobToImage(clone_info,blob,alloc_size,exception))
+              != NULL)
+            {
+              /*
+                Replace current image with new image while copying
+                base image attributes.
+              */
+              (void) strlcpy(image2->filename, (*image)->filename,
+                             sizeof(image2->filename));
+            (void) strlcpy(image2->magick_filename, (*image)->magick_filename,
+                           sizeof(image2->magick_filename));
+            (void) strlcpy(image2->magick, (*image)->magick,
+                           sizeof(image2->magick));
             DestroyBlob(image2);
-           image2->blob = ReferenceBlob(image->blob);
+            image2->blob = ReferenceBlob((*image)->blob);
 
-            if ((image->rows == 0) || (image->columns == 0))
-               DeleteImageFromList(&image);
+            if (((*image)->rows == 0) || ((*image)->columns == 0))
+              DeleteImageFromList(image);
 
-            AppendImageToList(&image, image2);
+            AppendImageToList(image, image2);
          }
-         DestroyImageInfo(clone_info);
-         clone_info = (ImageInfo *) NULL;
-         MagickFreeResourceLimitedMemory(blob);
-      }
+          DestroyImageInfo(clone_info);
+          clone_info = (ImageInfo *) NULL;
+          MagickFreeResourceLimitedMemory(blob);
+        }
       else
-      {
-        MagickFreeResourceLimitedMemory(blob);
-              /* Failed to read enough data from input */
-        ThrowException(exception,CorruptImageError,UnexpectedEndOfFile, image->filename);
-      }
-  }
+        {
+          MagickFreeResourceLimitedMemory(blob);
+          /* Failed to read enough data from input */
+          ThrowException(exception,CorruptImageError,UnexpectedEndOfFile, (*image)->filename);
+        }
+    }
   else
-  {
+    {
       /* Failed to allocate memory */
       ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,
-                     image->filename);
-  }
-  return(image);
+                     (*image)->filename);
+    }
+  return(*image);
 }
 
 
@@ -893,7 +896,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
                                           "  Compression: UNKNOWN (%u)",bmp_info.compression);
               (void) LogMagickEvent(CoderEvent, GetMagickModule(),
                                     "  Number of colors: %u\n"
-                                    "  Important colors: %u",
+                                    "    Important colors: %u",
                                     bmp_info.number_colors, bmp_info.colors_important);
             }
 
@@ -1199,7 +1202,7 @@ CheckBitSize:
           {
             MonitorHandler previous_handler;
             previous_handler = SetMonitorHandler(0);
-            image = ExtractNestedBlob(image, image_info, bmp_info.compression, exception);
+            image = ExtractNestedBlob(&image, image_info, bmp_info.compression, exception);
             (void) SetMonitorHandler(previous_handler);
             if (exception->severity >= ErrorException)
                 ThrowBMPReaderException(CoderError,JPEGCompressionNotSupported,image)
@@ -1218,7 +1221,7 @@ CheckBitSize:
           {
             MonitorHandler previous_handler;
             previous_handler = SetMonitorHandler(0);
-            image = ExtractNestedBlob(image, image_info, bmp_info.compression, exception);
+            image = ExtractNestedBlob(&image, image_info, bmp_info.compression, exception);
             (void) SetMonitorHandler(previous_handler);
             if (exception->severity >= ErrorException)
                 ThrowBMPReaderException(CoderError,PNGCompressionNotSupported,image)
@@ -1949,6 +1952,15 @@ ExitLoop:
     image=image->previous;
 */
   CloseBlob(image);
+#if 0
+  if (logging)
+    {
+      const size_t list_length = GetImageListLength(image);
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "%lu image%s in list", list_length, list_length > 1 ? "s" : "");
+    }
+#endif
+
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   return(image);
