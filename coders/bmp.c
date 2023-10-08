@@ -2480,6 +2480,11 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                 if (ExportImagePixelArea(image,IndexQuantum,8,q,&export_options,0)
                     == MagickFail)
                   {
+                      /* Please note that pixels array has uninitialised elements when this fails. */
+                    if(logging)
+                      (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                                    "  ExportImagePixelArea failed at row %u", y);
+                    ThrowWriterException(CoderError,DataEncodingSchemeIsNotSupported,image);
                     break;
                   }
                 if (image->previous == (Image *) NULL)

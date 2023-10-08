@@ -1,3 +1,8 @@
+2023-10-02  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/bmp.c: Emit error when ExportImagePixelArea fails.
+	This should fix oss-fuzz-63096 issue.
+
 2023-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (ReadWPGImage): Add a FIXME comment for a bug yet
