@@ -39,6 +39,9 @@
 #define HEIF_ENABLE_PROGRESS_MONITOR 0
 
 #include <libheif/heif.h>
+#ifdef HAVE_HEIF_INIT
+static MagickBool heif_initialized = MagickFalse;
+#endif /* ifdef HAVE_HEIF_INIT */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -492,6 +495,14 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
+#ifdef HAVE_HEIF_INIT
+  if (!heif_initialized)
+    {
+      heif_init();
+      heif_initialized = MagickTrue;
+    }
+#endif /* HAVE_HEIF_INIT */
+
   /*
     Open image file.
   */
@@ -836,5 +847,9 @@ ModuleExport void UnregisterHEIFImage(void)
   (void) UnregisterMagickInfo("AVIF");
   (void) UnregisterMagickInfo("HEIF");
   (void) UnregisterMagickInfo("HEIC");
+#ifdef HAVE_HEIF_DEINIT
+  if (heif_initialized)
+    heif_deinit();
+#endif /* HAVE_HEIF_DEINIT */
 #endif /* HasHEIF */
 }

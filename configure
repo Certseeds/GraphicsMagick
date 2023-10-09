@@ -27758,6 +27758,18 @@ else
   failed=`expr $failed + 1`
 fi
 
+    for ac_func in heif_init heif_deinit
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking if HEIF package is complete" >&5
 $as_echo_n "checking if HEIF package is complete... " >&6; }
     if test $passed -gt 0

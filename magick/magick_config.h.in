@@ -143,6 +143,12 @@
 /* Define to 1 if you have the `getrlimit' function. */
 #undef HAVE_GETRLIMIT
 
+/* Define to 1 if you have the `heif_deinit' function. */
+#undef HAVE_HEIF_DEINIT
+
+/* Define to 1 if you have the `heif_init' function. */
+#undef HAVE_HEIF_INIT
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 

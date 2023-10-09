@@ -1,3 +1,8 @@
+2023-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/heif.c (ReadHEIFImage): Call heif_init() and
+	heif_deinit() if they are available.
+
 2023-10-02  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/bmp.c: Emit error when ExportImagePixelArea fails.

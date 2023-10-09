@@ -2659,6 +2659,7 @@ then
         # libheif that contains a avif codec.
         heif_libs="-lheif -lde265"])
     AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$heif_libs])
+    AC_CHECK_FUNCS([heif_init heif_deinit])
     AC_MSG_CHECKING([if HEIF package is complete])
     if test $passed -gt 0
     then
