@@ -2245,17 +2245,9 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
           bmp_info.bits_per_pixel = 0;
           bmp_info.compression = BI_PNG;
         }
-      else if (image->storage_class==DirectClass || image->colors==0)
-        {
-          /*
-            Full color BMP raster.
-          */
-          bmp_info.number_colors=0;
-          bmp_info.bits_per_pixel=((type > 3) && image->matte) ? 32 : 24;
-          bmp_info.compression=
-            (type > 3) && image->matte ?  BI_BITFIELDS : BI_RGB;
-        }
-      else  /* image->storage_class != DirectClass*/
+      else
+      {
+        if(image->storage_class != DirectClass)
         {
           /*
             Colormapped BMP raster.
@@ -2284,6 +2276,18 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                   }
               }
         }
+           /* Note: Image class could be changed in a code above. */
+        if (image->storage_class==DirectClass)
+        {
+          /*
+            Full color BMP raster.
+          */
+          bmp_info.number_colors=0;
+          bmp_info.bits_per_pixel=((type > 3) && image->matte) ? 32 : 24;
+          bmp_info.compression=
+            (type > 3) && image->matte ?  BI_BITFIELDS : BI_RGB;
+        }
+      }
 
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Final: Scene %lu, storage_class %s, colors %u",
