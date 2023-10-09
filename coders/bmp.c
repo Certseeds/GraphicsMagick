@@ -2245,7 +2245,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
           bmp_info.bits_per_pixel = 0;
           bmp_info.compression = BI_PNG;
         }
-      else if (image->storage_class == DirectClass)
+      else if (image->storage_class==DirectClass || image->colors==0)
         {
           /*
             Full color BMP raster.
