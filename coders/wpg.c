@@ -1624,6 +1624,8 @@ UnpackRaster:
                       indexes=AccessMutableIndexes(image);
                       if (indexes == (IndexPacket *) NULL)
                         break;
+                      if (!get)
+                        (void) memset(p,0,sizeof(PixelPacket)*image->columns);
                       (void) memset(indexes,0,sizeof(IndexPacket)*image->columns);
                       if (!SyncImagePixels(image))
                         break;

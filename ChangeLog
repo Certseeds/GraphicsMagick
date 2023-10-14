@@ -5,6 +5,8 @@
 	image to PseudoClass. Addresses oss-fuzz issue 61394:
 	"graphicsmagick:coder_WPG_fuzzer: Use-of-uninitialized-value in
 	GrayscalePseudoClassImage".
+	(ReadWPGImage): If pixel cache was not initialized at all, then
+	set DirectClass pixels as well.
 
 2023-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
