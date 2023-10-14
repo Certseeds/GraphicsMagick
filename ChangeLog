@@ -1,3 +1,11 @@
+2023-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ReadWPGImage): If a colormap is provided, make
+	sure that PsuedoClass indexes are initialized before promoting
+	image to PseudoClass. Addresses oss-fuzz issue 61394:
+	"graphicsmagick:coder_WPG_fuzzer: Use-of-uninitialized-value in
+	GrayscalePseudoClassImage".
+
 2023-10-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/heif.c (ReadHEIFImage): Call heif_init() and

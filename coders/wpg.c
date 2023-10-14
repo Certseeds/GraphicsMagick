@@ -1602,9 +1602,37 @@ UnpackRaster:
                    (((WPG_Palette.NumOfEntries-WPG_Palette.StartIndex) >
                      ((Rec2.RecordLength-2-2) / 3))) )
                  ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);
-
+              /* Make sure that indexes contain initialized data if
+                 promoting from DirectClass.  This is a stop-gap
+                 measure until independent colormap support is
+                 developed. */
+              if (PseudoClass != image->storage_class)
+                {
+                  unsigned long y;
+                  IndexPacket *indexes;
+                  PixelPacket *p;
+                  MagickBool get = GetPixelCachePresent(image);
+                  image->storage_class = PseudoClass;
+                  for (y=0; y < image->rows; y++)
+                    {
+                      if (get)
+                        p=GetImagePixels(image,0,y,image->columns,1);
+                      else
+                        p=SetImagePixels(image,0,y,image->columns,1);
+                      if (p == (const PixelPacket *) NULL)
+                        break;
+                      indexes=AccessMutableIndexes(image);
+                      if (indexes == (IndexPacket *) NULL)
+                        break;
+                      (void) memset(indexes,0,sizeof(IndexPacket)*image->columns);
+                      if (!SyncImagePixels(image))
+                        break;
+                    }
+                  if (y != image->rows)
+                    ThrowReaderException(CacheError,UnableToGetPixelsFromCache,image);
+                }
               image->colors=WPG_Palette.NumOfEntries;
-              if (!AllocateImageColormap(image,image->colors)) /* FIXME: Oss-fuzz 61394, Trashes image->storage_class of previous image, which might be from ExtractPostscript()! */
+              if (!AllocateImageColormap(image,image->colors))
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
               for (i=WPG_Palette.StartIndex;

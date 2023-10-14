@@ -2732,7 +2732,7 @@ static void FormMultiPartFilename(Image *image, const ImageInfo *image_info)
     Form filename for multi-part images.
   */
   if (MagickSceneFileName(filename,image->filename,"",MagickFalse,
-                          GetImageIndexInList(image)))
+                          GetImageIndexInList(image))) /* FIXME: Could use image->scene */
     (void) strlcpy(image->filename,filename,MaxTextExtent);
 
   if (!image_info->adjoin)
