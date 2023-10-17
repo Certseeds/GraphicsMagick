@@ -1,3 +1,13 @@
+2023-10-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c (ReadWPGImage): If a colormap is provided, make
+	sure that PsuedoClass indexes are initialized before promoting
+	image to PseudoClass. Addresses oss-fuzz issue 63335:
+	"graphicsmagick:coder_WPG_fuzzer: Use-of-uninitialized-value in
+	GrayscalePseudoClassImage".  This is a stop-gap fix until the
+	WPG reader supports a colormap independent of the image, to be
+	used when needed.
+
 2023-10-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (WriteTIFFImage): Remove safe-guards against use
