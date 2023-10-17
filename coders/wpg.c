@@ -1248,6 +1248,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   BlobInfo *TmpBlob;
   magick_off_t FilePos, filesize;
 
+  unsigned char *pPalette = NULL;
+  unsigned char PaletteItems = 0;
+  //unsigned char PaletteStartIDX = 0;
+
   tCTM CTM;         /*current transform matrix*/
 
   /*
@@ -1372,9 +1376,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               goto UnpackRaster;
 
             case 0x0E:  /*Color palette */
-              WPG_Palette.StartIndex=ReadBlobLSBShort(image);
-              WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
-              
+///////Temporary fix, should be removed//////////////////////////
               /* Make sure that indexes contain initialized data if
                  promoting from DirectClass.  This is a stop-gap
                  measure until independent colormap support is
@@ -1406,7 +1408,12 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   if (y != image->rows)
                     ThrowReaderException(CacheError,UnableToGetPixelsFromCache,image);
                 }
+/////////////////////////////////////////////////////////////////
 
+              WPG_Palette.StartIndex=ReadBlobLSBShort(image);
+              WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
+
+		// This should be replaced with commented stuff.
               image->colors=WPG_Palette.NumOfEntries;
               if (!AllocateImageColormap(image,image->colors))
                 goto NoMemory;
@@ -1419,6 +1426,26 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
                   image->colormap[i].opacity = OpaqueOpacity;
                 }
+
+/*
+              PaletteItems = WPG_Palette.NumOfEntries;
+              if(pPalette==NULL)
+              {
+                pPalette = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)3*256);
+                if(pPalette==NULL)
+                    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                for(i=0; i<255; i++)
+                {
+                  pPalette[3*i] = WPG1_Palette[i].Red;
+                  pPalette[3*i+1] = WPG1_Palette[i].Green;
+                  pPalette[3*i+2] = WPG1_Palette[i].Blue;
+                }
+              }
+              if(PaletteItems + WPG_Palette.StartIndex > 256)
+                  ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+              if(ReadBlob(image,PaletteItems*3,pPalette+3*WPG_Palette.StartIndex) != PaletteItems*3)
+                  ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+*/
               break;
 
             case 0x11:  /* Start PS l1 */
@@ -1462,6 +1489,22 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 UnpackRaster:
               if(bpp>24)
                 {ThrowReaderException(CoderError,ColorTypeNotSupported,image)}
+
+              if(pPalette!=NULL && PaletteItems>0)
+              {
+                image->colors=WPG_Palette.NumOfEntries;
+                if (!AllocateImageColormap(image,image->colors))
+                  goto NoMemory;
+                image->storage_class = PseudoClass;
+                for (i=WPG_Palette.StartIndex;
+                   i < (int)WPG_Palette.NumOfEntries; i++)
+                {
+                  image->colormap[i].red = ScaleCharToQuantum(pPalette[3*i]);
+                  image->colormap[i].green=ScaleCharToQuantum(pPalette[3*i+1]);
+                  image->colormap[i].blue=ScaleCharToQuantum(pPalette[3*i+2]);
+                  image->colormap[i].opacity = OpaqueOpacity;
+                }
+              }
 
               if ((image->storage_class != PseudoClass) && (bpp != 24) && bpp!=1)
                 {
@@ -1634,6 +1677,7 @@ UnpackRaster:
                    (((WPG_Palette.NumOfEntries-WPG_Palette.StartIndex) >
                      ((Rec2.RecordLength-2-2) / 3))) )
                  ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);
+///////Temporary fix, should be removed//////////////////////////
               /* Make sure that indexes contain initialized data if
                  promoting from DirectClass.  This is a stop-gap
                  measure until independent colormap support is
@@ -1665,6 +1709,7 @@ UnpackRaster:
                   if (y != image->rows)
                     ThrowReaderException(CacheError,UnableToGetPixelsFromCache,image);
                 }
+///////////////////////////////////////////////////
               image->colors=WPG_Palette.NumOfEntries;
               if (!AllocateImageColormap(image,image->colors))
                 ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -1833,6 +1878,7 @@ UnpackRaster:
 
  Finish:
   CloseBlob(image);
+  if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
 
   {
     Image
