@@ -1,3 +1,13 @@
+2023-10-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Remove safe-guards against use
+	of incorrect PHOTOMETRIC_MINISWHITE or PHOTOMETRIC_MINISBLACK
+	photometic for Group3 and Group4 compression.  Other photometrics
+	are rejected when using Group3 or Group4 compression.  The user is
+	responsible for providing the correct parameters.  This is to
+	address discussion on the graphicsmagick-help list on October 16,
+	2023 under the topic "tiff:photometric and CCITT compression".
+
 2023-10-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (ReadWPGImage): If a colormap is provided, make

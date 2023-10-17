@@ -37,6 +37,18 @@
 </div>
 
 <div class="document">
+<p>2023-10-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c (WriteTIFFImage): Remove safe-guards against use
+of incorrect PHOTOMETRIC_MINISWHITE or PHOTOMETRIC_MINISBLACK
+photometic for Group3 and Group4 compression.  Other photometrics
+are rejected when using Group3 or Group4 compression.  The user is
+responsible for providing the correct parameters.  This is to
+address discussion on the graphicsmagick-help list on October 16,
+2023 under the topic &quot;tiff:photometric and CCITT compression&quot;.</p></li>
+</ul>
+</blockquote>
 <p>2023-10-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

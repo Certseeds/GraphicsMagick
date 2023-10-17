@@ -5052,24 +5052,16 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                                   "Ignoring request for JPEG compression due "
                                   "to incompatible photometric.");
         }
-      else if ((compress_tag == COMPRESSION_CCITTFAX3) &&
-               (photometric != PHOTOMETRIC_MINISWHITE))
+      else if (((compress_tag == COMPRESSION_CCITTFAX3) ||
+                (compress_tag == COMPRESSION_CCITTFAX4)) &&
+               ((photometric != PHOTOMETRIC_MINISWHITE) &&
+                (photometric != PHOTOMETRIC_MINISBLACK)))
         {
           compress_tag=COMPRESSION_NONE;
           fill_order=FILLORDER_MSB2LSB;
           if (logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Ignoring request for Group3 FAX compression"
-                                  " due to incompatible photometric.");
-        }
-      else if ((compress_tag == COMPRESSION_CCITTFAX4) &&
-               (photometric != PHOTOMETRIC_MINISWHITE))
-        {
-          compress_tag=COMPRESSION_NONE;
-          fill_order=FILLORDER_MSB2LSB;
-          if (logging)
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Ignoring request for Group4 FAX compression"
+                                  "Ignoring request for FAX compression"
                                   " due to incompatible photometric.");
         }
 #if defined(COMPRESSION_JBIG)
