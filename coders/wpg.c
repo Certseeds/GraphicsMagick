@@ -1372,15 +1372,17 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                 image->colormap[0].red = image->colormap[0].green = image->colormap[0].blue = 0;
                 image->colormap[1].red = image->colormap[1].green = image->colormap[1].blue = MaxRGB;
                 image->colormap[0].opacity = image->colormap[1].opacity = OpaqueOpacity;
+                goto UnpackRaster1bpp;	/* bypass cached palette for 1bpp. */
               }
               goto UnpackRaster;
 
             case 0x0E:  /*Color palette */
+/*
 ///////Temporary fix, should be removed//////////////////////////
-              /* Make sure that indexes contain initialized data if
-                 promoting from DirectClass.  This is a stop-gap
-                 measure until independent colormap support is
-                 developed. */
+              // Make sure that indexes contain initialized data if
+              //   promoting from DirectClass.  This is a stop-gap
+              //   measure until independent colormap support is
+              //   developed.
               if (PseudoClass != image->storage_class)
                 {
                   unsigned long y;
@@ -1409,10 +1411,11 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                     ThrowReaderException(CacheError,UnableToGetPixelsFromCache,image);
                 }
 /////////////////////////////////////////////////////////////////
-
+*/
               WPG_Palette.StartIndex=ReadBlobLSBShort(image);
               WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
 
+/*
 		// This should be replaced with commented stuff.
               image->colors=WPG_Palette.NumOfEntries;
               if (!AllocateImageColormap(image,image->colors))
@@ -1426,8 +1429,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
                   image->colormap[i].opacity = OpaqueOpacity;
                 }
+*/
 
-/*
               PaletteItems = WPG_Palette.NumOfEntries;
               if(pPalette==NULL)
               {
@@ -1445,7 +1448,6 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               if(ReadBlob(image,PaletteItems*3,pPalette+3*WPG_Palette.StartIndex) != PaletteItems*3)
                   ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-*/
               break;
 
             case 0x11:  /* Start PS l1 */
@@ -1506,6 +1508,7 @@ UnpackRaster:
                 }
               }
 
+UnpackRaster1bpp:
               if ((image->storage_class != PseudoClass) && (bpp != 24) && bpp!=1)
                 {
                   image->colors=1 << bpp;
@@ -1536,8 +1539,8 @@ UnpackRaster:
               if(bpp == 1)
                 {
                   if(image->colors<=0)
-                                  {
-                                image->colormap[0].red =
+                    {
+                      image->colormap[0].red =
                         image->colormap[0].green =
                         image->colormap[0].blue = 0;
                       image->colormap[0].opacity = OpaqueOpacity;

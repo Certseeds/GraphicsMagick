@@ -1,3 +1,8 @@
+2023-10-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/wpg.c: Do not store palette into image structure before
+	a raster chunk is found. Implemented for WPG l1 only.
+
 2023-10-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (ReadWPGImage): If a colormap is provided, make
