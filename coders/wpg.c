@@ -1036,6 +1036,22 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   return(image);
 }
 
+
+int EnsureNextImage(const ImageInfo *image_info, Image **pp_image)
+{
+  if(pp_image==NULL) return -1;
+  if(*pp_image==NULL) return -2;
+  if(image_info==NULL) return -3;
+
+  AllocateNextImage(image_info,*pp_image);
+  if((*pp_image)->next == (Image *) NULL) return -4;
+  *pp_image = SyncNextImageInList(*pp_image);
+  (*pp_image)->columns = (*pp_image)->rows = 0;
+  (*pp_image)->colors = 0;
+return 0;
+}
+
+
 #define LogHeaderWPG(_WPG_HEADER) \
   (void)LogMagickEvent(CoderEvent,GetMagickModule(), \
                        "WPG Header Id=%Xh:\n" \
@@ -1354,6 +1370,12 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader1.VertRes=ReadBlobLSBShort(image);
               if(logging) LogWPGBitmapType1(BitmapHeader1);
 
+              if(image->rows!=0 && image->columns!=0)
+              {                       /* Allocate next image structure. */
+                if(EnsureNextImage(image_info, &image) < 0)
+                    goto Finish;
+              }
+
               if(BitmapHeader1.HorzRes && BitmapHeader1.VertRes)
                 {
                   image->units=PixelsPerCentimeterResolution;
@@ -1377,59 +1399,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               goto UnpackRaster;
 
             case 0x0E:  /*Color palette */
-/*
-///////Temporary fix, should be removed//////////////////////////
-              // Make sure that indexes contain initialized data if
-              //   promoting from DirectClass.  This is a stop-gap
-              //   measure until independent colormap support is
-              //   developed.
-              if (PseudoClass != image->storage_class)
-                {
-                  unsigned long y;
-                  IndexPacket *indexes;
-                  PixelPacket *p;
-                  MagickBool get = GetPixelCachePresent(image);
-                  image->storage_class = PseudoClass;
-                  for (y=0; y < image->rows; y++)
-                    {
-                      if (get)
-                        p=GetImagePixels(image,0,y,image->columns,1);
-                      else
-                        p=SetImagePixels(image,0,y,image->columns,1);
-                      if (p == (const PixelPacket *) NULL)
-                        break;
-                      indexes=AccessMutableIndexes(image);
-                      if (indexes == (IndexPacket *) NULL)
-                        break;
-                      if (!get)
-                        (void) memset(p,0,sizeof(PixelPacket)*image->columns);
-                      (void) memset(indexes,0,sizeof(IndexPacket)*image->columns);
-                      if (!SyncImagePixels(image))
-                        break;
-                    }
-                  if (y != image->rows)
-                    ThrowReaderException(CacheError,UnableToGetPixelsFromCache,image);
-                }
-/////////////////////////////////////////////////////////////////
-*/
               WPG_Palette.StartIndex=ReadBlobLSBShort(image);
               WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
-
-/*
-		// This should be replaced with commented stuff.
-              image->colors=WPG_Palette.NumOfEntries;
-              if (!AllocateImageColormap(image,image->colors))
-                goto NoMemory;
-              image->storage_class = PseudoClass;
-              for (i=WPG_Palette.StartIndex;
-                   i < (int)WPG_Palette.NumOfEntries; i++)
-                {
-                  image->colormap[i].red=ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].green=ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].opacity = OpaqueOpacity;
-                }
-*/
 
               PaletteItems = WPG_Palette.NumOfEntries;
               if(pPalette==NULL)
@@ -1472,6 +1443,12 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader2.VertRes=ReadBlobLSBShort(image);
               if(logging) LogWPGBitmapType2(BitmapHeader2);
 
+              if(image->rows!=0 && image->columns!=0)
+              {                       /* Allocate next image structure. */
+                if(EnsureNextImage(image_info, &image) < 0)
+                    goto Finish;
+              }
+
               image->units=PixelsPerCentimeterResolution;
               image->page.width=(unsigned int)
                 ((BitmapHeader2.LowLeftX-BitmapHeader2.UpRightX)/470.0);
@@ -1509,6 +1486,8 @@ UnpackRaster:
               }
 
 UnpackRaster1bpp:
+              image->depth = bpp;
+
               if ((image->storage_class != PseudoClass) && (bpp != 24) && bpp!=1)
                 {
                   image->colors=1 << bpp;
@@ -1612,14 +1591,6 @@ UnpackRaster1bpp:
                 if (image->scene >= (image_info->subimage+image_info->subrange-1))
                   goto Finish;
 
-              /* Allocate next image structure. */
-              AllocateNextImage(image_info,image);
-              image->depth=8;
-              if (image->next == (Image *) NULL)
-                goto Finish;
-              image=SyncNextImageInList(image);
-              image->columns=image->rows=0;
-              image->colors=0;
               break;
 
             case 0x1B:  /* Postscript l2 */
