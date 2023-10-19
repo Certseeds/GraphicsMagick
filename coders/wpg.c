@@ -1471,12 +1471,11 @@ UnpackRaster:
 
               if(pPalette!=NULL && PaletteItems>0)
               {
-                image->colors=WPG_Palette.NumOfEntries;
+                image->colors = PaletteItems; /*WPG_Palette.NumOfEntries;*/
                 if (!AllocateImageColormap(image,image->colors))
                   goto NoMemory;
                 image->storage_class = PseudoClass;
-                for (i=WPG_Palette.StartIndex;
-                   i < (int)WPG_Palette.NumOfEntries; i++)
+                for (i=0; i<(int)PaletteItems; i++)
                 {
                   image->colormap[i].red = ScaleCharToQuantum(pPalette[3*i]);
                   image->colormap[i].green=ScaleCharToQuantum(pPalette[3*i+1]);
