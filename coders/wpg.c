@@ -1475,13 +1475,14 @@ UnpackRaster:
 
               if(pPalette!=NULL && PaletteItems>0)
               {
-                image->colors = 1 << bpp;
-                if(PaletteItems < image->colors)
-                    image->colors = PaletteItems; /*WPG_Palette.NumOfEntries;*/
+                if(bpp>=16 || PaletteItems<(1<<bpp))
+                  image->colors = PaletteItems;	/*WPG_Palette.NumOfEntries;*/
+                else
+                  image->colors = 1 << bpp;
                 if (!AllocateImageColormap(image,image->colors))
                   goto NoMemory;
                 image->storage_class = PseudoClass;
-                for (i=0; i<image->colors; i++)
+                for (i=0; i<(int)image->colors; i++)
                 {
                   image->colormap[i].red = ScaleCharToQuantum(pPalette[3*i]);
                   image->colormap[i].green=ScaleCharToQuantum(pPalette[3*i+1]);
@@ -1653,7 +1654,7 @@ UnpackRaster1bpp:
                 ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
 
               if ( (WPG_Palette.StartIndex > WPG_Palette.NumOfEntries) ||
-                   (((WPG_Palette.NumOfEntries-WPG_Palette.StartIndex) >
+                   ((((unsigned long)WPG_Palette.NumOfEntries-(unsigned long)WPG_Palette.StartIndex) >
                      ((Rec2.RecordLength-2-2) / 3))) )
                  ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);
 ///////Temporary fix, should be removed//////////////////////////
