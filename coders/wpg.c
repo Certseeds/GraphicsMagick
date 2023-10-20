@@ -1208,8 +1208,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
   typedef struct
   {
-    unsigned int StartIndex;
-    unsigned int NumOfEntries;
+    magick_uint16_t StartIndex;
+    magick_uint16_t NumOfEntries;
   } WPGColorMapRec;
 
   /*
@@ -1265,7 +1265,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   magick_off_t FilePos, filesize;
 
   unsigned char *pPalette = NULL;
-  unsigned char PaletteItems = 0;
+  magick_uint16_t PaletteItems = 0;
   //unsigned char PaletteStartIDX = 0;
 
   tCTM CTM;         /*current transform matrix*/
@@ -1401,6 +1401,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
             case 0x0E:  /*Color palette */
               WPG_Palette.StartIndex=ReadBlobLSBShort(image);
               WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
+              if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                       "WPG Color palette:\n"
+                       "    StartIndex=%u\n"
+                       "    NumOfEntries=%u\n", (unsigned)WPG_Palette.StartIndex, (unsigned)WPG_Palette.NumOfEntries);
 
               PaletteItems = WPG_Palette.NumOfEntries;
               if(pPalette==NULL)
@@ -1408,7 +1412,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                 pPalette = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)3*256);
                 if(pPalette==NULL)
                     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-                for(i=0; i<255; i++)
+                for(i=0; i<=255; i++)
                 {
                   pPalette[3*i] = WPG1_Palette[i].Red;
                   pPalette[3*i+1] = WPG1_Palette[i].Green;
@@ -1471,11 +1475,13 @@ UnpackRaster:
 
               if(pPalette!=NULL && PaletteItems>0)
               {
-                image->colors = PaletteItems; /*WPG_Palette.NumOfEntries;*/
+                image->colors = 1 << bpp;
+                if(PaletteItems < image->colors)
+                    image->colors = PaletteItems; /*WPG_Palette.NumOfEntries;*/
                 if (!AllocateImageColormap(image,image->colors))
                   goto NoMemory;
                 image->storage_class = PseudoClass;
-                for (i=0; i<(int)PaletteItems; i++)
+                for (i=0; i<image->colors; i++)
                 {
                   image->colormap[i].red = ScaleCharToQuantum(pPalette[3*i]);
                   image->colormap[i].green=ScaleCharToQuantum(pPalette[3*i+1]);

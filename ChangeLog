@@ -1,4 +1,8 @@
 2023-10-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	coders/wpg.c Fix loop end to 256 insert "Palette" chunk header
+	to debug log.
+
+2023-10-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
 	coders/wpg.c Fix for potentiall access to uninitialised
 	object "Palette".
 
