@@ -1,3 +1,7 @@
+2023-10-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	coders/wpg.c Fix for potentiall access to uninitialised
+	object "Palette".
+
 2023-10-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/wpg.c: Do not store palette into image structure before
