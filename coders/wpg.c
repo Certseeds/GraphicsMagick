@@ -1657,7 +1657,7 @@ UnpackRaster1bpp:
               if (WPG_Palette.NumOfEntries == 0)
                 ThrowReaderException(CorruptImageError,UnrecognizedNumberOfColors,image);
 
-              if (WPG_Palette.NumOfEntries-1 > MaxMap)
+              if ((unsigned) (WPG_Palette.NumOfEntries-1) > MaxMap)
                 ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
 
               if ( (WPG_Palette.StartIndex > WPG_Palette.NumOfEntries) ||
