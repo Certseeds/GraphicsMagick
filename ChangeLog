@@ -1,4 +1,7 @@
-2023-10-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
+2023-10-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	coders/wpg.c Remove code duplicity for loading WPG1 and WPG2 palette.
+
+2023-10-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 	coders/wpg.c Fix loop end to 256 insert "Palette" chunk header
 	to debug log.
 

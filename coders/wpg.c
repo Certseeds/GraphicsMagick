@@ -1109,6 +1109,26 @@ return 0;
                             (unsigned int)_WPG_BITMAP_TYPE2.VertRes)
 
 
+typedef struct
+{
+    magick_uint16_t StartIndex;
+    magick_uint16_t NumOfEntries;
+} WPGColorMapRec;
+
+
+void LoadPaletteRec(Image *image, WPGColorMapRec *pWPG_Palette, const int logging)
+{
+  pWPG_Palette->StartIndex=ReadBlobLSBShort(image);
+  pWPG_Palette->NumOfEntries=ReadBlobLSBShort(image);
+  if(logging)
+    (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                "WPG Color palette:\n"
+                "    StartIndex=%u\n"
+                "    NumOfEntries=%u\n", (unsigned)pWPG_Palette->StartIndex, (unsigned)pWPG_Palette->NumOfEntries);
+
+}
+
+
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -1205,12 +1225,6 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
     unsigned int HorzRes;
     unsigned int VertRes;
   } WPGBitmapType2;
-
-  typedef struct
-  {
-    magick_uint16_t StartIndex;
-    magick_uint16_t NumOfEntries;
-  } WPGColorMapRec;
 
   /*
   typedef struct {
@@ -1385,7 +1399,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               image->columns=BitmapHeader1.Width;
               image->rows=BitmapHeader1.Heigth;
               bpp=BitmapHeader1.Depth;
-				// Whole palette is useless for bilevel image.
+				/* Whole palette is useless for bilevel image. */
               if(bpp==1)
               {
                 image->storage_class = PseudoClass;
@@ -1399,14 +1413,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               goto UnpackRaster;
 
             case 0x0E:  /*Color palette */
-              WPG_Palette.StartIndex=ReadBlobLSBShort(image);
-              WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
-              if(logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-                       "WPG Color palette:\n"
-                       "    StartIndex=%u\n"
-                       "    NumOfEntries=%u\n", (unsigned)WPG_Palette.StartIndex, (unsigned)WPG_Palette.NumOfEntries);
-
+              LoadPaletteRec(image,&WPG_Palette,logging);
               PaletteItems = WPG_Palette.NumOfEntries;
+              if(PaletteItems + WPG_Palette.StartIndex > 256)
+                  ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
               if(pPalette==NULL)
               {
                 pPalette = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)3*256);
@@ -1419,8 +1429,6 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   pPalette[3*i+2] = WPG1_Palette[i].Blue;
                 }
               }
-              if(PaletteItems + WPG_Palette.StartIndex > 256)
-                  ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               if(ReadBlob(image,PaletteItems*3,pPalette+3*WPG_Palette.StartIndex) != PaletteItems*3)
                   ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
               break;
@@ -1643,8 +1651,7 @@ UnpackRaster1bpp:
               StartWPG.PosSizePrecision=ReadBlobByte(image);
               break;
             case 0x0C:    /* Color palette */
-              WPG_Palette.StartIndex=ReadBlobLSBShort(image);
-              WPG_Palette.NumOfEntries=ReadBlobLSBShort(image);
+              LoadPaletteRec(image,&WPG_Palette,logging);
 
               /* Sanity check for amount of palette entries. */
               if (WPG_Palette.NumOfEntries == 0)
