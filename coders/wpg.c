@@ -1415,7 +1415,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
             case 0x0E:  /*Color palette */
               LoadPaletteRec(image,&WPG_Palette,logging);
               PaletteItems = WPG_Palette.NumOfEntries;
-              if(PaletteItems + WPG_Palette.StartIndex > 256)
+              if((magick_uint32_t)PaletteItems + WPG_Palette.StartIndex > 256)
                   ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
               if(pPalette==NULL)
               {
