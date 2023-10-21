@@ -2489,6 +2489,7 @@ static void AddNodeMedianList(MedianPixelList *pixel_list,
     This loop consumes most of the time.
   */
   search=65536UL;
+  (void) memset(update, 0, sizeof(update));
   for (level=list->level; level >= 0; level--)
     {
       while (list->nodes[search].next[level] < color)
