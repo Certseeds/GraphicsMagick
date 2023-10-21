@@ -415,8 +415,8 @@ magick_off_t TotalSize = 0;
           ThrowException(exception,CorruptImageError, UnableToUncompressImage, orig->filename);
           return NULL;
         }
-      fwrite(decompress_block, 4096-zip_info.avail_out, 1, mat_file);
-      TotalSize += 4096-zip_info.avail_out;
+      fwrite(decompress_block, (size_t) 4096-zip_info.avail_out, 1, mat_file);
+      TotalSize += (size_t) 4096-zip_info.avail_out;
 
       if(zip_status == Z_STREAM_END) goto DblBreak;
     }
@@ -629,7 +629,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     if(HDR.Type[1]==0)          /* Find Min and Max Values for doubles */
     {
       if (MagickFindRawImageMinMax(image, import_options->endian, HDR.nRows,
-                                      HDR.nCols, DoublePixel, ldblk, BImgBuff,
+                                      HDR.nCols, DoublePixel, (unsigned int)ldblk, BImgBuff,
                                       &import_options->double_minvalue,
                                    &import_options->double_maxvalue) != MagickPass)
         goto skip_reading_current;
@@ -637,7 +637,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
     if(HDR.Type[1]==1)          /* Find Min and Max Values for floats */
     {
       if (MagickFindRawImageMinMax(image, import_options->endian, HDR.nRows,
-                                      HDR.nCols, FloatPixel, ldblk, BImgBuff,
+                                      HDR.nCols, FloatPixel, (unsigned int)ldblk, BImgBuff,
                                       &import_options->double_minvalue,
                                       &import_options->double_maxvalue) != MagickPass)
         goto skip_reading_current;
@@ -685,7 +685,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       if(HDR.Type[1]==0)                /* Find Min and Max Values for doubles */
       {
         if (MagickFindRawImageMinMax(image, import_options->endian, HDR.nRows,
-                                     HDR.nCols, DoublePixel, ldblk, BImgBuff,
+                                     HDR.nCols, DoublePixel, (unsigned int)ldblk, BImgBuff,
                                      &MinVal_c, &MaxVal_c) != MagickPass)
           goto skip_reading_current;
         for(i=0; i<(long)HDR.nCols; i++)
@@ -702,7 +702,7 @@ size_t (*ReadBlobXXXFloats)(Image *image, size_t len, float *data);
       if(HDR.Type[1]==1)                /* Find Min and Max Values for floats */
       {
         if (MagickFindRawImageMinMax(image, import_options->endian, HDR.nRows,
-                                     HDR.nCols, FloatPixel, ldblk, BImgBuff,
+                                     HDR.nCols, FloatPixel, (unsigned int)ldblk, BImgBuff,
                                      &MinVal_c, &MaxVal_c) != MagickPass)
           goto skip_reading_current;
         for(i=0; i<(long)HDR.nCols; i++)
@@ -1154,7 +1154,7 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
     if (CellType==miDOUBLE)        /* Find Min and Max Values for floats */
     {
       if (MagickFindRawImageMinMax(image2, import_options.endian,MATLAB_HDR.SizeX,
-                                   MATLAB_HDR.SizeY,DoublePixel, ldblk, BImgBuff,
+                                   MATLAB_HDR.SizeY,DoublePixel, (unsigned int)ldblk, BImgBuff,
                                    &import_options.double_minvalue,
                                    &import_options.double_maxvalue) != MagickPass)
         goto skip_reading_current;
@@ -1165,7 +1165,7 @@ NoMemory: ThrowImg2MATReaderException(ResourceLimitError, MemoryAllocationFailed
     if (CellType==miSINGLE)        /* Find Min and Max Values for floats */
     {
       if (MagickFindRawImageMinMax(image2, import_options.endian,MATLAB_HDR.SizeX,
-                                   MATLAB_HDR.SizeY,FloatPixel, ldblk, BImgBuff,
+                                   MATLAB_HDR.SizeY,FloatPixel, (unsigned int)ldblk, BImgBuff,
                                    &import_options.double_minvalue,
                                    &import_options.double_maxvalue) != MagickPass)
         goto skip_reading_current;
@@ -1251,14 +1251,14 @@ ExitLoop:
       if (CellType==miDOUBLE)
       {
         if (MagickFindRawImageMinMax(image2, import_options.endian, MATLAB_HDR.SizeX,
-                                     MATLAB_HDR.SizeY, DoublePixel, ldblk, BImgBuff,
+                                     MATLAB_HDR.SizeY, DoublePixel, (unsigned int)ldblk, BImgBuff,
                                      &MinVal_c, &MaxVal_c) != MagickPass)
           ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       }
       if(CellType==miSINGLE)
       {
         if (MagickFindRawImageMinMax(image2, import_options.endian, MATLAB_HDR.SizeX,
-                                     MATLAB_HDR.SizeY, FloatPixel, ldblk, BImgBuff,
+                                     MATLAB_HDR.SizeY, FloatPixel, (unsigned int)ldblk, BImgBuff,
                                      &MinVal_c, &MaxVal_c)  != MagickPass)
           ThrowImg2MATReaderException(CorruptImageError,UnexpectedEndOfFile,image);
       }

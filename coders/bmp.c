@@ -304,7 +304,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
                 */
                 x=0;
                 y++;
-                q=pixels+y*image->columns;
+                q=pixels+y*(size_t) image->columns;
                 break;
               }
             case 0x02:
@@ -320,7 +320,7 @@ static MagickPassFail DecodeImage(Image *image,const unsigned long compression,
                 if (byte == EOF)
                   return MagickFail;
                 y+=byte;
-                q=pixels+y*image->columns+x;
+                q=pixels+y*(size_t) image->columns+x;
                 break;
               }
             default:
@@ -460,7 +460,7 @@ static size_t EncodeImage(Image *image,const size_t bytes_per_line,
       /*
         Determine runlength.
       */
-      for (i=1; ((x+i) < bytes_per_line); i++)
+      for (i=1; (((size_t) x+i) < bytes_per_line); i++)
         if ((i == 255) || (*(p+i) != *p))
           break;
       *q++=(unsigned char) i;
@@ -1307,7 +1307,7 @@ CheckBitSize:
           if ((offset < start_position) ||
               (SeekBlob(image,offset,SEEK_SET) != (magick_off_t) offset))
             ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
-          if (ReadBlob(image,packet_size*image->colors,(char *) bmp_colormap)
+          if (ReadBlob(image,(size_t) packet_size*image->colors,(char *) bmp_colormap)
               != (size_t) packet_size*image->colors)
             ThrowBMPReaderException(CorruptImageError,UnexpectedEndOfFile,image);
           p=bmp_colormap;
@@ -1435,7 +1435,7 @@ CheckBitSize:
             DecodeImage() normally decompresses to rows*columns bytes of data.
           */
           status=DecodeImage(image,bmp_info.compression,pixels,
-                             image->rows*image->columns);
+                             (size_t) image->rows*image->columns);
           if (status == MagickFail)
             ThrowBMPReaderException(CorruptImageError,UnableToRunlengthDecodeImage,
                                     image);
@@ -1549,7 +1549,7 @@ CheckBitSize:
             */
             for (y=(long) image->rows-1; y >= 0; y--)
               {
-                p=pixels+(image->rows-y-1)*bytes_per_line;
+                p=pixels+((size_t)image->rows-y-1)*bytes_per_line;
                 q=SetImagePixels(image,0,y,image->columns,1);
                 if (q == (PixelPacket *) NULL)
                   break;
@@ -1561,7 +1561,7 @@ CheckBitSize:
                 if (image->previous == (Image *) NULL)
                   if (QuantumTick(y,image->rows))
                     {
-                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                      status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
@@ -1581,7 +1581,7 @@ CheckBitSize:
               bytes_per_line=image->columns;
             for (y=(long) image->rows-1; y >= 0; y--)
               {
-                p=pixels+(image->rows-y-1)*bytes_per_line;
+                p=pixels+((size_t)image->rows-y-1)*bytes_per_line;
                 q=SetImagePixels(image,0,y,image->columns,1);
                 if (q == (PixelPacket *) NULL)
                   break;
@@ -1593,7 +1593,7 @@ CheckBitSize:
                 if (image->previous == (Image *) NULL)
                   if (QuantumTick(y,image->rows))
                     {
-                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                      status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
@@ -1615,11 +1615,11 @@ CheckBitSize:
                 bmp_info.compression != BI_BITFIELDS &&
                 bmp_info.compression != BI_ALPHABITFIELDS)
               ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)
-                bytes_per_line=2*(image->columns+image->columns%2);
+                bytes_per_line=2*((size_t)image->columns+image->columns%2);
             image->storage_class=DirectClass;
             for (y=(long) image->rows-1; y >= 0; y--)
               {
-                p=pixels+(image->rows-y-1)*bytes_per_line;
+                p=pixels+((size_t)image->rows-y-1)*bytes_per_line;
                 q=SetImagePixels(image,0,y,image->columns,1);
                 if (q == (PixelPacket *) NULL)
                   break;
@@ -1658,7 +1658,7 @@ CheckBitSize:
                 if (image->previous == (Image *) NULL)
                   if (QuantumTick(y,image->rows))
                     {
-                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                      status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
@@ -1673,10 +1673,10 @@ CheckBitSize:
             /*
               Convert DirectColor scanline.
             */
-            bytes_per_line=4*((image->columns*24+31)/32);
+            bytes_per_line=4*(((size_t)image->columns*24+31)/32);
             for (y=(long) image->rows-1; y >= 0; y--)
               {
-                p=pixels+(image->rows-y-1)*bytes_per_line;
+                p=pixels+((size_t)image->rows-y-1)*bytes_per_line;
                 q=SetImagePixels(image,0,y,image->columns,1);
                 if (q == (PixelPacket *) NULL)
                   break;
@@ -1692,7 +1692,7 @@ CheckBitSize:
                 if (image->previous == (Image *) NULL)
                   if (QuantumTick(y,image->rows))
                     {
-                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                      status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
@@ -1712,13 +1712,13 @@ CheckBitSize:
                bmp_info.compression != BI_BITFIELDS &&
                bmp_info.compression != BI_ALPHABITFIELDS)
               ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)
-                bytes_per_line=4*(image->columns);
+                bytes_per_line=4*((size_t) image->columns);
             for (y=(long) image->rows-1; y >= 0; y--)
               {
                 magick_uint32_t
                   pixel;
 
-                p=pixels+(image->rows-y-1)*bytes_per_line;
+                p=pixels+((size_t) image->rows-y-1)*bytes_per_line;
                 q=SetImagePixels(image,0,y,image->columns,1);
                 if (q == (PixelPacket *) NULL)
                   break;
@@ -1760,7 +1760,7 @@ CheckBitSize:
                 if (image->previous == (Image *) NULL)
                   if (QuantumTick(y,image->rows))
                     {
-                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                      status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
@@ -1780,7 +1780,7 @@ CheckBitSize:
             */
             for(y=(long) image->rows-1; y >= 0; y--)
               {
-                p = pixels+(image->rows-y-1)*bytes_per_line;
+                p = pixels+((size_t) image->rows-y-1)*bytes_per_line;
                 q = SetImagePixels(image,0,y,image->columns,1);
                 if(q == (PixelPacket *) NULL)
                   break;
@@ -1799,7 +1799,7 @@ CheckBitSize:
                 if(image->previous == (Image *) NULL)
                   if(QuantumTick(y,image->rows))
                     {
-                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                      status=MagickMonitorFormatted((size_t)image->rows-y-1,image->rows,
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
@@ -1818,7 +1818,7 @@ CheckBitSize:
             */
             for(y=(long) image->rows-1; y >= 0; y--)
               {
-                p = pixels+(image->rows-y-1)*bytes_per_line;
+                p = pixels+((size_t) image->rows-y-1)*bytes_per_line;
                 q = SetImagePixels(image,0,y,image->columns,1);
                 if(q == (PixelPacket *) NULL)
                   break;
@@ -1838,7 +1838,7 @@ CheckBitSize:
                 if(image->previous == (Image *) NULL)
                   if(QuantumTick(y,image->rows))
                     {
-                      status=MagickMonitorFormatted(image->rows-y-1,image->rows,
+                      status=MagickMonitorFormatted((size_t) image->rows-y-1,image->rows,
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
@@ -2267,11 +2267,11 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
               (void) SetImageType(image,TrueColorType);
             else
               {
-                bmp_info.file_size+=3U*(1U << bmp_info.bits_per_pixel);
+                bmp_info.file_size+=3U*(((size_t)1U) << bmp_info.bits_per_pixel);
                 bmp_info.offset_bits+=3U*(1U << bmp_info.bits_per_pixel);
                 if (type > 2)
                   {
-                    bmp_info.file_size+=(size_t) (1U << bmp_info.bits_per_pixel);
+                    bmp_info.file_size+=((size_t)1U << bmp_info.bits_per_pixel);
                     bmp_info.offset_bits+=(1U << bmp_info.bits_per_pixel);
                   }
               }
@@ -2404,14 +2404,14 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                                     "  Output %u-bit PseudoClass pixels",
                                     bmp_info.bits_per_pixel);
             ExportPixelAreaOptionsInit(&export_options);
-            export_options.pad_bytes=(unsigned long) (bytes_per_line - ((image->columns+7)/8));
+            export_options.pad_bytes=(unsigned long) (bytes_per_line - (((size_t) image->columns+7)/8));
             export_options.pad_value=0x00;
             for (y=0; y < image->rows; y++)
               {
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
                 if (p == (const PixelPacket *) NULL)
                   break;
-                q=pixels+(image->rows-y-1)*bytes_per_line;
+                q=pixels+((size_t) image->rows-y-1)*bytes_per_line;
                 if (ExportImagePixelArea(image,IndexQuantum,1,q,&export_options,0)
                     == MagickFail)
                   {
@@ -2446,7 +2446,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
                 if (p == (const PixelPacket *) NULL)
                   break;
-                q=pixels+(image->rows-y-1)*bytes_per_line;
+                q=pixels+((size_t) image->rows-y-1)*bytes_per_line;
                 if (ExportImagePixelArea(image,IndexQuantum,4,q,&export_options,0)
                     == MagickFail)
                   {
@@ -2480,7 +2480,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
                 if (p == (const PixelPacket *) NULL)
                   break;
-                q=pixels+(image->rows-y-1)*bytes_per_line;
+                q=pixels+((size_t) image->rows-y-1)*bytes_per_line;
                 if (ExportImagePixelArea(image,IndexQuantum,8,q,&export_options,0)
                     == MagickFail)
                   {
@@ -2515,7 +2515,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                 p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
                 if (p == (const PixelPacket *) NULL)
                   break;
-                q=pixels+(image->rows-y-1)*bytes_per_line;
+                q=pixels+((size_t) image->rows-y-1)*bytes_per_line;
                 for (x=0; x < image->columns; x++)
                   {
                     *q++=ScaleQuantumToChar(p->blue);
@@ -2558,7 +2558,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
             /*
               Convert run-length encoded raster pixels.
             */
-            length=2*(bytes_per_line+2)*(image->rows+2)+2;
+            length=2*(bytes_per_line+2)*((size_t)image->rows+2)+2;
             bmp_data=MagickAllocateResourceLimitedMemory(unsigned char *,length);
             if (bmp_data == (unsigned char *) NULL)
               {
@@ -2738,7 +2738,7 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "  Colormap: %u entries",image->colors);
             bmp_colormap=MagickAllocateResourceLimitedArray(unsigned char *,4,
-                                                          (size_t) (1L << bmp_info.bits_per_pixel));
+                                                           ((size_t)1L << bmp_info.bits_per_pixel));
             if (bmp_colormap == (unsigned char *) NULL)
               {
                 MagickFreeResourceLimitedMemory(pixels);
@@ -2762,10 +2762,10 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                   *q++=(Quantum) 0x0;
                 }
             if (type <= 2)
-              (void) WriteBlob(image,3*(1UL << bmp_info.bits_per_pixel),
+              (void) WriteBlob(image,3*((size_t)1UL << bmp_info.bits_per_pixel),
                              (char *) bmp_colormap);
             else
-              (void) WriteBlob(image,4*(1UL << bmp_info.bits_per_pixel),
+              (void) WriteBlob(image,4*((size_t)1UL << bmp_info.bits_per_pixel),
                              (char *) bmp_colormap);
             MagickFreeResourceLimitedMemory(bmp_colormap);
           }

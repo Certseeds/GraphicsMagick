@@ -5281,17 +5281,17 @@ static unsigned int WriteLOGOImage(const ImageInfo *image_info,Image *image)
       (logo_image->columns*logo_image->rows < 4097))
     {
       (void) strlcpy(logo_image->magick,"PBM",sizeof(logo_image->magick));
-      length=((logo_image->columns*logo_image->rows)/8)+16;
+      length=(((size_t)logo_image->columns*logo_image->rows)/8)+16;
     }
   else if (LocaleCompare(image_info->magick,"ROSE") == 0)
     {
       (void) strlcpy(logo_image->magick,"PPM",sizeof(logo_image->magick));
-      length=3*logo_image->columns*logo_image->rows;
+      length=3* (size_t)logo_image->columns*logo_image->rows;
     }
   else
     {
       (void) strlcpy(logo_image->magick,"GIF",sizeof(logo_image->magick));
-      length=logo_image->columns*logo_image->rows;
+      length= (size_t)logo_image->columns*logo_image->rows;
     }
   blob=ImageToBlob(image_info,logo_image,&length,&image->exception);
   if (blob == (void *) NULL)
@@ -5314,7 +5314,7 @@ static unsigned int WriteLOGOImage(const ImageInfo *image_info,Image *image)
   p=(char *) blob;
   for (i=0; i < length ; i++)
   {
-    FormatString(buffer,"0x%02X%s",*p & 0xff, i+1 < length ? ", " : "");
+    FormatString(buffer,"0x%02X%s",*p & 0xff, (size_t)i+1 < length ? ", " : "");
     (void) WriteBlobString(image,buffer);
     if (((i+1) % 12) == 0)
       {

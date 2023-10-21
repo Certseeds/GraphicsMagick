@@ -104,8 +104,8 @@ static void Upsample(const unsigned long width,const unsigned long height,
   assert(pixels != (unsigned char *) NULL);
   for (y=0; y < (long) height; y++)
   {
-    p=pixels+(height-1-y)*scaled_width+(width-1);
-    q=pixels+((height-1-y) << 1)*scaled_width+((width-1) << 1);
+    p=pixels+((size_t)height-1-y)*scaled_width+((size_t)width-1);
+    q=pixels+(((size_t)height-1-y) << 1)*(size_t)scaled_width+(((size_t)width-1) << 1);
     *q=(*p);
     *(q+1)=(*(p));
     for (x=1; x < (long) width; x++)
@@ -116,11 +116,11 @@ static void Upsample(const unsigned long width,const unsigned long height,
       *(q+1)=(unsigned char) ((((long) *p)+((long) *(p+1))+1) >> 1);
     }
   }
-  for (y=0; y < (long) (height-1); y++)
+  for (y=0; y < (long) ((size_t)height-1); y++)
   {
-    p=pixels+(y << 1)*scaled_width;
-    q=p+scaled_width;
-    r=q+scaled_width;
+    p=pixels+((size_t)y << 1)*scaled_width;
+    q=p+(size_t)scaled_width;
+    r=q+ (size_t)scaled_width;
     for (x=0; x < (long) (width-1); x++)
     {
       *q=(unsigned char) ((((long) *p)+((long) *r)+1) >> 1);
@@ -133,9 +133,9 @@ static void Upsample(const unsigned long width,const unsigned long height,
     *q++=(unsigned char) ((((long) *p++)+((long) *r++)+1) >> 1);
     *q++=(unsigned char) ((((long) *p++)+((long) *r++)+1) >> 1);
   }
-  p=pixels+(2*height-2)*scaled_width;
-  q=pixels+(2*height-1)*scaled_width;
-  (void) memcpy(q,p,2*width);
+  p=pixels+(2*(size_t)height-2)* (size_t)scaled_width;
+  q=pixels+(2*(size_t)height-1)* (size_t)scaled_width;
+  (void) memcpy(q,p,2*(size_t)width);
 }
 
 /*
@@ -272,7 +272,7 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
   for (i=0; i < (image->columns > 1536 ? 3 : 1); i++)
   {
     PCDGetBits(8);
-    length=(sum & 0xff)+1;
+    length=(size_t)(sum & 0xff)+1;
     pcd_table[i]=MagickAllocateResourceLimitedArray(PCDTable *,length,sizeof(PCDTable));
     if (pcd_table[i] == (PCDTable *) NULL)
       {
@@ -349,20 +349,20 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
         {
           case 0:
           {
-            q=luma+row*image->columns;
+            q=luma+row*(size_t)image->columns;
             count=(long) image->columns;
             break;
           }
           case 2:
           {
-            q=chroma1+(row >> 1)*image->columns;
+            q=chroma1+(row >> 1)*(size_t)image->columns;
             count=(long) (image->columns >> 1);
             plane--;
             break;
           }
           case 3:
           {
-            q=chroma2+(row >> 1)*image->columns;
+            q=chroma2+(row >> 1)*(size_t)image->columns;
             count=(long) (image->columns >> 1);
             plane--;
             break;
@@ -606,7 +606,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Determine resolution by subimage specification.
   */
-  number_pixels=image->columns*image->rows;
+  number_pixels= (size_t)image->columns*image->rows;
   if (number_pixels == 0)
     {
       subimage=3;
@@ -763,7 +763,7 @@ static Image *ReadPCDImage(const ImageInfo *image_info,ExceptionInfo *exception)
             image=SyncNextImageInList(image);
           }
         (void) SetMonitorHandler(handler);
-        if (!MagickMonitorFormatted(j-1,number_images,&image->exception,
+        if (!MagickMonitorFormatted((size_t)j-1,number_images,&image->exception,
                                     LoadImageText,image->filename,
                                     image->columns,image->rows))
           break;

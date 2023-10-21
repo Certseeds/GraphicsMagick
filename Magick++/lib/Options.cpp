@@ -506,7 +506,7 @@ void Magick::Options::strokeDashArray ( const double* strokeDashArray_ )
       unsigned int x;
       for (x=0; strokeDashArray_[x]; x++) {};
       // Allocate elements
-      _drawInfo->dash_pattern = MagickAllocateMemory(double*,(x+1)*sizeof(double));
+      _drawInfo->dash_pattern = MagickAllocateMemory(double*,((size_t)x+1)*sizeof(double));
 
       if (!_drawInfo->dash_pattern)
         throwExceptionExplicit( ResourceLimitError,
@@ -515,7 +515,7 @@ void Magick::Options::strokeDashArray ( const double* strokeDashArray_ )
       // Copy elements
       if (_drawInfo->dash_pattern)
         memcpy(_drawInfo->dash_pattern,strokeDashArray_,
-               (x+1)*sizeof(double));
+               ((size_t)x+1)*sizeof(double));
     }
 }
 const double* Magick::Options::strokeDashArray ( void ) const

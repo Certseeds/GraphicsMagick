@@ -2377,7 +2377,7 @@ Magick::Color Magick::Image::boxColor ( void ) const
 void Magick::Image::cacheThreshold ( const unsigned int threshold_ )
 {
   (void) SetMagickResourceLimit(MemoryResource,threshold_);
-  (void) SetMagickResourceLimit(MapResource,2*threshold_);
+  (void) SetMagickResourceLimit(MapResource,(size_t)2*threshold_);
 }
 
 void Magick::Image::chromaBluePrimary ( const double x_, const double y_ )

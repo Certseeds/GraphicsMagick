@@ -3206,8 +3206,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                                          image);
               }
-            tiles_total=(((image->columns/tile_columns)+((image->columns % tile_columns) ? 1 : 0))
-                         *((image->rows/tile_rows)+((image->rows % tile_rows) ? 1 : 0)))*max_sample;
+            tiles_total=((((size_t) image->columns/tile_columns)+((image->columns % tile_columns) ? 1 : 0))
+                         *(((size_t) image->rows/tile_rows)+((image->rows % tile_rows) ? 1 : 0)))*max_sample;
             /*
               Compute per-row stride.
             */
@@ -3497,8 +3497,8 @@ ReadTIFFImage(const ImageInfo *image_info,ExceptionInfo *exception)
                 ThrowTIFFReaderException(CoderError,ImageIsNotTiled,image);
               }
             tile_total_pixels=MagickArraySize(tile_columns,tile_rows);
-            tiles_total=(((image->columns/tile_columns)+((image->columns % tile_columns) ? 1 : 0))
-                         *((image->rows/tile_rows)+((image->rows % tile_rows) ? 1 : 0)));
+            tiles_total=((((size_t) image->columns/tile_columns)+((image->columns % tile_columns) ? 1 : 0))
+                         *(((size_t) image->rows/tile_rows)+((image->rows % tile_rows) ? 1 : 0)));
             if (logging)
               {
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Reading TIFF tiles ...");

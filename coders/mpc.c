@@ -678,7 +678,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     i=number_of_profiles;
 
                     new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
-                                                                      number_of_profiles+1,sizeof(ProfileInfo));
+                        (size_t)number_of_profiles+1,sizeof(ProfileInfo));
                     if (new_profiles == (ProfileInfo *) NULL)
                       ThrowMPCReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                     profiles=new_profiles;

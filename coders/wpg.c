@@ -1429,7 +1429,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   pPalette[3*i+2] = WPG1_Palette[i].Blue;
                 }
               }
-              if(ReadBlob(image,PaletteItems*3,pPalette+3*WPG_Palette.StartIndex) != PaletteItems*3)
+              if(ReadBlob(image,(size_t) PaletteItems*3,pPalette+((size_t)3*WPG_Palette.StartIndex)) != (size_t) PaletteItems*3)
                   ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
               break;
 

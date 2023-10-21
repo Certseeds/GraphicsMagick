@@ -1106,7 +1106,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
                     i=number_of_profiles;
                     new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
-                                                                      number_of_profiles+1,sizeof(ProfileInfo));
+                                                                     (size_t)number_of_profiles+1,sizeof(ProfileInfo));
                     if (new_profiles == (ProfileInfo *) NULL)
                       ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                     profiles=new_profiles;
@@ -1290,7 +1290,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                       ThrowMIFFReaderException(CorruptImageError,ImproperImageHeader,image);
                     i=number_of_profiles;
                     new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
-                                                                      number_of_profiles+1,sizeof(ProfileInfo));
+                                                                     (size_t)number_of_profiles+1,sizeof(ProfileInfo));
                     if (new_profiles == (ProfileInfo *) NULL)
                       ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                     profiles=new_profiles;
@@ -1568,7 +1568,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
             if (colormap == (unsigned char *) NULL)
               ThrowMIFFReaderException(ResourceLimitError,MemoryAllocationFailed,
                 image);
-            (void) ReadBlob(image,packet_size*image->colors,colormap);
+            (void) ReadBlob(image, (size_t)packet_size*image->colors,colormap);
             p=colormap;
             switch (depth)
               {
@@ -1966,7 +1966,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               if (q == (PixelPacket *) NULL)
                 break;
               pixels_p=pixels;
-              if (ReadBlobZC(image,packet_size*image->columns,&pixels_p)
+              if (ReadBlobZC(image, (size_t)packet_size*image->columns,&pixels_p)
                   != (size_t) packet_size*image->columns)
                 ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
                                          image);
@@ -2470,7 +2470,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
       packet_size+=quantum_size/8;
     if (compression == RLECompression)
       packet_size+=quantum_size/8;
-    length=packet_size*image->columns;
+    length= (size_t)packet_size*image->columns;
     pixels=MagickAllocateResourceLimitedMemory(unsigned char *,length);
     length=(size_t) (1.01*packet_size*image->columns+600);
     if ((compression == BZipCompression) || (compression == ZipCompression))
@@ -2795,7 +2795,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
             }
 #endif /* QuantumDepth > 16 */
           } /* switch (depth) */
-        (void) WriteBlob(image,packet_size*image->colors,colormap);
+        (void) WriteBlob(image, (size_t)packet_size*image->colors,colormap);
         MagickFreeResourceLimitedMemory(colormap);
       }
     /*
@@ -2966,7 +2966,7 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
         default:
         {
           (void) ExportImagePixelArea(image,quantum_type,quantum_size,pixels,0,0);
-          (void) WriteBlob(image,packet_size*image->columns,pixels);
+          (void) WriteBlob(image, (size_t)packet_size*image->columns,pixels);
           break;
         }
       }

@@ -553,9 +553,9 @@ static void JPEGErrorHandler(j_common_ptr jpeg_info)
                                                                         \
     if (((_c = GetCharacter(jpeg_info)) != EOF) && (_c >= 0))           \
       {                                                                 \
-        length=_c*256;                                                  \
+        length=(size_t) _c*256;                                         \
         if (((_c = GetCharacter(jpeg_info)) != EOF) && (_c >= 0))       \
-          length+=_c;                                                   \
+          length+=(size_t)_c;                                           \
         else                                                            \
           length=0;                                                     \
       }                                                                 \
@@ -3097,7 +3097,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     Convert MIFF to JPEG raster pixels.
   */
   jpeg_pixels=MagickAllocateResourceLimitedArray(JSAMPLE *,
-    jpeg_info.input_components*image->columns,sizeof(JSAMPLE));
+      (size_t)jpeg_info.input_components*image->columns,sizeof(JSAMPLE));
   if (jpeg_pixels == (JSAMPLE *) NULL)
     {
       if (huffman_memory)

@@ -6952,7 +6952,7 @@ WandExport char **MagickQueryFormats(const char *pattern,
   char
     **format_array;
 
-  int
+  unsigned int
     entries,
     i;
 
@@ -6974,7 +6974,7 @@ WandExport char **MagickQueryFormats(const char *pattern,
       return 0;
     }
 
-  format_array=MagickAllocateMemory(char **,(entries+1)*sizeof(char *));
+  format_array=MagickAllocateMemory(char **,((size_t)entries+1)*sizeof(char *));
   if (!format_array)
     {
       MagickFreeMemory(magick_info);

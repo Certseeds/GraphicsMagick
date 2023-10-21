@@ -2615,7 +2615,7 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       mng_info->quantum_scanline=
         MagickAllocateMemory(Quantum *,
                              (image->matte ?  2 : 1) *
-                             image->columns*sizeof(Quantum));
+                             (size_t) image->columns*sizeof(Quantum));
       if (mng_info->quantum_scanline == (Quantum *) NULL)
         png_error(ping, "Could not allocate quantum_scanline");
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -8531,9 +8531,9 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
               *(png_pixels+i)=(*(png_pixels+i) > 128) ? 255 : 0;
             png_write_row(ping,png_pixels);
             if (image->previous == (Image *) NULL)
-              if (QuantumTick((magick_uint64_t) y*(pass+1),
+              if (QuantumTick((magick_uint64_t) y*((magick_uint64_t)pass+1),
                               (magick_uint64_t) image->rows * num_passes))
-                if (!MagickMonitorFormatted((magick_uint64_t) y*(pass+1),
+                if (!MagickMonitorFormatted((magick_uint64_t) y*((magick_uint64_t)pass+1),
                                             (magick_uint64_t) image->rows*
                                             num_passes,
                                             &image->exception,
@@ -8590,9 +8590,9 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                   }
                 png_write_row(ping,png_pixels);
                 if (image->previous == (Image *) NULL)
-                  if (QuantumTick((magick_uint64_t) y*(pass+1),
+                  if (QuantumTick((magick_uint64_t) y*((magick_uint64_t) pass+1),
                                   (magick_uint64_t) image->rows * num_passes))
-                    if (!MagickMonitorFormatted((magick_uint64_t) y*(pass+1),
+                    if (!MagickMonitorFormatted((magick_uint64_t) y*((magick_uint64_t) pass+1),
                                                 (magick_uint64_t) image->rows*
                                                 num_passes,
                                                 &image->exception,SaveImageTag,
@@ -8654,11 +8654,11 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                         }
                       png_write_row(ping,png_pixels);
                       if (image->previous == (Image *) NULL)
-                      if (QuantumTick((magick_uint64_t) y * (pass+1),
+                      if (QuantumTick((magick_uint64_t) y * ((magick_uint64_t) pass+1),
                                       (magick_uint64_t) image->rows *
                                       num_passes))
                         if (!MagickMonitorFormatted((magick_uint64_t)
-                                                    y*(pass+1),
+                                                    y*((magick_uint64_t) pass+1),
                                                     (magick_uint64_t)
                                                     image->rows*num_passes,
                                                     &image->exception,
@@ -8700,11 +8700,11 @@ static MagickPassFail WriteOnePNGImage(MngInfo *mng_info,
                                                     png_pixels,0,0);
                       png_write_row(ping,png_pixels);
                       if (image->previous == (Image *) NULL)
-                        if (QuantumTick((magick_uint64_t) y * (pass+1),
+                        if (QuantumTick((magick_uint64_t) y * ((magick_uint64_t) pass+1),
                                         (magick_uint64_t) image->rows *
                                         num_passes))
                           if (!MagickMonitorFormatted((magick_uint64_t)
-                                                      y*(pass+1),
+                                                      y*((magick_uint64_t) pass+1),
                                                       (magick_uint64_t)
                                                       image->rows*num_passes,
                                                       &image->exception,
@@ -9365,7 +9365,7 @@ static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
         num_bytes=10L;
       (void) WriteBlobMSBULong(image,num_bytes-4L);
       PNGType(chunk,mng_bKGD);
-      LogPNGChunk(logging,mng_bKGD,num_bytes-4L);
+      LogPNGChunk(logging,mng_bKGD,((size_t) num_bytes-4L));
       red=ScaleQuantumToChar(image->background_color.red);
       green=ScaleQuantumToChar(image->background_color.green);
       blue=ScaleQuantumToChar(image->background_color.blue);
@@ -9515,7 +9515,7 @@ static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
                   /* Found an IDAT chunk. */
                   (void) WriteBlobMSBULong(image,(unsigned long) len);
                   LogPNGChunk(logging,mng_IDAT,len);
-                  (void) WriteBlob(image,len+4,(char *) p);
+                  (void) WriteBlob(image,(size_t) len+4,(char *) p);
                   (void) WriteBlobMSBULong(image,
                                            crc32(0,p,len+4));
                 }
@@ -9527,7 +9527,7 @@ static MagickPassFail WriteOneJNGImage(MngInfo *mng_info,
                                           " length=%lu.",
                                           *(p),*(p+1),*(p+2),*(p+3),len);
                 }
-              p+=(8+len);
+              p+=((size_t) 8+len);
             }
         }
       else
@@ -10390,7 +10390,7 @@ static unsigned int WriteMNGImage(const ImageInfo *image_info,Image *image)
               chunk[5+i*3]=ScaleQuantumToChar(image->colormap[i].green) & 0xff;
               chunk[6+i*3]=ScaleQuantumToChar(image->colormap[i].blue) & 0xff;
             }
-          (void) WriteBlob(image,data_length+4,(char *) chunk);
+          (void) WriteBlob(image,(size_t) data_length+4,(char *) chunk);
           (void) WriteBlobMSBULong(image,crc32(0,chunk,(int) (data_length+4)));
           mng_info->have_write_global_plte=MagickTrue;
         }
@@ -10447,7 +10447,7 @@ static unsigned int WriteMNGImage(const ImageInfo *image_info,Image *image)
                           chunk[6+i*3]=
                              ScaleQuantumToChar(image->colormap[i].blue);
                         }
-                      (void) WriteBlob(image,data_length+4,(char *) chunk);
+                      (void) WriteBlob(image,(size_t) data_length+4,(char *) chunk);
                       (void) WriteBlobMSBULong(image,
                                                crc32(0,chunk,(int)
                                                (data_length+4)));
