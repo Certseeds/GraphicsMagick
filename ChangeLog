@@ -1,3 +1,9 @@
+2023-10-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/wpg.c Do not touch to image structure from palette reader.
+	"RecordLength" is a 32bit variable, it should not be long that expands
+	to 64bits.
+
 2023-10-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (CommandAccessMonitor): Add "Access Request: "

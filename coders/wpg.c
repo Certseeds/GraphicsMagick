@@ -246,7 +246,7 @@ static unsigned int IsWPG(const unsigned char *magick,const size_t length)
   return(False);
 }
 
-static int Rd_WP_DWORD(Image *image, unsigned long *d)
+static int Rd_WP_DWORD(Image *image, magick_uint32_t *d)
 {
   unsigned char b;
 
@@ -1177,15 +1177,15 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   typedef struct
   {
     unsigned char RecType;
-    unsigned long RecordLength;
+    magick_uint32_t RecordLength;
   } WPGRecord;
 
   typedef struct
   {
     unsigned char Class;
     unsigned char RecType;
-    unsigned long Extension;
-    unsigned long RecordLength;
+    magick_uint32_t Extension;
+    magick_uint32_t RecordLength;
   } WPG2Record;
 
   typedef struct
@@ -1280,7 +1280,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
   unsigned char *pPalette = NULL;
   magick_uint16_t PaletteItems = 0;
-  //unsigned char PaletteStartIDX = 0;
+  magick_uint32_t PaletteAllocBytes = 0;
 
   tCTM CTM;         /*current transform matrix*/
 
@@ -1419,7 +1419,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
               if(pPalette==NULL)
               {
-                pPalette = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)3*256);
+                PaletteAllocBytes = 3*256;
+                pPalette = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)PaletteAllocBytes);
                 if(pPalette==NULL)
                     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                 for(i=0; i<=255; i++)
@@ -1650,6 +1651,7 @@ UnpackRaster1bpp:
               StartWPG.VerticalUnits=ReadBlobLSBShort(image);
               StartWPG.PosSizePrecision=ReadBlobByte(image);
               break;
+
             case 0x0C:    /* Color palette */
               LoadPaletteRec(image,&WPG_Palette,logging);
 
@@ -1664,60 +1666,47 @@ UnpackRaster1bpp:
                    ((((unsigned long)WPG_Palette.NumOfEntries-(unsigned long)WPG_Palette.StartIndex) >
                      ((Rec2.RecordLength-2-2) / 3))) )
                  ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);
-///////Temporary fix, should be removed//////////////////////////
-              /* Make sure that indexes contain initialized data if
-                 promoting from DirectClass.  This is a stop-gap
-                 measure until independent colormap support is
-                 developed. */
-              if (PseudoClass != image->storage_class)
-                {
-                  unsigned long y;
-                  IndexPacket *indexes;
-                  PixelPacket *p;
-                  MagickBool get = GetPixelCachePresent(image);
-                  image->storage_class = PseudoClass;
-                  for (y=0; y < image->rows; y++)
-                    {
-                      if (get)
-                        p=GetImagePixels(image,0,y,image->columns,1);
-                      else
-                        p=SetImagePixels(image,0,y,image->columns,1);
-                      if (p == (const PixelPacket *) NULL)
-                        break;
-                      indexes=AccessMutableIndexes(image);
-                      if (indexes == (IndexPacket *) NULL)
-                        break;
-                      if (!get)
-                        (void) memset(p,0,sizeof(PixelPacket)*image->columns);
-                      (void) memset(indexes,0,sizeof(IndexPacket)*image->columns);
-                      if (!SyncImagePixels(image))
-                        break;
-                    }
-                  if (y != image->rows)
-                    ThrowReaderException(CacheError,UnableToGetPixelsFromCache,image);
-                }
-///////////////////////////////////////////////////
-              image->colors=WPG_Palette.NumOfEntries;
-              if (!AllocateImageColormap(image,image->colors))
-                ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-              for (i=WPG_Palette.StartIndex;
-                   i < (int)WPG_Palette.NumOfEntries; i++)
+              if(pPalette!=NULL &&
+                 PaletteAllocBytes < 4*(WPG_Palette.StartIndex+WPG_Palette.NumOfEntries))
+              {
+                MagickFreeResourceLimitedMemory(pPalette);
+                PaletteAllocBytes = 0;
+              }
+              if(pPalette==NULL)
+              {
+                PaletteItems = WPG_Palette.NumOfEntries;
+                PaletteAllocBytes = 4*(WPG_Palette.StartIndex+WPG_Palette.NumOfEntries);
+                if(PaletteAllocBytes < 4*256) PaletteAllocBytes = 4*256;
+                pPalette = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)PaletteAllocBytes);
+                if(pPalette==NULL)
+                    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+                for(i=0; i<=255; i++)
                 {
-                  image->colormap[i].red=ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].green=ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].blue=ScaleCharToQuantum(ReadBlobByte(image));
-                  image->colormap[i].opacity = OpaqueOpacity;
-                  (void) ReadBlobByte(image);   /*Opacity??*/
+                  pPalette[4*i] = WPG1_Palette[i].Red;
+                  pPalette[4*i+1] = WPG1_Palette[i].Green;
+                  pPalette[4*i+2] = WPG1_Palette[i].Blue;
+                  pPalette[4*i+3] = OpaqueOpacity;
                 }
+              }
+              if(ReadBlob(image,(size_t) PaletteItems*4,pPalette+((size_t)4*WPG_Palette.StartIndex)) != (size_t) PaletteItems*4)
+                  ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
               break;
+
             case 0x0E:
               Bitmap2Header1.Width=ReadBlobLSBShort(image);
               Bitmap2Header1.Heigth=ReadBlobLSBShort(image);
-              if ((Bitmap2Header1.Width == 0) || (Bitmap2Header1.Heigth == 0))
-                ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
               Bitmap2Header1.Depth=ReadBlobByte(image);
               Bitmap2Header1.Compression=ReadBlobByte(image);
+
+              if ((Bitmap2Header1.Width == 0) || (Bitmap2Header1.Heigth == 0))
+                ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+
+              if(image->rows!=0 && image->columns!=0)
+              {                       /* Allocate next image structure. */
+                if(EnsureNextImage(image_info, &image) < 0)
+                    goto Finish;
+              }
 
               if(Bitmap2Header1.Compression > 1)
                 continue; /*Unknown compression method */
@@ -1739,6 +1728,24 @@ UnpackRaster1bpp:
               image->columns=Bitmap2Header1.Width;
               image->rows=Bitmap2Header1.Heigth;
 
+              if(pPalette!=NULL && PaletteItems>0)
+              {
+                if(bpp>=16 || PaletteItems<(1<<bpp))
+                  image->colors = PaletteItems;	/*WPG_Palette.NumOfEntries;*/
+                else
+                  image->colors = 1 << bpp;
+                if (!AllocateImageColormap(image,image->colors))
+                  goto NoMemory;
+                image->storage_class = PseudoClass;
+                for (i=0; i<(int)image->colors; i++)
+                {
+                  image->colormap[i].red = ScaleCharToQuantum(pPalette[4*i]);
+                  image->colormap[i].green = ScaleCharToQuantum(pPalette[4*i+1]);
+                  image->colormap[i].blue = ScaleCharToQuantum(pPalette[4*i+2]);
+                  image->colormap[i].opacity = ScaleCharToQuantum(pPalette[4*i+3]);
+                }
+              }
+
               if ((image->colors == 0) && (bpp != 24))
                 {
                   image->colors=1 << bpp;
@@ -1753,7 +1760,6 @@ UnpackRaster1bpp:
                       if (!ReallocateImageColormap(image,1U<<bpp))
                         goto NoMemory;
                 }
-
 
               switch(Bitmap2Header1.Compression)
                 {
@@ -1831,14 +1837,6 @@ UnpackRaster1bpp:
                 if (image->scene >= (image_info->subimage+image_info->subrange-1))
                   goto Finish;
 
-              /* Allocate next image structure. */
-              AllocateNextImage(image_info,image);
-              image->depth=8;
-              if (image->next == (Image *) NULL)
-                goto Finish;
-              image=SyncNextImageInList(image);
-              image->columns=image->rows=0;
-              image->colors=0;
               break;
 
             case 0x12:  /* Postscript WPG2*/
