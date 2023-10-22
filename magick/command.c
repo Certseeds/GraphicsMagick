@@ -392,7 +392,7 @@ static MagickBool CommandAccessMonitor(const ConfirmAccessMode mode,
   if (((env=getenv("MAGICK_ACCESS_MONITOR")) != (const char *) NULL) &&
       (LocaleCompare(env,"TRUE") == 0))
     {
-      (void) fprintf(stderr,"  %s %s\n",
+      (void) fprintf(stderr,"  Access Request: %s %s\n",
                      ConfirmAccessModeToString(mode),path);
     }
   return MagickPass;
