@@ -1014,14 +1014,20 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
                     {
                       if ((number_files % prealloc_entries) == 0)
                         {
-                          MagickReallocMemory(char **,vector,
-                                              MagickArraySize((size_t) *argc+count+prealloc_entries,
-                                              sizeof(char *)));
-                          if (vector == (char **) NULL)
+                          char **new_vector;
+                          new_vector=
+                            (char **) MagickReallocStd(vector,
+                                                       MagickArraySize((size_t) *argc+count+prealloc_entries,
+                                                                       sizeof(char *)));
+                          if (new_vector == (char **) NULL)
                             {
+                              for (j=0 ; j < count; j++)
+                                MagickFreeMemory(vector[j]);
+                              MagickFreeMemory(vector);
                               fclose(file);
                               return(MagickFail);
                             }
+                          vector = new_vector;
                         }
 
                       if (first)
@@ -1111,10 +1117,21 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
         There's at least one matching filename.
         Transfer file list to argument vector.
       */
-      MagickReallocMemory(char **,vector,
-                          MagickArraySize((size_t) *argc+count+number_files+prealloc_entries,sizeof(char *)));
-      if (vector == (char **) NULL)
-        return(MagickFail);
+      {
+         char **new_vector;
+         new_vector =
+           (char **) MagickReallocStd(vector,
+                                      MagickArraySize((size_t) *argc+count+number_files+prealloc_entries,
+                                                      sizeof(char *)));
+         if (new_vector == (char **) NULL)
+           {
+             for (j=0 ; j < count; j++)
+               MagickFreeMemory(vector[j]);
+             MagickFreeMemory(vector);
+             return(MagickFail);
+           }
+         vector=new_vector;
+      }
 
       first=MagickTrue;
       for (j=0; j < number_files; j++)

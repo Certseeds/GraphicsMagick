@@ -1,8 +1,45 @@
+2023-11-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (ExpandFilenames): Fix memory leak of existing
+	allocations if realloc() fails.
+
+	* magick/memory.c (MagickReallocStd): Added function to expose
+	standard realloc() functionality to allow cleanup of original
+	object.
+
+	* magick/list.c (AppendImageToList): Added image could itself be a
+	list, so seek again for the end of the list.
+	(GetImageListLength): Count value should be unsigned long.
+
+	* coders/wpg.c (ReadWPGImage): Reset image rows and columns to
+	zero.
+	(ExtractPostscript): Pass original image pointer storage.
+
+	* coders/fits.c (ReadFITSImage): Reset image rows and columns to
+	zero.
+
+	* coders/bmp.c (ExtractNestedBlob): Reset image rows and columns
+	to zero.
+
+	* PerlMagick/t/subroutines.pl (testRead): Remove request for size
+	512x512.
+
+	* PerlMagick/t/read.t: Fix checksums for FITS tests.
+
+	* PerlMagick/t/png/read.t: Fix checksum for PNG in BMP format.
+
+	* PerlMagick/Makefile.am (perl-check): Enable verbose PerlMagick
+	tests using TEST_VERBOSE=1.
+
 2023-11-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	PerlMagick/t/input1_PS.wpg
-	PerlMagick/t/input1_PS.wpg Add 2 samples of WPG that really contains
-	embedded EPS.
+	PerlMagick/t/input1_PS.wpg PerlMagick/t/input2_PS.wpg Add 2
+	samples of WPG that really contain embedded EPS.
+
+2023-11-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ExtractNestedBlob): Always need to remove image
+	which is being replaced.
 
 2023-10-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
 

@@ -79,7 +79,7 @@ perl-build: $(PERLMAKEFILE)
 	( cd $(PERLMAGICK) && $(MAKE) CC='@CC@' )
 
 perl-check: $(PERLMAKEFILE)
-	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) CC='@CC@' test
+	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) CC='@CC@' test TEST_VERBOSE=1
 
 check-perl:
 
@@ -118,7 +118,7 @@ uninstall-exec-perl:
 	rm -f '$(DESTDIR)$(BIN_DIR)/$(PERLSTATICNAME)'
 
 check-perl: $(PERLMAGICK)/$(PERLSTATICNAME)
-	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) -f Makefile.aperl CC='@CC@' test
+	cd $(PERLMAGICK) && $(abs_top_builddir)/rungm.sh $(MAKE) -f Makefile.aperl CC='@CC@' test TEST_VERBOSE=1
 
 perl-build: $(PERLMAGICK)/$(PERLSTATICNAME)
 

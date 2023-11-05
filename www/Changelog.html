@@ -37,6 +37,50 @@
 </div>
 
 <div class="document">
+<p>2023-11-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/utility.c (ExpandFilenames): Fix memory leak of existing
+allocations if realloc() fails.</p></li>
+<li><p>magick/memory.c (MagickReallocStd): Added function to expose
+standard realloc() functionality to allow cleanup of original
+object.</p></li>
+<li><p>magick/list.c (AppendImageToList): Added image could itself be a
+list, so seek again for the end of the list.
+(GetImageListLength): Count value should be unsigned long.</p></li>
+<li><p>coders/wpg.c (ReadWPGImage): Reset image rows and columns to
+zero.
+(ExtractPostscript): Pass original image pointer storage.</p></li>
+<li><p>coders/fits.c (ReadFITSImage): Reset image rows and columns to
+zero.</p></li>
+<li><p>coders/bmp.c (ExtractNestedBlob): Reset image rows and columns
+to zero.</p></li>
+<li><p>PerlMagick/t/subroutines.pl (testRead): Remove request for size
+512x512.</p></li>
+<li><p>PerlMagick/t/read.t: Fix checksums for FITS tests.</p></li>
+<li><p>PerlMagick/t/png/read.t: Fix checksum for PNG in BMP format.</p></li>
+<li><p>PerlMagick/Makefile.am (perl-check): Enable verbose PerlMagick
+tests using TEST_VERBOSE=1.</p></li>
+</ul>
+</blockquote>
+<p>2023-11-05  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<p>PerlMagick/t/input1_PS.wpg PerlMagick/t/input2_PS.wpg Add 2
+samples of WPG that really contain embedded EPS.</p>
+</blockquote>
+<p>2023-11-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/bmp.c (ExtractNestedBlob): Always need to remove image
+which is being replaced.</p></li>
+</ul>
+</blockquote>
+<p>2023-10-21  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<p>coders/wpg.c Do not touch to image structure from palette reader.
+&quot;RecordLength&quot; is a 32bit variable, it should not be long that expands
+to 64bits.</p>
+</blockquote>
 <p>2023-10-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

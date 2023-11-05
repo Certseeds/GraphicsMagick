@@ -7679,12 +7679,14 @@ Read(ref,...)
     MY_CXT.error_jump=(&error_jmp);
     if (setjmp(error_jmp))
       goto ReturnIt;
-    status=ExpandFilenames(&n,&list);
+#if 1
+    status=ExpandFilenames(&n,&list); /* FIXME: Leaks original 16-byte list allocation! */
     if (status == False)
       {
         MagickError(ResourceLimitError,MemoryAllocationFailed,NULL);
         goto ReturnIt;
       }
+#endif
     GetExceptionInfo(&exception);
     number_images=0;
     for (i=0; i < n; i++)

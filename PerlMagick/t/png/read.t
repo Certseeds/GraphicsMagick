@@ -77,5 +77,5 @@ testRead( 'input.mng', q//,
 # of multiple frames from the BMP reader!
 ++$test;
 print( "PNG in BMP format ...\n" );
-testRead( 'input_PNG.bmp[1]', q//,
+testRead( 'input_PNG.bmp', q//,
   '88956c2242aab1c8f23d4074ed4f313316413cf79ccf1fea8f650f30bd8e2e42' );

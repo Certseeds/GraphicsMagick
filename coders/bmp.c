@@ -578,6 +578,10 @@ static Image *ExtractNestedBlob(Image ** image, const ImageInfo * image_info, in
           if ((image2 = BlobToImage(clone_info,blob,alloc_size,exception))
               != NULL)
             {
+              if ((*image)->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "Read embedded %s blob with dimensions %lux%lu",
+                                      image2->magick, image2->rows, image2->columns);
               /*
                 Replace current image with new image while copying
                 base image attributes.
@@ -590,10 +594,7 @@ static Image *ExtractNestedBlob(Image ** image, const ImageInfo * image_info, in
                            sizeof(image2->magick));
             DestroyBlob(image2);
             image2->blob = ReferenceBlob((*image)->blob);
-
-            if (((*image)->rows == 0) || ((*image)->columns == 0))
-              DeleteImageFromList(image);
-
+            DeleteImageFromList(image);
             AppendImageToList(image, image2);
          }
           DestroyImageInfo(clone_info);
@@ -721,6 +722,8 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   pixels=(unsigned char *) NULL;
   logging=LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   image=AllocateImage(image_info);
+  image->rows=0;
+  image->columns=0;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowBMPReaderException(FileOpenError,UnableToOpenFile,image);
