@@ -1,3 +1,9 @@
+2023-11-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	PerlMagick/t/input1_PS.wpg
+	PerlMagick/t/input1_PS.wpg Add 2 samples of WPG that really contains
+	embedded EPS.
+
 2023-10-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	coders/wpg.c Do not touch to image structure from palette reader.
