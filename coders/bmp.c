@@ -594,7 +594,8 @@ static Image *ExtractNestedBlob(Image ** image, const ImageInfo * image_info, in
                            sizeof(image2->magick));
             DestroyBlob(image2);
             image2->blob = ReferenceBlob((*image)->blob);
-            DeleteImageFromList(image);
+            if(((*image)->rows == 0) || ((*image)->columns == 0))
+                DeleteImageFromList(image);
             AppendImageToList(image, image2);
          }
           DestroyImageInfo(clone_info);
