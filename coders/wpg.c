@@ -798,7 +798,7 @@ unsigned Flags;
 }
 
 
-static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
+static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
                                 ExtendedSignedIntegralType PS_Offset,
                                 size_t PS_Size,ExceptionInfo *exception)
 {
@@ -824,7 +824,7 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
   magick_off_t
     filesize;
 
-  if ((*image)->logging)
+  if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "ExtractPostscript(): PS_Offset=%"MAGICK_OFF_F"d, PS_Size=%"MAGICK_SIZE_T_F"u",
                           (magick_off_t) PS_Offset, (MAGICK_SIZE_T) PS_Size);
@@ -832,30 +832,30 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
   /*
     Validate that claimed subordinate image data is contained in file size
   */
-  filesize = GetBlobSize((*image));
+  filesize = GetBlobSize(image);
   if ((PS_Offset > filesize) || ((size_t) (filesize - PS_Offset) < PS_Size))
     {
-      if ((*image)->logging)
+      if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "ExtractPostscript(): Failed to seek to PS_Offset=%"MAGICK_OFF_F"d",
                               (magick_off_t) PS_Offset);
-      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,(*image)->filename);
-      return *image;
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+      return image;
     }
 
   /*
     Get subordinate file header magick and use it to identify file format
   */
-  if (SeekBlob((*image),PS_Offset,SEEK_SET) != PS_Offset)
+  if (SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset)
     {
-      if ((*image)->logging)
+      if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "ExtractPostscript(): Failed to seek to PS_Offset=%"MAGICK_OFF_F"d",
                               (magick_off_t) PS_Offset);
-      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,(*image)->filename);
-      return *image;
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+      return image;
     }
-  header_magick_size = ReadBlob((*image), Min(sizeof(header_magick),PS_Size), header_magick);
+  header_magick_size = ReadBlob(image, Min(sizeof(header_magick),PS_Size), header_magick);
   format[0]='\0';
   /*
     MagickExport MagickPassFail
@@ -868,8 +868,8 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
     {
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Failed to identify embedded file type!");
-      ThrowException(exception,CorruptImageError,UnableToReadImageHeader,(*image)->filename);
-      return *image;
+      ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
+      return image;
     }
 
   /*
@@ -879,57 +879,57 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
   {
     (void) LogMagickEvent(CoderEvent, GetMagickModule(),
                         "Format \"%s\" cannot be embedded inside WPG.", format);
-    ThrowException(exception,CorruptImageError,UnableToReadImageHeader,(*image)->filename);
-    return *image;
+    ThrowException(exception,CorruptImageError,UnableToReadImageHeader,image->filename);
+    return image;
   }
 
   /*
     Restore seek offset after reading header
   */
-  if (SeekBlob((*image),PS_Offset,SEEK_SET) != PS_Offset)
+  if (SeekBlob(image,PS_Offset,SEEK_SET) != PS_Offset)
     {
-      if ((*image)->logging)
+      if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "ExtractPostscript(): Failed to seek to PS_Offset=%"MAGICK_OFF_F"d",
                               (magick_off_t) PS_Offset);
-      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,(*image)->filename);
-      return *image;
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+      return image;
     }
   /*
     Allocate buffer if zero-copy read is not possible.
   */
-  if (GetBlobStreamData((*image)) == (unsigned char *) NULL)
+  if (GetBlobStreamData(image) == (unsigned char *) NULL)
     {
       ps_data_alloc=MagickAllocateResourceLimitedMemory(unsigned char *, PS_Size);
       if (ps_data_alloc == (unsigned char *) NULL)
         {
-          if ((*image)->logging)
+          if (image->logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "ExtractPostscript(): Failed to allocate "
                                   "%"MAGICK_SIZE_T_F"u bytes of memory",
                                   (MAGICK_SIZE_T) PS_Size);
-          ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,(*image)->filename);
-          return *image;
+          ThrowException(exception,ResourceLimitError,MemoryAllocationFailed,image->filename);
+          return image;
         }
     }
   /*
     Use a zero-copy read when possible to access data
   */
   ps_data=ps_data_alloc;
-  if (ReadBlobZC((*image),PS_Size,&ps_data) != PS_Size)
+  if (ReadBlobZC(image,PS_Size,&ps_data) != PS_Size)
     {
       MagickFreeResourceLimitedMemory(ps_data_alloc);
-      if ((*image)->logging)
+      if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "ExtractPostscript(): Failed to read %"MAGICK_SIZE_T_F"u bytes of data at"
                               " offset=%"MAGICK_OFF_F"d",
                               (MAGICK_SIZE_T) PS_Size, (magick_off_t) PS_Offset);
-      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,(*image)->filename);
-      return *image; /* return (Image *) NULL; */
+      ThrowException(exception,CorruptImageError,UnexpectedEndOfFile,image->filename);
+      return image; /* return (Image *) NULL; */
     }
   if (ps_data_alloc != ps_data)
     {
-      if ((*image)->logging)
+      if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "ExtractPostscript(): Zero copy read.");
     }
@@ -944,13 +944,13 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
     FormatString(file_name,"wpg-blob.%s",format);
     if ((file=fopen(file_name,"w")) != (FILE *) NULL)
       {
-        if ((*image)->logging)
+        if (image->logging)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Writing %s...", file_name);
         (void) fwrite(ps_data, 1, PS_Size, file);
         (void) fclose(file);
       }
-    SeekBlob((*image),PS_Offset,SEEK_SET);
+    SeekBlob(image,PS_Offset,SEEK_SET);
   }
 #endif
   /*
@@ -959,7 +959,7 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
   if ((clone_info=CloneImageInfo(image_info)) == NULL)
     {
       MagickFreeResourceLimitedMemory(ps_data_alloc);
-      return(*image);
+      return(image);
     }
   clone_info->blob=(void *) NULL;
   /* clone_info->length=0; */
@@ -967,7 +967,7 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
   (void) strlcpy(clone_info->filename, "", sizeof(clone_info->filename));
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Reading embedded \"%s\" content from blob...", clone_info->magick);
-  image2 = BlobToImage(clone_info, ps_data, PS_Size, &(*image)->exception );
+  image2 = BlobToImage(clone_info, ps_data, PS_Size, &image->exception );
   MagickFreeResourceLimitedMemory(ps_data_alloc);
   if (!image2)
     {
@@ -975,7 +975,7 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
     }
   if(exception->severity >= ErrorException) /* When exception is raised, destroy image2 read. */
   {
-    if((*image)->logging)
+    if(image->logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(), "Exception raised during embedded image reading.");
     CloseBlob(image2);
     DestroyImageList(image2);
@@ -983,7 +983,7 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
   }
   if(!GetPixelCachePresent(image2))
   {
-    if((*image)->logging)
+    if(image->logging)
       (void) LogMagickEvent(CoderEvent,GetMagickModule(), "Pixel cache is missing for embedded image.");
     CloseBlob(image2);
     DestroyImageList(image2);
@@ -999,24 +999,42 @@ static Image *ExtractPostscript(Image **image,const ImageInfo *image_info,
     p = image2;
     do
     {
-      (void) strlcpy(p->filename,(*image)->filename,MaxTextExtent);
-      (void) strlcpy(p->magick_filename,(*image)->magick_filename,MaxTextExtent);
-      (void) strlcpy(p->magick,(*image)->magick,MaxTextExtent);
-
+      (void) strlcpy(p->filename,image->filename,MaxTextExtent);
+      (void) strlcpy(p->magick_filename,image->magick_filename,MaxTextExtent);
+      (void) strlcpy(p->magick,image->magick,MaxTextExtent);
+      /*image2->depth=image->depth;*/   /* !!!! The image2 depth should not be modified here. Image2 is completely different. */
       DestroyBlob(p);
-      p->blob = ReferenceBlob((*image)->blob);
-      p = p->next;
-    } while (p != NULL);
+
+      if(p->rows==0 || p->columns==0)
+      {
+        DeleteImageFromList(&p);
+        if(p==NULL)
+        {
+          image2 = NULL;
+          goto FINISH_UNL;      /* Nothing to add, skip. */
+        }
+      }
+      else
+      {
+        p->blob = ReferenceBlob(image->blob);
+        p = p->next;
+      }
+    } while(p!=NULL);
   }
-  DeleteImageFromList(image);
-  AppendImageToList(image,image2);     /* This should append list 'image2' to the list 'image', image2 accepts NULL. */
-  *image=GetLastImageInList(*image);   /* Rewind the cursor to the end. */
+
+  if((image->rows==0 || image->columns==0) && (image->previous!=NULL || image->next!=NULL))
+  {
+    DeleteImageFromList(&image);
+  }
+
+  AppendImageToList(&image,image2);     /* This should append list 'image2' to the list 'image', image2 accepts NULL. */
+  while(image->next != NULL)
+    image = image->next;                /* Rewind the cursor to the end. */
 
  FINISH_UNL:
   DestroyImageInfo(clone_info);
-  return(*image);
+  return(image);
 }
-
 
 int EnsureNextImage(const ImageInfo *image_info, Image **pp_image)
 {
@@ -1422,7 +1440,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
             case 0x11:  /* Start PS l1 */
               if(Rec.RecordLength > 8)
-                image=ExtractPostscript(&image,image_info,
+                image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+8,   /* skip PS header in the wpg */
                                         (size_t) (Rec.RecordLength-8),exception);
               break;
@@ -1599,7 +1617,7 @@ UnpackRaster1bpp:
 
             case 0x1B:  /* Postscript l2 */
               if(Rec.RecordLength>0x3C)
-                image=ExtractPostscript(&image,image_info,
+                image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+0x3C,   /* skip PS l2 header in the wpg */
                                         (size_t) (Rec.RecordLength-0x3C),exception);
               break;
@@ -1834,7 +1852,7 @@ UnpackRaster1bpp:
             case 0x12:  /* Postscript WPG2*/
               i=ReadBlobLSBShort(image);
               if(Rec2.RecordLength > ((unsigned long) i+2))
-                image=ExtractPostscript(&image,image_info,
+                image=ExtractPostscript(image,image_info,
                                         TellBlob(image)+i,              /*skip PS header in the wpg2*/
                                         (size_t)Rec2.RecordLength-i-2,exception);
               break;
