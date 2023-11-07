@@ -1,3 +1,8 @@
+2023-11-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/wpg.c Revert
+	* coders/mat.c Prevent against geometry injection.
+
 2023-11-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/wpg.c (ExtractPostscript): Restore previous

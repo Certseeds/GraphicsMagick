@@ -435,6 +435,9 @@ DblBreak:
 
   if((clone_info->file=fopen(clone_info->filename,"rb"))==NULL) goto UnlinkFile;
   if((image2 = AllocateImage(clone_info))==NULL) goto EraseFile;
+  image2->rows=0;
+  image2->columns=0;
+
   status = OpenBlob(clone_info,image2,ReadBinaryBlobMode,exception);
   if (status == False)
   {
@@ -831,6 +834,8 @@ static Image *ReadMATImage(const ImageInfo *image_info, ExceptionInfo *exception
      Open image file.
    */
   image = AllocateImage(image_info);
+  image->rows=0;
+  image->columns=0;
 
   status = OpenBlob(image_info, image, ReadBinaryBlobMode, exception);
   if (status == False)
