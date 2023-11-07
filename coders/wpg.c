@@ -1885,7 +1885,7 @@ UnpackRaster1bpp:
     /*
       Rewind list, removing any empty images while rewinding.
     */
-    p=GetFirstImageInList(image);
+    p=image;	//reverted GetFirstImageInList(image);
     image=NULL;
     while (p != (Image *) NULL)
       {
