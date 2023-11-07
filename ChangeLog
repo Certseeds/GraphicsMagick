@@ -1,5 +1,10 @@
 2023-11-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/colorspace.c (RGBTransformImage): Move cast in
+	primary_info.x and primary_info.y calcuation.  Addresses concern
+	expressed in SourceForge issue #730 "Recent colorspace conversion
+	change".
+
 	* coders/wpg.c Revert
 	* coders/mat.c Prevent against geometry injection.
 

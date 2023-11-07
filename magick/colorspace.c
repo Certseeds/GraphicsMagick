@@ -634,8 +634,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             I and Q, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=(((float) MaxMap+1)/2);
-          xform.primary_info.z=(((float) MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -738,8 +738,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             Cb and Cr, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=(((float) MaxMap+1)/2);
-          xform.primary_info.z=(((float) MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -771,8 +771,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             Cb and Cr, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=(((float) MaxMap+1)/2);
-          xform.primary_info.z=(((float) MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -847,8 +847,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             I and Q, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=(((float) MaxMap+1)/2);
-          xform.primary_info.z=(((float) MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -880,8 +880,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             Pb and Pr, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=(((float) MaxMap+1)/2);
-          xform.primary_info.z=(((float) MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -914,8 +914,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             U and V, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.  Note that U = 0.493*(B-Y), V = 0.877*(R-Y).
           */
-          xform.primary_info.y=(((float) MaxMap+1)/2);
-          xform.primary_info.z=(((float) MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
