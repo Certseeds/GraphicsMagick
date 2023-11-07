@@ -263,6 +263,8 @@ ReadJNXImage(const ImageInfo * image_info, ExceptionInfo * exception)
   logging = LogMagickEvent(CoderEvent, GetMagickModule(), "enter");
 
   image = AllocateImage(image_info);
+  image->rows = 0;
+  image->columns = 0;
   status = OpenBlob(image_info, image, ReadBinaryBlobMode, exception);
   if (status == False)
     ThrowReaderException(FileOpenError, UnableToOpenFile, image);

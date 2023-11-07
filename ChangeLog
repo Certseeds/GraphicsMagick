@@ -1,9 +1,15 @@
+2023-11-08  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/jnx.c JNX decoder is also vulnerable against size injection.
+
 2023-11-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/colorspace.c (RGBTransformImage): Move cast in
 	primary_info.x and primary_info.y calcuation.  Addresses concern
 	expressed in SourceForge issue #730 "Recent colorspace conversion
 	change".
+
+2023-11-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/wpg.c Revert
 	* coders/mat.c Prevent against geometry injection.
