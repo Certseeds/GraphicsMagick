@@ -76,27 +76,27 @@
   <delegate decode="dot" command='"@DOTDecodeDelegate@" -Tps "%i" -o "%o"' />
   <delegate decode="dvi" command='"@DVIDecodeDelegate@" -q -o "%o" "%i"' />
   <delegate decode="edit" stealth="True" command='"@EditorDelegate@" -title "Edit Image Comment" -e vi "%o"' />
-  <delegate decode="eps" encode="pdf" mode="bi" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPDFDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
-  <delegate decode="eps" encode="ps" mode="bi" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPSDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
+  <delegate decode="eps" encode="pdf" mode="bi" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPDFDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
+  <delegate decode="eps" encode="ps" mode="bi" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPSDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
   <delegate decode="fig" command='"@FIGDecodeDelegate@" -L ps "%i" "%o"' />
 
   <!-- Read monochrome Postscript, EPS, and PDF  -->
-  <delegate decode="gs-mono" stealth="True" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSMonoDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
+  <delegate decode="gs-mono" stealth="True" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSMonoDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
 
   <!-- Read grayscale Postscript, EPS, and PDF  -->
-  <delegate decode="gs-gray" stealth="True" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSGrayDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
+  <delegate decode="gs-gray" stealth="True" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSGrayDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
 
   <!-- Read colormapped Postscript, EPS, and PDF  -->
-  <delegate decode="gs-palette" stealth="True" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPaletteDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
+  <delegate decode="gs-palette" stealth="True" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPaletteDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
 
   <!-- Read color Postscript, EPS, and PDF  -->
-  <delegate decode="gs-color" stealth="True" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSColorDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
+  <delegate decode="gs-color" stealth="True" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSColorDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
 
   <!-- Read color+alpha Postscript, EPS, and PDF  -->
-  <delegate decode="gs-color+alpha" stealth="True" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSColorAlphaDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
+  <delegate decode="gs-color+alpha" stealth="True" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSColorAlphaDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
 
   <!-- Read CMYK Postscript, EPS, and PDF  -->
-  <delegate decode="gs-cmyk" stealth="True" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSCMYKDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
+  <delegate decode="gs-cmyk" stealth="True" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSCMYKDevice@ -dTextAlphaBits=%u -dGraphicsAlphaBits=%u -r%s %s "-sOutputFile=%s" -- "%s" -c quit' />
 
   <!-- Read monochrome PDF using Poppler's pdftoppm -->
   <delegate decode="poppler-mono" stealth="True" command='"pdftoppm" "-mono" "-freetype" "yes" "-aa" "yes" "-aaVector" "yes" "-rx" "72" "-ry" "72" "%s" ">" "%s"' />
@@ -120,15 +120,15 @@
   <!-- Write MPEG file using mpeg2encode -->
   <delegate encode="mpeg-encode" stealth="True" command='"@MPEGEncodeDelegate@" "%i" "%o"' />
   <!-- Convert PDF to Encapsulated Poscript using Ghostscript -->
-  <delegate decode="pdf" encode="eps" mode="bi" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSEPSDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
+  <delegate decode="pdf" encode="eps" mode="bi" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSEPSDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
   <!-- Convert PDF to Postcript using Ghostscript -->
-  <delegate decode="pdf" encode="ps" mode="bi" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPSDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
+  <delegate decode="pdf" encode="ps" mode="bi" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPSDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
   <!-- Convert PNM file to IFF ILBM format using ppmtoilbm -->
   <delegate decode="pnm" encode="ilbm" mode="encode" command='"@ILBMEncodeDelegate@" -24if "%i" > "%o"' />
   <delegate decode="pnm" encode="launch" mode="encode" command='"@LaunchDelegate@" "%i"' />
   <delegate decode="pnm" encode="win" mode="encode" command='"@GMDelegate@" display -immutable "%i"' />
-  <delegate decode="ps" encode="eps" mode="bi" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSEPSDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
-  <delegate decode="ps" encode="pdf" mode="bi" command='"@PSDelegate@" -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPDFDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
+  <delegate decode="ps" encode="eps" mode="bi" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSEPSDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
+  <delegate decode="ps" encode="pdf" mode="bi" command='"@PSDelegate@" -sstdout=%%stderr -q -dBATCH -dSAFER -dMaxBitmap=50000000 -dNOPAUSE -sDEVICE=@GSPDFDevice@ "-sOutputFile=%o" -- "%i" -c quit' />
   <delegate decode="ps" encode="print" mode="encode" command='"@PrintDelegate@" "%i"' />
   <!-- Read HTML file  -->
   <delegate decode="shtml" command='"@HTMLDecodeDelegate@" -U -o "%o" "%i"' />

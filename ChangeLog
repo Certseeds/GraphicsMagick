@@ -1,3 +1,10 @@
+2023-11-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* config/delegates.mgk.in, VisualMagick/bin/delegates.mgk:
+	Re-direct Ghostscript stdout to stderr to avoid output corruption
+	when GM stdout is redirected to a file.  Addresses SourceForge
+	issue #729 "GhostScript warnings in files on stdout".
+
 2023-11-08  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/jnx.c JNX decoder is also vulnerable against size injection.
