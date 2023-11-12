@@ -1,3 +1,8 @@
+2023-11-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/tests/runtest.bat Sumate and display total amount 
+        of problems during testing.
+
 2023-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/resource.c, magick/blob.c: Add support for a per-file

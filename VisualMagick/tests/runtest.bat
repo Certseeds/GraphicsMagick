@@ -1,5 +1,6 @@
 @echo off
 set TESTS=0
+set PROBLEMS=0
 set TYPE=NONE
 set exedir=..\bin\
 
@@ -379,7 +380,7 @@ call :_dorwtest both Y
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both YUV
 if not %COUNT% EQU 6 goto :_failed
-echo %TESTS% tests completed!
+echo %TESTS% tests completed! %PROBLEMS% problems detected!
 goto :EOF
 
 :_dorwtest
@@ -412,6 +413,7 @@ if not %ERRORLEVEL% EQU 0 goto :_problem
 set /a COUNT += 1
 goto :EOF
 :_problem
+set /a PROBLEMS += 1
 @echo Test %COUNT% on type %TYPE% failed, ERRORLEVEL is %ERRORLEVEL%
 goto :EOF
 
