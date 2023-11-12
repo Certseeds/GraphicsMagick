@@ -1557,10 +1557,10 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     /* TODO Better Error-code? */
     ThrowJXLWriterException(CoderError,NoDataReturned,image);
 
-  CloseBlob(image);
+  status &= CloseBlob(image);
 
   JXLWriteCleanup();
-  return MagickPass;
+  return(status);
 }
 
 #endif /* HasJXL */

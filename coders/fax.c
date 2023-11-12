@@ -335,6 +335,6 @@ static MagickPassFail WriteFAXImage(const ImageInfo *image_info,Image *image)
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return(status);
 }

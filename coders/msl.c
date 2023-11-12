@@ -4913,7 +4913,7 @@ static unsigned int WriteMSLImage(const ImageInfo *image_info,Image *image)
   if (status == MagickFail)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "ProcessMSLScript() returned MagickFail!");
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return status;
 }
 #endif /* defined(HasXML) */

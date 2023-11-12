@@ -1312,6 +1312,6 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
-  return (MagickTrue);
+  status &= CloseBlob(image);
+  return (status);
 }

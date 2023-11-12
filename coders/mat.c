@@ -1569,7 +1569,7 @@ BreakAll:
     image=SyncNextImageInList(image);
   }
 
-  CloseBlob(image);
+  status &= CloseBlob(image);
   MagickFreeResourceLimitedMemory(pixels);
 
   if (logging)

@@ -2909,6 +2909,12 @@ unable to transform colorspace
 .
 
 MessageId       = +1
+SymbolicName    = LimitErrorWriteLimitExceeded
+Language        = English
+Write limit exceeded (see -limit Write)
+.
+
+MessageId       = +1
 SymbolicName    = LimitFatalErrorMemoryAllocationFailed
 Language        = English
 Memory allocation failed

@@ -409,6 +409,6 @@ static unsigned int WriteMAPImage(const ImageInfo *image_info,Image *image)
       ThrowMAPWriterException(FileOpenError,UnableToWriteFile,image);
   }
   MagickFreeResourceLimitedMemory(pixels);
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return(status);
 }

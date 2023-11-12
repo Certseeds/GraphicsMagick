@@ -563,8 +563,8 @@ static void AnimateUsage(void)
   (void) puts("  -geometry geometry   preferred size and location of the Image window");
   (void) puts("  -help                print program options");
   (void) puts("  -interlace type      None, Line, Plane, or Partition");
-  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
-  (void) puts("                       Threads resource limit");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height");
+  (void) puts("                       Threads, Read, or Write resource limit");
   (void) puts("  -log format          format of debugging information");
   (void) puts("  -matte               store matte channel if the image has one");
   (void) puts("  -map type            display image using this Standard Colormap");
@@ -3013,8 +3013,8 @@ static void CompareUsage(void)
   (void) puts("  -highlight-style style");
   (void) puts("                       pixel highlight style (assign, threshold, tint, xor)");
   (void) puts("  -interlace type      None, Line, Plane, or Partition");
-  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
-  (void) puts("                       Threads resource limit");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height");
+  (void) puts("                       Threads, Read, or Write resource limit");
   (void) puts("  -log format          format of debugging information");
   (void) puts("  -matte               store matte channel if the image has one");
   (void) puts("  -maximum-error       maximum total difference before returning error");
@@ -4282,8 +4282,8 @@ static void CompositeUsage(void)
   (void) puts("  -help                print program options");
   (void) puts("  -interlace type      None, Line, Plane, or Partition");
   (void) puts("  -label name          ssign a label to an image");
-  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
-  (void) puts("                       Threads resource limit");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height");
+  (void) puts("                       Threads, Read, or Write resource limit");
   (void) puts("  -log format          format of debugging information");
   (void) puts("  -matte               store matte channel if the image has one");
   (void) puts("  -monitor             show progress indication");
@@ -6389,8 +6389,8 @@ static void ConvertUsage(void)
   (void) puts("  -label name          assign a label to an image");
   (void) puts("  -lat geometry        local adaptive thresholding");
   (void) puts("  -level value         adjust the level of image contrast");
-  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height or");
-  (void) puts("                       Threads resource limit");
+  (void) puts("  -limit type value    Disk, File, Map, Memory, Pixels, Width, Height");
+  (void) puts("                       Threads, Read, or Write resource limit");
   (void) puts("  -linewidth width     the line width for subsequent draw operations");
   (void) puts("  -list type           Color, Delegate, Format, Magic, Module, Resource,");
   (void) puts("                       or Type");

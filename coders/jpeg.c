@@ -178,6 +178,9 @@ typedef struct _MagickClientData
   unsigned char
     buffer[65537+200];
 
+  void
+    *jpeg_pixels;
+
 } MagickClientData;
 
 typedef struct _SourceManager
@@ -218,6 +221,7 @@ static MagickClientData *FreeMagickClientData(MagickClientData *client_data)
           MagickFreeMemory(client_data->profiles[i].name);
           MagickFreeResourceLimitedMemory(client_data->profiles[i].info);
         }
+      MagickFreeResourceLimitedMemory(client_data->jpeg_pixels);
 
       MagickFreeMemory(client_data);
     }
@@ -2497,7 +2501,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     *attribute;
 
   JSAMPLE
-    *jpeg_pixels;
+    *jpeg_pixels = (JSAMPLE *) NULL; /* Freed by FreeMagickClientData() */
 
   JSAMPROW
     scanline[1];
@@ -3104,6 +3108,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
         LiberateMagickResource(MemoryResource,huffman_memory);
       ThrowJPEGWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
+  client_data->jpeg_pixels = jpeg_pixels;
   scanline[0]=(JSAMPROW) jpeg_pixels;
   if (jpeg_info.data_precision > 8 && jpeg_info.data_precision <= 16)
     {
@@ -3338,8 +3343,8 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     LiberateMagickResource(MemoryResource,huffman_memory);
   client_data=FreeMagickClientData(client_data);
   jpeg_destroy_compress(&jpeg_info);
-  MagickFreeResourceLimitedMemory(jpeg_pixels);
-  CloseBlob(image);
-  return(True);
+  /* MagickFreeResourceLimitedMemory(jpeg_pixels); */
+  status &= CloseBlob(image);
+  return(status);
 }
 #endif

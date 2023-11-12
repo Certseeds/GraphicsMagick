@@ -1225,7 +1225,7 @@ static MagickPassFail WritePCDImage(const ImageInfo *image_info,Image *image)
     (char *) "768x512");
   if (GetBlobStatus(pcd_image) != 0)
     status=MagickFail;
-  CloseBlob(pcd_image);
+  status &= CloseBlob(pcd_image);
   if (pcd_image != image)
     DestroyImage(pcd_image);
   return(status);

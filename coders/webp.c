@@ -975,8 +975,9 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
 #if defined(SUPPORT_WEBP_MUX)
   WebPMemoryWriterClear(&writer);
 #endif
-  CloseBlob(image);
+  status &= (webp_status ? MagickPass : MagickFail);
+  status &= CloseBlob(image);
 
-  return (webp_status ? MagickPass : MagickFail);
+  return (status);
 }
 #endif

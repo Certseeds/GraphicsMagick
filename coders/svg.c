@@ -5568,7 +5568,7 @@ WriteSVGImage(const ImageInfo *image_info,Image *image)
   MagickFreeMemory(token);
   if (primitive_info != (PrimitiveInfo *) NULL)
     MagickFreeMemory(primitive_info);
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return(status);
 }
 #endif

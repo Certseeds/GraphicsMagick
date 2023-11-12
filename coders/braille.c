@@ -311,6 +311,6 @@ static unsigned int WriteBRAILLEImage(const ImageInfo *image_info,
     if (iso_11548_1 == 0)
       (void) WriteBlobByte(image,'\n');
   }
-  (void) CloseBlob(image);
-  return(MagickTrue);
+  status &= CloseBlob(image);
+  return(status);
 }

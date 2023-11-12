@@ -1375,6 +1375,6 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     }
   if (status == False)
     ThrowPCXWriterException(FileOpenError,UnableToWriteFile,image);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

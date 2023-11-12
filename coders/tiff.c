@@ -914,14 +914,17 @@ TIFFCloseBlob(thandle_t image_handle)
   Image
     *image = ((Magick_TIFF_ClientData *) image_handle)->image;
 
+  int
+    status = MagickPass;
+
 #if LOG_TIFF_BLOB_IO
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"TIFF close blob");
 #endif /* LOG_TIFF_BLOB_IO */
   while (image->previous != (Image *) NULL)
     image=image->previous;
-  CloseBlob(image);
-  return(0);
+  status &= CloseBlob(image);
+  return(status);
 }
 
 /* Report errors. */
@@ -4262,7 +4265,7 @@ WriteGROUP4RAWImage(const ImageInfo *image_info,Image *image)
   TIFFClose(tiff);
 
   (void) LiberateTemporaryFile(temporary_filename);
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return status;
 }
 #endif /* if defined(HasTIFF) */
@@ -6483,6 +6486,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
     image=image->previous;
   TIFFClose(tiff); /* Should implicity invoke CloseBlob(image) */
 
+#if 0
   if (status == MagickFail)
     {
       /*
@@ -6492,9 +6496,9 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
       if (unlink(filename) != -1)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Removed broken output file \"%s\"",filename);
-      return (MagickFail);
     }
+#endif
 
-  return(MagickPass);
+  return(status);
 }
 #endif

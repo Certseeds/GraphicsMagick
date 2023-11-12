@@ -2046,7 +2046,7 @@ static unsigned int WritePSDImage(const ImageInfo *image_info,Image *image)
     WriteImageChannels( image, image, pixels );
 
   MagickFreeResourceLimitedMemory(pixels);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }
 #endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -105,7 +105,8 @@ static ResourceInfo
     { "threads", "", "OMP_NUM_THREADS",     1, 1,     ResourceInfinity, AbsoluteLimit, 0  },
     { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,     PIXEL_LIMIT,      AbsoluteLimit, 0  },
     { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,     PIXEL_LIMIT,      AbsoluteLimit, 0  },
-    { "read",   "B", "MAGICK_LIMIT_READ",   0, 4096,  ResourceInfinity, AbsoluteLimit, 0  }
+    { "read",   "B", "MAGICK_LIMIT_READ",   0, 4096,  ResourceInfinity, AbsoluteLimit, 0  },
+    { "write",  "B", "MAGICK_LIMIT_WRITE",  0, 4096,  ResourceInfinity, AbsoluteLimit, 0  }
   };
 
 /*
@@ -413,7 +414,8 @@ MagickExport void InitializeMagickResources(void)
     max_threads=1,
     max_width=-1,
     max_height=-1,
-    max_read=-1;
+    max_read=-1,
+    max_write=-1;
 
   size_t
     index;
@@ -615,6 +617,9 @@ MagickExport void InitializeMagickResources(void)
     if ((envp=getenv("MAGICK_LIMIT_READ")))
       max_read=MagickSizeStrToInt64(envp,1024);
 
+    if ((envp=getenv("MAGICK_LIMIT_WRITE")))
+      max_write=MagickSizeStrToInt64(envp,1024);
+
 #if defined(HAVE_OPENMP)
     max_threads=omp_get_num_procs();
     (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
@@ -720,6 +725,8 @@ MagickExport void InitializeMagickResources(void)
     (void) SetMagickResourceLimit(HeightResource,max_height);
   if (max_read >= 0)
     (void) SetMagickResourceLimit(ReadResource,max_read);
+  if (max_write >= 0)
+    (void) SetMagickResourceLimit(WriteResource,max_write);
 }
 
 /*

@@ -1221,6 +1221,6 @@ static unsigned int WritePCLImage(const ImageInfo *image_info,Image *image)
     } while (image_info->adjoin);
 
   (void) WriteBlobString(image,"\033E");
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

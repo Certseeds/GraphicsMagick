@@ -1,3 +1,14 @@
+2023-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resource.c, magick/blob.c: Add support for a per-file
+	write limit.  This imposes a limit on the number of uncompressed
+	bytes written.  The behavior when the limit is hit is similar to
+	an unexpected write error, as if the disk is full.
+	* coders/: Updated the many coders to behave correctly when faced
+	with an unexpected write error.
+	* magick/blob.c: If the write limit is hit, then the truncated
+	output file is automatically removed.
+
 2023-11-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* config/delegates.mgk.in, VisualMagick/bin/delegates.mgk:

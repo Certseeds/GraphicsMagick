@@ -1540,6 +1540,6 @@ static unsigned int WriteCINEONImage(const ImageInfo *image_info,Image *image)
                     (unsigned int) TellBlob(image));
     }
 
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return(status);
 }

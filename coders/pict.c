@@ -2562,6 +2562,6 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   MagickFreeResourceLimitedMemory(scanline);
   MagickFreeResourceLimitedMemory(packed_scanline);
   MagickFreeResourceLimitedMemory(buffer);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

@@ -2802,8 +2802,8 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
   if (adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
+  status &= CloseBlob(image);
   if (logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),"return");
-  return(True);
+  return(status);
 }

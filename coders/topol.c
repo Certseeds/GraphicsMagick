@@ -936,7 +936,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
     }
   }
 
-  CloseBlob(image); /* valgrind reports write of unitialized data */
+  status &= CloseBlob(image); /* valgrind reports write of unitialized data */
   MagickFreeResourceLimitedMemory(pixels);
 
   if (y != (long)image->rows)
@@ -981,7 +981,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
                 WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
               }
             }
-            CloseBlob(Palette);
+            status &= CloseBlob(Palette);
           }
           DestroyImage(Palette);
         }

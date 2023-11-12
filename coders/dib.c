@@ -1560,6 +1560,6 @@ static unsigned int WriteDIBImage(const ImageInfo *image_info,Image *image)
     }
   (void) WriteBlob(image,dib_info.image_size,(char *) pixels);
   MagickFreeResourceLimitedMemory(pixels);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

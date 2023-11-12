@@ -37,6 +37,19 @@
 </div>
 
 <div class="document">
+<p>2023-11-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/resource.c, magick/blob.c: Add support for a per-file
+write limit.  This imposes a limit on the number of uncompressed
+bytes written.  The behavior when the limit is hit is similar to
+an unexpected write error, as if the disk is full.</p></li>
+<li><p>coders/: Updated the many coders to behave correctly when faced
+with an unexpected write error.</p></li>
+<li><p>magick/blob.c: If the write limit is hit, then the truncated
+output file is automatically removed.</p></li>
+</ul>
+</blockquote>
 <p>2023-11-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

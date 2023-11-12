@@ -1573,6 +1573,9 @@
         <Message name="ReadLimitExceeded">
           Read limit exceeded (see -limit Read)
         </Message>
+        <Message name="WriteLimitExceeded">
+          Write limit exceeded (see -limit Write)
+        </Message>
       </Error>
       <FatalError>
         <Message name="UnableToAllocateAscii85Info">

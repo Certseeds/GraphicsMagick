@@ -2197,7 +2197,7 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
 
   MagickFreeResourceLimitedMemory(pixels);
 ImageFailure:
-  CloseBlob(image);
+  status &= CloseBlob(image);
 
 
   if (logging)

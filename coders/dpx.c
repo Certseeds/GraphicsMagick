@@ -4781,7 +4781,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   MagickFreeResourceLimitedMemory(map_Y);
   MagickFreeResourceLimitedMemory(samples);
   MagickFreeResourceLimitedMemory(scanline);
-  CloseBlob(image);
+  status &= CloseBlob(image);
   if (chroma_image != (Image *) NULL)
     {
       DestroyImage(chroma_image);

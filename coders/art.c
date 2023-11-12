@@ -246,7 +246,7 @@ static MagickPassFail WriteARTImage(const ImageInfo *image_info,Image *image)
       }
   }
 
-  CloseBlob(image);
+  status &= CloseBlob(image);
   MagickFreeResourceLimitedMemory(pixels);
 
   if (logging)

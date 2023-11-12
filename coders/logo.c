@@ -5324,8 +5324,8 @@ static unsigned int WriteLOGOImage(const ImageInfo *image_info,Image *image)
     p++;
   }
   (void) WriteBlobString(image,"\n  };\n");
-  CloseBlob(image);
+  status &= CloseBlob(image);
   MagickFreeMemory(blob);
   DestroyImage(logo_image);
-  return(True);
+  return(status);
 }

@@ -401,12 +401,13 @@ static long BlobSeek(jas_stream_obj_t *obj,long offset,int origin)
 /* int (*close_)(jas_stream_obj_t *obj); */
 static int BlobClose(jas_stream_obj_t *obj)
 {
+  int status;
   StreamManager
     *source = (StreamManager *) obj;
 
-  CloseBlob(source->image);
+  status = CloseBlob(source->image);
   jas_free(source);
-  return (0);
+  return (status == 0 ? EOF : 0);
 }
 
 

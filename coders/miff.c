@@ -2982,15 +2982,16 @@ static unsigned int WriteMIFFImage(const ImageInfo *image_info,Image *image)
     if (image->next == (Image *) NULL)
       break;
     image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,image_list_length,
-                                  &image->exception,SaveImagesText,
-                                  image->filename);
+    if (status != MagickFail)
+      status=MagickMonitorFormatted(scene++,image_list_length,
+                                    &image->exception,SaveImagesText,
+                                    image->filename);
     if (status == False)
       break;
   } while (image_info->adjoin);
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return(status);
 }

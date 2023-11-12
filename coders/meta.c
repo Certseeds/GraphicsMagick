@@ -2376,8 +2376,8 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
       if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
       (void) WriteBlob(image,profile_length,(void *) profile);
-      CloseBlob(image);
-      return MagickPass;
+      status &= CloseBlob(image);
+      return status;
     }
   if (LocaleCompare(image_info->magick,"IPTC") == 0)
     {
@@ -2396,8 +2396,8 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
         ThrowWriterException(CoderError,NoIPTCInfoWasFound,image);
       info=profile+iptc_offset;
       (void) WriteBlob(image,length,info);
-      CloseBlob(image);
-      return MagickPass;
+      status &= CloseBlob(image);
+      return status;
     }
   if (LocaleCompare(image_info->magick,"8BIMTEXT") == 0)
     {
@@ -2420,7 +2420,7 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
         status = MagickFail;
       DetachBlob(buff->blob);
       DestroyImage(buff);
-      CloseBlob(image);
+      status &= CloseBlob(image);
       return status;
     }
   if (LocaleCompare(image_info->magick,"8BIMWTEXT") == 0)
@@ -2457,8 +2457,8 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
       (void) formatIPTC(buff,image);
       DetachBlob(buff->blob);
       DestroyImage(buff);
-      CloseBlob(image);
-      return MagickPass;
+      status &= CloseBlob(image);
+      return status;
     }
   if (LocaleCompare(image_info->magick,"IPTCWTEXT") == 0)
     {
@@ -2477,8 +2477,8 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
       if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
       (void) WriteBlob(image,(int) profile_length, (char *) profile);
-      CloseBlob(image);
-      return MagickPass;
+      status &= CloseBlob(image);
+      return status;
     }
   if ((LocaleCompare(image_info->magick,"ICC") == 0) ||
       (LocaleCompare(image_info->magick,"ICM") == 0))
@@ -2493,8 +2493,8 @@ static MagickPassFail WriteMETAImage(const ImageInfo *image_info,Image *image)
       if (status == MagickFail)
         ThrowWriterException(FileOpenError,UnableToOpenFile,image);
       (void) WriteBlob(image,profile_length,(void *) profile);
-      CloseBlob(image);
-      return MagickPass;
+      status &= CloseBlob(image);
+      return status;
     }
   return MagickFail;
 }

@@ -678,7 +678,7 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
     packet_size,
     quantum_size,
     scene,
-    status;
+    status = MagickPass;
 
   ExportPixelAreaOptions
     export_options;
@@ -974,6 +974,6 @@ static unsigned int WriteCMYKImage(const ImageInfo *image_info,Image *image)
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }
