@@ -1,7 +1,12 @@
+2023-11-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/rwfile.c, tests/rwblob.c: Print reproducible test
+	information.
+
 2023-11-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat Sumate and display total amount 
-        of problems during testing.
+	* VisualMagick/tests/runtest.bat Sumate and display total amount
+	of problems during testing.
 
 2023-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

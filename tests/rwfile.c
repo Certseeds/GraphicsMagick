@@ -26,6 +26,27 @@
 #include <string.h>
 #include <locale.h>
 
+static void DescribeFrames(const ImageInfo *image_info, Image *list)
+{
+  /* [0] AVS 70x46+072 Grayscale 8-bit adea7b1989cc5d19794a25ae3d7d0bc86f83b014f7231a869ee7b97177d54ab5 */
+  static const char descr_fmt[] = "[%s] %m %wx%h%X%y %r %q-bit %#";
+  Image *list_entry = list;
+
+  while (list_entry != (Image *) NULL)
+    {
+      char
+        *text;
+
+      text=TranslateText(image_info,list_entry,descr_fmt);
+      if (text != (char *) NULL)
+        {
+          fprintf(stdout,"%s\n", text);
+          MagickFree(text);
+        }
+      list_entry=GetNextImageInList(list_entry);
+    }
+}
+
 int main ( int argc, char **argv )
 {
   Image
@@ -400,7 +421,7 @@ int main ( int argc, char **argv )
     else
       {
         /* Print a short description of the image to stdout */
-        DescribeImage( ping_image, stdout, MagickFalse );
+        /* DescribeFrames(imageInfo, ping_image); */
         DestroyImageList( ping_image );
       }
     if (ping_error)
@@ -527,6 +548,10 @@ int main ( int argc, char **argv )
       exit_status = 1;
       goto program_exit;
     }
+
+  /* Print a short description of the image to stdout */
+  DescribeFrames(imageInfo, final);
+  (void) fflush(stdout);
 
   if (check)
     {

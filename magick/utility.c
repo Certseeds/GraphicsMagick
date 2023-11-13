@@ -6811,6 +6811,7 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
       }
       case '#':
       {
+        /* If 'ping' mode was used, then there may be no pixel cache! */
         if (GetPixelCachePresent(image))
           {
             (void) SignatureImage(image);
