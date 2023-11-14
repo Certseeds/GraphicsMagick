@@ -6484,9 +6484,10 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
     } while (image_info->adjoin);
   while (image->previous != (Image *) NULL)
     image=image->previous;
+  if (TIFFFlush(tiff) != 1) /* Flush pending writes, check status */
+    status=MagickFail;
   TIFFClose(tiff); /* Should implicity invoke CloseBlob(image) */
 
-#if 0
   if (status == MagickFail)
     {
       /*
@@ -6497,7 +6498,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "Removed broken output file \"%s\"",filename);
     }
-#endif
 
   return(status);
 }

@@ -1,3 +1,9 @@
+2023-11-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): Call TIFFFlush() to detect any
+	errors which might otherwise be lost by TIFFClose().  Restore
+	broken file deletion code.
+
 2023-11-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/rwfile.c, tests/rwblob.c: Print reproducible test
