@@ -2650,10 +2650,11 @@ then
     failed=0
     passed=0
     heif_libs=''
+    heif_cflags=''
     # Use pkg-config to handle different optional codec libs
     # and if pkg-config is not available fallback to manual search.
     PKG_CHECK_MODULES([HEIF], [libheif],
-        [heif_libs=$HEIF_LIBS; passed=1;],
+        [heif_libs=$HEIF_LIBS; heif_cflags=$HEIF_CFLAGS; passed=1;],
         [AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
         # Assume sensible default for codec; This will fail with a static
         # libheif that contains a avif codec.
@@ -2670,6 +2671,30 @@ then
     else
         LIB_HEIF="$heif_libs"
         LIBS="$LIB_HEIF $LIBS"
+        for flag in $heif_cflags
+        do
+          case $flag in
+            -I*)
+              # Add flag to CPPFLAGS if not already present
+              add=yes
+              for test_flag in $CPPFLAGS
+              do
+                if test $flag = $test_flag
+                then
+                  add=no
+                  break
+                fi
+              done
+              if test $add = yes
+              then
+                CPPFLAGS="$CPPFLAGS $flag"
+              fi
+              break
+              ;;
+            *)
+              ;;
+          esac
+        done
         AC_DEFINE([HasHEIF],[1],[Define if you have HEIF library])
         AC_MSG_RESULT([yes])
         have_heif='yes'

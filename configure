@@ -27623,6 +27623,7 @@ $as_echo "" >&6; }
     failed=0
     passed=0
     heif_libs=''
+    heif_cflags=''
     # Use pkg-config to handle different optional codec libs
     # and if pkg-config is not available fallback to manual search.
 
@@ -27714,7 +27715,7 @@ else
 	HEIF_LIBS=$pkg_cv_HEIF_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-	heif_libs=$HEIF_LIBS; passed=1;
+	heif_libs=$HEIF_LIBS; heif_cflags=$HEIF_CFLAGS; passed=1;
 fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for heif_context_alloc in -lheif" >&5
 $as_echo_n "checking for heif_context_alloc in -lheif... " >&6; }
@@ -27782,6 +27783,30 @@ $as_echo "no -- some components failed test" >&6; }
     else
         LIB_HEIF="$heif_libs"
         LIBS="$LIB_HEIF $LIBS"
+        for flag in $heif_cflags
+        do
+          case $flag in
+            -I*)
+              # Add flag to CPPFLAGS if not already present
+              add=yes
+              for test_flag in $CPPFLAGS
+              do
+                if test $flag = $test_flag
+                then
+                  add=no
+                  break
+                fi
+              done
+              if test $add = yes
+              then
+                CPPFLAGS="$CPPFLAGS $flag"
+              fi
+              break
+              ;;
+            *)
+              ;;
+          esac
+        done
 
 $as_echo "#define HasHEIF 1" >>confdefs.h
 

@@ -1,5 +1,10 @@
 2023-11-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: Use CPPFLAGS delivered by pkg-config for
+	libheif. Applied patch
+	configure-libheif-cppflags-deduplicated2.patch from SourceForge
+	patch #79 "Use CPPFLAGS delivered by pkg-config".
+
 	* coders/tiff.c (WriteTIFFImage): Call TIFFFlush() to detect any
 	errors which might otherwise be lost by TIFFClose().  Restore
 	broken file deletion code.
