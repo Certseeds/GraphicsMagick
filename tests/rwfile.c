@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 - 2018 GraphicsMagick Group
+ * Copyright (C) 2003 - 2023 GraphicsMagick Group
  * Copyright (C) 2003 ImageMagick Studio
  * Copyright 1991-1999 E. I. du Pont de Nemours and Company
  *
@@ -26,10 +26,11 @@
 #include <string.h>
 #include <locale.h>
 
-static void DescribeFrames(const ImageInfo *image_info, Image *list)
+static void DescribeFrames(const ImageInfo *image_info, Image *list, const MagickBool ping)
 {
   /* [0] AVS 70x46+072 Grayscale 8-bit adea7b1989cc5d19794a25ae3d7d0bc86f83b014f7231a869ee7b97177d54ab5 */
   static const char descr_fmt[] = "[%s] %m %wx%h%X%y %r %q-bit %#";
+  static const char descr_fmt_ping[] = "[%s] %m %wx%h%X%y %r %q-bit";
   Image *list_entry = list;
 
   while (list_entry != (Image *) NULL)
@@ -37,7 +38,7 @@ static void DescribeFrames(const ImageInfo *image_info, Image *list)
       char
         *text;
 
-      text=TranslateText(image_info,list_entry,descr_fmt);
+      text=TranslateText(image_info,list_entry,ping ? descr_fmt_ping : descr_fmt);
       if (text != (char *) NULL)
         {
           fprintf(stdout,"%s\n", text);
@@ -421,7 +422,7 @@ int main ( int argc, char **argv )
     else
       {
         /* Print a short description of the image to stdout */
-        /* DescribeFrames(imageInfo, ping_image); */
+        /* DescribeFrames(imageInfo, ping_image, MagickTrue); */
         DestroyImageList( ping_image );
       }
     if (ping_error)
@@ -550,7 +551,7 @@ int main ( int argc, char **argv )
     }
 
   /* Print a short description of the image to stdout */
-  DescribeFrames(imageInfo, final);
+  DescribeFrames(imageInfo, final, MagickFalse);
   (void) fflush(stdout);
 
   if (check)

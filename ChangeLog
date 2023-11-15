@@ -1,3 +1,9 @@
+2023-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/{rwfile.c, rwblob.c} (DescribeFrames): Add a 'ping' option
+	in case this function is activated on an image read with the
+	'ping' flag set.
+
 2023-11-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Use CPPFLAGS delivered by pkg-config for
