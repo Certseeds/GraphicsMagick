@@ -33,9 +33,9 @@ at http://sourceforge.net/projects/graphicsmagick/files/.
 GraphicsMagick is a continual work in progress. The very latest code
 is available via the Mercurial distributed source control management
 tool (https://www.mercurial-scm.org/). GraphicsMagick may be retrieved
-from OSDN or SourceForge via the following commands:
+from foss.heptapod.net or SourceForge via the following commands:
 
-  hg clone https://hg.osdn.net/view/graphicsmagick/GM GM
+  hg clone https://foss.heptapod.net/graphicsmagick/graphicsmagick GM
 
   hg clone http://hg.code.sf.net/p/graphicsmagick/code/ GM
 

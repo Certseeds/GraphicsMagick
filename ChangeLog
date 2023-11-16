@@ -1,3 +1,14 @@
+2023-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/thanks.rst: Provide attributions expected by
+	https://foss.heptapod.net/
+
+	* www/Hg.rst: Replace OSDN with foss.heptapod.net.
+
+	* README.txt: Replace OSDN with foss.heptapod.net.
+
+	* LICENSE: Provide a license file at an expected location.
+
 2023-11-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/{rwfile.c, rwblob.c} (DescribeFrames): Add a 'ping' option

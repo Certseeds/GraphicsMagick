@@ -22,7 +22,7 @@ GraphicsMagick Mercurial
 .. _Mercurial : https://www.mercurial-scm.org/
 .. _TortoiseHg : https://tortoisehg.bitbucket.io/
 .. _`GraphicsMagick repository at SourceForge` : http://hg.code.sf.net/p/graphicsmagick/code/
-.. _`GraphicsMagick repository at OSDN` : https://hg.osdn.net/view/graphicsmagick/GM
+.. _`GraphicsMagick repository at Heptapod` : https://foss.heptapod.net/graphicsmagick/graphicsmagick
 
 .. contents::
 
@@ -48,7 +48,7 @@ Web Access
 =============
 
 The `GraphicsMagick repository at SourceForge`_ and `GraphicsMagick
-repository at OSDN`_ web interfaces are available which may be used to
+repository at Heptapod`_ web interfaces are available which may be used to
 interactively view the latest versions of files (or the changes to
 files) using your web browser.  These two servers will be updated at
 about the same time so they should normally contain the same content.
@@ -63,9 +63,9 @@ directory, issue the command to one of the two public servers::
 
 or::
 
-  hg clone https://hg.osdn.net/view/graphicsmagick/GM
+  hg clone https://foss.heptapod.net/graphicsmagick/graphicsmagick GM
 
-The repository is large (e.g. 239MB of Hg content, resulting in 299MB
+The repository is large (e.g. 296M of Hg content, resulting in 450M
 after files are extracted), so some time may be required to transfer
 all the changesets.  Patience is a virtue!
 
