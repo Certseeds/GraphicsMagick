@@ -35,8 +35,8 @@ make -j$(nproc)
 make install
 popd
 
-# build libjpeg
-printf "=== Building libjpeg...\n"
+# build libjpeg-turbo
+printf "=== Building libjpeg-turbo...\n"
 pushd "$SRC/libjpeg-turbo"
 CFLAGS="$CFLAGS -fPIC" cmake . -DCMAKE_INSTALL_PREFIX="$WORK" -DENABLE_STATIC=on -DENABLE_SHARED=on -DWITH_JPEG8=1 -DWITH_SIMD=0
 make -j$(nproc)
@@ -70,11 +70,26 @@ make -j$(nproc)
 make install
 popd
 
-# Build freetype2
-printf "=== Building freetype2...\n"
-pushd "$SRC/freetype2"
+# Build freetype
+printf "=== Building freetype...\n"
+pushd "$SRC/freetype"
 ./autogen.sh
 PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --enable-freetype-config
+make -j$(nproc)
+make install
+popd
+
+# Build libde265
+pushd "$SRC/libde265"
+./autogen.sh
+./configure --disable-shared --prefix="$WORK"
+make -j$(nproc)
+make install
+popd
+
+# Build libheif
+pushd "$SRC/libheif"
+cmake . -DCMAKE_INSTALL_PREFIX=$WORK -DBUILD_SHARED_LIBS=off -DBUILD_TESTING=off -DWITH_EXAMPLES=off -DENABLE_PLUGIN_LOADING=off -DWITH_JPEG_DECODER=off -DWITH_JPEG_ENCODER=off -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
 make install
 popd
@@ -100,6 +115,15 @@ printf "=== Building GraphicsMagick...\n"
 PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include/libxml2 -I$WORK/include" CFLAGS="$CFLAGS" LDFLAGS="${LDFLAGS:-} -L$WORK/lib" --prefix="$WORK" --disable-compressed-files --without-perl --with-quantum-depth=16
 make "-j$(nproc)"
 make install
+
+# Build libjxl
+pushd "$SRC/libjxl"
+cmake . -DCMAKE_INSTALL_PREFIX=$WORK -DBUILD_TESTING=off -DBUILD_SHARED_LIBS=false -DJPEGXL_FORCE_SYSTEM_LCMS2=true -DJPEGXL_ENABLE_EXAMPLES=false -DJPEGXL_ENABLE_FUZZERS=false -DJPEGXL_ENABLE_TOOLS=false -DJPEGXL_ENABLE_JPEGLI=false -DCMAKE_C_FLAGS="$CFLAGS" -DCMAKE_CXX_FLAGS="$CXXFLAGS"
+make -j$(nproc)
+make install
+cp third_party/brotli/*.a $WORK/lib
+cp third_party/brotli/*.pc $WORK/lib/pkgconfig
+popd
 
 # Order libraries in linkage dependency order so libraries on the
 # right provide symbols needed by libraries to the left, to the

@@ -1,3 +1,9 @@
+2023-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Build script improvements.  Change
+	'freetype2' to 'freetype'. Add libde265, libheif, and libjxl to
+	build.
+
 2023-11-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/thanks.rst: Provide attributions expected by
