@@ -2572,10 +2572,10 @@ then
     AC_LANG_PUSH([C++])
     AC_CHECK_HEADER([jxl/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     # jxl always requires hwy/brotli no extra test needed
-    AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lhwy -lbrotlidec -lbrotlienc])
+    AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lhwy -lbrotlidec -lbrotlienc -lbrotlicommon])
     AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     # Testing for decoder should also cover encoder
-    AC_CHECK_LIB([brotlidec],[BrotliDecoderVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_CHECK_LIB([brotlidec],[BrotliDecoderVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lbrotlicommon])
     AC_LANG_POP
     AC_MSG_CHECKING([if JXL package is complete])
     if test $passed -gt 0
@@ -2588,7 +2588,7 @@ then
         # JXL is a C++ Lib so requires linking with stdc++.
         # TODO: A better solution would be to tell automake to do any linking with
         # c++, but I can't figure out a way to get this working.
-        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lstdc++'
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lbrotlicommon -lstdc++'
         LIBS="$LIB_JXL $LIBS"
         AC_DEFINE([HasJXL],[1],[Define if you have JXL library])
         AC_MSG_RESULT([yes])

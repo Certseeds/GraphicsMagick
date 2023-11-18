@@ -1,5 +1,8 @@
 2023-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: libbrotlidec and liblbrotlienc depend on
+	libbrotlicommon.
+
 	* fuzzing/oss-fuzz-build.sh: Build script improvements.  Change
 	'freetype2' to 'freetype'. Add libde265, libheif, and libjxl to
 	build.
