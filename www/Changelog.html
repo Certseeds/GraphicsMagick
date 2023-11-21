@@ -37,6 +37,26 @@
 </div>
 
 <div class="document">
+<p>2023-11-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/GraphicsMagick.pc.in: Add OpenMP runtime library as a
+private dependency.</p></li>
+<li><p>coders/Makefile.am: If JXL is enabled, then link the JXL module
+with C++ (if modules are enabled), or the GraphicsMagick library
+with C++ (if modules are not enabled).</p></li>
+<li><p>configure.ac: Fix detection of if OpenMP is enabled. Add the
+OpenMP runtime as an explicit library dependency.</p></li>
+<li><p>coders/acppfile.cpp: An example useless C++ file.</p></li>
+</ul>
+</blockquote>
+<p>2023-11-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/Makefile.am: When linking JXL or FlashPIX, use the C++
+linker.</p></li>
+</ul>
+</blockquote>
 <p>2023-11-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

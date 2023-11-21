@@ -1,3 +1,22 @@
+2023-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/GraphicsMagick.pc.in: Add OpenMP runtime library as a
+	private dependency.
+
+	* coders/Makefile.am: If JXL is enabled, then link the JXL module
+	with C++ (if modules are enabled), or the GraphicsMagick library
+	with C++ (if modules are not enabled).
+
+	* configure.ac: Fix detection of if OpenMP is enabled. Add the
+	OpenMP runtime as an explicit library dependency.
+
+	* coders/acppfile.cpp: An example useless C++ file.
+
+2023-11-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/Makefile.am: When linking JXL or FlashPIX, use the C++
+	linker.
+
 2023-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: libbrotlidec and liblbrotlienc depend on

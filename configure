@@ -2225,6 +2225,52 @@ fi
 
 } # ac_fn_c_try_link
 
+# ac_fn_c_check_decl LINENO SYMBOL VAR INCLUDES
+# ---------------------------------------------
+# Tests whether SYMBOL is declared in INCLUDES, setting cache variable VAR
+# accordingly.
+ac_fn_c_check_decl ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  as_decl_name=`echo $2|sed 's/ *(.*//'`
+  as_decl_use=`echo $2|sed -e 's/(/((/' -e 's/)/) 0&/' -e 's/,/) 0& (/g'`
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $as_decl_name is declared" >&5
+$as_echo_n "checking whether $as_decl_name is declared... " >&6; }
+if eval \${$3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+#ifndef $as_decl_name
+#ifdef __cplusplus
+  (void) $as_decl_use;
+#else
+  (void) $as_decl_name;
+#endif
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$3=yes"
+else
+  eval "$3=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_decl
+
 # ac_fn_c_check_func LINENO FUNC VAR
 # ----------------------------------
 # Tests whether FUNC exists, setting the cache variable VAR accordingly
@@ -2649,52 +2695,6 @@ rm -f conftest.val
   as_fn_set_status $ac_retval
 
 } # ac_fn_c_compute_int
-
-# ac_fn_c_check_decl LINENO SYMBOL VAR INCLUDES
-# ---------------------------------------------
-# Tests whether SYMBOL is declared in INCLUDES, setting cache variable VAR
-# accordingly.
-ac_fn_c_check_decl ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  as_decl_name=`echo $2|sed 's/ *(.*//'`
-  as_decl_use=`echo $2|sed -e 's/(/((/' -e 's/)/) 0&/' -e 's/,/) 0& (/g'`
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $as_decl_name is declared" >&5
-$as_echo_n "checking whether $as_decl_name is declared... " >&6; }
-if eval \${$3+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$4
-int
-main ()
-{
-#ifndef $as_decl_name
-#ifdef __cplusplus
-  (void) $as_decl_use;
-#else
-  (void) $as_decl_name;
-#endif
-#endif
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  eval "$3=yes"
-else
-  eval "$3=no"
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-eval ac_res=\$$3
-	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
-$as_echo "$ac_res" >&6; }
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-
-} # ac_fn_c_check_decl
 
 # ac_fn_cxx_check_header_mongrel LINENO HEADER VAR INCLUDES
 # ---------------------------------------------------------
@@ -7388,6 +7388,13 @@ fi
 #
 # Sets Set the OPENMP_CFLAGS / OPENMP_CXXFLAGS / OPENMP_FFLAGS
 # variable to these options.
+#
+
+# https://clang.llvm.org/docs/UsersManual.html#openmp-features
+# https://clang.llvm.org/docs/OpenMPSupport.html
+#
+# Clang needs -fopenmp=libomp "Intel OpenMP" or CFLAGS=-fopenmp "GNU OpenMP".
+# FIXME: AC_OPENMP() does not set OPENMP_CFLAGS for Clang 13 on Linux!
 
 
   OPENMP_CFLAGS=
@@ -7458,6 +7465,13 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
 CFLAGS="$OPENMP_CFLAGS $CFLAGS"
 #CXXFLAGS="$OPENMP_CXXFLAGS $CXXFLAGS"
 #LDFLAGS="$LDFLAGS $OPENMP_CFLAGS"
+
+ac_fn_c_check_decl "$LINENO" "_OPENMP" "ac_cv_have_decl__OPENMP" "$ac_includes_default"
+if test "x$ac_cv_have_decl__OPENMP" = xyes; then :
+  OPENMP_ENABLED='yes'
+else
+  OPENMP_ENABLED='yes'
+fi
 
 
 # Allow the user to disable use of OpenMP where algorithms sometimes run slower.
@@ -23074,7 +23088,7 @@ fi
 # Find OpenMP library
 #
 LIB_OMP=''
-if test "${OPENMP_CFLAGS}x" != 'x'
+if test "${OPENMP_ENABLED}" == 'yes'
 then
   if test "${GCC}" = "yes"
   then
@@ -23168,7 +23182,7 @@ fi
 
       fi
     fi
-    # GCC
+    # GCC/Clang
     if test "x$LIB_OMP" = x ; then
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GOMP_parallel_start in -lgomp" >&5
 $as_echo_n "checking for GOMP_parallel_start in -lgomp... " >&6; }
@@ -23257,7 +23271,7 @@ fi
     fi
     # AIX xlc
     if test "x$LIB_OMP" = x ; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _xlsmpFlush in -lxlsmp" >&5
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _xlsmpFlush in -lxlsmp" >&5
 $as_echo_n "checking for _xlsmpFlush in -lxlsmp... " >&6; }
 if ${ac_cv_lib_xlsmp__xlsmpFlush+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -23300,7 +23314,7 @@ fi
     fi
     # SGI IRIX 6.5 MIPSpro C/C++
     if test "x$LIB_OMP" = x ; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mp_destroy in -lmp" >&5
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mp_destroy in -lmp" >&5
 $as_echo_n "checking for mp_destroy in -lmp... " >&6; }
 if ${ac_cv_lib_mp_mp_destroy+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -23343,6 +23357,15 @@ fi
     fi
   fi
   LIBS="$LIB_OMP $LIBS"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for OpenMP library " >&5
+$as_echo_n "checking for OpenMP library ... " >&6; }
+  if test "x$LIB_OMP" = x ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: not found!" >&5
+$as_echo "not found!" >&6; }
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LIB_OMP}" >&5
+$as_echo "${LIB_OMP}" >&6; }
+  fi
 fi
 
 
@@ -27397,10 +27420,10 @@ $as_echo_n "checking if JXL package is complete... " >&6; }
 $as_echo "no -- some components failed test" >&6; }
         have_jxl='no (failed tests)'
     else
-        # JXL is a C++ Lib so requires linking with stdc++.
-        # TODO: A better solution would be to tell automake to do any linking with
-        # c++, but I can't figure out a way to get this working.
-        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lbrotlicommon -lstdc++'
+        # JXL is a C++ Lib so it requires linking with stdc++.  This
+        # is handled by inserting a C++ dummy shim file when JXL is
+        # part of the build.
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lbrotlicommon'
         LIBS="$LIB_JXL $LIBS"
 
 $as_echo "#define HasJXL 1" >>confdefs.h
@@ -33862,5 +33885,5 @@ printf "  CXX      = $CXX\n"
 printf "  CXXFLAGS = $CXXFLAGS\n"
 printf "  DEFS     = $DEFS\n"
 printf "  LDFLAGS  = $LDFLAGS\n"
-printf "  LIBS     = $MAGICK_API_DEP_LIBS\n"
+printf "  LIBS     = $MAGICK_API_DEP_LIBS $MAGICK_EXTRA_DEP_LIBS\n"
 printf "\n"

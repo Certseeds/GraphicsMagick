@@ -18,7 +18,7 @@ endif
 
 if HasFPX
 MAGICK_FPX_MODULES = coders/fpx.la
-MAGICK_FPX_SRCS = coders/fpx.c
+MAGICK_FPX_SRCS = coders/fpx.c coders/acppfile.cpp
 endif
 
 if HasWINGDI32
@@ -48,7 +48,7 @@ endif
 
 if HasJXL
 MAGICK_JXL_MODULES = coders/jxl.la
-MAGICK_JXL_SRCS = coders/jxl.c
+MAGICK_JXL_SRCS = coders/jxl.c coders/acppfile.cpp
 endif
 
 if HasPNG
@@ -401,7 +401,7 @@ coders_fits_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_fits_la_LIBADD      = $(LIBMAGICK) $(LIB_MATH)
 
 # FPX coder module
-coders_fpx_la_SOURCES      = coders/fpx.c
+coders_fpx_la_SOURCES      = coders/fpx.c coders/acppfile.cpp
 coders_fpx_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_fpx_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_fpx_la_LIBADD       = $(LIBMAGICK) $(LIB_FPX)
@@ -491,7 +491,7 @@ coders_jp2_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_jp2_la_LIBADD       = $(LIBMAGICK) $(LIB_JP2) $(LIB_HEIF) $(LIB_JPEG) $(LIB_MATH)
 
 # JXL coder module
-coders_jxl_la_SOURCES     = coders/jxl.c
+coders_jxl_la_SOURCES     = coders/jxl.c coders/acppfile.cpp
 coders_jxl_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_jxl_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_jxl_la_LIBADD      = $(LIBMAGICK) $(LIB_JXL)

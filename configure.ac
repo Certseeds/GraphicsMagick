@@ -335,12 +335,20 @@ fi
 #
 # Sets Set the OPENMP_CFLAGS / OPENMP_CXXFLAGS / OPENMP_FFLAGS
 # variable to these options.
+#
+
+# https://clang.llvm.org/docs/UsersManual.html#openmp-features
+# https://clang.llvm.org/docs/OpenMPSupport.html
+#
+# Clang needs -fopenmp=libomp "Intel OpenMP" or CFLAGS=-fopenmp "GNU OpenMP".
+# FIXME: AC_OPENMP() does not set OPENMP_CFLAGS for Clang 13 on Linux!
 
 AC_OPENMP([C])
 CFLAGS="$OPENMP_CFLAGS $CFLAGS"
 #CXXFLAGS="$OPENMP_CXXFLAGS $CXXFLAGS"
 #LDFLAGS="$LDFLAGS $OPENMP_CFLAGS"
 AC_SUBST([OPENMP_CFLAGS])
+AC_CHECK_DECL([_OPENMP],[OPENMP_ENABLED='yes'],[OPENMP_ENABLED='yes'],[])
 
 # Allow the user to disable use of OpenMP where algorithms sometimes run slower.
 AC_ARG_ENABLE([openmp-slow],
@@ -1603,7 +1611,7 @@ AC_SUBST([LIB_MTMALLOC])
 # Find OpenMP library
 #
 LIB_OMP=''
-if test "${OPENMP_CFLAGS}x" != 'x'
+if test "${OPENMP_ENABLED}" == 'yes'
 then
   if test "${GCC}" = "yes"
   then
@@ -1619,7 +1627,7 @@ then
         AC_CHECK_LIB([omp],[GOMP_parallel_start],[LIB_OMP="-lomp"],,)
       fi
     fi
-    # GCC
+    # GCC/Clang
     if test "x$LIB_OMP" = x ; then
       AC_CHECK_LIB([gomp],[GOMP_parallel_start],[LIB_OMP="-lgomp"],,)
     fi
@@ -1630,14 +1638,20 @@ then
     fi
     # AIX xlc
     if test "x$LIB_OMP" = x ; then
-    AC_CHECK_LIB([xlsmp],[_xlsmpFlush],[LIB_OMP="-lxlsmp"],,)
+      AC_CHECK_LIB([xlsmp],[_xlsmpFlush],[LIB_OMP="-lxlsmp"],,)
     fi
     # SGI IRIX 6.5 MIPSpro C/C++
     if test "x$LIB_OMP" = x ; then
-    AC_CHECK_LIB([mp],[mp_destroy],[LIB_OMP="-lmp"],,)
+      AC_CHECK_LIB([mp],[mp_destroy],[LIB_OMP="-lmp"],,)
     fi
   fi
   LIBS="$LIB_OMP $LIBS"
+  AC_MSG_CHECKING([for OpenMP library ])
+  if test "x$LIB_OMP" = x ; then
+    AC_MSG_RESULT([not found!])
+  else
+    AC_MSG_RESULT([${LIB_OMP}])
+  fi
 fi
 AC_SUBST([LIB_OMP])
 
@@ -2585,10 +2599,10 @@ then
         AC_MSG_RESULT([no -- some components failed test])
         have_jxl='no (failed tests)'
     else
-        # JXL is a C++ Lib so requires linking with stdc++.
-        # TODO: A better solution would be to tell automake to do any linking with
-        # c++, but I can't figure out a way to get this working.
-        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lbrotlicommon -lstdc++'
+        # JXL is a C++ Lib so it requires linking with stdc++.  This
+        # is handled by inserting a C++ dummy shim file when JXL is
+        # part of the build.
+        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lbrotlicommon'
         LIBS="$LIB_JXL $LIBS"
         AC_DEFINE([HasJXL],[1],[Define if you have JXL library])
         AC_MSG_RESULT([yes])
@@ -4064,5 +4078,5 @@ printf "  CXX      = $CXX\n"
 printf "  CXXFLAGS = $CXXFLAGS\n"
 printf "  DEFS     = $DEFS\n"
 printf "  LDFLAGS  = $LDFLAGS\n"
-printf "  LIBS     = $MAGICK_API_DEP_LIBS\n"
+printf "  LIBS     = $MAGICK_API_DEP_LIBS $MAGICK_EXTRA_DEP_LIBS\n"
 printf "\n"
