@@ -28433,9 +28433,9 @@ $as_echo_n "checking if TIFF package is complete... " >&6; }
             { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
             have_tiff='no (failed tests)'
-            CFLAGS=OLD_CFLAGS
-            CPPFLAGS=OLD_CPPFLAGS
-            LIBS=OLD_LIBS
+            CFLAGS=$OLD_CFLAGS
+            CPPFLAGS=$OLD_CPPFLAGS
+            LIBS=$OLD_LIBS
         else
             LIB_TIFF='-ltiff'
             #LIBS="$LIB_TIFF $LIBS"

@@ -2786,9 +2786,9 @@ then
         then
             AC_MSG_RESULT([no -- some components failed test])
             have_tiff='no (failed tests)'
-            CFLAGS=OLD_CFLAGS
-            CPPFLAGS=OLD_CPPFLAGS
-            LIBS=OLD_LIBS
+            CFLAGS=$OLD_CFLAGS
+            CPPFLAGS=$OLD_CPPFLAGS
+            LIBS=$OLD_LIBS
         else
             LIB_TIFF='-ltiff'
             #LIBS="$LIB_TIFF $LIBS"
