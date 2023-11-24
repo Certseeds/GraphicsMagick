@@ -2969,12 +2969,7 @@ then
     if test $failed -eq 0 ; then
        pkg_config_to_flags 'libheif' "${HEIF_LIBS}" "${HEIF_CFLAGS}"
     fi
-    PKG_CHECK_MODULES([HEIF], [libheif],
-        [heif_libs=$HEIF_LIBS; heif_cflags=$HEIF_CFLAGS; passed=1;],
-        [AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-        # Assume sensible default for codec; This will fail with a static
-        # libheif that contains a avif codec.
-        heif_libs="-lheif -lde265"])
+    AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$heif_libs])
     AC_CHECK_FUNCS([heif_init heif_deinit])
     AC_MSG_CHECKING([if HEIF package is complete])

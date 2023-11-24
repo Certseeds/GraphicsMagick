@@ -1,5 +1,7 @@
 2023-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: Eliminate redundant check for HEIF library.
+
 	* www/INSTALL-unix.rst: Document how to get a maximally-static
 	build using `PKG_CONFIG='pkg-config --static' ./configure`.
 

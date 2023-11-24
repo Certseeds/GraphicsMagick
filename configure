@@ -29076,66 +29076,7 @@ fi
     if test $failed -eq 0 ; then
        pkg_config_to_flags 'libheif' "${HEIF_LIBS}" "${HEIF_CFLAGS}"
     fi
-
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libheif" >&5
-$as_echo_n "checking for libheif... " >&6; }
-
-if test -n "$HEIF_CFLAGS"; then
-    pkg_cv_HEIF_CFLAGS="$HEIF_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libheif\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libheif") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_HEIF_CFLAGS=`$PKG_CONFIG --cflags "libheif" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$HEIF_LIBS"; then
-    pkg_cv_HEIF_LIBS="$HEIF_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libheif\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libheif") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_HEIF_LIBS=`$PKG_CONFIG --libs "libheif" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-
-
-
-if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        HEIF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libheif" 2>&1`
-        else
-	        HEIF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libheif" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$HEIF_PKG_ERRORS" >&5
-
-	ac_fn_c_check_header_mongrel "$LINENO" "libheif/heif.h" "ac_cv_header_libheif_heif_h" "$ac_includes_default"
+    ac_fn_c_check_header_mongrel "$LINENO" "libheif/heif.h" "ac_cv_header_libheif_heif_h" "$ac_includes_default"
 if test "x$ac_cv_header_libheif_heif_h" = xyes; then :
   passed=`expr $passed + 1`
 else
@@ -29143,30 +29084,6 @@ else
 fi
 
 
-        # Assume sensible default for codec; This will fail with a static
-        # libheif that contains a avif codec.
-        heif_libs="-lheif -lde265"
-elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	ac_fn_c_check_header_mongrel "$LINENO" "libheif/heif.h" "ac_cv_header_libheif_heif_h" "$ac_includes_default"
-if test "x$ac_cv_header_libheif_heif_h" = xyes; then :
-  passed=`expr $passed + 1`
-else
-  failed=`expr $failed + 1`
-fi
-
-
-        # Assume sensible default for codec; This will fail with a static
-        # libheif that contains a avif codec.
-        heif_libs="-lheif -lde265"
-else
-	HEIF_CFLAGS=$pkg_cv_HEIF_CFLAGS
-	HEIF_LIBS=$pkg_cv_HEIF_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	heif_libs=$HEIF_LIBS; heif_cflags=$HEIF_CFLAGS; passed=1;
-fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for heif_context_alloc in -lheif" >&5
 $as_echo_n "checking for heif_context_alloc in -lheif... " >&6; }
 if ${ac_cv_lib_heif_heif_context_alloc+:} false; then :
