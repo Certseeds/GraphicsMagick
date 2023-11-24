@@ -93,6 +93,11 @@ and watch the configure script output to verify that it finds everything
 that you think it should. If it does not, then adjust your environment
 so that it does.
 
+If you are attempting to build a maximally-static build, then
+use --disable-shared and execute configure like::
+
+  PKG_CONFIG='pkg-config --static' ./configure
+
 By default, 'make install' will install the package's files
 in '/usr/local/bin', '/usr/local/man', etc. You can specify an
 installation prefix other than '/usr/local' by giving 'configure'

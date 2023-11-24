@@ -1,3 +1,16 @@
+2023-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-unix.rst: Document how to get a maximally-static
+	build using `PKG_CONFIG='pkg-config --static' ./configure`.
+
+	* fuzzing/oss-fuzz-build.sh: Continued work to try to accomplish a
+	static oss-fuzz build. Not quite successful yet.
+
+	* magick/GraphicsMagick.pc.in (Description): Added project URL.
+
+	* configure.ac: Major change to require/trust pkg-config much more
+	than before.  Deleted outdated code.
+
 2023-11-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/GraphicsMagick.pc.in: Add OpenMP runtime library as a

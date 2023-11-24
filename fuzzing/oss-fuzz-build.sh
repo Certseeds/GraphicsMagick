@@ -8,7 +8,14 @@ rm -rf $WORK/lib/
 
 set +x
 
+# We are doing a static build
+# Work-around for not using PKG_CHECK_MODULES_STATIC
+# See https://stackoverflow.com/questions/21027388/how-to-make-pkg-check-modules-work-with-static-libraries
+export PKG_CONFIG='pkg-config --static'
+
 # build zlib
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static zlib --libs
+#    -L/work/lib -lz
 printf "=== Building zlib...\n"
 pushd "$SRC/zlib"
 ./configure --prefix="$WORK"
@@ -17,6 +24,8 @@ make install
 popd
 
 # build xz
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static liblzma --libs
+#    -L/work/lib -llzma -pthread -lpthread
 printf "=== Building ${SRC}/xz...\n"
 pushd "$SRC/xz"
 ./autogen.sh --no-po4a --no-doxygen
@@ -38,6 +47,8 @@ make install
 popd
 
 # build zstd
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libzstd --libs
+#    -L/usr/local/lib -lzstd -pthread
 printf "==== Building ${SRC}/zstd...\n"
 pushd "$SRC/zstd"
 make -j$(nproc) lib-release
@@ -45,6 +56,9 @@ make install PREFIX="$WORK"
 popd
 
 printf "=== Building ${SRC}/jasper...\n"
+# With all extras removed from libjasper
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static jasper --libs
+# -L/work/lib -ljasper
 pushd "$SRC/jasper"
 cmake -G "Unix Makefiles" -H. -Bstaging \
       -DJAS_ENABLE_SHARED=false \
@@ -65,6 +79,8 @@ popd
 popd
 
 printf "=== Building ${SRC}/libpng...\n"
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libpng --libs
+#    -L/work/lib -lpng16 -lm -lz
 pushd "$SRC/libpng"
 autoreconf -fiv
 PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
@@ -86,6 +102,8 @@ popd
 #popd
 
 # build libjpeg-turbo
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjpeg --libs
+#     -L/work/lib -ljpeg
 printf "=== Building ${SRC}/libjpeg-turbo...\n"
 pushd "$SRC/libjpeg-turbo"
 CFLAGS="$CFLAGS -fPIC" cmake . \
@@ -99,6 +117,8 @@ make install
 popd
 
 # Build webp
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libwebp --libs
+#    -L/work/lib -lwebp -lm -lsharpyuv -lm
 printf "=== Building ${SRC}/libwebp...\n"
 pushd "$SRC/libwebp"
 ./autogen.sh
@@ -129,6 +149,8 @@ popd
 # FXIME: Add libdeflate, and libdeflate build here
 
 # Build libtiff
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libtiff-4 --libs
+#    -L/work/lib -L/usr/local/lib -L/work/lib -ltiff -lwebp -lzstd -llzma -ljpeg -lz -lm -lwebp -lm -lsharpyuv -lm -lzstd -pthread -llzma -pthread -lpthread -ljpeg -lz
 printf "=== Building ${SRC}/libtiff...\n"
 pushd "$SRC/libtiff"
 autoreconf -fiv
@@ -148,6 +170,8 @@ make install
 popd
 
 # Build liblcms2
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static lcms2 --libs
+#    -L/work/lib -llcms2 -lm -lpthread
 printf "=== Building ${SRC}/Little-CMS...\n"
 pushd "$SRC/Little-CMS"
 autoreconf -fiv
@@ -163,6 +187,8 @@ make install
 popd
 
 # Build freetype
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static freetype2 --libs
+#    -L/work/lib -lfreetype -lpng16 -lm -lz
 printf "=== Building ${SRC}/freetype...\n"
 pushd "$SRC/freetype"
 ./autogen.sh
@@ -179,6 +205,8 @@ make install
 popd
 
 # Build libx265
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static x265 --libs
+#    -L/work/lib -lx265 -lc++ -lm -lrt -lm -ldl -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl
 pushd "$SRC/x265/build/linux"
 printf "=== Building ${SRC}/libx265...\n"
 cmake -G "Unix Makefiles" \
@@ -195,6 +223,8 @@ make install
 popd
 
 # Build libde265
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libde265 --libs
+#    -L/work/lib -lde265 -lstdc++
 printf "=== Building ${SRC}/libde265...\n"
 pushd "$SRC/libde265"
 ./autogen.sh
@@ -213,6 +243,8 @@ make install
 popd
 
 # Build libaom
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static aom --libs
+#    -L/work/lib -laom -lm -lpthread
 printf "=== Building ${SRC}/aom...\n"
 rm -rf $SRC/aom/build/linux
 mkdir -p $SRC/aom/build/linux
@@ -245,6 +277,8 @@ popd
 #rm -f $WORK/lib/*.so.*
 
 # Build libheif
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libheif --libs
+#   -L/work/lib -lheif -lc++ -lde265 -lstdc++ -lx265 -lc++ -lm -lrt -lm -ldl -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl -laom -lm -lpthread -ljpeg
 printf "=== Building ${SRC}/libheif...\n"
 pushd "$SRC/libheif"
 #cmake . -DCMAKE_INSTALL_PREFIX=$WORK -DBUILD_SHARED_LIBS=off -DBUILD_TESTING=off -DWITH_EXAMPLES=off -DENABLE_PLUGIN_LOADING=off -DWITH_JPEG_DECODER=off -DWITH_JPEG_ENCODER=off -DCMAKE_BUILD_TYPE=Release -DX265_INCLUDE_DIR="$WORK/include" -DX265_LIBRARY="$WORK/lib"
@@ -263,6 +297,10 @@ make install
 popd
 
 # Build libjxl
+#  PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjxl_threads --libs
+#    -L/work/lib -ljxl_threads -lm
+#  PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjxl --libs
+#    -L/work/lib -L -ljxl -lm -lhwy -lbrotlienc -lbrotlidec -lbrotlicommon -ljxl_cms -lm
 printf "=== Building ${SRC}/libjxl...\n"
 pushd "$SRC/libjxl"
 rm -rf build
@@ -297,6 +335,7 @@ ls -l ${WORK}/lib
 # FIXME: All tests for libheif functions fail
 
 # freetype-config is in $WORK/bin so we temporarily add $WORK/bin to the path
+# pkg-config names GraphicsMagick, GraphicsMagickWand, GraphicsMagick++
 printf "=== Building GraphicsMagick...\n"
 PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
     CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include/libxml2 -I$WORK/include" \
