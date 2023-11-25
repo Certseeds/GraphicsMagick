@@ -1771,7 +1771,7 @@ AC_SUBST([LIB_MATH])
 #
 have_trio='no'
 LIB_TRIO=''
-if test "$ac_cv_func_vsnprintf" != 'yes' && test "$with_trio" != 'no'
+if test "$ac_cv_have_decl_vsnprintf" != 'yes' && test "$with_trio" != 'no'
 then
    AC_MSG_CHECKING([for TRIO vsnprintf replacement])
    AC_CHECK_LIB([trio],[trio_vsnprintf],[have_trio='yes'],,)
@@ -2658,22 +2658,34 @@ then
     OLD_LIBS=$LIBS
     failed=0
     passed=0
+
+    # libwebpdemux depends on webp
+    # libwebpmux depends on webp
+    # libwebp depends on libsharpyuv
+
+    # Need to add libsharp    libsharpyuv.pc
+
     # libwebp, libwebpmux, libwebpdemux
     PKG_CHECK_MODULES([WEBPMUX], [libwebpmux], [], [])
-    #printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
-    #printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
+    printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
+    printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
     if test $failed -eq 0 ; then
        pkg_config_to_flags 'libwebpmux' "${WEBPMUX_LIBS}" "${WEBPMUX_CFLAGS}"
     fi
-    PKG_CHECK_MODULES([WEBPDEMUX], [libwebpdemux], [], [])
+
+    # We are not currently using libwebpdemux
+    #PKG_CHECK_MODULES([WEBPDEMUX], [libwebpdemux], [], [])
     #printf "WEBPDMUX_LIBS=${WEBPDMUX_LIBS}\n"
     #printf "WEBPDMUX_CFLAGS=${WEBPDMUX_CFLAGS}\n"
-    if test $failed -eq 0 ; then
-       pkg_config_to_flags 'libwebpdemux' "${WEBPDMUX_LIBS}" "${WEBPDMUX_CFLAGS}"
-    fi
+    #if test $failed -eq 0 ; then
+    #   pkg_config_to_flags 'libwebpdemux' "${WEBPDMUX_LIBS}" "${WEBPDMUX_CFLAGS}"
+    #fi
+
+    # pkg-config libwebp --static --libs
+    #-L/work/lib -lwebp -lm -lsharpyuv -lm
     PKG_CHECK_MODULES([WEBP], [libwebp], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "WEBP_LIBS=${WEBP_LIBS}\n"
-    #printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
+    printf "WEBP_LIBS=${WEBP_LIBS}\n"
+    printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
     if test $failed -eq 0 ; then
        pkg_config_to_flags 'libwebp' "${WEBP_LIBS}" "${WEBP_CFLAGS}"
     fi
