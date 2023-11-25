@@ -3,15 +3,14 @@
 # This is intended to be run from OSS-Fuzz's build environment. We intend to
 # eventually refactor it to be easy to run locally.
 
+printf "SRC=${SRC}\n"
+printf "WORK=${WORK}\n"
+printf "OUT=${OUT}\n"
+
 rm -rf $WORK/bin/
 rm -rf $WORK/lib/
 
-set +x
-
-# We are doing a static build
-# Work-around for not using PKG_CHECK_MODULES_STATIC
-# See https://stackoverflow.com/questions/21027388/how-to-make-pkg-check-modules-work-with-static-libraries
-export PKG_CONFIG='pkg-config --static'
+set -x
 
 # build zlib
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static zlib --libs
@@ -29,7 +28,7 @@ popd
 printf "=== Building ${SRC}/xz...\n"
 pushd "$SRC/xz"
 ./autogen.sh --no-po4a --no-doxygen
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
                --disable-xz \
                --disable-xzdec \
                --disable-lzmadec \
@@ -55,35 +54,12 @@ make -j$(nproc) lib-release
 make install PREFIX="$WORK"
 popd
 
-printf "=== Building ${SRC}/jasper...\n"
-# With all extras removed from libjasper
-# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static jasper --libs
-# -L/work/lib -ljasper
-pushd "$SRC/jasper"
-cmake -G "Unix Makefiles" -H. -Bstaging \
-      -DJAS_ENABLE_SHARED=false \
-      -DCMAKE_INSTALL_PREFIX=$WORK \
-      -DJAS_INCLUDE_BMP_CODEC=false \
-      -DJAS_INCLUDE_JPG_CODEC=false \
-      -DJAS_INCLUDE_MIF_CODEC=false \
-      -DJAS_INCLUDE_PNM_CODEC=false \
-      -DJAS_INCLUDE_RAS_CODEC=false \
-      -DJAS_ENABLE_OPENGL=false \
-      -DJAS_ENABLE_LIBJPEG=false \
-      -DJAS_ENABLE_OPENGL=false \
-      -DJAS_ENABLE_LIBHEIF=false
-pushd staging
-make -j$(nproc)
-make install
-popd
-popd
-
 printf "=== Building ${SRC}/libpng...\n"
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libpng --libs
 #    -L/work/lib -lpng16 -lm -lz
 pushd "$SRC/libpng"
 autoreconf -fiv
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
                --prefix="$WORK" \
                --disable-shared \
                --enable-static \
@@ -122,7 +98,7 @@ popd
 printf "=== Building ${SRC}/libwebp...\n"
 pushd "$SRC/libwebp"
 ./autogen.sh
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
                CPPFLAGS="-I$WORK/include" \
                CFLAGS="$CFLAGS" \
                LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
@@ -148,34 +124,13 @@ popd
 
 # FXIME: Add libdeflate, and libdeflate build here
 
-# Build libtiff
-# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libtiff-4 --libs
-#    -L/work/lib -L/usr/local/lib -L/work/lib -ltiff -lwebp -lzstd -llzma -ljpeg -lz -lm -lwebp -lm -lsharpyuv -lm -lzstd -pthread -llzma -pthread -lpthread -ljpeg -lz
-printf "=== Building ${SRC}/libtiff...\n"
-pushd "$SRC/libtiff"
-autoreconf -fiv
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
-               CPPFLAGS="-I$WORK/include" \
-               CFLAGS="$CFLAGS" \
-               LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-               --prefix="$WORK" \
-               --disable-old-jpeg \
-               --disable-shared \
-               --enable-static \
-               --disable-tools \
-               --disable-tests \
-               --disable-contrib
-make -j$(nproc)
-make install
-popd
-
 # Build liblcms2
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static lcms2 --libs
 #    -L/work/lib -llcms2 -lm -lpthread
 printf "=== Building ${SRC}/Little-CMS...\n"
 pushd "$SRC/Little-CMS"
 autoreconf -fiv
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
                CPPFLAGS="-I$WORK/include" \
                CFLAGS="$CFLAGS" \
                LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
@@ -192,7 +147,7 @@ popd
 printf "=== Building ${SRC}/freetype...\n"
 pushd "$SRC/freetype"
 ./autogen.sh
-PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
                CPPFLAGS="-I$WORK/include" \
                CFLAGS="$CFLAGS" \
                LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
@@ -228,7 +183,7 @@ popd
 printf "=== Building ${SRC}/libde265...\n"
 pushd "$SRC/libde265"
 ./autogen.sh
-./configure \
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
     --prefix="$WORK" \
     --disable-shared \
     --enable-static \
@@ -272,10 +227,6 @@ make -j$(nproc)
 make install
 popd
 
-# Remove shared libraries to avoid accidental linking against them.
-#rm -f $WORK/lib/*.so
-#rm -f $WORK/lib/*.so.*
-
 # Build libheif
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libheif --libs
 #   -L/work/lib -lheif -lc++ -lde265 -lstdc++ -lx265 -lc++ -lm -lrt -lm -ldl -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl -laom -lm -lpthread -ljpeg
@@ -292,6 +243,27 @@ cmake .. --preset=fuzzing \
       -DFUZZING_C_COMPILER=$CC -DFUZZING_CXX_COMPILER=$CXX \
       -DWITH_DEFLATE_HEADER_COMPRESSION=OFF \
       -DENABLE_SHARED:bool=off
+make -j$(nproc)
+make install
+popd
+
+# Build libtiff
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libtiff-4 --libs
+#    -L/work/lib -L/usr/local/lib -L/work/lib -ltiff -lwebp -lzstd -llzma -ljpeg -lz -lm -lwebp -lm -lsharpyuv -lm -lzstd -pthread -llzma -pthread -lpthread -ljpeg -lz
+printf "=== Building ${SRC}/libtiff...\n"
+pushd "$SRC/libtiff"
+autoreconf -fiv
+PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
+               CPPFLAGS="-I$WORK/include" \
+               CFLAGS="$CFLAGS" \
+               LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
+               --prefix="$WORK" \
+               --disable-old-jpeg \
+               --disable-shared \
+               --enable-static \
+               --disable-tools \
+               --disable-tests \
+               --disable-contrib
 make -j$(nproc)
 make install
 popd
@@ -328,6 +300,29 @@ cp third_party/brotli/*.a $WORK/lib
 cp third_party/brotli/*.pc $WORK/lib/pkgconfig
 popd
 
+printf "=== Building ${SRC}/jasper...\n"
+# With all extras removed from libjasper
+# PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static jasper --libs
+# -L/work/lib -ljasper
+pushd "$SRC/jasper"
+cmake -G "Unix Makefiles" -H. -Bstaging \
+      -DJAS_ENABLE_SHARED=false \
+      -DCMAKE_INSTALL_PREFIX=$WORK \
+      -DJAS_INCLUDE_BMP_CODEC=false \
+      -DJAS_INCLUDE_JPG_CODEC=false \
+      -DJAS_INCLUDE_MIF_CODEC=false \
+      -DJAS_INCLUDE_PNM_CODEC=false \
+      -DJAS_INCLUDE_RAS_CODEC=false \
+      -DJAS_ENABLE_OPENGL=false \
+      -DJAS_ENABLE_LIBJPEG=false \
+      -DJAS_ENABLE_OPENGL=false \
+      -DJAS_ENABLE_LIBHEIF=false
+pushd staging
+make -j$(nproc)
+make install
+popd
+popd
+
 printf "Built libraries:\n"
 ls -l ${WORK}/lib
 
@@ -337,7 +332,7 @@ ls -l ${WORK}/lib
 # freetype-config is in $WORK/bin so we temporarily add $WORK/bin to the path
 # pkg-config names GraphicsMagick, GraphicsMagickWand, GraphicsMagick++
 printf "=== Building GraphicsMagick...\n"
-PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" ./configure \
+PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig PKG_CONFIG='pkg-config --static'" ./configure \
     CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include/libxml2 -I$WORK/include" \
     CFLAGS="$CFLAGS" \
     LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
@@ -356,7 +351,7 @@ set +x
 # FIXME: This hard-coded list is not taking advantage of the list that GraphicsMagick configure computed!
 #MAGICK_LIBS="$WORK/lib/libxml2.a $WORK/lib/libjasper.a $WORK/lib/libpng.a $WORK/lib/libtiff.a $WORK/lib/liblcms2.a $WORK/lib/libwebpmux.a $WORK/lib/libwebp.a $WORK/lib/libsharpyuv.a $WORK/lib/libturbojpeg.a $WORK/lib/libfreetype.a $WORK/lib/libzstd.a $WORK/lib/liblzma.a $WORK/lib/libz.a"
 MAGICK_LIBS=''
-for lib in libxml2.a libjasper.a libpng.a libtiff.a liblcms2.a libwebpmux.a libwebpdemux.a libwebp.a libsharpyuv.a libheif.a libturbojpeg.a libfreetype.a libx265.a libde265.a libzstd.a liblzma.a libz.a ; do
+for lib in libxml2.a libjasper.a libpng.a libtiff.a liblcms2.a libwebpmux.a libwebp.a libsharpyuv.a libheif.a libturbojpeg.a libfreetype.a libx265.a libde265.a libzstd.a liblzma.a libz.a ; do
     if [ -f "${WORK}/lib/$lib" ] ; then
         if [ -n "${MAGICK_LIBS}" ] ; then
              MAGICK_LIBS="${MAGICK_LIBS} "
