@@ -1547,7 +1547,12 @@ pkg_config_to_flags() {
        esac
     done
     # -l
+    reverse_pkg_libs=""
     for token in $pkg_libs
+    do
+        reverse_pkg_libs="$token $reverse_pkg_libs"
+    done
+    for token in $reverse_pkg_libs
     do
         case $token in
             -l*)
@@ -1762,9 +1767,10 @@ AC_SUBST([LIB_OMP])
 #
 LIB_MATH=''
 AC_CHECK_LIB([m],[sqrt],[LIB_MATH="-lm"],,)
+LIB_MATH='-lm'
 LIBS="$LIB_MATH $LIBS"
+#printf "LIBS=${LIBS}\n"
 AC_SUBST([LIB_MATH])
-
 
 #
 # If vsnprintf is missing, look for TRIO
@@ -2341,15 +2347,11 @@ AC_SUBST([LIB_LCMS])
 
 have_png='no'
 LIB_PNG=''
-if test "$have_zlib" = 'yes'
+if test "$have_zlib" = 'yes' -a "$with_png" = 'yes'
 then
   #
   # Check for PNG delegate library.
   #
-  AC_ARG_WITH([png],
-      [AS_HELP_STRING([--without-png],[disable PNG support])],
-      [with_png=$withval],
-      [with_png='yes'])
   OLD_CPPFLAGS=$CPPFLAGS
   OLD_LDFLAGS=$LDFLAGS
   OLD_LIBS=$LIBS
@@ -2477,7 +2479,10 @@ then
     failed=0
     passed=0
 
-    PKG_CHECK_MODULES([JPEG], [libturbojpeg, libjpeg], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    #PKG_CHECK_MODULES([JPEG], [libturbojpeg, libjpeg], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    PKG_CHECK_MODULES([JPEG], [libturbojpeg], [passed=`expr $passed + 1`],
+                              [PKG_CHECK_MODULES([JPEG], [libjpeg], [passed=`expr $passed + 1`],
+                                                         [failed=`expr $failed + 1`])])
     #printf "JPEG_LIBS=${JPEG_LIBS}\n"
     #printf "JPEG_CFLAGS=${JPEG_CFLAGS}\n"
     if test $failed -eq 0 ; then
@@ -2663,12 +2668,18 @@ then
     # libwebpmux depends on webp
     # libwebp depends on libsharpyuv
 
+    # FIXME: For static build to succeed the link order needs to be
+    # "-lwebp -lwebpmux -lsharpyuv" but "-lsharpyuv -lwebp -lwebpmux"
+    # is being produced! Order is reversed!  Maybe fixed now.
+    # WEBPMUX_LIBS=-L/work/lib -lwebpmux -lm -lwebp -lm -lsharpyuv -lm
+    # WEBP_LIBS=-L/work/lib -lwebp -lm -lsharpyuv -lm
+
     # Need to add libsharp    libsharpyuv.pc
 
     # libwebp, libwebpmux, libwebpdemux
     PKG_CHECK_MODULES([WEBPMUX], [libwebpmux], [], [])
-    printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
-    printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
+    #printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
+    #printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
     if test $failed -eq 0 ; then
        pkg_config_to_flags 'libwebpmux' "${WEBPMUX_LIBS}" "${WEBPMUX_CFLAGS}"
     fi
@@ -2684,8 +2695,8 @@ then
     # pkg-config libwebp --static --libs
     #-L/work/lib -lwebp -lm -lsharpyuv -lm
     PKG_CHECK_MODULES([WEBP], [libwebp], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    printf "WEBP_LIBS=${WEBP_LIBS}\n"
-    printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
+    #printf "WEBP_LIBS=${WEBP_LIBS}\n"
+    #printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
     if test $failed -eq 0 ; then
        pkg_config_to_flags 'libwebp' "${WEBP_LIBS}" "${WEBP_CFLAGS}"
     fi
@@ -2971,7 +2982,6 @@ then
     OLD_LIBS=$LIBS
     failed=0
     passed=0
-    heif_libs=''
     heif_cflags=''
     # Use pkg-config to handle different optional codec libs
     # and if pkg-config is not available fallback to manual search.
@@ -2982,7 +2992,7 @@ then
        pkg_config_to_flags 'libheif' "${HEIF_LIBS}" "${HEIF_CFLAGS}"
     fi
     AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$heif_libs])
+    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[${HEIF_LIBS}])
     AC_CHECK_FUNCS([heif_init heif_deinit])
     AC_MSG_CHECKING([if HEIF package is complete])
     if test $passed -gt 0
@@ -2994,8 +3004,9 @@ then
         CPPFLAGS=$OLD_CPPFLAGS
         LDFLAGS=$OLD_LDFLAGS
         LIBS=$OLD_LIBS
+        LIB_HEIF=''
     else
-        LIB_HEIF="$heif_libs"
+        LIB_HEIF="${HEIF_LIBS}"
         #LIBS="$LIB_HEIF $LIBS"
         for flag in $heif_cflags
         do

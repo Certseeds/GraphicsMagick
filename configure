@@ -1881,7 +1881,6 @@ Optional Packages:
   --without-zstd          disable Zstd support
   --with-libstdc=DIR      use libstdc++ in DIR (for GNU C++)
   --with-x                use the X Window System
-  --without-png           disable PNG support
 
 Some influential environment variables:
   CC          C compiler command
@@ -22888,7 +22887,12 @@ pkg_config_to_flags() {
        esac
     done
     # -l
+    reverse_pkg_libs=""
     for token in $pkg_libs
+    do
+        reverse_pkg_libs="$token $reverse_pkg_libs"
+    done
+    for token in $reverse_pkg_libs
     do
         case $token in
             -l*)
@@ -23713,8 +23717,9 @@ if test "x$ac_cv_lib_m_sqrt" = xyes; then :
   LIB_MATH="-lm"
 fi
 
+LIB_MATH='-lm'
 LIBS="$LIB_MATH $LIBS"
-
+#printf "LIBS=${LIBS}\n"
 
 
 #
@@ -26567,19 +26572,11 @@ fi
 
 have_png='no'
 LIB_PNG=''
-if test "$have_zlib" = 'yes'
+if test "$have_zlib" = 'yes' -a "$with_png" = 'yes'
 then
   #
   # Check for PNG delegate library.
   #
-
-# Check whether --with-png was given.
-if test "${with_png+set}" = set; then :
-  withval=$with_png; with_png=$withval
-else
-  with_png='yes'
-fi
-
   OLD_CPPFLAGS=$CPPFLAGS
   OLD_LDFLAGS=$LDFLAGS
   OLD_LIBS=$LIBS
@@ -27059,21 +27056,22 @@ $as_echo "" >&6; }
     failed=0
     passed=0
 
+    #PKG_CHECK_MODULES([JPEG], [libturbojpeg, libjpeg], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libturbojpeg, libjpeg" >&5
-$as_echo_n "checking for libturbojpeg, libjpeg... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libturbojpeg" >&5
+$as_echo_n "checking for libturbojpeg... " >&6; }
 
 if test -n "$JPEG_CFLAGS"; then
     pkg_cv_JPEG_CFLAGS="$JPEG_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libturbojpeg, libjpeg\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libturbojpeg, libjpeg") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libturbojpeg\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libturbojpeg") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_JPEG_CFLAGS=`$PKG_CONFIG --cflags "libturbojpeg, libjpeg" 2>/dev/null`
+  pkg_cv_JPEG_CFLAGS=`$PKG_CONFIG --cflags "libturbojpeg" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -27085,12 +27083,12 @@ if test -n "$JPEG_LIBS"; then
     pkg_cv_JPEG_LIBS="$JPEG_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libturbojpeg, libjpeg\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libturbojpeg, libjpeg") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libturbojpeg\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libturbojpeg") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_JPEG_LIBS=`$PKG_CONFIG --libs "libturbojpeg, libjpeg" 2>/dev/null`
+  pkg_cv_JPEG_LIBS=`$PKG_CONFIG --libs "libturbojpeg" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -27111,9 +27109,68 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        JPEG_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libturbojpeg, libjpeg" 2>&1`
+	        JPEG_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libturbojpeg" 2>&1`
         else
-	        JPEG_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libturbojpeg, libjpeg" 2>&1`
+	        JPEG_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libturbojpeg" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$JPEG_PKG_ERRORS" >&5
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libjpeg" >&5
+$as_echo_n "checking for libjpeg... " >&6; }
+
+if test -n "$JPEG_CFLAGS"; then
+    pkg_cv_JPEG_CFLAGS="$JPEG_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libjpeg\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libjpeg") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_JPEG_CFLAGS=`$PKG_CONFIG --cflags "libjpeg" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$JPEG_LIBS"; then
+    pkg_cv_JPEG_LIBS="$JPEG_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libjpeg\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libjpeg") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_JPEG_LIBS=`$PKG_CONFIG --libs "libjpeg" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        JPEG_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libjpeg" 2>&1`
+        else
+	        JPEG_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libjpeg" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$JPEG_PKG_ERRORS" >&5
@@ -27123,6 +27180,87 @@ elif test $pkg_failed = untried; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	failed=`expr $failed + 1`
+else
+	JPEG_CFLAGS=$pkg_cv_JPEG_CFLAGS
+	JPEG_LIBS=$pkg_cv_JPEG_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	passed=`expr $passed + 1`
+fi
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libjpeg" >&5
+$as_echo_n "checking for libjpeg... " >&6; }
+
+if test -n "$JPEG_CFLAGS"; then
+    pkg_cv_JPEG_CFLAGS="$JPEG_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libjpeg\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libjpeg") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_JPEG_CFLAGS=`$PKG_CONFIG --cflags "libjpeg" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$JPEG_LIBS"; then
+    pkg_cv_JPEG_LIBS="$JPEG_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libjpeg\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libjpeg") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_JPEG_LIBS=`$PKG_CONFIG --libs "libjpeg" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        JPEG_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libjpeg" 2>&1`
+        else
+	        JPEG_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libjpeg" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$JPEG_PKG_ERRORS" >&5
+
+	failed=`expr $failed + 1`
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	failed=`expr $failed + 1`
+else
+	JPEG_CFLAGS=$pkg_cv_JPEG_CFLAGS
+	JPEG_LIBS=$pkg_cv_JPEG_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	passed=`expr $passed + 1`
+fi
 else
 	JPEG_CFLAGS=$pkg_cv_JPEG_CFLAGS
 	JPEG_LIBS=$pkg_cv_JPEG_LIBS
@@ -27550,6 +27688,12 @@ $as_echo "" >&6; }
     # libwebpmux depends on webp
     # libwebp depends on libsharpyuv
 
+    # FIXME: For static build to succeed the link order needs to be
+    # "-lwebp -lwebpmux -lsharpyuv" but "-lsharpyuv -lwebp -lwebpmux"
+    # is being produced! Order is reversed!  Maybe fixed now.
+    # WEBPMUX_LIBS=-L/work/lib -lwebpmux -lm -lwebp -lm -lsharpyuv -lm
+    # WEBP_LIBS=-L/work/lib -lwebp -lm -lsharpyuv -lm
+
     # Need to add libsharp    libsharpyuv.pc
 
     # libwebp, libwebpmux, libwebpdemux
@@ -27644,8 +27788,8 @@ else
 $as_echo "yes" >&6; }
 
 fi
-    printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
-    printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
+    #printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
+    #printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
     if test $failed -eq 0 ; then
        pkg_config_to_flags 'libwebpmux' "${WEBPMUX_LIBS}" "${WEBPMUX_CFLAGS}"
     fi
@@ -27731,8 +27875,8 @@ else
 $as_echo "yes" >&6; }
 	passed=`expr $passed + 1`
 fi
-    printf "WEBP_LIBS=${WEBP_LIBS}\n"
-    printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
+    #printf "WEBP_LIBS=${WEBP_LIBS}\n"
+    #printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
     if test $failed -eq 0 ; then
        pkg_config_to_flags 'libwebp' "${WEBP_LIBS}" "${WEBP_CFLAGS}"
     fi
@@ -28910,7 +29054,6 @@ $as_echo "" >&6; }
     OLD_LIBS=$LIBS
     failed=0
     passed=0
-    heif_libs=''
     heif_cflags=''
     # Use pkg-config to handle different optional codec libs
     # and if pkg-config is not available fallback to manual search.
@@ -29004,7 +29147,7 @@ if ${ac_cv_lib_heif_heif_context_alloc+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lheif $heif_libs $LIBS"
+LIBS="-lheif ${HEIF_LIBS} $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -29064,8 +29207,9 @@ $as_echo "no -- some components failed test" >&6; }
         CPPFLAGS=$OLD_CPPFLAGS
         LDFLAGS=$OLD_LDFLAGS
         LIBS=$OLD_LIBS
+        LIB_HEIF=''
     else
-        LIB_HEIF="$heif_libs"
+        LIB_HEIF="${HEIF_LIBS}"
         #LIBS="$LIB_HEIF $LIBS"
         for flag in $heif_cflags
         do

@@ -1,3 +1,12 @@
+2023-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Continued work on the oss-fuzz build
+	script.  Still not there yet, but closer.
+
+	* configure.ac: Fix many bugs related to building library
+	dependency list.  Much thanks to Tobias Mark for a patch to fix
+	the library dependency order.
+
 2023-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Eliminate redundant check for HEIF library.
