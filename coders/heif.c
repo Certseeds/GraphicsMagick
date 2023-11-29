@@ -498,7 +498,8 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
 #ifdef HAVE_HEIF_INIT
   if (!heif_initialized)
     {
-      heif_init();
+      /* heif_init() accepts a 'struct heif_init_params *' argument */
+      heif_init((struct heif_init_params *) NULL);
       heif_initialized = MagickTrue;
     }
 #endif /* HAVE_HEIF_INIT */

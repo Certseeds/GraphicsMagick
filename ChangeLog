@@ -1,3 +1,10 @@
+2023-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/heif.c (ReadHEIFImage): heif_init() expects an argument.
+
+	* configure.ac: Fix typo when testing for _OPENMP which caused the
+	test to always pass.  Remove forced LIB_MATH=-lm.
+
 2023-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Continued work on the oss-fuzz build

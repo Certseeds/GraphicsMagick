@@ -7670,7 +7670,7 @@ ac_fn_c_check_decl "$LINENO" "_OPENMP" "ac_cv_have_decl__OPENMP" "$ac_includes_d
 if test "x$ac_cv_have_decl__OPENMP" = xyes; then :
   OPENMP_ENABLED='yes'
 else
-  OPENMP_ENABLED='yes'
+  OPENMP_ENABLED='no'
 fi
 
 
@@ -23714,10 +23714,9 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_sqrt" >&5
 $as_echo "$ac_cv_lib_m_sqrt" >&6; }
 if test "x$ac_cv_lib_m_sqrt" = xyes; then :
-  LIB_MATH="-lm"
+  LIB_MATH='-lm'
 fi
 
-LIB_MATH='-lm'
 LIBS="$LIB_MATH $LIBS"
 #printf "LIBS=${LIBS}\n"
 

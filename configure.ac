@@ -351,7 +351,7 @@ CFLAGS="$OPENMP_CFLAGS $CFLAGS"
 #CXXFLAGS="$OPENMP_CXXFLAGS $CXXFLAGS"
 #LDFLAGS="$LDFLAGS $OPENMP_CFLAGS"
 AC_SUBST([OPENMP_CFLAGS])
-AC_CHECK_DECL([_OPENMP],[OPENMP_ENABLED='yes'],[OPENMP_ENABLED='yes'],[])
+AC_CHECK_DECL([_OPENMP],[OPENMP_ENABLED='yes'],[OPENMP_ENABLED='no'],[])
 
 # Allow the user to disable use of OpenMP where algorithms sometimes run slower.
 AC_ARG_ENABLE([openmp-slow],
@@ -1766,8 +1766,7 @@ AC_SUBST([LIB_OMP])
 # Find math library (no pkg-config support!)
 #
 LIB_MATH=''
-AC_CHECK_LIB([m],[sqrt],[LIB_MATH="-lm"],,)
-LIB_MATH='-lm'
+AC_CHECK_LIB([m],[sqrt],[LIB_MATH='-lm'],,)
 LIBS="$LIB_MATH $LIBS"
 #printf "LIBS=${LIBS}\n"
 AC_SUBST([LIB_MATH])
