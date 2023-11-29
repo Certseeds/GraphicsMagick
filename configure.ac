@@ -4198,6 +4198,7 @@ printf "Static libraries  --enable-static=$enable_static\t\t$libtool_build_stati
 printf "GNU ld            --with-gnu-ld=$with_gnu_ld    \t\t$lt_cv_prog_gnu_ld\n"
 printf "Quantum depth     --with-quantum-depth=$with_quantum_depth\t$with_quantum_depth\n"
 printf "Modules           --with-modules=$with_modules  \t\t$build_modules\n"
+printf "OpenMP            --enable-openmp=$enable_openmp\t\t${OPENMP_ENABLED} ${LIB_OMP}\n"
 printf "\n"
 printf "Delegate Configuration:\n"
 printf "BZLIB             --with-bzlib=$with_bzlib         \t$have_bzlib\n"
