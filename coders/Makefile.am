@@ -28,7 +28,7 @@ endif
 
 if HasHEIF
 MAGICK_HEIF_MODULES = coders/heif.la
-MAGICK_HEIF_SRCS = coders/heif.c
+MAGICK_HEIF_SRCS = coders/heif.c coders/acppfile.cpp
 endif
 
 if HasJBIG
@@ -425,7 +425,7 @@ coders_gradient_la_LDFLAGS = $(MODULECOMMONFLAGS)
 coders_gradient_la_LIBADD  = $(LIBMAGICK)
 
 # HEIF coder module
-coders_heif_la_SOURCES     = coders/heif.c
+coders_heif_la_SOURCES     = coders/heif.c coders/acppfile.cpp
 coders_heif_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_heif_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_heif_la_LIBADD      = $(LIBMAGICK) $(LIB_HEIF)

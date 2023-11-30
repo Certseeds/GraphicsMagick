@@ -40,6 +40,8 @@
 <p>2023-11-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>fuzzing/oss-fuzz-build.sh: Build zlib and zstd as static.</p></li>
+<li><p>coders/Makefile.am: Heif library is also C++ so link with C++.</p></li>
 <li><p>configure.ac: Report in the configure summary if OpenMP is
 supported, as well as the OpenMP link library selected.</p></li>
 <li><p>coders/heif.c (ReadHEIFImage): heif_init() expects an argument.</p></li>

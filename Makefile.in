@@ -525,12 +525,13 @@ coders_gray_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$@
 @WITH_MODULES_TRUE@am_coders_gray_la_rpath = -rpath $(codersdir)
 coders_heif_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1)
-am_coders_heif_la_OBJECTS = coders/heif_la-heif.lo
+am_coders_heif_la_OBJECTS = coders/heif_la-heif.lo \
+	coders/heif_la-acppfile.lo
 coders_heif_la_OBJECTS = $(am_coders_heif_la_OBJECTS)
-coders_heif_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(AM_CFLAGS) $(CFLAGS) $(coders_heif_la_LDFLAGS) $(LDFLAGS) -o \
-	$@
+coders_heif_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
+	$(AM_CXXFLAGS) $(CXXFLAGS) $(coders_heif_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
 @HasHEIF_TRUE@@WITH_MODULES_TRUE@am_coders_heif_la_rpath = -rpath \
 @HasHEIF_TRUE@@WITH_MODULES_TRUE@	$(codersdir)
 coders_histogram_la_DEPENDENCIES = $(LIBMAGICK)
@@ -1335,7 +1336,8 @@ am__objects_2 = magick/libGraphicsMagick_la-analyze.lo \
 @HasWINGDI32_TRUE@am__objects_7 = coders/magick_libGraphicsMagick_la-clipboard.lo \
 @HasWINGDI32_TRUE@	coders/magick_libGraphicsMagick_la-emf.lo
 @HasHEIF_TRUE@am__objects_8 =  \
-@HasHEIF_TRUE@	coders/magick_libGraphicsMagick_la-heif.lo
+@HasHEIF_TRUE@	coders/magick_libGraphicsMagick_la-heif.lo \
+@HasHEIF_TRUE@	coders/magick_libGraphicsMagick_la-acppfile.lo
 @HasJBIG_TRUE@am__objects_9 =  \
 @HasJBIG_TRUE@	coders/magick_libGraphicsMagick_la-jbig.lo
 @HasJP2_TRUE@am__objects_10 =  \
@@ -1672,6 +1674,7 @@ am__depfiles_remade = Magick++/demo/$(DEPDIR)/analyze-analyze.Po \
 	coders/$(DEPDIR)/gif_la-gif.Plo \
 	coders/$(DEPDIR)/gradient_la-gradient.Plo \
 	coders/$(DEPDIR)/gray_la-gray.Plo \
+	coders/$(DEPDIR)/heif_la-acppfile.Plo \
 	coders/$(DEPDIR)/heif_la-heif.Plo \
 	coders/$(DEPDIR)/histogram_la-histogram.Plo \
 	coders/$(DEPDIR)/hrz_la-hrz.Plo \
@@ -2940,7 +2943,7 @@ codersdir = $(MagickCoderModulesPath)
 @HasWINGDI32_TRUE@MAGICK_GDI32_MODULES = coders/clipboard.la coders/emf.la
 @HasWINGDI32_TRUE@MAGICK_GDI32_SRCS = coders/clipboard.c coders/emf.c
 @HasHEIF_TRUE@MAGICK_HEIF_MODULES = coders/heif.la
-@HasHEIF_TRUE@MAGICK_HEIF_SRCS = coders/heif.c
+@HasHEIF_TRUE@MAGICK_HEIF_SRCS = coders/heif.c coders/acppfile.cpp
 @HasJBIG_TRUE@MAGICK_JBIG_MODULES = coders/jbig.la
 @HasJBIG_TRUE@MAGICK_JBIG_SRCS = coders/jbig.c
 @HasJPEG_TRUE@MAGICK_JPEG_MODULES = coders/jnx.la coders/jpeg.la
@@ -3306,7 +3309,7 @@ coders_gradient_la_LDFLAGS = $(MODULECOMMONFLAGS)
 coders_gradient_la_LIBADD = $(LIBMAGICK)
 
 # HEIF coder module
-coders_heif_la_SOURCES = coders/heif.c
+coders_heif_la_SOURCES = coders/heif.c coders/acppfile.cpp
 coders_heif_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
 coders_heif_la_LDFLAGS = $(MODULECOMMONFLAGS)
 coders_heif_la_LIBADD = $(LIBMAGICK) $(LIB_HEIF)
@@ -5459,9 +5462,11 @@ coders/gray.la: $(coders_gray_la_OBJECTS) $(coders_gray_la_DEPENDENCIES) $(EXTRA
 	$(AM_V_CCLD)$(coders_gray_la_LINK) $(am_coders_gray_la_rpath) $(coders_gray_la_OBJECTS) $(coders_gray_la_LIBADD) $(LIBS)
 coders/heif_la-heif.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
+coders/heif_la-acppfile.lo: coders/$(am__dirstamp) \
+	coders/$(DEPDIR)/$(am__dirstamp)
 
 coders/heif.la: $(coders_heif_la_OBJECTS) $(coders_heif_la_DEPENDENCIES) $(EXTRA_coders_heif_la_DEPENDENCIES) coders/$(am__dirstamp)
-	$(AM_V_CCLD)$(coders_heif_la_LINK) $(am_coders_heif_la_rpath) $(coders_heif_la_OBJECTS) $(coders_heif_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(coders_heif_la_LINK) $(am_coders_heif_la_rpath) $(coders_heif_la_OBJECTS) $(coders_heif_la_LIBADD) $(LIBS)
 coders/histogram_la-histogram.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 
@@ -6603,6 +6608,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/gif_la-gif.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/gradient_la-gradient.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/gray_la-gray.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/heif_la-acppfile.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/heif_la-heif.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/histogram_la-histogram.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/hrz_la-hrz.Plo@am__quote@ # am--include-marker
@@ -9214,6 +9220,13 @@ coders/fpx_la-acppfile.lo: coders/acppfile.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_fpx_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o coders/fpx_la-acppfile.lo `test -f 'coders/acppfile.cpp' || echo '$(srcdir)/'`coders/acppfile.cpp
 
+coders/heif_la-acppfile.lo: coders/acppfile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_heif_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT coders/heif_la-acppfile.lo -MD -MP -MF coders/$(DEPDIR)/heif_la-acppfile.Tpo -c -o coders/heif_la-acppfile.lo `test -f 'coders/acppfile.cpp' || echo '$(srcdir)/'`coders/acppfile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/heif_la-acppfile.Tpo coders/$(DEPDIR)/heif_la-acppfile.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='coders/acppfile.cpp' object='coders/heif_la-acppfile.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_heif_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o coders/heif_la-acppfile.lo `test -f 'coders/acppfile.cpp' || echo '$(srcdir)/'`coders/acppfile.cpp
+
 coders/jxl_la-acppfile.lo: coders/acppfile.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_jxl_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT coders/jxl_la-acppfile.lo -MD -MP -MF coders/$(DEPDIR)/jxl_la-acppfile.Tpo -c -o coders/jxl_la-acppfile.lo `test -f 'coders/acppfile.cpp' || echo '$(srcdir)/'`coders/acppfile.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/jxl_la-acppfile.Tpo coders/$(DEPDIR)/jxl_la-acppfile.Plo
@@ -10400,6 +10413,7 @@ distclean: distclean-am
 	-rm -f coders/$(DEPDIR)/gif_la-gif.Plo
 	-rm -f coders/$(DEPDIR)/gradient_la-gradient.Plo
 	-rm -f coders/$(DEPDIR)/gray_la-gray.Plo
+	-rm -f coders/$(DEPDIR)/heif_la-acppfile.Plo
 	-rm -f coders/$(DEPDIR)/heif_la-heif.Plo
 	-rm -f coders/$(DEPDIR)/histogram_la-histogram.Plo
 	-rm -f coders/$(DEPDIR)/hrz_la-hrz.Plo
@@ -10795,6 +10809,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f coders/$(DEPDIR)/gif_la-gif.Plo
 	-rm -f coders/$(DEPDIR)/gradient_la-gradient.Plo
 	-rm -f coders/$(DEPDIR)/gray_la-gray.Plo
+	-rm -f coders/$(DEPDIR)/heif_la-acppfile.Plo
 	-rm -f coders/$(DEPDIR)/heif_la-heif.Plo
 	-rm -f coders/$(DEPDIR)/histogram_la-histogram.Plo
 	-rm -f coders/$(DEPDIR)/hrz_la-hrz.Plo

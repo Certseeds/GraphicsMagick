@@ -21,8 +21,9 @@ printf "SRC=${SRC}\n"
 printf "WORK=${WORK}\n"
 printf "OUT=${OUT}\n"
 
-rm -rf $WORK/bin/
-rm -rf $WORK/lib/
+#rm -rf $WORK/bin/
+#rm -rf $WORK/lib/
+rm -rf $WORK/*
 
 set -x
 
@@ -31,7 +32,7 @@ set -x
 #    -L/work/lib -lz
 printf "=== Building zlib...\n"
 pushd "$SRC/zlib"
-./configure --prefix="$WORK"
+./configure --static --prefix="$WORK"
 make -j$(nproc) CFLAGS="$CFLAGS -fPIC"
 make install
 popd
@@ -63,9 +64,20 @@ popd
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libzstd --libs
 #    -L/usr/local/lib -lzstd -pthread
 printf "==== Building ${SRC}/zstd...\n"
-pushd "$SRC/zstd"
-make -j$(nproc) lib-release
-make install PREFIX="$WORK"
+ZSTD_BUILD="${SRC}/zstd_build"
+rm -rf "${ZSTD_BUILD}"
+mkdir -p "${ZSTD_BUILD}"
+pushd "${ZSTD_BUILD}"
+cmake -DCMAKE_C_COMPILER=$CC \
+      -DCMAKE_CXX_COMPILER=$CXX \
+      -DCMAKE_C_FLAGS="$CFLAGS" \
+      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+      -DCMAKE_INSTALL_PREFIX=$WORK \
+      -DZSTD_BUILD_STATIC=ON \
+      -DZSTD_BUILD_SHARED=OFF \
+      "${SRC}/zstd/build/cmake"
+make -j$(nproc)
+make install
 popd
 
 printf "=== Building ${SRC}/libpng...\n"
