@@ -1,3 +1,8 @@
+2023-11-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Add bzip2 and libjbig to the oss-fuzz
+	build.
+
 2023-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Build zlib and zstd as static.

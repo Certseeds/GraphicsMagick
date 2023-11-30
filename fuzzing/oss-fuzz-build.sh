@@ -21,9 +21,8 @@ printf "SRC=${SRC}\n"
 printf "WORK=${WORK}\n"
 printf "OUT=${OUT}\n"
 
-#rm -rf $WORK/bin/
-#rm -rf $WORK/lib/
 rm -rf $WORK/*
+rm -f $OUT/*
 
 set -x
 
@@ -70,8 +69,8 @@ mkdir -p "${ZSTD_BUILD}"
 pushd "${ZSTD_BUILD}"
 cmake -DCMAKE_C_COMPILER=$CC \
       -DCMAKE_CXX_COMPILER=$CXX \
-      -DCMAKE_C_FLAGS="$CFLAGS" \
-      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+      -DCMAKE_C_FLAGS="${CFLAGS} -fPIC" \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -fPIC" \
       -DCMAKE_INSTALL_PREFIX=$WORK \
       -DZSTD_BUILD_STATIC=ON \
       -DZSTD_BUILD_SHARED=OFF \
@@ -132,7 +131,7 @@ if ${enable_webp}
        #PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static'
        ./configure \
            CPPFLAGS="-I$WORK/include" \
-           CFLAGS="$CFLAGS" \
+           CFLAGS="$CFLAGS -fPIC" \
            LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
            --enable-libwebpmux \
            --disable-shared \
@@ -144,16 +143,50 @@ if ${enable_webp}
            --disable-tiff \
            --disable-gif \
            --disable-wic \
-           --prefix="$WORK" \
-           CFLAGS="$CFLAGS -fPIC"
+           --prefix="$WORK"
        make -j$(nproc)
        make install
        popd
 fi
 
-# FIXME: Add libbzip2 build here
+printf "=== Building ${SRC}/bzip2...\n"
+BZIP2_BUILD="${SRC}/bzip2_build"
+rm -rf "${BZIP2_BUILD}"
+mkdir -p "${BZIP2_BUILD}"
+pushd "${BZIP2_BUILD}"
+cmake -G "Unix Makefiles" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_C_COMPILER=$CC \
+      -DCMAKE_CXX_COMPILER=$CXX \
+      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+      -DCMAKE_INSTALL_PREFIX="$WORK" \
+      -DENABLE_LIB_ONLY=ON \
+      -DENABLE_SHARED_LIB=OFF \
+      -DENABLE_STATIC_LIB=ON \
+      ${SRC}/bzip2
+make clean
+make -j$(nproc)
+make install
+mv "${WORK}/lib/libbz2_static.a" "${WORK}/lib/libbz2.a"
+popd
 
-# FIXME: Add libjbig build here
+# Build libjbig
+# This incantation is borrowed from libtiff contrib/oss-fuzz/build.sh
+printf "=== Building ${SRC}/jbigkit...\n"
+pushd "$SRC/jbigkit"
+if [ "$ARCHITECTURE" = "i386" ]; then
+    echo "#!/bin/bash" > gcc
+    echo "clang -m32 \$*" >> gcc
+    chmod +x gcc
+    PATH=$PWD:$PATH make lib
+else
+    make lib
+fi
+
+mv "$SRC"/jbigkit/libjbig/*.a "$WORK/lib/"
+mv "$SRC"/jbigkit/libjbig/*.h "$WORK/include/"
+popd
 
 # FXIME: Add libdeflate, and libdeflate build here
 
@@ -168,7 +201,7 @@ if ${enable_tiff}
        #PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static'
        ./configure \
            CPPFLAGS="-I$WORK/include" \
-           CFLAGS="$CFLAGS" \
+           CFLAGS="$CFLAGS -fPIC" \
            LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
            --prefix="$WORK" \
            --disable-old-jpeg \
@@ -194,7 +227,7 @@ pushd "$SRC/Little-CMS"
 autoreconf -fiv
 ./configure \
     CPPFLAGS="-I$WORK/include" \
-    CFLAGS="$CFLAGS" \
+    CFLAGS="$CFLAGS -fPIC" \
     LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
     --prefix="$WORK" \
     --disable-shared \
@@ -214,7 +247,7 @@ pushd "$SRC/freetype"
 ./autogen.sh
 ./configure \
     CPPFLAGS="-I$WORK/include" \
-    CFLAGS="$CFLAGS" \
+    CFLAGS="$CFLAGS -fPIC" \
     LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
     --prefix="$WORK" \
     --enable-freetype-config \
@@ -235,7 +268,7 @@ then
     cmake -G "Unix Makefiles" \
           -DCMAKE_C_COMPILER=$CC \
           -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_C_FLAGS="$CFLAGS" \
+          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
           -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
           -DCMAKE_INSTALL_PREFIX="$WORK" \
           -DENABLE_SHARED:bool=off \
@@ -252,6 +285,7 @@ then
     pushd "$SRC/libde265"
     ./autogen.sh
     ./configure \
+        CFLAGS="$CFLAGS -fPIC" \
         --prefix="$WORK" \
         --disable-shared \
         --enable-static \
@@ -276,7 +310,7 @@ then
     cmake -G "Unix Makefiles" \
           -DCMAKE_C_COMPILER=$CC \
           -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_C_FLAGS="$CFLAGS" \
+          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
           -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
           -DCMAKE_INSTALL_PREFIX="$WORK" \
           -DENABLE_SHARED:bool=off \
@@ -307,7 +341,7 @@ then
     cmake --preset=fuzzing \
           -DCMAKE_C_COMPILER=$CC \
           -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_C_FLAGS="$CFLAGS" \
+          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
           -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
           -DCMAKE_INSTALL_PREFIX=$WORK \
           -DFUZZING_COMPILE_OPTIONS="" \
@@ -349,9 +383,10 @@ then
            -DJPEGXL_ENABLE_SJPEG=false \
            -DJPEGXL_ENABLE_TOOLS=false \
            -DJPEGXL_ENABLE_VIEWERS=false \
+           -DJPEGXL_ENABLE_JPEGLI=false \
            -DJPEGXL_FORCE_SYSTEM_LCMS2=true \
-           -DCMAKE_C_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CFLAGS}" \
-           -DCMAKE_CXX_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CXXFLAGS}" \
+           -DCMAKE_C_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CFLAGS} -fPIC" \
+           -DCMAKE_CXX_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CXXFLAGS} -fPIC" \
            "${SRC}/libjxl"
        make -j$(nproc)
        # libjxl claims to require libjxl_cms, but does not build/install one!
@@ -375,6 +410,10 @@ then
     pushd "${JASPER_BUILD}"
     cmake -G "Unix Makefiles" -H"$SRC/jasper" \
       -DJAS_ENABLE_SHARED=false \
+      -DCMAKE_C_COMPILER=$CC \
+      -DCMAKE_CXX_COMPILER=$CXX \
+      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
       -DCMAKE_INSTALL_PREFIX=$WORK \
       -DJAS_INCLUDE_BMP_CODEC=false \
       -DJAS_INCLUDE_JPG_CODEC=false \
