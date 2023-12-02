@@ -6,12 +6,20 @@
 # For local testing of fuzzing/oss-fuzz-build.sh do:
 # ~/src/GM% cp fuzzing/oss-fuzz-build.sh ../oss-fuzz-heptapod/projects/graphicsmagick/
 
-enable_heif=false
+enable_bzip2=true
+enable_freetype=true
+enable_heif=true
 enable_jasper=true
-enable_jxl=false
+enable_jbig=true
+enable_jpeg=true
+enable_jxl=true
+enable_lcms=true
+enable_png=true
 enable_tiff=true
 enable_webp=true
 enable_xml=false
+enable_xz=true
+enable_zstd=true
 
 export PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
 export PKG_CONFIG='pkg-config --static'
@@ -19,7 +27,9 @@ export VERBOSE=TRUE
 
 printf "SRC=${SRC}\n"
 printf "WORK=${WORK}\n"
+ls -l "${WORK}"
 printf "OUT=${OUT}\n"
+ls -l "${OUT}"
 
 rm -rf $WORK/*
 rm -f $OUT/*
@@ -39,67 +49,82 @@ popd
 # build xz
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static liblzma --libs
 #    -L/work/lib -llzma -pthread -lpthread
-printf "=== Building ${SRC}/xz...\n"
-pushd "$SRC/xz"
-./autogen.sh --no-po4a --no-doxygen
-./configure \
-    --disable-xz \
-    --disable-xzdec \
-    --disable-lzmadec \
-    --disable-lzmainfo \
-    --disable-lzma-links \
-    --disable-ifunc \
-    --disable-scripts \
-    --disable-doc \
-    --disable-shared \
-    --enable-static \
-    --with-pic=yes \
-    --prefix="$WORK"
-make -j$(nproc)
-make install
-popd
+if $enable_xz
+then
+    printf "=== Building ${SRC}/xz...\n"
+    pushd "$SRC/xz"
+    ./autogen.sh --no-po4a --no-doxygen
+    ./configure \
+        --disable-xz \
+        --disable-xzdec \
+        --disable-lzmadec \
+        --disable-lzmainfo \
+        --disable-lzma-links \
+        --disable-ifunc \
+        --disable-scripts \
+        --disable-doc \
+        --disable-shared \
+        --enable-static \
+        --with-pic=yes \
+        --prefix="$WORK"
+    make -j$(nproc)
+    make install
+    popd
+fi
 
 # build zstd
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libzstd --libs
 #    -L/usr/local/lib -lzstd -pthread
-printf "==== Building ${SRC}/zstd...\n"
-ZSTD_BUILD="${SRC}/zstd_build"
-rm -rf "${ZSTD_BUILD}"
-mkdir -p "${ZSTD_BUILD}"
-pushd "${ZSTD_BUILD}"
-cmake -DCMAKE_C_COMPILER=$CC \
-      -DCMAKE_CXX_COMPILER=$CXX \
-      -DCMAKE_C_FLAGS="${CFLAGS} -fPIC" \
-      -DCMAKE_CXX_FLAGS="${CXXFLAGS} -fPIC" \
-      -DCMAKE_INSTALL_PREFIX=$WORK \
-      -DZSTD_BUILD_STATIC=ON \
-      -DZSTD_BUILD_SHARED=OFF \
-      "${SRC}/zstd/build/cmake"
-make -j$(nproc)
-make install
-popd
+if $enable_zstd
+then
+    printf "==== Building ${SRC}/zstd...\n"
+    ZSTD_BUILD="${SRC}/zstd_build"
+    rm -rf "${ZSTD_BUILD}"
+    mkdir -p "${ZSTD_BUILD}"
+    pushd "${ZSTD_BUILD}"
+    cmake -DCMAKE_C_COMPILER=$CC \
+          -DCMAKE_CXX_COMPILER=$CXX \
+          -DCMAKE_C_FLAGS="${CFLAGS} -fPIC" \
+          -DCMAKE_CXX_FLAGS="${CXXFLAGS} -fPIC" \
+          -DCMAKE_INSTALL_PREFIX=$WORK \
+          -DZSTD_BUILD_STATIC=ON \
+          -DZSTD_BUILD_SHARED=OFF \
+          "${SRC}/zstd/build/cmake"
+    make -j$(nproc)
+    make install
+    popd
+fi
 
 printf "=== Building ${SRC}/libpng...\n"
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libpng --libs
 #    -L/work/lib -lpng16 -lm -lz
-pushd "$SRC/libpng"
-autoreconf -fiv
-./configure \
-    --prefix="$WORK" \
-    --disable-shared \
-    --enable-static \
-    CPPFLAGS="-I$WORK/include" \
-    CFLAGS="$CFLAGS" \
-    LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
-make -j$(nproc)
-make install
-popd
+if $enable_png
+then
+    pushd "$SRC/libpng"
+    autoreconf -fiv
+    ./configure \
+        --prefix="$WORK" \
+        --disable-shared \
+        --enable-static \
+        CPPFLAGS="-I$WORK/include" \
+        CFLAGS="$CFLAGS" \
+        LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
+    make -j$(nproc)
+    make install
+    popd
+fi
 
-if ${enable_xml}
+if $enable_xml
 then
     printf "=== Building ${SRC}/libxml2...\n"
     pushd "$SRC/libxml2"
-    ./autogen.sh --disable-shared --without-debug --without-legacy --without-python --without-schematron --without-schemas --prefix="${WORK}"
+    ./autogen.sh --disable-shared \
+                 --without-debug \
+                 --without-legacy \
+                 --without-python \
+                 --without-schematron \
+                 --without-schemas \
+                 --prefix="${WORK}"
     make -j$(nproc)
     make install
     popd
@@ -108,19 +133,22 @@ fi
 # build libjpeg-turbo
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjpeg --libs
 #     -L/work/lib -ljpeg
-printf "=== Building ${SRC}/libjpeg-turbo...\n"
-pushd "$SRC/libjpeg-turbo"
-CFLAGS="$CFLAGS -fPIC" cmake . \
-      -DCMAKE_INSTALL_PREFIX="$WORK" \
-      -DENABLE_STATIC=on \
-      -DENABLE_SHARED=off \
-      -DWITH_JPEG8=1 \
-      -DWITH_SIMD=0
-make -j$(nproc)
-make install
-popd
+if $enable_jpeg
+then
+    printf "=== Building ${SRC}/libjpeg-turbo...\n"
+    pushd "$SRC/libjpeg-turbo"
+    CFLAGS="$CFLAGS -fPIC" cmake . \
+          -DCMAKE_INSTALL_PREFIX="$WORK" \
+          -DENABLE_STATIC=on \
+          -DENABLE_SHARED=off \
+          -DWITH_JPEG8=1 \
+          -DWITH_SIMD=0
+    make -j$(nproc)
+    make install
+    popd
+fi
 
-if ${enable_webp}
+if $enable_webp
    then
        # Build webp
        # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libwebp --libs
@@ -149,56 +177,61 @@ if ${enable_webp}
        popd
 fi
 
-printf "=== Building ${SRC}/bzip2...\n"
-BZIP2_BUILD="${SRC}/bzip2_build"
-rm -rf "${BZIP2_BUILD}"
-mkdir -p "${BZIP2_BUILD}"
-pushd "${BZIP2_BUILD}"
-cmake -G "Unix Makefiles" \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_C_COMPILER=$CC \
-      -DCMAKE_CXX_COMPILER=$CXX \
-      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
-      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-      -DCMAKE_INSTALL_PREFIX="$WORK" \
-      -DENABLE_LIB_ONLY=ON \
-      -DENABLE_SHARED_LIB=OFF \
-      -DENABLE_STATIC_LIB=ON \
-      ${SRC}/bzip2
-make clean
-make -j$(nproc)
-make install
-mv "${WORK}/lib/libbz2_static.a" "${WORK}/lib/libbz2.a"
-popd
+if $enable_bzip2
+then
+    printf "=== Building ${SRC}/bzip2...\n"
+    BZIP2_BUILD="${SRC}/bzip2_build"
+    rm -rf "${BZIP2_BUILD}"
+    mkdir -p "${BZIP2_BUILD}"
+    pushd "${BZIP2_BUILD}"
+    cmake -G "Unix Makefiles" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_C_COMPILER=$CC \
+          -DCMAKE_CXX_COMPILER=$CXX \
+          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+          -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+          -DCMAKE_INSTALL_PREFIX="$WORK" \
+          -DENABLE_LIB_ONLY=ON \
+          -DENABLE_SHARED_LIB=OFF \
+          -DENABLE_STATIC_LIB=ON \
+          ${SRC}/bzip2
+    make clean
+    make -j$(nproc)
+    make install
+    mv "${WORK}/lib/libbz2_static.a" "${WORK}/lib/libbz2.a"
+    popd
+fi
 
 # Build libjbig
 # This incantation is borrowed from libtiff contrib/oss-fuzz/build.sh
-printf "=== Building ${SRC}/jbigkit...\n"
-pushd "$SRC/jbigkit"
-if [ "$ARCHITECTURE" = "i386" ]; then
-    echo "#!/bin/bash" > gcc
-    echo "clang -m32 \$*" >> gcc
-    chmod +x gcc
-    PATH=$PWD:$PATH make lib
-else
-    make lib
-fi
+if $enable_jbig
+then
+    printf "=== Building ${SRC}/jbigkit...\n"
+    pushd "$SRC/jbigkit"
+    if [ "$ARCHITECTURE" = "i386" ]; then
+        echo "#!/bin/bash" > gcc
+        echo "clang -m32 \$*" >> gcc
+        chmod +x gcc
+        PATH=$PWD:$PATH make lib
+    else
+        make lib
+    fi
 
-mv "$SRC"/jbigkit/libjbig/*.a "$WORK/lib/"
-mv "$SRC"/jbigkit/libjbig/*.h "$WORK/include/"
-popd
+    mv "$SRC"/jbigkit/libjbig/*.a "$WORK/lib/"
+    mv "$SRC"/jbigkit/libjbig/*.h "$WORK/include/"
+    popd
+fi
 
 # FXIME: Add libdeflate, and libdeflate build here
 
 # Build libtiff
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libtiff-4 --libs
 #  -L/work/lib -L/usr/local/lib -L/work/lib -ltiff -lwebp -lzstd -llzma -ljpeg -lz -lm -lwebp -lm -lsharpyuv -lm -lzstd -pthread -llzma -pthread -lpthread -ljpeg -lz
-if ${enable_tiff}
+if $enable_tiff
    then
        printf "=== Building ${SRC}/libtiff...\n"
        pushd "$SRC/libtiff"
        autoreconf -fiv
-       #PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static'
        ./configure \
            CPPFLAGS="-I$WORK/include" \
            CFLAGS="$CFLAGS -fPIC" \
@@ -222,42 +255,48 @@ fi
 #    -L/work/lib -llcms2 -lm -lpthread
 # liblcms2 does not test for library dependencies using pkg-config!
 # LIBS="`pkg-config --static --libs-only-l zlib libjpeg libtiff-4`"
-printf "=== Building ${SRC}/Little-CMS...\n"
-pushd "$SRC/Little-CMS"
-autoreconf -fiv
-./configure \
-    CPPFLAGS="-I$WORK/include" \
-    CFLAGS="$CFLAGS -fPIC" \
-    LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-    --prefix="$WORK" \
-    --disable-shared \
-    --enable-static \
-    --without-jpeg \
-    --without-tiff \
-    --without-zlib
-make -j$(nproc)
-make install
-popd
+if $enable_lcms
+then
+    printf "=== Building ${SRC}/Little-CMS...\n"
+    pushd "$SRC/Little-CMS"
+    autoreconf -fiv
+    ./configure \
+        CPPFLAGS="-I$WORK/include" \
+        CFLAGS="$CFLAGS -fPIC" \
+        LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
+        --prefix="$WORK" \
+        --disable-shared \
+        --enable-static \
+        --without-jpeg \
+        --without-tiff \
+        --without-zlib
+    make -j$(nproc)
+    make install
+    popd
+fi
 
 # Build freetype
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static freetype2 --libs
 #    -L/work/lib -lfreetype -lpng16 -lm -lz
-printf "=== Building ${SRC}/freetype...\n"
-pushd "$SRC/freetype"
-./autogen.sh
-./configure \
-    CPPFLAGS="-I$WORK/include" \
-    CFLAGS="$CFLAGS -fPIC" \
-    LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-    --prefix="$WORK" \
-    --enable-freetype-config \
-    --disable-shared \
-    --enable-static
-make -j$(nproc)
-make install
-popd
+if $enable_freetype
+then
+    printf "=== Building ${SRC}/freetype...\n"
+    pushd "$SRC/freetype"
+    ./autogen.sh
+    ./configure \
+        CPPFLAGS="-I$WORK/include" \
+        CFLAGS="$CFLAGS -fPIC" \
+        LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
+        --prefix="$WORK" \
+        --enable-freetype-config \
+        --disable-shared \
+        --enable-static
+    make -j$(nproc)
+    make install
+    popd
+fi
 
-if ${enable_heif} # Start conditional for if libheif related stuff should be included
+if $enable_heif
 then
 
     # Build libx265 (a C++ library)
@@ -354,10 +393,9 @@ then
     make -j$(nproc)
     make install
     popd
+fi
 
-fi # End conditional for if libheif related stuff should be included
-
-if ${enable_jxl}
+if $enable_jxl
 then
        # Build libjxl
        #  PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjxl_threads --libs
@@ -397,7 +435,7 @@ then
        popd
 fi
 
-if ${enable_jasper}
+if $enable_jasper
 then
     printf "=== Building ${SRC}/jasper...\n"
     # With all extras removed from libjasper
@@ -433,9 +471,6 @@ fi
 printf "Built libraries:\n"
 ls -l ${WORK}/lib
 
-# FIXME: All tests for libheif functions fail.
-# FIXME: Linking with libjxl results in a huge C++ explosion.
-
 # freetype-config is in $WORK/bin so we temporarily add $WORK/bin to the path
 # pkg-config names GraphicsMagick, GraphicsMagickWand, GraphicsMagick++
 # -stdlib=libc++'
@@ -445,6 +480,7 @@ PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-confi
     CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include/libxml2 -I$WORK/include" \
     CFLAGS="$CFLAGS" \
     LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
+    LIBS=-lc++ \
     --prefix="$WORK" \
     --disable-compressed-files \
     --without-perl \

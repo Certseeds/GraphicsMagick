@@ -1,3 +1,14 @@
+2023-12-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Print data returned from PKG_CHECK_MODULES if
+	VERBOSE is defined to some value.
+
+	* fuzzing/oss-fuzz-build.sh: Add LIBS=-lc++ until GM's static
+	linking with C++ libraries is perfected.  Enable JXL and HEIF in
+	the oss-fuzz build.
+
+	* fuzzing/coder_list.cc: Exclude more formats.
+
 2023-11-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Add bzip2 and libjbig to the oss-fuzz

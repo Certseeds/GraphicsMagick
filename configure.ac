@@ -26,6 +26,7 @@ AC_REQUIRE_AUX_FILE([tap-driver.sh])
 #
 # Save initial user-tunable values
 #
+#printf "LIBS=${LIBS}\n"
 LIBS_USER=$LIBS
 for var in CC CFLAGS  CPPFLAGS CXX CXXCPP LDFLAGS LIBS ; do
   eval isset=\${$var+set}
@@ -1850,9 +1851,12 @@ then
   failed=0
   passed=0
   PKG_CHECK_MODULES([ZLIB], [zlib], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-  #printf "ZLIB_LIBS=${ZLIB_LIBS}\n"
-  #printf "ZLIB_CFLAGS=${ZLIB_CFLAGS}\n"
   if test $failed -eq 0 ; then
+    if test -n "$VERBOSE"
+    then
+      printf "ZLIB_LIBS=${ZLIB_LIBS}\n"
+      printf "ZLIB_CFLAGS=${ZLIB_CFLAGS}\n"
+    fi
     pkg_config_to_flags 'zlib' "${ZLIB_LIBS}" "${ZLIB_CFLAGS}"
   fi
   AC_CHECK_HEADER([zconf.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
@@ -1958,9 +1962,12 @@ then
   failed=0
   passed=0
   PKG_CHECK_MODULES([LZMA], [liblzma], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-  #printf "LZMA_LIBS=${LZMA_LIBS}\n"
-  #printf "LZMA_CFLAGS=${LZMA_CFLAGS}\n"
   if test $failed -eq 0 ; then
+    if test -n "$VERBOSE"
+    then
+      printf "LZMA_LIBS=${LZMA_LIBS}\n"
+      printf "LZMA_CFLAGS=${LZMA_CFLAGS}\n"
+    fi
     pkg_config_to_flags 'liblzma' "${LZMA_LIBS}" "${LZMA_CFLAGS}"
   fi
   AC_CHECK_HEADER([lzma.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
@@ -2011,9 +2018,12 @@ then
   OLD_LDFLAGS=$LDFLAGS
   OLD_LIBS=$LIBS
   PKG_CHECK_MODULES([ZSTD], [libzstd], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-  #printf "ZSTD_LIBS=${ZSTD_LIBS}\n"
-  #printf "ZSTD_CFLAGS=${ZSTD_CFLAGS}\n"
   if test $failed -eq 0 ; then
+    if test -n "$VERBOSE"
+    then
+      printf "ZSTD_LIBS=${ZSTD_LIBS}\n"
+      printf "ZSTD_CFLAGS=${ZSTD_CFLAGS}\n"
+    fi
     pkg_config_to_flags 'libzstd' "${ZSTD_LIBS}" "${ZSTD_CFLAGS}"
   fi
   AC_CHECK_HEADER([zstd.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
@@ -2063,10 +2073,13 @@ then
     xml2_cflags=''
     xml2_libs=''
     PKG_CHECK_MODULES([XML], [libxml-2.0], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "XML_LIBS=${XML_LIBS}\n"
-    #printf "XML_CFLAGS=${XML_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'libxml-2.0' "${XML_LIBS}" "${XML_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "XML_LIBS=${XML_LIBS}\n"
+        printf "XML_CFLAGS=${XML_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libxml-2.0' "${XML_LIBS}" "${XML_CFLAGS}"
     fi
     failed=0
     passed=0
@@ -2280,10 +2293,13 @@ then
     have_lcms_header='no'
 
     PKG_CHECK_MODULES([LCMS2], [lcms2], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "LCMS2_LIBS=${LCMS2_LIBS}\n"
-    #printf "LCMS2_CFLAGS=${LCMS2_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'lcms2' "${LCMS2_LIBS}" "${LCMS2_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "LCMS2_LIBS=${LCMS2_LIBS}\n"
+        printf "LCMS2_CFLAGS=${LCMS2_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'lcms2' "${LCMS2_LIBS}" "${LCMS2_CFLAGS}"
     fi
 
     # Check for <lcms2.h>
@@ -2357,10 +2373,13 @@ then
   failed=0
   passed=0
   PKG_CHECK_MODULES([PNG], [libpng], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-  #printf "PNG_LIBS=${PNG_LIBS}\n"
-  #printf "PNG_CFLAGS=${PNG_CFLAGS}\n"
   if test $failed -eq 0 ; then
-     pkg_config_to_flags 'libpng' "${PNG_LIBS}" "${PNG_CFLAGS}"
+    if test -n "$VERBOSE"
+    then
+      printf "PNG_LIBS=${PNG_LIBS}\n"
+      printf "PNG_CFLAGS=${PNG_CFLAGS}\n"
+    fi
+    pkg_config_to_flags 'libpng' "${PNG_LIBS}" "${PNG_CFLAGS}"
   fi
 
   if test "$with_png" != 'yes'; then
@@ -2482,9 +2501,12 @@ then
     PKG_CHECK_MODULES([JPEG], [libturbojpeg], [passed=`expr $passed + 1`],
                               [PKG_CHECK_MODULES([JPEG], [libjpeg], [passed=`expr $passed + 1`],
                                                          [failed=`expr $failed + 1`])])
-    #printf "JPEG_LIBS=${JPEG_LIBS}\n"
-    #printf "JPEG_CFLAGS=${JPEG_CFLAGS}\n"
     if test $failed -eq 0 ; then
+      if test -n "$VERBOSE"
+      then
+        printf "JPEG_LIBS=${JPEG_LIBS}\n"
+        printf "JPEG_CFLAGS=${JPEG_CFLAGS}\n"
+      fi
      pkg_config_to_flags 'libjpeg' "${JPEG_LIBS}" "${JPEG_CFLAGS}"
     fi
 
@@ -2583,10 +2605,13 @@ then
     freeype_libs=''
     freetype_config=''
     PKG_CHECK_MODULES([FREETYPE], [freetype2], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "FREETYPE_LIBS=${FREETYPE_LIBS}\n"
-    #printf "FREETYPE_CFLAGS=${FREETYPE_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'freetype2' "${FREETYPE_LIBS}" "${FREETYPE_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "FREETYPE_LIBS=${FREETYPE_LIBS}\n"
+        printf "FREETYPE_CFLAGS=${FREETYPE_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'freetype2' "${FREETYPE_LIBS}" "${FREETYPE_CFLAGS}"
     fi
 
 dnl First see if there is a library
@@ -2677,27 +2702,36 @@ then
 
     # libwebp, libwebpmux, libwebpdemux
     PKG_CHECK_MODULES([WEBPMUX], [libwebpmux], [], [])
-    #printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
-    #printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'libwebpmux' "${WEBPMUX_LIBS}" "${WEBPMUX_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
+        printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libwebpmux' "${WEBPMUX_LIBS}" "${WEBPMUX_CFLAGS}"
     fi
 
     # We are not currently using libwebpdemux
     #PKG_CHECK_MODULES([WEBPDEMUX], [libwebpdemux], [], [])
-    #printf "WEBPDMUX_LIBS=${WEBPDMUX_LIBS}\n"
-    #printf "WEBPDMUX_CFLAGS=${WEBPDMUX_CFLAGS}\n"
     #if test $failed -eq 0 ; then
-    #   pkg_config_to_flags 'libwebpdemux' "${WEBPDMUX_LIBS}" "${WEBPDMUX_CFLAGS}"
+    #  if test -n "$VERBOSE"
+    #  then
+    #    printf "WEBPDMUX_LIBS=${WEBPDMUX_LIBS}\n"
+    #    printf "WEBPDMUX_CFLAGS=${WEBPDMUX_CFLAGS}\n"
+    #  fi
+    #  pkg_config_to_flags 'libwebpdemux' "${WEBPDMUX_LIBS}" "${WEBPDMUX_CFLAGS}"
     #fi
 
     # pkg-config libwebp --static --libs
     #-L/work/lib -lwebp -lm -lsharpyuv -lm
     PKG_CHECK_MODULES([WEBP], [libwebp], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "WEBP_LIBS=${WEBP_LIBS}\n"
-    #printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'libwebp' "${WEBP_LIBS}" "${WEBP_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "WEBP_LIBS=${WEBP_LIBS}\n"
+        printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libwebp' "${WEBP_LIBS}" "${WEBP_CFLAGS}"
     fi
 
     AC_CHECK_HEADER([webp/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
@@ -2789,8 +2823,11 @@ then
     #set -x
     if test $failed -eq 0
     then
-        #printf "TIFF_LIBS=${TIFF_LIBS}\n"
-        #printf "TIFF_CFLAGS=${TIFF_CFLAGS}\n"
+        if test -n "$VERBOSE"
+        then
+            printf "TIFF_LIBS=${TIFF_LIBS}\n"
+            printf "TIFF_CFLAGS=${TIFF_CFLAGS}\n"
+        fi
         pkg_config_to_flags 'libtiff-4' "${TIFF_LIBS}" "${TIFF_CFLAGS}"
     fi
     #set +x
@@ -2857,18 +2894,24 @@ then
 
     # libjxl_threads
     PKG_CHECK_MODULES([LIBJXL_THREADS], [libjxl_threads], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "LIBJXL_THREADS_LIBS=${LIBJXL_THREADS_LIBS}\n"
-    #printf "LIBJXL_THREADS_CFLAGS=${LIBJXL_THREADS_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'libjxl_threads' "${LIBJXL_THREADS_LIBS}" "${LIBJXL_THREADS_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "LIBJXL_THREADS_LIBS=${LIBJXL_THREADS_LIBS}\n"
+        printf "LIBJXL_THREADS_CFLAGS=${LIBJXL_THREADS_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libjxl_threads' "${LIBJXL_THREADS_LIBS}" "${LIBJXL_THREADS_CFLAGS}"
     fi
 
     # [libjxl
     PKG_CHECK_MODULES([LIBJXL], [libjxl], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "LIBJXL_LIBS=${LIBJXL_LIBS}\n"
-    #printf "LIBJXL_CFLAGS=${LIBJXL_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'libjxl' "${LIBJXL_LIBS}" "${LIBJXL_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "LIBJXL_LIBS=${LIBJXL_LIBS}\n"
+        printf "LIBJXL_CFLAGS=${LIBJXL_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libjxl' "${LIBJXL_LIBS}" "${LIBJXL_CFLAGS}"
     fi
 
     AC_CHECK_HEADER([jxl/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
@@ -2985,10 +3028,13 @@ then
     # Use pkg-config to handle different optional codec libs
     # and if pkg-config is not available fallback to manual search.
     PKG_CHECK_MODULES([HEIF], [libheif], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "HEIF_LIBS=${HEIF_LIBS}\n"
-    #printf "HEIF_CFLAGS=${HEIF_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'libheif' "${HEIF_LIBS}" "${HEIF_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "HEIF_LIBS=${HEIF_LIBS}\n"
+        printf "HEIF_CFLAGS=${HEIF_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libheif' "${HEIF_LIBS}" "${HEIF_CFLAGS}"
     fi
     AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[${HEIF_LIBS}])
@@ -3058,10 +3104,13 @@ then
     passed=0
 
     PKG_CHECK_MODULES([JASPER], [jasper], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
-    #printf "JASPER_LIBS=${JASPER_LIBS}\n"
-    #printf "JASPER_CFLAGS=${JASPER_CFLAGS}\n"
     if test $failed -eq 0 ; then
-       pkg_config_to_flags 'jasper' "${JASPER_LIBS}" "${JASPER_CFLAGS}"
+      if test -n "$VERBOSE"
+      then
+        printf "JASPER_LIBS=${JASPER_LIBS}\n"
+        printf "JASPER_CFLAGS=${JASPER_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'jasper' "${JASPER_LIBS}" "${JASPER_CFLAGS}"
     fi
 
     AC_CHECK_HEADER([jasper/jasper.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
@@ -4059,10 +4108,12 @@ fi
 # to be built as modules.  This requires libltdl ($LIB_LTDL).
 # Removed $LIB_OMP and $LIB_THREAD
 
+#printf "LIBS=${LIBS}\n"
+
 if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS=''
-  for token in $LIBS_USER $LCMS2_LIBS $FREETYPE_LIBS $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
+  for token in $LCMS2_LIBS $FREETYPE_LIBS $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIBS_USER $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
   do
     case $token in
       -l*)
@@ -4090,6 +4141,8 @@ else
   MAGICK_DEP_LIBS="$LIBS"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
+#printf "MAGICK_DEP_LIBS=${MAGICK_DEP_LIBS}\n"
+#printf "MAGICK_EXTRA_DEP_LIBS=${MAGICK_EXTRA_DEP_LIBS}\n"
 AC_SUBST([MAGICK_DEP_LIBS])
 AC_SUBST([MAGICK_EXTRA_DEP_LIBS])
 
