@@ -319,7 +319,7 @@ then
 
     # Build libde265 (a C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libde265 --libs
-    #    -L/work/lib -lde265 -lstdc++
+    #     -L/work/lib -lde265 -lc++
     printf "=== Building ${SRC}/libde265...\n"
     pushd "$SRC/libde265"
     ./autogen.sh
@@ -335,6 +335,8 @@ then
         --disable-acceleration_speed
     make clean
     make -j$(nproc)
+    # Fix broken libde265.pc
+    sed -i 's/@LIBS_PRIVATE@/-lc++/' libde265.pc
     make install
     popd
 
@@ -371,25 +373,39 @@ then
 
     # Build libheif (a C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libheif --libs
-    #   -L/work/lib -lheif -lc++ -lde265 -lstdc++ -lx265 -lc++ -lm -lrt -lm -ldl -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl -laom -lm -lpthread -ljpeg
+    #   -L/work/lib -lheif -lc++ -lde265 -lc++ -lx265 -lc++ -lm -lrt -lm -ldl -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl -laom -lm -lpthread -lsharpyuv -lm
     printf "=== Building ${SRC}/libheif...\n"
     HEIF_BUILD="${SRC}/heif_build"
     rm -rf "${HEIF_BUILD}"
     mkdir -p "${HEIF_BUILD}"
     pushd "${HEIF_BUILD}"
-    cmake --preset=fuzzing \
-          -DCMAKE_C_COMPILER=$CC \
-          -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
-          -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-          -DCMAKE_INSTALL_PREFIX=$WORK \
-          -DFUZZING_COMPILE_OPTIONS="" \
-          -DFUZZING_LINKER_OPTIONS="$LIB_FUZZING_ENGINE" \
-          -DFUZZING_C_COMPILER=$CC -DFUZZING_CXX_COMPILER=$CXX \
-          -DWITH_DEFLATE_HEADER_COMPRESSION=OFF \
-          -DENABLE_SHARED:bool=off \
-          -DCONFIG_PIC=1 \
-          "${SRC}/libheif"
+    #cmake --preset=fuzzing \
+    #      -DCMAKE_C_COMPILER=$CC \
+    #      -DCMAKE_CXX_COMPILER=$CXX \
+    #      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+    #      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+    #      -DCMAKE_INSTALL_PREFIX=$WORK \
+    #      -DFUZZING_COMPILE_OPTIONS="" \
+    #      -DFUZZING_LINKER_OPTIONS="$LIB_FUZZING_ENGINE" \
+    #      -DFUZZING_C_COMPILER=$CC -DFUZZING_CXX_COMPILER=$CXX \
+    #      -DWITH_DEFLATE_HEADER_COMPRESSION=OFF \
+    #      -DENABLE_SHARED:bool=off \
+    #      -DCONFIG_PIC=1 \
+    #      "${SRC}/libheif"
+    cmake \
+        -DCMAKE_C_COMPILER=$CC \
+        -DCMAKE_CXX_COMPILER=$CXX \
+        -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+        -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+        -DCMAKE_INSTALL_PREFIX=$WORK \
+        -DBUILD_SHARED_LIBS=off \
+        -DBUILD_TESTING=off \
+        -DWITH_EXAMPLES=off \
+        -DENABLE_PLUGIN_LOADING=off \
+        -DWITH_JPEG_DECODER=off \
+        -DWITH_JPEG_ENCODER=off \
+        -DCMAKE_BUILD_TYPE=Release \
+        "${SRC}/libheif"
     make -j$(nproc)
     make install
     popd
