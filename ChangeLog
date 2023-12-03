@@ -1,3 +1,8 @@
+2023-12-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/coder_list.cc: Exclude format names depending on an
+	external 'dcraw' program.
+
 2023-12-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Print data returned from PKG_CHECK_MODULES if
