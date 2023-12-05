@@ -37,6 +37,18 @@
 </div>
 
 <div class="document">
+<p>2023-12-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>fuzzing/oss-fuzz-build.sh: If doing oss-fuzz CI testing, then
+only include primary-class coders to improve chances of success</p></li>
+<li><p>coders/jbig.c (RegisterJBIGImage): Reduce to 'unstable' coder
+class given that 'JBIG-Kit' is not yet proven to survive fuzz
+testing.</p></li>
+<li><p>coders/dcraw.c (RegisterDCRAWImage): Reduce to 'unstable' coder
+class given that 'dcraw' is not fuzz tested at all.</p></li>
+</ul>
+</blockquote>
 <p>2023-12-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

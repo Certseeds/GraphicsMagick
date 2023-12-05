@@ -25,6 +25,20 @@ export PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
 export PKG_CONFIG='pkg-config --static'
 export VERBOSE=TRUE
 
+# Dont check Coverage in CI as it gets killed
+if [[ -n "${OSS_FUZZ_CI-}" && "$SANITIZER" = coverage ]]; then
+  touch $OUT/exit
+  exit 0
+fi
+
+# If doing oss-fuzz CI testing, then only include primary-class
+# coders to improve chances of success
+if [ -n "${OSS_FUZZ_CI-}" ]; then
+    export MAGICK_CODER_STABILITY=PRIMARY
+else
+    export MAGICK_CODER_STABILITY=UNSTABLE
+fi
+
 printf "SRC=${SRC}\n"
 printf "WORK=${WORK}\n"
 ls -l "${WORK}"

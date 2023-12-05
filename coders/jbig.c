@@ -283,7 +283,7 @@ ModuleExport void RegisterJBIGImage(void)
   entry->description=description;
     entry->version=version;
   entry->module="JBIG";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("JBG");
@@ -294,7 +294,7 @@ ModuleExport void RegisterJBIGImage(void)
   entry->description=description;
   entry->version=version;
   entry->module="JBIG";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("JBIG");
@@ -305,7 +305,7 @@ ModuleExport void RegisterJBIGImage(void)
   entry->description=description;
   entry->version=version;
   entry->module="JBIG";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 

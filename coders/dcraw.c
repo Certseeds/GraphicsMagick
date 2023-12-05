@@ -159,6 +159,7 @@ ModuleExport void RegisterDCRAWImage(void)
       entry->description=dcraw_formats[i].description;
       entry->extension_treatment=ObeyExtensionTreatment;
       entry->module="DCRAW";
+      entry->coder_class=UnstableCoderClass;
       (void) RegisterMagickInfo(entry);
     }
 }
