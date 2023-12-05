@@ -45,8 +45,8 @@ ls -l "${WORK}"
 printf "OUT=${OUT}\n"
 ls -l "${OUT}"
 
-rm -rf $WORK/*
-rm -f $OUT/*
+#rm -rf $WORK/*
+#rm -f $OUT/*
 
 set -x
 
