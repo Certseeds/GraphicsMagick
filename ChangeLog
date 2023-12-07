@@ -1,3 +1,7 @@
+2023-11-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/wpg.c Deallocate palette when image load fails.
+
 2023-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: If doing oss-fuzz CI testing, then

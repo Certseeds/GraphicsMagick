@@ -1357,7 +1357,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
           FilePos += Rd_WP_DWORD(image,&Rec.RecordLength);
           if((magick_off_t)Rec.RecordLength > filesize)
+          {
+            if(pPalette) MagickFreeResourceLimitedMemory(pPalette);     
             ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+          }
           if(EOFBlob(image)) break;
 
           FilePos += (magick_off_t)Rec.RecordLength;
@@ -1379,7 +1382,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader1.Width=ReadBlobLSBShort(image);
               BitmapHeader1.Heigth=ReadBlobLSBShort(image);
               if ((BitmapHeader1.Width == 0) || (BitmapHeader1.Heigth == 0))
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
               BitmapHeader1.Depth=ReadBlobLSBShort(image);
               BitmapHeader1.HorzRes=ReadBlobLSBShort(image);
               BitmapHeader1.VertRes=ReadBlobLSBShort(image);
@@ -1420,7 +1426,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               LoadPaletteRec(image,&WPG_Palette,logging);
               PaletteItems = WPG_Palette.NumOfEntries;
               if((magick_uint32_t)PaletteItems + WPG_Palette.StartIndex > 256)
-                  ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
+                ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
+              }
               if(pPalette==NULL)
               {
                 PaletteAllocBytes = 3*256;
@@ -1435,7 +1444,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                 }
               }
               if(ReadBlob(image,(size_t) PaletteItems*3,pPalette+((size_t)3*WPG_Palette.StartIndex)) != (size_t) PaletteItems*3)
-                  ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
+                ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+              }
               break;
 
             case 0x11:  /* Start PS l1 */
@@ -1454,7 +1466,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader2.Width=ReadBlobLSBShort(image);
               BitmapHeader2.Heigth=ReadBlobLSBShort(image);
               if ((BitmapHeader2.Width == 0) || (BitmapHeader2.Heigth == 0))
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
               BitmapHeader2.Depth=ReadBlobLSBShort(image);
               BitmapHeader2.HorzRes=ReadBlobLSBShort(image);
               BitmapHeader2.VertRes=ReadBlobLSBShort(image);
@@ -1487,7 +1502,10 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
 
 UnpackRaster:
               if(bpp>24)
-                {ThrowReaderException(CoderError,ColorTypeNotSupported,image)}
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
+                ThrowReaderException(CoderError,ColorTypeNotSupported,image);
+              }
 
               if(pPalette!=NULL && PaletteItems>0)
               {
@@ -1516,8 +1534,8 @@ UnpackRaster1bpp:
                   if (!AllocateImageColormap(image,image->colors))
                     {
                     NoMemory:
-                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-                                           image)
+                      if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
+                      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image)
                     }
                   image->storage_class = PseudoClass;
                   /* printf("Load default colormap \n"); */
@@ -1561,6 +1579,7 @@ UnpackRaster1bpp:
                 if(UnpackWPGRaster(image,bpp) < 0)
                 {               /* The raster cannot be unpacked */
                 DecompressionFailed:
+                  if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
                   ThrowReaderException(CoderError,UnableToDecompressImage,image)
                 }
 
@@ -1664,15 +1683,23 @@ UnpackRaster1bpp:
 
               /* Sanity check for amount of palette entries. */
               if (WPG_Palette.NumOfEntries == 0)
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,UnrecognizedNumberOfColors,image);
-
+              }
               if ((unsigned) (WPG_Palette.NumOfEntries-1) > MaxMap)
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,ColormapExceedsColorsLimit,image);
+              }
 
               if ( (WPG_Palette.StartIndex > WPG_Palette.NumOfEntries) ||
                    ((((unsigned long)WPG_Palette.NumOfEntries-(unsigned long)WPG_Palette.StartIndex) >
                      ((Rec2.RecordLength-2-2) / 3))) )
-                 ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
+                ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);
+              }
 
               if(pPalette!=NULL &&
                  PaletteAllocBytes < 4*(WPG_Palette.StartIndex+WPG_Palette.NumOfEntries))
@@ -1697,7 +1724,10 @@ UnpackRaster1bpp:
                 }
               }
               if(ReadBlob(image,(size_t) PaletteItems*4,pPalette+((size_t)4*WPG_Palette.StartIndex)) != (size_t) PaletteItems*4)
-                  ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
+                ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+              }
               break;
 
             case 0x0E:
@@ -1707,7 +1737,10 @@ UnpackRaster1bpp:
               Bitmap2Header1.Compression=ReadBlobByte(image);
 
               if ((Bitmap2Header1.Width == 0) || (Bitmap2Header1.Heigth == 0))
+              {
+                if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+              }
 
               if(image->rows!=0 && image->columns!=0)
               {                       /* Allocate next image structure. */
@@ -1867,6 +1900,7 @@ UnpackRaster1bpp:
 
     default:
       {
+        if(pPalette) MagickFreeResourceLimitedMemory(pPalette);
         ThrowReaderException(CoderError,DataEncodingSchemeIsNotSupported,image);
       }
     }
