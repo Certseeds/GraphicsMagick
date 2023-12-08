@@ -1,5 +1,9 @@
 2023-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/miff.c (ReadMIFFImage): Handle unexpected EOF in version
+	0 bzip2 compressed MIFF.  Addresses oss-fuzz "Issue 64851:
+	graphicsmagick:coder_MIFF_fuzzer: Timeout in coder_MIFF_fuzzer".
+
 	* coders/jbig.c (ReadJBIGImage): Add error detection. Addresses
 	oss-fuzz "Issue 64781: graphicsmagick:coder_JBIG_fuzzer:
 	Null-dereference READ in jbg_dec_getimage".

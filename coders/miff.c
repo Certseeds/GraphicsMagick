@@ -1859,6 +1859,12 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
                         {
                           length=(int) (1.01*pixels_size+600);
                           bzip_info.avail_in=(unsigned int) ReadBlob(image,length,bzip_info.next_in);
+                          if (bzip_info.avail_in == 0)
+                            {
+                              (void) BZ2_bzDecompressEnd(&bzip_info);
+                              ThrowMIFFReaderException(CorruptImageError,UnexpectedEndOfFile,
+                                                   image);
+                            }
                         }
                       else
                         {
