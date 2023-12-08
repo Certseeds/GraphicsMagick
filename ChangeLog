@@ -1,3 +1,13 @@
+2023-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jbig.c (ReadJBIGImage): Add error detection. Addresses
+	oss-fuzz "Issue 64781: graphicsmagick:coder_JBIG_fuzzer:
+	Null-dereference READ in jbg_dec_getimage".
+
+	* magick/export.c (ExportGrayQuantumType): Only use 'Special
+	"fast" support for two-color PsudeoClass.' case when image has two
+	colors.  Otherwise output image is not correct!
+
 2023-12-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/wpg.c Deallocate palette when image load fails.

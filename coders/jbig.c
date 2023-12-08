@@ -39,6 +39,7 @@
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/constitute.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
@@ -145,6 +146,7 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
   if (buffer == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   status=JBG_EAGAIN;
+  /* FIXME: Should handle JBG_EOK_INTR for multi-resolution support */
   do
     {
       length=(long) ReadBlob(image,MaxBufferSize,(char *) buffer);
@@ -152,13 +154,23 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
         break;
       p=buffer;
       count=0;
-      while ((length > 0) && ((status == JBG_EAGAIN) || (status == JBG_EOK)))
+      while ((length > 0) && (status == JBG_EAGAIN))
         {
           status=jbg_dec_in(&jbig_info,p,length,&count);
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "jbg_dec_in() returns 0x%02x (\"%s\")",
+                                  status, jbg_strerror(status));
           p+=count;
           length-=count;
         }
-    } while ((status == JBG_EAGAIN) || (status == JBG_EOK));
+    } while (status == JBG_EAGAIN);
+  if (JBG_EOK != status)
+    {
+      jbg_dec_free(&jbig_info);
+      MagickFreeMemory(buffer);
+      ThrowReaderException(CorruptImageError,CorruptImage,image);
+    }
   /*
     Create colormap.
   */
@@ -170,7 +182,7 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
       if (!AllocateImageColormap(image,2))
         {
           MagickFreeMemory(buffer);
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
         }
       image->colormap[0].red=0;
       image->colormap[0].green=0;
