@@ -1863,7 +1863,7 @@ Optional Packages:
   --without-lzma          disable LZMA support
   --without-png           disable PNG support
   --without-tiff          disable TIFF support
-  --without-trio          disable TRIO support
+  --with-trio             enable TRIO support
   --without-ttf           disable TrueType support
   --with-tcmalloc         enable Google perftools tcmalloc (minimal) memory
                           allocation library support
@@ -19776,16 +19776,16 @@ if test "$with_tiff" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-tiff=$with_tiff "
 fi
 
-# Disable TRIO.
+# Enable TRIO.
 
 # Check whether --with-trio was given.
 if test "${with_trio+set}" = set; then :
   withval=$with_trio; with_trio=$withval
 else
-  with_trio='yes'
+  with_trio='no'
 fi
 
-if test "$with_trio" != 'yes' ; then
+if test "$with_trio" != 'no' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-trio=$with_trio "
 fi
 

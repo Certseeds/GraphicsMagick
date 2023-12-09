@@ -343,9 +343,9 @@ Optional Packages/Options
 
     disable TIFF support
 
---without-trio
+--with-trio
 
-    disable TRIO library support
+    enable TRIO library support
 
 --without-ttf
 

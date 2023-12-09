@@ -4,8 +4,9 @@
 	pkg-config is not present or misbehaves. If pkg-config is not
 	present, it may be necessary to manually set CPPFLAGs in order to
 	find the FreeType and libxml2 headers.  Also print any error
-	information that pkg-config produces.
-	jxl_threads is not a hard requirement.
+	information that pkg-config produces.  jxl_threads is not a hard
+	requirement.  Do not search for TRIO by default.  The user needs
+	to specify --with-trio=yes in order to enable searching for TRIO.
 
 2023-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

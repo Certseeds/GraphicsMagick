@@ -791,13 +791,13 @@ if test "$with_tiff" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-tiff=$with_tiff "
 fi
 
-# Disable TRIO.
+# Enable TRIO.
 AC_ARG_WITH([trio],
-              AS_HELP_STRING([--without-trio],
-                             [disable TRIO support]),
+              AS_HELP_STRING([--with-trio],
+                             [enable TRIO support]),
               [with_trio=$withval],
-              [with_trio='yes'])
-if test "$with_trio" != 'yes' ; then
+              [with_trio='no'])
+if test "$with_trio" != 'no' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-trio=$with_trio "
 fi
 

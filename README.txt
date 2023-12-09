@@ -258,11 +258,12 @@ building under Microsoft Windows:
      http://sourceforge.net/projects/ctrio/
 
   to substitute for the vsnprintf function when the operating system
-  does not provide one. Older operating systems (e.g. Solaris 2.5)
-  may not provide a vsnprintf function. If vsnprintf (or the TRIO
+  does not provide one. Older operating systems (e.g. Solaris 2.5) may
+  not provide a vsnprintf function. If vsnprintf (or the TRIO
   replacement) is not used, then vsprintf is used instead, which
   decreases the security of GraphicsMagick due to possible buffer
-  overrun exploits.
+  overrun exploits.  It is highly unlikely that TRIO is useful on any
+  modern system.
 
 * GraphicsMagick may optionally use the 'tcmalloc' library provided as
   part of Google gperftools available from
