@@ -3005,7 +3005,7 @@ then
     AC_CHECK_HEADER([jxl/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     # jxl always requires hwy/brotli no extra test needed
     AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`; LIB_JXL='-ljxl'],[failed=`expr $failed + 1`],[-lhwy -lbrotlidec -lbrotlienc -lbrotlicommon])
-    AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`; LIB_JXL="${LIB_JXL} -ljxl_threads"],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`; LIB_JXL="${LIB_JXL} -ljxl_threads"],[])
     # Testing for decoder should also cover encoder
     AC_CHECK_LIB([brotlidec],[BrotliDecoderVersion],[passed=`expr $passed + 1`; LIB_JXL="${LIB_JXL} -lbrotlidec -lbrotlicommon"],[failed=`expr $failed + 1`],[-lbrotlicommon])
     AC_LANG_POP

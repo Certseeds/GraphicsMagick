@@ -28933,8 +28933,6 @@ fi
 $as_echo "$ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate" >&6; }
 if test "x$ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate" = xyes; then :
   passed=`expr $passed + 1`; LIB_JXL="${LIB_JXL} -ljxl_threads"
-else
-  failed=`expr $failed + 1`
 fi
 
     # Testing for decoder should also cover encoder
