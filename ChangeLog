@@ -1,3 +1,11 @@
+2023-12-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Try really hard to configure everything, even if
+	pkg-config is not present or misbehaves. If pkg-config is not
+	present, it may be necessary to manually set CPPFLAGs in order to
+	find the FreeType and libxml2 headers.  Also print any error
+	information that pkg-config produces.
+
 2023-12-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/miff.c (ReadMIFFImage): Handle unexpected EOF in version

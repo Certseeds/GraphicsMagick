@@ -23989,6 +23989,12 @@ fi
       printf "ZLIB_CFLAGS=${ZLIB_CFLAGS}\n"
     fi
     pkg_config_to_flags 'zlib' "${ZLIB_LIBS}" "${ZLIB_CFLAGS}"
+  else
+    if test -n "${ZLIB_PKG_ERRORS}"
+    then
+      printf "${ZLIB_PKG_ERRORS}\n"
+    fi
+    failed=0
   fi
   ac_fn_c_check_header_mongrel "$LINENO" "zconf.h" "ac_cv_header_zconf_h" "$ac_includes_default"
 if test "x$ac_cv_header_zconf_h" = xyes; then :
@@ -24274,6 +24280,7 @@ $as_echo "no -- some components failed test" >&6; }
       LIBS=$OLD_LIBS
     else
       LIB_ZLIB='-lz'
+      pkg_config_to_flags 'zlib' "${LIB_ZLIB}" ''
 
 $as_echo "#define HasZLIB 1" >>confdefs.h
 
@@ -24545,6 +24552,12 @@ fi
       printf "LZMA_CFLAGS=${LZMA_CFLAGS}\n"
     fi
     pkg_config_to_flags 'liblzma' "${LZMA_LIBS}" "${LZMA_CFLAGS}"
+  else
+    if test -n "${LZMA_PKG_ERRORS}"
+    then
+      printf "${LZMA_PKG_ERRORS}\n"
+    fi
+    failed=0
   fi
   ac_fn_c_check_header_mongrel "$LINENO" "lzma.h" "ac_cv_header_lzma_h" "$ac_includes_default"
 if test "x$ac_cv_header_lzma_h" = xyes; then :
@@ -24618,6 +24631,7 @@ $as_echo "no -- some components failed test" >&6; }
             ;;
         esac
       done
+      pkg_config_to_flags 'liblzma' "${LIB_LZMA}" ''
 
 $as_echo "#define HasLZMA 1" >>confdefs.h
 
@@ -24727,13 +24741,20 @@ else
 $as_echo "yes" >&6; }
 	passed=`expr $passed + 1`
 fi
-  if test $failed -eq 0 ; then
+  if test $failed -eq 0
+  then
     if test -n "$VERBOSE"
     then
       printf "ZSTD_LIBS=${ZSTD_LIBS}\n"
       printf "ZSTD_CFLAGS=${ZSTD_CFLAGS}\n"
     fi
     pkg_config_to_flags 'libzstd' "${ZSTD_LIBS}" "${ZSTD_CFLAGS}"
+  else
+    if test -n "${ZSTD_PKG_ERRORS}"
+    then
+      printf "${ZSTD_PKG_ERRORS}\n"
+    fi
+    failed=0
   fi
   ac_fn_c_check_header_mongrel "$LINENO" "zstd.h" "ac_cv_header_zstd_h" "$ac_includes_default"
 if test "x$ac_cv_header_zstd_h" = xyes; then :
@@ -24799,6 +24820,7 @@ $as_echo "no -- some components failed test" >&6; }
       LIBS=$OLD_LIBS
     else
       LIB_ZSTD='-lzstd'
+      pkg_config_to_flags 'libzstd' "${LIB_ZSTD}" ''
       #LIBS="$LIB_ZSTD $LIBS"
 
 $as_echo "#define HasZSTD 1" >>confdefs.h
@@ -24822,7 +24844,6 @@ fi
 
 
 
-
 #
 # Check for XML
 #
@@ -24841,9 +24862,6 @@ $as_echo "" >&6; }
     OLD_LIBS=$LIBS
     failed=0
     passed=0
-    xml2_config=''
-    xml2_cflags=''
-    xml2_libs=''
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml-2.0" >&5
@@ -24915,16 +24933,29 @@ else
 $as_echo "yes" >&6; }
 	passed=`expr $passed + 1`
 fi
-    if test $failed -eq 0 ; then
+    if test $failed -eq 0
+    then
       if test -n "$VERBOSE"
       then
         printf "XML_LIBS=${XML_LIBS}\n"
         printf "XML_CFLAGS=${XML_CFLAGS}\n"
       fi
       pkg_config_to_flags 'libxml-2.0' "${XML_LIBS}" "${XML_CFLAGS}"
+    else
+      if test -n "${XML_PKG_ERRORS}"
+      then
+        printf "${XML_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
     failed=0
     passed=0
+
+    # libxml2 normally requires pkg-config in order to produce the
+    # necessary additional include path.  For example
+    # "-I/usr/include/libxml2", but if pkg-config was not available,
+    # the user could supply that manually using CPPFLAGS.
+    #
     # Incantation tested with libxml2 2.7.8 configured with
     #   --with-minimum --with-http --with-ftp --with-push --with-zlib --with-sax1
     # Note that SAX1 interfaces don't seem to be directly used but parsers fail to work
@@ -25068,24 +25099,25 @@ fi
 $as_echo_n "checking if XML package is complete ... " >&6; }
     if test $passed -gt 0
     then
-    if test $failed -gt 0
-    then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        if test $failed -gt 0
+        then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-        have_xml='no (failed tests)'
-        CPPFLAGS=$OLD_CPPFLAGS
-        LDFLAGS=$OLD_LDFLAGS
-        LIBS=$OLD_LIBS
-    else
-        LIB_XML="-lxml2"
+            have_xml='no (failed tests)'
+            CPPFLAGS=$OLD_CPPFLAGS
+            LDFLAGS=$OLD_LDFLAGS
+            LIBS=$OLD_LIBS
+        else
+            LIB_XML="-lxml2"
+            pkg_config_to_flags 'libxml-2.0' "${LIB_XML}" ''
 
 $as_echo "#define HasXML 1" >>confdefs.h
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-        have_xml='yes'
-        for ac_func in xmlNanoHTTPOpen \
-                        xmlNanoFTPNewCtxt
+            have_xml='yes'
+            for ac_func in xmlNanoHTTPOpen \
+                            xmlNanoFTPNewCtxt
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -25097,7 +25129,7 @@ _ACEOF
 fi
 done
 
-    fi
+        fi
     else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
@@ -26457,6 +26489,12 @@ fi
         printf "LCMS2_CFLAGS=${LCMS2_CFLAGS}\n"
       fi
       pkg_config_to_flags 'lcms2' "${LCMS2_LIBS}" "${LCMS2_CFLAGS}"
+    else
+      if test -n "${LCMS2_PKG_ERRORS}"
+      then
+        printf "${LCMS2_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
 
     # Check for <lcms2.h>
@@ -26556,6 +26594,7 @@ $as_echo "no -- some components failed test" >&6; }
         LIBS=$OLD_LIBS
       else
         LIB_LCMS='-llcms2'
+        pkg_config_to_flags 'lcms2' "${LIB_LCMS}" ''
         #LIBS="$LIB_LCMS $LIBS"
         #AC_DEFINE(HasLCMS2,1,Define if you have LCMS v2 library)
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
@@ -26675,6 +26714,12 @@ fi
       printf "PNG_CFLAGS=${PNG_CFLAGS}\n"
     fi
     pkg_config_to_flags 'libpng' "${PNG_LIBS}" "${PNG_CFLAGS}"
+  else
+    if test -n "${PNG_PKG_ERRORS}"
+    then
+      printf "${PNG_PKG_ERRORS}\n"
+    fi
+    failed=0
   fi
 
   if test "$with_png" != 'yes'; then
@@ -27020,21 +27065,22 @@ fi
 $as_echo_n "checking if ${pnglib} package is complete... " >&6; }
               if test $passed -gt 0 ; then
                 if test $failed -gt 0 ; then
-                { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+                  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-                have_png='no (failed tests)'
-                CPPFLAGS=$OLD_CPPFLAGS
-                LDFLAGS=$OLD_LDFLAGS
-                LIBS=$OLD_LIBS
+                  have_png='no (failed tests)'
+                  CPPFLAGS=$OLD_CPPFLAGS
+                  LDFLAGS=$OLD_LDFLAGS
+                  LIBS=$OLD_LIBS
                 else
-                LIB_PNG="-l${pnglib}"
-                #LIBS="$LIB_PNG $LIBS"
+                  LIB_PNG="-l${pnglib}"
+                  pkg_config_to_flags 'libpng' "${LIB_PNG}" ''
+                  #LIBS="$LIB_PNG $LIBS"
 
 $as_echo "#define HasPNG 1" >>confdefs.h
 
-                { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+                  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-                have_png='yes'
+                  have_png='yes'
                 fi
               fi
             fi
@@ -27292,7 +27338,13 @@ fi
         printf "JPEG_LIBS=${JPEG_LIBS}\n"
         printf "JPEG_CFLAGS=${JPEG_CFLAGS}\n"
       fi
-     pkg_config_to_flags 'libjpeg' "${JPEG_LIBS}" "${JPEG_CFLAGS}"
+      pkg_config_to_flags 'libjpeg' "${JPEG_LIBS}" "${JPEG_CFLAGS}"
+    else
+      if test -n "${JPEG_PKG_ERRORS}"
+      then
+        printf "${JPEG_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
 
     ac_fn_c_check_header_mongrel "$LINENO" "jconfig.h" "ac_cv_header_jconfig_h" "$ac_includes_default"
@@ -27383,6 +27435,7 @@ $as_echo "no -- some components failed test" >&6; }
         LIBS=$OLD_LIBS
     else
         LIB_JPEG='-ljpeg'
+        pkg_config_to_flags 'libjpeg' "${LIB_JPEG}" ''
         #LIBS="$LIB_JPEG $LIBS"
 
 $as_echo "#define HasJPEG 1" >>confdefs.h
@@ -27562,6 +27615,12 @@ fi
         printf "FREETYPE_CFLAGS=${FREETYPE_CFLAGS}\n"
       fi
       pkg_config_to_flags 'freetype2' "${FREETYPE_LIBS}" "${FREETYPE_CFLAGS}"
+    else
+      if test -n "${FREETYPE_PKG_ERRORS}"
+      then
+        printf "${FREETYPE_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for FT_Init_FreeType in -lfreetype" >&5
@@ -27661,6 +27720,7 @@ $as_echo "no -- some components failed test" >&6; }
             LDFLAGS=$OLD_LDFLAGS
             LIBS=$OLD_LIBS
         else
+            pkg_config_to_flags 'freetype2' "${LIB_TTF}" ''
             #LIBS="$LIB_TTF $LIBS"
 
 $as_echo "#define HasTTF 1" >>confdefs.h
@@ -27780,37 +27840,17 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$WEBPMUX_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (libwebpmux) were not met:
-
-$WEBPMUX_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables WEBPMUX_CFLAGS
-and WEBPMUX_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
+	failed=`expr $failed + 1`
 elif test $pkg_failed = untried; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables WEBPMUX_CFLAGS
-and WEBPMUX_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
+	failed=`expr $failed + 1`
 else
 	WEBPMUX_CFLAGS=$pkg_cv_WEBPMUX_CFLAGS
 	WEBPMUX_LIBS=$pkg_cv_WEBPMUX_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-
+	passed=`expr $passed + 1`
 fi
     if test $failed -eq 0 ; then
       if test -n "$VERBOSE"
@@ -27819,6 +27859,12 @@ fi
         printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
       fi
       pkg_config_to_flags 'libwebpmux' "${WEBPMUX_LIBS}" "${WEBPMUX_CFLAGS}"
+    else
+      if test -n "${WEBPMUX_PKG_ERRORS}"
+      then
+        printf "${WEBPMUX_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
 
     # We are not currently using libwebpdemux
@@ -27830,6 +27876,8 @@ fi
     #    printf "WEBPDMUX_CFLAGS=${WEBPDMUX_CFLAGS}\n"
     #  fi
     #  pkg_config_to_flags 'libwebpdemux' "${WEBPDMUX_LIBS}" "${WEBPDMUX_CFLAGS}"
+    #else
+    #  failed=0
     #fi
 
     # pkg-config libwebp --static --libs
@@ -27912,6 +27960,12 @@ fi
         printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
       fi
       pkg_config_to_flags 'libwebp' "${WEBP_LIBS}" "${WEBP_CFLAGS}"
+    else
+      if test -n "${WEBP_PKG_ERRORS}"
+      then
+        printf "${WEBP_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
 
     ac_fn_c_check_header_mongrel "$LINENO" "webp/decode.h" "ac_cv_header_webp_decode_h" "$ac_includes_default"
@@ -28065,15 +28119,8 @@ $as_echo "no -- some components failed test" >&6; }
             LDFLAGS=$OLD_LDFLAGS
             LIBS=$OLD_LIBS
         else
-            LIB_WEBP=''
-            for token in ${WEBPMUX_LIBS} ${WEBPDMUX_LIBS} ${WEBP_LIBS}
-            do
-                case $token in
-                    -l*)
-                        LIB_WEBP="$LIB_WEBP $token"
-                        ;;
-                esac
-            done
+            pkg_config_to_flags 'libwebp' "${LIB_WEBP}" ''
+            # LIBS="$LIB_WEBP $LIBS"
 
 $as_echo "#define HasWEBP 1" >>confdefs.h
 
@@ -28290,6 +28337,12 @@ fi
             printf "TIFF_CFLAGS=${TIFF_CFLAGS}\n"
         fi
         pkg_config_to_flags 'libtiff-4' "${TIFF_LIBS}" "${TIFF_CFLAGS}"
+    else
+      if test -n "${TIFF_PKG_ERRORS}"
+      then
+        printf "${TIFF_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
     #set +x
     ac_fn_c_check_header_mongrel "$LINENO" "tiff.h" "ac_cv_header_tiff_h" "$ac_includes_default"
@@ -28532,6 +28585,7 @@ $as_echo "no -- some components failed test" >&6; }
             LIBS=$OLD_LIBS
         else
             LIB_TIFF='-ltiff'
+            pkg_config_to_flags 'libtiff-4' "${LIB_TIFF}" ''
             #LIBS="$LIB_TIFF $LIBS"
 
 $as_echo "#define HasTIFF 1" >>confdefs.h
@@ -28686,13 +28740,20 @@ else
 $as_echo "yes" >&6; }
 	passed=`expr $passed + 1`
 fi
-    if test $failed -eq 0 ; then
+    if test $failed -eq 0
+    then
       if test -n "$VERBOSE"
       then
         printf "LIBJXL_THREADS_LIBS=${LIBJXL_THREADS_LIBS}\n"
         printf "LIBJXL_THREADS_CFLAGS=${LIBJXL_THREADS_CFLAGS}\n"
       fi
       pkg_config_to_flags 'libjxl_threads' "${LIBJXL_THREADS_LIBS}" "${LIBJXL_THREADS_CFLAGS}"
+    else
+      if test -n "${LIBJXL_THREADS_PKG_ERRORS}"
+      then
+        printf "${LIBJXL_THREADS_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
 
     # [libjxl
@@ -28767,13 +28828,20 @@ else
 $as_echo "yes" >&6; }
 	passed=`expr $passed + 1`
 fi
-    if test $failed -eq 0 ; then
+    if test $failed -eq 0
+    then
       if test -n "$VERBOSE"
       then
         printf "LIBJXL_LIBS=${LIBJXL_LIBS}\n"
         printf "LIBJXL_CFLAGS=${LIBJXL_CFLAGS}\n"
       fi
       pkg_config_to_flags 'libjxl' "${LIBJXL_LIBS}" "${LIBJXL_CFLAGS}"
+    else
+      if test -n "${LIBJXL_PKG_ERRORS}"
+      then
+        printf "${LIBJXL_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
 
     ac_fn_cxx_check_header_mongrel "$LINENO" "jxl/decode.h" "ac_cv_header_jxl_decode_h" "$ac_includes_default"
@@ -28822,7 +28890,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jxl_JxlDecoderCreate" >&5
 $as_echo "$ac_cv_lib_jxl_JxlDecoderCreate" >&6; }
 if test "x$ac_cv_lib_jxl_JxlDecoderCreate" = xyes; then :
-  passed=`expr $passed + 1`
+  passed=`expr $passed + 1`; LIB_JXL='-ljxl'
 else
   failed=`expr $failed + 1`
 fi
@@ -28864,7 +28932,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate" >&5
 $as_echo "$ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate" >&6; }
 if test "x$ac_cv_lib_jxl_threads_JxlThreadParallelRunnerCreate" = xyes; then :
-  passed=`expr $passed + 1`
+  passed=`expr $passed + 1`; LIB_JXL="${LIB_JXL} -ljxl_threads"
 else
   failed=`expr $failed + 1`
 fi
@@ -28907,7 +28975,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_brotlidec_BrotliDecoderVersion" >&5
 $as_echo "$ac_cv_lib_brotlidec_BrotliDecoderVersion" >&6; }
 if test "x$ac_cv_lib_brotlidec_BrotliDecoderVersion" = xyes; then :
-  passed=`expr $passed + 1`
+  passed=`expr $passed + 1`; LIB_JXL="${LIB_JXL} -lbrotlidec -lbrotlicommon"
 else
   failed=`expr $failed + 1`
 fi
@@ -28922,36 +28990,43 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 $as_echo_n "checking if JXL package is complete... " >&6; }
     if test $passed -gt 0
     then
-    if test $failed -gt 0
-    then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
+        if test $failed -gt 0
+        then
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
-        have_jxl='no (failed tests)'
-        CPPFLAGS=$OLD_CPPFLAGS
-        LDFLAGS=$OLD_LDFLAGS
-        LIBS=$OLD_LIBS
-    else
-        # JXL is a C++ Lib so it requires linking with stdc++.  This
-        # is handled by inserting a C++ dummy shim file when JXL is
-        # part of the build.
-        LIB_JXL=''
-        for token in ${LIBJXL_LIBS} ${LIBJXL_THREADS_LIBS}
-        do
-            case $token in
-                -l*)
-                    LIB_JXL="$LIB_JXL $token"
-                    ;;
-            esac
-        done
-        #LIBS="$LIB_JXL $LIBS"
+            have_jxl='no (failed tests)'
+            CPPFLAGS=$OLD_CPPFLAGS
+            LDFLAGS=$OLD_LDFLAGS
+            LIBS=$OLD_LIBS
+        else
+            # JXL is a C++ Lib so it requires linking with stdc++.  This
+            # is handled by inserting a C++ dummy shim file when JXL is
+            # part of the build.
+            if test -n "${LIBJXL_LIBS}"
+            then
+               # Use pkg-config info
+               LIB_JXL=''
+               for token in ${LIBJXL_LIBS} ${LIBJXL_THREADS_LIBS}
+               do
+                   case $token in
+                       -l*)
+                           LIB_JXL="$LIB_JXL $token"
+                           ;;
+                   esac
+               done
+            else
+                # Without pkg-config, use LIB_JXL we built via testing
+                pkg_config_to_flags 'libjxl' "${LIB_JXL}" ''
+            fi
+            #LIBS="$LIB_JXL $LIBS"
 
 $as_echo "#define HasJXL 1" >>confdefs.h
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-        have_jxl='yes'
-        PERLMAINCC="$CXX"
-    fi
+            have_jxl='yes'
+            PERLMAINCC="$CXX"
+        fi
     else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
@@ -29096,9 +29171,13 @@ $as_echo "" >&6; }
     OLD_LIBS=$LIBS
     failed=0
     passed=0
-    heif_cflags=''
     # Use pkg-config to handle different optional codec libs
     # and if pkg-config is not available fallback to manual search.
+    #
+    # pkg-config --libs libheif
+    #  -lheif
+    # pkg-config --cflags libheif
+    #  nada
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libheif" >&5
@@ -29177,6 +29256,12 @@ fi
         printf "HEIF_CFLAGS=${HEIF_CFLAGS}\n"
       fi
       pkg_config_to_flags 'libheif' "${HEIF_LIBS}" "${HEIF_CFLAGS}"
+    else
+      if test -n "${HEIF_PKG_ERRORS}"
+      then
+        printf "${HEIF_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
     ac_fn_c_check_header_mongrel "$LINENO" "libheif/heif.h" "ac_cv_header_libheif_heif_h" "$ac_includes_default"
 if test "x$ac_cv_header_libheif_heif_h" = xyes; then :
@@ -29244,8 +29329,8 @@ done
 $as_echo_n "checking if HEIF package is complete... " >&6; }
     if test $passed -gt 0
     then
-    if test $failed -gt 0
-    then
+      if test $failed -gt 0
+      then
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
 $as_echo "no -- some components failed test" >&6; }
         have_heif='no (failed tests)'
@@ -29253,44 +29338,21 @@ $as_echo "no -- some components failed test" >&6; }
         LDFLAGS=$OLD_LDFLAGS
         LIBS=$OLD_LIBS
         LIB_HEIF=''
-    else
-        LIB_HEIF="${HEIF_LIBS}"
+      else
+        LIB_HEIF='-lheif'
+        pkg_config_to_flags 'libheif' "${LIB_HEIF}" ''
         #LIBS="$LIB_HEIF $LIBS"
-        for flag in $heif_cflags
-        do
-          case $flag in
-            -I*)
-              # Add flag to CPPFLAGS if not already present
-              add=yes
-              for test_flag in $CPPFLAGS
-              do
-                if test $flag = $test_flag
-                then
-                  add=no
-                  break
-                fi
-              done
-              if test $add = yes
-              then
-                CPPFLAGS="$CPPFLAGS $flag"
-              fi
-              break
-              ;;
-            *)
-              ;;
-          esac
-        done
 
 $as_echo "#define HasHEIF 1" >>confdefs.h
 
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         have_heif='yes'
-    fi
-    else
+     fi
+     else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-    fi
+     fi
 fi
  if test "$have_heif" = 'yes'; then
   HasHEIF_TRUE=
@@ -29397,6 +29459,12 @@ fi
         printf "JASPER_CFLAGS=${JASPER_CFLAGS}\n"
       fi
       pkg_config_to_flags 'jasper' "${JASPER_LIBS}" "${JASPER_CFLAGS}"
+    else
+      if test -n "${JASPER_PKG_ERRORS}"
+      then
+        printf "${JASPER_PKG_ERRORS}\n"
+      fi
+      failed=0
     fi
 
     ac_fn_c_check_header_mongrel "$LINENO" "jasper/jasper.h" "ac_cv_header_jasper_jasper_h" "$ac_includes_default"
@@ -29547,6 +29615,7 @@ $as_echo "no -- some components failed test" >&6; }
         LIBS=$OLD_LIBS
     else
         LIB_JP2='-ljasper'
+        pkg_config_to_flags 'jasper' "${LIB_JP2}" ''
         #LIBS="$LIB_JP2 $LIBS"
 
 $as_echo "#define HasJP2 1" >>confdefs.h
