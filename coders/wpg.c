@@ -1694,8 +1694,8 @@ UnpackRaster1bpp:
               }
 
               if ( (WPG_Palette.StartIndex > WPG_Palette.NumOfEntries) ||
-                   ((((unsigned long)WPG_Palette.NumOfEntries-(unsigned long)WPG_Palette.StartIndex) >
-                     ((Rec2.RecordLength-2-2) / 3))) )
+                   ((((magick_int32_t)WPG_Palette.NumOfEntries-(magick_int32_t)WPG_Palette.StartIndex) >
+                   (((magick_int32_t)Rec2.RecordLength-2-2) / 4))) )
               {
                 MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,InvalidColormapIndex,image);

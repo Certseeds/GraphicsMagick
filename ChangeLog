@@ -1,3 +1,6 @@
+2023-12-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* coders/wpg.c Fix for oss-fuzz-64935.
+
 2023-12-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jbig.c (ReadJBIGImage): Attempt to set maximum image
