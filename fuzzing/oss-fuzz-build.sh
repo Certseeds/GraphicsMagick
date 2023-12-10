@@ -232,7 +232,7 @@ then
     fi
 
     mv "$SRC"/jbigkit/libjbig/*.a "$WORK/lib/"
-    mv "$SRC"/jbigkit/libjbig/*.h "$WORK/include/"
+    cp -p "$SRC"/jbigkit/libjbig/*.h "$WORK/include/"
     popd
 fi
 
@@ -427,42 +427,46 @@ fi
 
 if $enable_jxl
 then
-       # Build libjxl
-       #  PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjxl_threads --libs
-       #    -L/work/lib -ljxl_threads -lm
-       #  PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjxl --libs
-       #    -L/work/lib -L -ljxl -lm -lhwy -lbrotlienc -lbrotlidec -lbrotlicommon -ljxl_cms -lm
-       #
-       printf "=== Building ${SRC}/libjxl...\n"
-       LIBJXL_BUILD="${SRC}/libjxl_build"
-       rm -rf "${LIBJXL_BUILD}"
-       mkdir -p "${LIBJXL_BUILD}"
-       pushd "${LIBJXL_BUILD}"
-       cmake \
-           -DCMAKE_INSTALL_PREFIX=$WORK \
-           -DBUILD_TESTING=off \
-           -DBUILD_SHARED_LIBS=false \
-           -DCMAKE_BUILD_TYPE=Release \
-           -DJPEGXL_ENABLE_BENCHMARK=false \
-           -DJPEGXL_ENABLE_EXAMPLES=false \
-           -DJPEGXL_ENABLE_FUZZERS=false \
-           -DJPEGXL_ENABLE_JPEGLI=false \
-           -DJPEGXL_ENABLE_MANPAGES=OFF \
-           -DJPEGXL_ENABLE_SJPEG=false \
-           -DJPEGXL_ENABLE_TOOLS=false \
-           -DJPEGXL_ENABLE_VIEWERS=false \
-           -DJPEGXL_ENABLE_JPEGLI=false \
-           -DJPEGXL_FORCE_SYSTEM_LCMS2=true \
-           -DCMAKE_C_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CFLAGS} -fPIC" \
-           -DCMAKE_CXX_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CXXFLAGS} -fPIC" \
-           "${SRC}/libjxl"
-       make -j$(nproc)
-       # libjxl claims to require libjxl_cms, but does not build/install one!
-       sed -i 's/ libjxl_cms//' ./lib/libjxl.pc
-       make install
-       cp third_party/brotli/*.a $WORK/lib
-       cp third_party/brotli/*.pc $WORK/lib/pkgconfig
-       popd
+    # Build libjxl
+    #  PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjxl_threads --libs
+    #    -L/work/lib -ljxl_threads -lm
+    #  PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libjxl --libs
+    #    -L/work/lib -L -ljxl -lm -lhwy -lbrotlienc -lbrotlidec -lbrotlicommon -ljxl_cms -lm
+    #
+    # Removed -DJPEGXL_FORCE_SYSTEM_LCMS2=true
+    # Added -DJPEGXL_ENABLE_SKCMS=true, -DJPEGXL_BUNDLE_SKCMS=true
+    printf "=== Building ${SRC}/libjxl...\n"
+    LIBJXL_BUILD="${SRC}/libjxl_build"
+    rm -rf "${LIBJXL_BUILD}"
+    mkdir -p "${LIBJXL_BUILD}"
+    pushd "${LIBJXL_BUILD}"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=$WORK \
+        -DBUILD_TESTING=off \
+        -DBUILD_SHARED_LIBS=false \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DJPEGXL_ENABLE_BENCHMARK=false \
+        -DJPEGXL_ENABLE_EXAMPLES=false \
+        -DJPEGXL_ENABLE_FUZZERS=false \
+        -DJPEGXL_ENABLE_JPEGLI=false \
+        -DJPEGXL_ENABLE_MANPAGES=OFF \
+        -DJPEGXL_ENABLE_SJPEG=false \
+        -DJPEGXL_ENABLE_TOOLS=false \
+        -DJPEGXL_ENABLE_VIEWERS=false \
+        -DJPEGXL_ENABLE_JPEGLI=false \
+        -DJPEGXL_ENABLE_SKCMS=false \
+        -DJPEGXL_BUNDLE_SKCMS=false \
+        -DJPEGXL_FORCE_SYSTEM_LCMS2=false \
+        -DCMAKE_C_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CFLAGS} -fPIC" \
+        -DCMAKE_CXX_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CXXFLAGS} -fPIC" \
+        "${SRC}/libjxl"
+    make -j$(nproc)
+    # libjxl claims to require libjxl_cms, but does not build/install one!
+    #sed -i 's/ libjxl_cms//' ./lib/libjxl.pc
+    make install
+    cp third_party/brotli/*.a $WORK/lib
+    cp third_party/brotli/*.pc $WORK/lib/pkgconfig
+    popd
 fi
 
 if $enable_jasper

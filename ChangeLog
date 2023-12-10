@@ -1,5 +1,8 @@
 2023-12-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* fuzzing/oss-fuzz-build.sh: Add -DJPEGXL_ENABLE_SKCMS=false to
+	libjxl build since skcms is not working with static linkage.
+
 	* configure.ac: Try really hard to configure everything, even if
 	pkg-config is not present or misbehaves. If pkg-config is not
 	present, it may be necessary to manually set CPPFLAGs in order to
