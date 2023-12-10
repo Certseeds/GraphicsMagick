@@ -47,7 +47,7 @@
 /*
   Define  declarations.
 */
-#define ResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0) >> 1))
+/* #define MagickResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0) >> 1)) */
 #define ResourceInfoMaxIndex ((unsigned int) (sizeof(resource_info)/sizeof(resource_info[0])-1))
 
 /*
@@ -96,17 +96,17 @@ typedef struct _ResourceInfo
 static ResourceInfo
   resource_info[] =
   {
-    { "",       "",  "",                    0, 0,     ResourceInfinity, AbsoluteLimit, 0  },
-    { "disk",   "B", "MAGICK_LIMIT_DISK",   0, 0,     ResourceInfinity, SummationLimit, 0 },
-    { "files",  "",  "MAGICK_LIMIT_FILES",  0, 32,    256,              SummationLimit, 0 },
-    { "map",    "B", "MAGICK_LIMIT_MAP",    0, 0,     ResourceInfinity, SummationLimit, 0 },
-    { "memory", "B", "MAGICK_LIMIT_MEMORY", 0, 0,     ResourceInfinity, SummationLimit, 0 },
-    { "pixels", "P", "MAGICK_LIMIT_PIXELS", 0, 1,     ResourceInfinity, AbsoluteLimit, 0  },
-    { "threads", "", "OMP_NUM_THREADS",     1, 1,     ResourceInfinity, AbsoluteLimit, 0  },
-    { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,     PIXEL_LIMIT,      AbsoluteLimit, 0  },
-    { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,     PIXEL_LIMIT,      AbsoluteLimit, 0  },
-    { "read",   "B", "MAGICK_LIMIT_READ",   0, 4096,  ResourceInfinity, AbsoluteLimit, 0  },
-    { "write",  "B", "MAGICK_LIMIT_WRITE",  0, 4096,  ResourceInfinity, AbsoluteLimit, 0  }
+    { "",       "",  "",                    0, 0,     MagickResourceInfinity, AbsoluteLimit, 0  },
+    { "disk",   "B", "MAGICK_LIMIT_DISK",   0, 0,     MagickResourceInfinity, SummationLimit, 0 },
+    { "files",  "",  "MAGICK_LIMIT_FILES",  0, 32,    256,                    SummationLimit, 0 },
+    { "map",    "B", "MAGICK_LIMIT_MAP",    0, 0,     MagickResourceInfinity, SummationLimit, 0 },
+    { "memory", "B", "MAGICK_LIMIT_MEMORY", 0, 0,     MagickResourceInfinity, SummationLimit, 0 },
+    { "pixels", "P", "MAGICK_LIMIT_PIXELS", 0, 1,     MagickResourceInfinity, AbsoluteLimit, 0  },
+    { "threads", "", "OMP_NUM_THREADS",     1, 1,     MagickResourceInfinity, AbsoluteLimit, 0  },
+    { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,     PIXEL_LIMIT,            AbsoluteLimit, 0  },
+    { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,     PIXEL_LIMIT,            AbsoluteLimit, 0  },
+    { "read",   "B", "MAGICK_LIMIT_READ",   0, 4096,  MagickResourceInfinity, AbsoluteLimit, 0  },
+    { "write",  "B", "MAGICK_LIMIT_WRITE",  0, 4096,  MagickResourceInfinity, AbsoluteLimit, 0  }
   };
 
 /*
@@ -177,7 +177,7 @@ AcquireMagickResource(const ResourceType type,
               Limit depends only on the currently requested size.
             */
             value=info->value;
-            if ((info->maximum != ResourceInfinity) &&
+            if ((info->maximum != MagickResourceInfinity) &&
                 (size > (magick_uint64_t) info->maximum))
               status=MagickFail;
             break;
@@ -190,7 +190,7 @@ AcquireMagickResource(const ResourceType type,
             */
             LockSemaphoreInfo(info->semaphore);
             value=info->value+size;
-            if ((info->maximum != ResourceInfinity) &&
+            if ((info->maximum != MagickResourceInfinity) &&
                 (value > (magick_uint64_t) info->maximum))
               {
                 value=info->value;
@@ -211,7 +211,7 @@ AcquireMagickResource(const ResourceType type,
             f_size[MaxTextExtent],
             f_value[MaxTextExtent];
 
-          if (info->maximum == ResourceInfinity)
+          if (info->maximum == MagickResourceInfinity)
             {
               strlcpy(f_limit,"Unlimited",sizeof(f_limit));
             }
@@ -799,7 +799,7 @@ MagickExport void LiberateMagickResource(const ResourceType type,
             f_size[MaxTextExtent],
             f_value[MaxTextExtent];
 
-          if (info->maximum == ResourceInfinity)
+          if (info->maximum == MagickResourceInfinity)
             {
               strlcpy(f_limit,"Unlimited",sizeof(f_limit));
             }
@@ -881,7 +881,7 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
         limit[MaxTextExtent];
 
       LockSemaphoreInfo(resource_info[index].semaphore);
-      if (resource_info[index].maximum == ResourceInfinity)
+      if (resource_info[index].maximum == MagickResourceInfinity)
         {
           strlcpy(limit,"Unlimited",sizeof(limit));
         }

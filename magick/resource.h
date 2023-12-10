@@ -33,6 +33,7 @@ typedef enum
   WriteResource        /* Maximum amount of uncompressed file data which may be written to one file */
 } ResourceType;
 
+
 /*
   Method declarations.
 */
@@ -49,6 +50,15 @@ extern MagickExport void
   DestroyMagickResources(void),
   InitializeMagickResources(void),
   LiberateMagickResource(const ResourceType type,const magick_uint64_t size);
+
+#if defined(MAGICK_IMPLEMENTATION)
+
+/*
+  Define  declarations.
+*/
+#define MagickResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0) >> 1))
+
+#endif /* MAGICK_IMPLEMENTATION */
 
 
 #if defined(__cplusplus) || defined(c_plusplus)
