@@ -1,5 +1,7 @@
-2023-12-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	* coders/wpg.c Fix for oss-fuzz-64935.
+2023-12-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/wpg.c Fix for oss-fuzz issue 64935:
+	"graphicsmagick:enhance_fuzzer: Heap-buffer-overflow in ReadBlob".
 
 2023-12-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
