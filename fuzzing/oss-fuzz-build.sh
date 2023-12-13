@@ -121,8 +121,9 @@ then
         --disable-shared \
         --enable-static \
         CPPFLAGS="-I$WORK/include" \
-        CFLAGS="$CFLAGS" \
+        CFLAGS="${CFLAGS} -fPIC" \
         LDFLAGS="${LDFLAGS:-} -L$WORK/lib"
+    make clean
     make -j$(nproc)
     make install
     popd
@@ -451,7 +452,7 @@ then
         -DJPEGXL_ENABLE_JPEGLI=false \
         -DJPEGXL_ENABLE_MANPAGES=OFF \
         -DJPEGXL_ENABLE_SJPEG=false \
-        -DJPEGXL_ENABLE_TOOLS=false \
+        -DJPEGXL_ENABLE_TOOLS=true \
         -DJPEGXL_ENABLE_VIEWERS=false \
         -DJPEGXL_ENABLE_JPEGLI=false \
         -DJPEGXL_ENABLE_SKCMS=false \
