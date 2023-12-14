@@ -467,6 +467,10 @@ then
     make install
     cp third_party/brotli/*.a $WORK/lib
     cp third_party/brotli/*.pc $WORK/lib/pkgconfig
+    printf "==================\n"
+    printf "JXL version info\n"
+    ${WORK}/bin/cjxl --version
+    printf "==================\n"
     popd
 fi
 
@@ -546,8 +550,7 @@ for f in fuzzing/*_fuzzer.cc; do
     set -x
     $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
         "$f" -o "${target}" \
-        $LIB_FUZZING_ENGINE "$WORK/lib/libGraphicsMagick++.a" \
-        "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
+        $LIB_FUZZING_ENGINE $MAGICK_LIBS
     set +x
 done
 
@@ -555,8 +558,7 @@ target="$WORK/coder_list"
 printf "=== Building ${target}...\n"
 set -x
 $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
-    fuzzing/coder_list.cc -o "${target}" \
-    "$WORK/lib/libGraphicsMagick++.a" "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
+    fuzzing/coder_list.cc -o "${target}" $MAGICK_LIBS
 set +x
 
 for item in $("$WORK/coder_list"); do
@@ -571,8 +573,7 @@ for item in $("$WORK/coder_list"); do
     set -x
     $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
         fuzzing/coder_fuzzer.cc -o "${target}" \
-        $coder_flags $LIB_FUZZING_ENGINE "$WORK/lib/libGraphicsMagick++.a" \
-        "$WORK/lib/libGraphicsMagick.a" $MAGICK_LIBS
+        $coder_flags $LIB_FUZZING_ENGINE $MAGICK_LIBS
     set +x
 
     if [ -f "fuzzing/dictionaries/${coder}.dict" ]; then
