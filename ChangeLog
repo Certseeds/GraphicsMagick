@@ -1,3 +1,7 @@
+2023-12-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tiff.c Attempt to store EXIF inside TIFF image.
+
 2023-12-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/wpg.c Fix for oss-fuzz issue 64935:
