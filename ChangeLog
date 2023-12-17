@@ -1,4 +1,8 @@
-2023-12-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
+2023-12-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tiff.c Check for NULL in EXIF tag name being logged.
+
+2023-12-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c Check recipe compatibility for TIFFSetField().
 	Improved optional log record:

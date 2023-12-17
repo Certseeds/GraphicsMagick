@@ -27,6 +27,8 @@
 %                     Re-Written For GraphicsMagick                           %
 %                             Bob Friesenhahn                                 %
 %                                2002-2015                                    %
+%                             Jaroslav Fojtik                                 %
+%                                   2023                                      %
 %                                                                             %
 %                                                                             %
 %                                                                             %
@@ -4401,44 +4403,49 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
 
 #include "tif_dir.h"
 
-
-#ifndef EXIFTAG_SECURITYCLASSIFICATION
- #define EXIFTAG_SECURITYCLASSIFICATION		37394
-#endif
-#ifndef EXIFTAG_IMAGEHISTORY
- #define EXIFTAG_IMAGEHISTORY			37395
-#endif
-
+/*
 static TIFFField customFields[] = {
     {544, -1, -1, TIFF_LONG, 0, TIFF_SETGET_UINT32,
      TIFF_SETGET_UNDEFINED, FIELD_CUSTOM, 1, 0, "Custom1", NULL},
 };
 
 static TIFFFieldArray customFieldArray = {tfiatOther, 0, 1, customFields};
+*/
 
 
-uint32_t LD_UINT32_LO(const unsigned char *Mem)
+static uint32_t LD_UINT32_LO(const unsigned char *Mem)
 {
   return (uint32_t)Mem[0] | ((uint32_t)Mem[1] << 8) | ((uint32_t)Mem[2] << 16) | ((uint32_t)Mem[3] << 24);
 }
 
-uint32_t LD_UINT32_HI(const unsigned char *Mem)
+static uint32_t LD_UINT32_HI(const unsigned char *Mem)
 {
   return ((uint32_t)Mem[0]<<24) | ((uint32_t)Mem[1] << 16) | ((uint32_t)Mem[2] << 8) | ((uint32_t)Mem[3]);
 }
 
-uint16_t LD_UINT16_LO(const unsigned char *Mem)
+static uint16_t LD_UINT16_LO(const unsigned char *Mem)
 {
   return (uint32_t)Mem[0] | ((uint32_t)Mem[1] << 8);
 }
 
-uint16_t LD_UINT16_HI(const unsigned char *Mem)
+static uint16_t LD_UINT16_HI(const unsigned char *Mem)
 {
   return ((uint32_t)Mem[0] << 8) | ((uint32_t)Mem[1]);
 }
 
 
-int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging)
+static const char *FipFieldName(const TIFFField *fip)
+{
+  if(fip)
+  {
+    if(fip->field_name==NULL) return "N/A";
+    return fip->field_name;
+  }
+  return "UNSUPPORTED";
+}
+
+
+static int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging)
 {
 const char EXIF[6] = {'E','x','i','f',0,0};
 uint32_t IFDpos;
@@ -4500,7 +4507,7 @@ const TIFFField *fip;
 
       if(logging)
         (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Extracted tag from EXIF %xh, Field %d, Long2 %d, val %d %s",
-                             Tag, Field, Long2, Value, (fip!=NULL)?fip->field_name:"UNSUPPORTED");
+                             Tag, Field, Long2, Value, FipFieldName(fip));
 
       if(fip!=NULL)		/* libtiff doesn't understand these */
       {
