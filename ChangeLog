@@ -1,5 +1,9 @@
 2023-12-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
+	* coders/tiff.c Check recipe compatibility for TIFFSetField().
+
+2023-12-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* coders/tiff.c Attempt to store EXIF inside TIFF image.
 
 2023-12-11  Fojtik Jaroslav  <JaFojtik@yandex.com>

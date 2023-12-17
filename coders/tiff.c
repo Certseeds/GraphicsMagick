@@ -4448,6 +4448,7 @@ uint32_t Long2, Value;
 int FieldCount = 0;
 uint32_t(*LD_UINT32)(const unsigned char *Mem);
 uint16_t(*LD_UINT16)(const unsigned char *Mem);
+const TIFFField *fip;  // = TIFFFindField(tif, tag, TIFF_ANY);
 /* TIFFField FakeField; */
 
   if(profile_data==NULL || profile_length<12+8) return 0;
@@ -4499,29 +4500,32 @@ uint16_t(*LD_UINT16)(const unsigned char *Mem);
       if(logging)
         (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Extracted tag from EXIF %xh, Field %d, Long2 %d, val %d", Tag, Field, Long2, Value);
 
-    if(Tag != EXIFTAG_SECURITYCLASSIFICATION &&
-       Tag != EXIFTAG_IMAGEHISTORY &&
-       Tag != EXIFTAG_ISOSPEEDRATINGS)		/* libtiff doesn't understand these */
+      fip = TIFFFindField(tiff, Tag, TIFF_ANY);
+      if(fip!=NULL)		/* libtiff doesn't understand these */
       {
         switch(Field)
         {
-          case TIFF_ASCII: if(Value>=profile_length-1) break;
+          case TIFF_ASCII: if(fip->field_type!=TIFF_ASCII) break;	/* Incompatible recipe.*/
+                           if(Value>=profile_length-1) break;		/* String outside EXIF boundary. */
                            if(TIFFSetField(tiff, Tag, profile_data+Value))
                                FieldCount++;
                            break;
           case TIFF_BYTE:
           case TIFF_SHORT:
-          case TIFF_LONG:  if(TIFFSetField(tiff, Tag, Value))
+          case TIFF_LONG:  if(fip->field_type!=TIFF_BYTE && fip->field_type!=TIFF_SHORT && fip->field_type!=TIFF_LONG)
+                               break;
+                           if(TIFFSetField(tiff, Tag, Value))
                                FieldCount++;
                            break;
           //case TIFF_SRATIONAL:  ??
           case TIFF_RATIONAL:
+                           if(fip->field_type == TIFF_RATIONAL)
                            {
-                           double d = Value / (double)Long2;
-                           if(TIFFSetField(tiff, Tag, d))
-                               FieldCount++;
-                           break;
+                             double d = Value / (double)Long2;
+                             if(TIFFSetField(tiff, Tag, d))
+                                 FieldCount++;
                            }
+                           break;
         }
       }
       IFDpos += 12;	// Go to a next direntry.
@@ -6624,13 +6628,17 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               uint64_t dir_offset = 0;
               if(!TIFFWriteCustomDirectory(tiff, &dir_offset)) 
               {
-                LogMagickEvent(CoderEvent,GetMagickModule(),"failed TIFFWriteCustomDirectory() of the Exif data");
+                LogMagickEvent(CoderEvent,GetMagickModule(),"Failed TIFFWriteCustomDirectory() of the Exif data");
               }
               else
-              {  /* Go back to the first directory, and add the EXIFIFD pointer.
-                  std::cout << "diffdir = " << tiffdir << "\n"; */
+              {  // Go back to the first directory, and add the EXIFIFD pointer.
                 TIFFSetDirectory(tiff, 0);
                 TIFFSetField(tiff, TIFFTAG_EXIFIFD, dir_offset);
+                if(!TIFFWriteDirectory(tiff))
+                {
+                 (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "TIFFWriteDirectory EXIF returns failed status!");
+                }
               }
             }
           }
