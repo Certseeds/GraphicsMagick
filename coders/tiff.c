@@ -4448,8 +4448,7 @@ uint32_t Long2, Value;
 int FieldCount = 0;
 uint32_t(*LD_UINT32)(const unsigned char *Mem);
 uint16_t(*LD_UINT16)(const unsigned char *Mem);
-const TIFFField *fip;  // = TIFFFindField(tif, tag, TIFF_ANY);
-/* TIFFField FakeField; */
+const TIFFField *fip;
 
   if(profile_data==NULL || profile_length<12+8) return 0;
   if(memcmp(EXIF,profile_data,6)==0)
@@ -4497,15 +4496,18 @@ const TIFFField *fip;  // = TIFFFindField(tif, tag, TIFF_ANY);
       Field = LD_UINT16(profile_data+IFDpos+2);
       Long2 = LD_UINT32(profile_data+IFDpos+4);
       Value = LD_UINT32(profile_data+IFDpos+8);
-      if(logging)
-        (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Extracted tag from EXIF %xh, Field %d, Long2 %d, val %d", Tag, Field, Long2, Value);
-
       fip = TIFFFindField(tiff, Tag, TIFF_ANY);
+
+      if(logging)
+        (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Extracted tag from EXIF %xh, Field %d, Long2 %d, val %d %s",
+                             Tag, Field, Long2, Value, (fip!=NULL)?fip->field_name:"UNSUPPORTED");
+
       if(fip!=NULL)		/* libtiff doesn't understand these */
       {
         switch(Field)
         {
-          case TIFF_ASCII: if(fip->field_type!=TIFF_ASCII) break;	/* Incompatible recipe.*/
+          case TIFF_ASCII: if(fip->field_type!=TIFF_ASCII)
+                               break;	/* Incompatible recipe.*/
                            if(Value>=profile_length-1) break;		/* String outside EXIF boundary. */
                            if(TIFFSetField(tiff, Tag, profile_data+Value))
                                FieldCount++;
@@ -6634,11 +6636,11 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               {  // Go back to the first directory, and add the EXIFIFD pointer.
                 TIFFSetDirectory(tiff, 0);
                 TIFFSetField(tiff, TIFFTAG_EXIFIFD, dir_offset);
-                if(!TIFFWriteDirectory(tiff))
+                /*if(!TIFFWriteDirectory(tiff))  This destroys part of EXIF from unknown reason, commented out.
                 {
                  (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "TIFFWriteDirectory EXIF returns failed status!");
-                }
+                }*/
               }
             }
           }

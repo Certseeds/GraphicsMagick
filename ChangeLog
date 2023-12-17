@@ -1,6 +1,8 @@
 2023-12-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c Check recipe compatibility for TIFFSetField().
+	Improved optional log record:
+	Extracted tag from EXIF 213h, Field 3, Long2 1, val 2 YCbCrPositioning
 
 2023-12-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
