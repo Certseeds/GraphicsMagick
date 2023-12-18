@@ -4401,10 +4401,6 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
 
 #if TIFFLIB_VERSION >= 20120922
 
-#ifdef HasTIFF_dir
-  #include "tif_dir.h"
-#endif
-
 /*
 static TIFFField customFields[] = {
     {544, -1, -1, TIFF_LONG, 0, TIFF_SETGET_UINT32,
@@ -4438,18 +4434,14 @@ static uint16_t LD_UINT16_HI(const unsigned char *Mem)
 
 static const char *FipFieldName(const TIFFField *fip)
 {
-#ifdef HasTIFF_dir
   if(fip)
   {
-    if(fip->field_name==NULL) return "N/A";
-    return fip->field_name;
+    const char * const FName = TIFFFieldName(fip);
+    if(FName==NULL) return "N/A";
+    return FName;
   }
   return "UNSUPPORTED";
-#else
-  return "";
-#endif
 }
-
 
 
 static int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging)
@@ -4519,13 +4511,12 @@ const TIFFField *fip;
 
       if(fip!=NULL)		/* libtiff doesn't understand these */
       {
+        const TIFFDataType FDT = TIFFFieldDataType(fip);
         switch(Field)
         {
           case TIFF_ASCII:
-#ifdef HasTIFF_dir
-                            if(fip->field_type!=TIFF_ASCII)
+                            if(FDT!=TIFF_ASCII)
                                break;	/* Incompatible recipe.*/
-#endif
                            if(Value>=profile_length-1) break;		/* String outside EXIF boundary. */
                            if(TIFFSetField(tiff, Tag, profile_data+Value))
                                FieldCount++;
@@ -4533,18 +4524,14 @@ const TIFFField *fip;
           case TIFF_BYTE:
           case TIFF_SHORT:
           case TIFF_LONG:
-#ifdef HasTIFF_dir
-                           if(fip->field_type!=TIFF_BYTE && fip->field_type!=TIFF_SHORT && fip->field_type!=TIFF_LONG)
+                           if(FDT!=TIFF_BYTE && FDT!=TIFF_SHORT && FDT!=TIFF_LONG)
                                break;
-#endif
                            if(TIFFSetField(tiff, Tag, Value))
                                FieldCount++;
                            break;
           //case TIFF_SRATIONAL:  ??
           case TIFF_RATIONAL:
-#ifdef HasTIFF_dir
-                           if(fip->field_type == TIFF_RATIONAL)
-#endif
+                           if(FDT == TIFF_RATIONAL)
                            {
                              double d = Value / (double)Long2;
                              if(TIFFSetField(tiff, Tag, d))
