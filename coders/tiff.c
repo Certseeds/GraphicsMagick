@@ -96,8 +96,6 @@
 #  define uint32 uint32_t
 #endif /* TIFFLIB_VERSION */
 
-#undef EXPERIMENTAL_EXIF_TAGS
-
 /*
   Set to 1 in order to log low-level BLOB I/O at "coder" level.
 */
