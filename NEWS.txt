@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to September 23, 2023
+This file was last updated to reflect changes up to December 20, 2023
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -18,6 +18,113 @@ release and not attempt to patch older releases.
 
 .. contents::
   :local:
+
+1.3.43 (??? ???, 202?)
+===========================
+
+Special Issues:
+
+* GraphicsMagick really does need some additional productive
+  volunteers.  For several years now, the burden has entirely been on
+  me (Bob Friesenhahn).  I have been sheparding the project for 22
+  years already (and contributed to ImageMagick and GraphicsMagick
+  combined for 27 years already).  It is not reasonable to expect
+  someone with a full time job (and expecting to retire in a few
+  years) to do all of the work.
+
+Security Fixes:
+
+* GraphicsMagick is participating in Google's oss-fuzz project since
+  February 4 2018 due to the contributions and assistance of Alex
+  Gaynor and Paul Kehrer. The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
+
+* GraphicsMagick has been participating in Synopsys's Coverity program
+  for free software projects since 2015.  There has been a continuing
+  objective to keep outstanding defects at 0, or very close to 0.
+  Information about the Coverity status may be found at
+  https://scan.coverity.com/projects/graphicsmagick.
+
+Bug fixes:
+
+* JBIG: Add support for 'width', 'height', and 'pixels', resource
+  limits.  Your mileage may vary.
+
+* WPG: Many fixes based on oss-fuzz testing.
+
+* Ghostscript: When invoking Ghostscript, re-direct Ghostscript stdout
+  to stderr to avoid output corruption when GM stdout is redirected to
+  a file.
+
+New Features:
+
+* File write limit: Add support for a per-file write limit (-limit
+  write or MAGICK_LIMIT_WRITE).  This imposes a limit on the number of
+  uncompressed bytes written.  The behavior when the limit is hit is
+  similar to an unexpected write error, as if the disk is full.
+
+* BMP: Support BI_PNG compression (PNG inside BMP).
+
+* BMP: Support reading 64 bits-per-pixel.
+
+* BMP: Support reading 48 bits-per-pixel.
+
+* HEIF: Call heif_init() and heif_deinit() if they are available.
+
+* TIFF: Remove miniswhite/minisblack prohibitions when using Group3
+  and Group4 compression in order to allow using inverted photometric
+  from the standard.
+
+API Updates:
+
+* ExpandFilenames(): Fix memory leak of existing allocations if
+  realloc() fails.
+
+Windows Delegate Updates/Additions:
+
+* None.
+
+Build Changes:
+
+* Since it seems that OSDN has mostly died, Hepapod is now used to
+  provide a redundant https-capable Hg service and may provide
+  services that SourceForge does not offer.  Hg checkouts may now be
+  made from "https://foss.heptapod.net/graphicsmagick/graphicsmagick".
+
+* Autotools-based build: When libraries dependend upon are implemented
+  in C++ (e.g. JXL, libheif dependencies) the only portable way to
+  assure correct operation is to link using the C++ compiler.  This
+  particularly applies for static builds.  Therefore, an effort is
+  made to link using the C++ compiler when deemed necessary.  The
+  method used to use the C++ compiler as the linker is still in flux.
+
+* Autotools-based build: pkg-config provided data is now used to the
+  maximal extent possible.  However, if pkg-config fails to provide
+  useful data, then the previously existing tests will still prevail.
+  Document that `PKG_CONFIG='pkg-config --static' ./configure` should
+  reveal the private library dependencies needed for a fully-static
+  build to succeed.
+
+* Autotools-based build: Base decision on if OpenMP is supported on
+  the '_OPENMP' pre-processor define.
+
+* Autotools-based build: No longer search for (and use) libtrio by
+  default.  The user now needs to request using it.
+
+* oss-fuzz build: The fuzzing/oss-fuzz-build.sh is re-written in order
+  to support almost all possible dependency libraries.  For example,
+  JXL and HEIF (with HEIC and AVIF reader support) are now included in
+  oss-fuzz testing.
+
+Behavior Changes:
+
+* None
+
 
 1.3.42 (September 23, 2023)
 ===========================

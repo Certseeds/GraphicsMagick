@@ -1,5 +1,7 @@
 2023-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Update with news since the last release.
+
 	* coders/tiff.c: Disable new EXIF code which is not working
 	correctly yet.  Enable using EXPERIMENTAL_EXIF_TAGS.
 
@@ -201,8 +203,8 @@
 
 2023-11-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat Sumate and display total amount
-	of problems during testing.
+	* VisualMagick/tests/runtest.bat Summarize and display total
+	amount of problems during testing.
 
 2023-11-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
