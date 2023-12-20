@@ -1,5 +1,8 @@
 2023-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c: Disable new EXIF code which is not working
+	correctly yet.  Enable using EXPERIMENTAL_EXIF_TAGS.
+
 	* fuzzing/oss-fuzz-build.sh: Remove unnecessary space in include
 	path argument.
 

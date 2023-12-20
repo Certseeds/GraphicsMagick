@@ -96,6 +96,8 @@
 #  define uint32 uint32_t
 #endif /* TIFFLIB_VERSION */
 
+#undef EXPERIMENTAL_EXIF_TAGS
+
 /*
   Set to 1 in order to log low-level BLOB I/O at "coder" level.
 */
@@ -4399,6 +4401,7 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
 
 #if defined(HasTIFF)
 
+#if defined(EXPERIMENTAL_EXIF_TAGS)
 #if TIFFLIB_VERSION >= 20120922
 
 /*
@@ -4549,7 +4552,8 @@ const TIFFField *fip;
   return FieldCount;
 }
 
-#endif
+#endif /* if TIFFLIB_VERSION >= 20120922 */
+#endif /* defined(EXPERIMENTAL_EXIF_TAGS) */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6628,6 +6632,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                                 "TIFFWriteDirectory returns failed status!");
         }
 
+#if defined(EXPERIMENTAL_EXIF_TAGS)
 #if TIFFLIB_VERSION >= 20120922
         if(status!=MagickFail)
         {
@@ -6655,7 +6660,8 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             }
           }
         }
-#endif
+#endif /* TIFFLIB_VERSION >= 20120922 */
+#endif /* defined(EXPERIMENTAL_EXIF_TAGS) */
 
       if (image->next == (Image *) NULL)
         break;
