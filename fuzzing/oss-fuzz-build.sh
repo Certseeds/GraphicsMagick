@@ -45,9 +45,6 @@ ls -l "${WORK}"
 printf "OUT=${OUT}\n"
 ls -l "${OUT}"
 
-#rm -rf $WORK/*
-#rm -f $OUT/*
-
 set -x
 
 # build zlib
@@ -548,7 +545,7 @@ for f in fuzzing/*_fuzzer.cc; do
     target="$OUT/${fuzzer}_fuzzer"
     printf "=== Building ${target}...\n"
     set -x
-    $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
+    $CXX $CXXFLAGS -std=c++11 -I"$WORK/include/GraphicsMagick" \
         "$f" -o "${target}" \
         $LIB_FUZZING_ENGINE $MAGICK_LIBS
     set +x
@@ -557,7 +554,7 @@ done
 target="$WORK/coder_list"
 printf "=== Building ${target}...\n"
 set -x
-$CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
+$CXX $CXXFLAGS -std=c++11 -I"$WORK/include/GraphicsMagick" \
     fuzzing/coder_list.cc -o "${target}" $MAGICK_LIBS
 set +x
 
@@ -571,7 +568,7 @@ for item in $("$WORK/coder_list"); do
     target="${OUT}/coder_${coder}_fuzzer"
     printf "=== Building ${target}...\n"
     set -x
-    $CXX $CXXFLAGS -std=c++11 -I "$WORK/include/GraphicsMagick" \
+    $CXX $CXXFLAGS -std=c++11 -I"$WORK/include/GraphicsMagick" \
         fuzzing/coder_fuzzer.cc -o "${target}" \
         $coder_flags $LIB_FUZZING_ENGINE $MAGICK_LIBS
     set +x

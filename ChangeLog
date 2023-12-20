@@ -1,3 +1,12 @@
+2023-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Remove unnecessary space in include
+	path argument.
+
+	* coders/jxl.c (RegisterJXLImage): Fix version identification.
+	(ReadJXLImage): Add error tracing.
+	(WriteJXLImage): Add error tracing.
+
 2023-12-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c Check for NULL in EXIF tag name being logged.
