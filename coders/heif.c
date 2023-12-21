@@ -30,6 +30,7 @@
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
 #include "magick/profile.h"
+#include "magick/resource.h"
 #include "magick/utility.h"
 #include "magick/resource.h"
 
@@ -540,10 +541,18 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   /* Init HEIF-Decoder handles */
   heif=heif_context_alloc();
 
-#if 0
-  /* FIXME: Add an image size limit */
-  void heif_context_set_maximum_image_size_limit(struct heif_context* ctx, int maximum_width);
-#endif
+#if defined(HAVE_HEIF_CONTEXT_SET_MAXIMUM_IMAGE_SIZE_LIMIT)
+  {
+    /* Add an image size limit */
+    magick_int64_t width_limit = GetMagickResourceLimit(WidthResource);
+    if (MagickResourceInfinity != width_limit)
+      {
+        if (width_limit > INT_MAX)
+          width_limit =  INT_MAX;
+        heif_context_set_maximum_image_size_limit(heif, (int) width_limit);
+      }
+  }
+#endif /* if defined(HAVE_HEIF_CONTEXT_SET_MAXIMUM_IMAGE_SIZE_LIMIT) */
 
   /* FIXME: DEPRECATED: use heif_context_read_from_memory_without_copy() instead. */
   heif_status=heif_context_read_from_memory(heif, in_buf, in_len, NULL);

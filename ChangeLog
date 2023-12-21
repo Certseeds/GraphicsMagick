@@ -1,5 +1,8 @@
 2023-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/heif.c (ReadHEIFImage): Support setting image width
+	limit.
+
 	* configure.ac: Check libheif for
 	heif_context_set_maximum_image_size_limit().
 
