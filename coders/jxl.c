@@ -445,7 +445,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "JxlDecoderCreate() failed");
-      ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowReaderException(CoderError,JXLDecoderAPIFailure,image);
     }
 
   /* Deliver image as-is. We provide autoOrient function if user requires it */
@@ -454,7 +454,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "JxlDecoderSetKeepOrientation() failed");
-      ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
     }
 
   /* Apply any pre-multiplied alpha for us so we don't need to do it. */
@@ -463,7 +463,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "JxlDecoderSetUnpremultiplyAlpha() failed");
-      ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
     }
 
   if(!image_info->ping)
@@ -476,7 +476,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "JxlThreadParallelRunnerCreate() failed (%"MAGICK_SIZE_T_F"u threads)",
                                   num_worker_threads);
-          ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+          ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
         }
       if (JxlDecoderSetParallelRunner(jxl_decoder, JxlThreadParallelRunner, jxl_thread_runner)
           != JXL_DEC_SUCCESS)
@@ -485,7 +485,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "JxlDecoderSetParallelRunner() failed (%"MAGICK_SIZE_T_F"u) threads",
                                   num_worker_threads);
-          ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+          ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
         }
     }
 
@@ -502,7 +502,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "JxlDecoderSubscribeEvents() failed");
-      ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
     }
 
   in_buf=MagickAllocateResourceLimitedArray(unsigned char *,in_len,sizeof(*in_buf));
@@ -1248,7 +1248,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "JxlEncoderCreate() failure");
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowWriterException(CoderError,JXLEncoderAPIFailure,image);
     }
 
   /* Use the same number of threads as used for OpenMP */
@@ -1262,7 +1262,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "JxlThreadParallelRunnerCreate() failed (%"MAGICK_SIZE_T_F"u) threads",
                                 num_worker_threads);
-        ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+        ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
       }
     if (JxlEncoderSetParallelRunner(jxl_encoder, JxlThreadParallelRunner, jxl_thread_runner)
         != JXL_ENC_SUCCESS)
@@ -1271,7 +1271,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
           (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "JxlDecoderSetParallelRunner() failed (%"MAGICK_SIZE_T_F"u) threads",
                                 num_worker_threads);
-        ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+        ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
       }
   }
 
@@ -1377,14 +1377,14 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     {
       /* TODO better error codes */
       if (jxl_status == JXL_ENC_ERROR)
-        ThrowJXLWriterException(CoderError,NoDataReturned,image);
+        ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
 #if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0,9,0)
       /* JXL_ENC_NOT_SUPPORTED was removed for 0.9.0, although API docs still mention it. */
       else if (jxl_status == JXL_ENC_NOT_SUPPORTED)
         ThrowJXLWriterException(CoderError,UnsupportedBitsPerSample,image);
 #endif /* if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0,9,0) */
       else
-        ThrowJXLWriterException(CoderFatalError,Default,image);
+        ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
     }
 
   /* Set expected input colorspace */
@@ -1396,7 +1396,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "JxlEncoderSetColorEncoding() failed");
-      ThrowJXLWriterException(CoderFatalError,Default,image);
+      ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
     }
 
   frame_settings = JxlEncoderFrameSettingsCreate(jxl_encoder, NULL);
@@ -1407,7 +1407,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
           if (image->logging)
             (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                   "JxlEncoderSetFrameLossless() failed");
-          ThrowJXLWriterException(CoderFatalError,Default,image);
+          ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
         }
     }
   else
@@ -1422,7 +1422,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "JxlEncoderSetFrameDistance() failed");
-              ThrowJXLWriterException(CoderFatalError,Default,image);
+              ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
             }
         }
       else
@@ -1434,7 +1434,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "JxlEncoderSetFrameDistance() failed");
-              ThrowJXLWriterException(CoderFatalError,Default,image);
+              ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
             }
         }
     }
@@ -1613,8 +1613,12 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 
         p += export_info.bytes_exported;
       }
+    /*
+      This error is totally bogus but ExportImagePixelArea() should
+      have already set a more useful error.
+    */
     if (status == MagickFail)
-      ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowJXLWriterException(CoderError,ImageTypeNotSupported,image);
   }
 
   /* real encode */
@@ -1624,8 +1628,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "JxlEncoderAddImageFrame() failed");
-      /* TODO Better Error-code? */
-      ThrowJXLWriterException(CoderError,NoDataReturned,image);
+      ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
     }
 
   /* Close any input to the encoder. No further input of any kind may
@@ -1662,8 +1665,7 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                               "JxlEncoderProcessOutput() failure");
-      /* TODO Better Error-code? */
-      ThrowJXLWriterException(CoderError,NoDataReturned,image);
+      ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
     }
 
   status &= CloseBlob(image);

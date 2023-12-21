@@ -354,6 +354,12 @@
       <Message name="DecodedImageNotReturned">
         Coder did not return an image (this is a bug, please report it!)
       </Message>
+      <Message name="JXLDecoderAPIFailure">
+        JXL decoder API failure
+      </Message>
+      <Message name="JXLEncoderAPIFailure">
+        JXL encoder API failure
+      </Message>
     </Error>
     <FatalError>
       <Message name="Default">
