@@ -29311,7 +29311,7 @@ else
   failed=`expr $failed + 1`
 fi
 
-    for ac_func in heif_init heif_deinit
+    for ac_func in heif_init heif_deinit heif_context_set_maximum_image_size_limit
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

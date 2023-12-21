@@ -1,5 +1,8 @@
 2023-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: Check libheif for
+	heif_context_set_maximum_image_size_limit().
+
 	* coders/jxl.c: Improve JXL reader/writer exception information.
 
 2023-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

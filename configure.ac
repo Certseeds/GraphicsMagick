@@ -3143,7 +3143,7 @@ then
     fi
     AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[${HEIF_LIBS}])
-    AC_CHECK_FUNCS([heif_init heif_deinit])
+    AC_CHECK_FUNCS([heif_init heif_deinit heif_context_set_maximum_image_size_limit])
     AC_MSG_CHECKING([if HEIF package is complete])
     if test $passed -gt 0
     then
