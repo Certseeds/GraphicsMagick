@@ -1,3 +1,7 @@
+2023-12-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* tiff/ Update libtiff to 4.5.1.
+
 2023-12-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update with news since the last release.

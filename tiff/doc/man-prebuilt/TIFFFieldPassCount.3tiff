@@ -1,8 +1,5 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "TIFFFIELDPASSCOUNT" "3tiff" "Dec 13, 2022" "4.5" "LibTIFF"
-.SH NAME
-TIFFFieldPassCount \- get whether to pass a count to TIFFGetField/TIFFSetField
 .
 .nr rst2man-indent-level 0
 .
@@ -30,6 +27,9 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
+.TH "TIFFFIELDPASSCOUNT" "3tiff" "Jun 10, 2023" "4.5" "LibTIFF"
+.SH NAME
+TIFFFieldPassCount \- get whether to pass a count to TIFFGetField/TIFFSetField
 .SH SYNOPSIS
 .INDENT 0.0
 .INDENT 3.5

@@ -1,17 +1,14 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LibTIFF - TIFF Library and Utilities &#8212; LibTIFF 4.5.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>LibTIFF - TIFF Library and Utilities &#8212; LibTIFF 4.5.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -27,7 +24,7 @@
         <li class="right" >
           <a href="specification/index.html" title="TIFF File Format Specification"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">LibTIFF 4.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">LibTIFF 4.5.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">LibTIFF - TIFF Library and Utilities</a></li> 
       </ul>
     </div>  
@@ -37,9 +34,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="libtiff-tiff-library-and-utilities">
+  <section id="libtiff-tiff-library-and-utilities">
 <h1>LibTIFF - TIFF Library and Utilities<a class="headerlink" href="#libtiff-tiff-library-and-utilities" title="Permalink to this heading">¶</a></h1>
-<table class="colwidths-auto docutils align-default" id="id1">
+<table class="docutils align-default" id="id1">
 <caption><span class="caption-text">References</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
@@ -57,7 +54,7 @@
 <td><p><a class="reference external" href="http://libtiff.maptools.org/">http://libtiff.maptools.org/</a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Latest Stable Release</p></td>
-<td><p>v4.5.0</p></td>
+<td><p>v4.5.1</p></td>
 </tr>
 <tr class="row-even"><td><p>Master Download Site</p></td>
 <td><p><a class="reference external" href="https://download.osgeo.org/libtiff/">download.osgeo.org</a></p></td>
@@ -89,6 +86,16 @@ the TIFF specification is <a class="reference internal" href="specification/inde
 your needs for reading and writing TIFF images.</p>
 <p>LibTIFF is portable software, supported on various operating systems including
 UNIX (Linux, BSD, MacOS X) and Windows.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>libtiff v4.5.1 will be the last one supporting most TIFF tools (except tiffinfo,
+tiffdump, tiffcp and tiffset), whose maintenance will be discontinued, due
+to the lack of contributors able to address reported security issues.
+Starting with libtiff v4.6.0, their source code, at this time ,will still be
+available in the source distribution, but they will no longer be built by
+default, and issues related to them will no longer be accepted in the
+libtiff bug tracker.</p>
+</div>
 <p>The following sections are included in this documentation:</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -103,6 +110,7 @@ UNIX (Linux, BSD, MacOS X) and Windows.</p>
 <li class="toctree-l1"><a class="reference internal" href="build.html">Building the TIFF Software Distribution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="terms.html">Terminology</a></li>
 <li class="toctree-l1"><a class="reference internal" href="libtiff.html">Using The TIFF Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_page.html">Multi Page / Multi Image TIFF</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">TIFF Functions Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="functions/libtiff.html">libtiff</a></li>
 <li class="toctree-l2"><a class="reference internal" href="functions/TIFFAccessTagMethods.html">TIFFAccessTagMethods</a></li>
@@ -200,6 +208,7 @@ UNIX (Linux, BSD, MacOS X) and Windows.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releases/index.html">Release history</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="releases/v4.5.1.html">Changes in TIFF v4.5.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases/v4.5.0.html">Changes in TIFF v4.5.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases/v4.4.0.html">Changes in TIFF v4.4.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="releases/v4.3.0.html">Changes in TIFF v4.3.0</a></li>
@@ -222,7 +231,7 @@ UNIX (Linux, BSD, MacOS X) and Windows.</p>
 </li>
 </ul>
 </div>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -266,13 +275,13 @@ UNIX (Linux, BSD, MacOS X) and Windows.</p>
         <li class="right" >
           <a href="specification/index.html" title="TIFF File Format Specification"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">LibTIFF 4.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">LibTIFF 4.5.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">LibTIFF - TIFF Library and Utilities</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 1988-2022, LibTIFF contributors.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.2.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     </div>
   </body>
 </html>

@@ -417,7 +417,7 @@ static int LZWDecode(TIFF *tif, uint8_t *op0, tmsize_t occ0, uint16_t s)
     WordType nextdata;
     code_t *free_entp, *maxcodep, *oldcodep;
     uint64_t dec_bitsleft;
-    code_t * dec_codetab;
+    code_t *dec_codetab;
     code_t *codep;
 
     (void)s;
@@ -426,6 +426,10 @@ static int LZWDecode(TIFF *tif, uint8_t *op0, tmsize_t occ0, uint16_t s)
 
     if (sp->read_error)
     {
+        TIFFErrorExtR(tif, module,
+                      "LZWDecode: Scanline %" PRIu32 " cannot be read due to "
+                      "previous error",
+                      tif->tif_row);
         return 0;
     }
 
@@ -488,7 +492,6 @@ static int LZWDecode(TIFF *tif, uint8_t *op0, tmsize_t occ0, uint16_t s)
     free_entp = sp->dec_free_entp;
     maxcodep = sp->dec_maxcodep;
     dec_codetab = sp->dec_codetab;
-    //code_t *codep;
 
     if (occ == 0)
     {
@@ -543,8 +546,8 @@ code_below_256:
 
 code_above_or_equal_to_258:
 {
-unsigned short len;
-uint8_t *tp;
+    unsigned short len;
+    uint8_t *tp;
     /*
      * Add the new entry to the code table.
      */
@@ -703,7 +706,7 @@ code_clear:
 
 too_short_buffer:
 {
-uint8_t *tp;
+    uint8_t *tp;
     /*
      * String is too long for decode buffer,
      * locate portion that will fit, copy to
@@ -749,6 +752,7 @@ after_loop:
     return (1);
 
 no_eoi:
+    sp->read_error = 1;
     TIFFErrorExtR(tif, module,
                   "LZWDecode: Strip %" PRIu32 " not terminated with EOI code",
                   tif->tif_curstrip);

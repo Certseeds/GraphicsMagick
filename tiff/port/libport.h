@@ -24,7 +24,7 @@
 #ifndef _LIBPORT_
 #define _LIBPORT_
 
-#include "libport_config.h"
+#include <libport_config.h>
 
 #if HAVE_GETOPT
 #if HAVE_UNISTD_H

@@ -127,7 +127,7 @@
 
 #define lfind _lfind
 
-#include "../../src/webp/types.h"
+#include "../../webp/src/webp/types.h"
 
 #pragma warning(disable : 4996) /* function deprecation warnings */
 

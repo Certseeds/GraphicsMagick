@@ -1,17 +1,14 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Modifying The TIFF Library &#8212; LibTIFF 4.5.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Modifying The TIFF Library &#8212; LibTIFF 4.5.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -31,7 +28,7 @@
         <li class="right" >
           <a href="functions/_TIFFRewriteField.html" title="_TIFFRewriteField"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">LibTIFF 4.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LibTIFF 4.5.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Modifying The TIFF Library</a></li> 
       </ul>
     </div>  
@@ -41,14 +38,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="modifying-the-tiff-library">
+  <section id="modifying-the-tiff-library">
 <h1>Modifying The TIFF Library<a class="headerlink" href="#modifying-the-tiff-library" title="Permalink to this heading">¶</a></h1>
 <a class="reference internal image-reference" href="_images/dave.gif"><img alt="dave" src="_images/dave.gif" style="width: 107px;" /></a>
 <p>This chapter provides information about the internal structure of
 the library, how to control the configuration when building it, and
 how to add new support to the library.
 The following sections are found in this chapter:</p>
-<div class="section" id="library-configuration">
+<section id="library-configuration">
 <h2>Library Configuration<a class="headerlink" href="#library-configuration" title="Permalink to this heading">¶</a></h2>
 <p>Information on compiling the library is given <a class="reference internal" href="build.html"><span class="doc">Building the TIFF Software Distribution</span></a>
 elsewhere in this documentation.
@@ -128,11 +125,11 @@ LZW algorithm is claimed to be governed by licensing restrictions.</strong></p>
 <code class="xref c c-macro docutils literal notranslate"><span class="pre">YCBCR_SUPPORT</span></code>,
 and
 <code class="xref c c-macro docutils literal notranslate"><span class="pre">CMYK_SUPPORT</span></code>.</p>
-<table class="colwidths-given docutils align-default" id="id1">
+<table class="docutils align-default" id="id1">
 <caption><span class="caption-text"><code class="file docutils literal notranslate"><span class="pre">tiffconf.h</span></code> defines</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Define</p></th>
@@ -188,8 +185,8 @@ available at
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="general-portability-comments">
+</section>
+<section id="general-portability-comments">
 <h2>General Portability Comments<a class="headerlink" href="#general-portability-comments" title="Permalink to this heading">¶</a></h2>
 <p>This software is developed on Silicon Graphics UNIX
 systems (big-endian, MIPS CPU, 32-bit ints,
@@ -219,17 +216,15 @@ as possible in two files: <code class="file docutils literal notranslate"><span 
 <code class="file docutils literal notranslate"><span class="pre">libtiff/tif_&lt;os&gt;.c</span></code>.  The latter file contains
 operating system-specific routines to do I/O and I/O-related operations.
 The UNIX (<code class="file docutils literal notranslate"><span class="pre">tif_unix.c</span></code>) code has had the most use.</p>
-<p>Native CPU byte order is determined on the fly by
-the library and does not need to be specified.
-The <code class="xref c c-macro docutils literal notranslate"><span class="pre">HOST_FILLORDER</span></code> and <code class="xref c c-macro docutils literal notranslate"><span class="pre">HOST_BIGENDIAN</span></code>
-definitions are not currently used, but may be employed by
-codecs for optimization purposes.</p>
+<p>Native CPU byte order is determined through the <code class="xref c c-macro docutils literal notranslate"><span class="pre">WORDS_BIGENDIAN</span></code>
+definition, which must be set to the appropriate value in <code class="file docutils literal notranslate"><span class="pre">tif_config.h</span></code>
+by the build system.</p>
 <p>The following defines control general portability:</p>
-<table class="colwidths-given docutils align-default" id="id2">
+<table class="docutils align-default" id="id2">
 <caption><span class="caption-text">Portability defines</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Define</p></th>
@@ -269,8 +264,8 @@ the <strong class="program">configure</strong> script; otherwise support for mem
 files is disabled.
 Note that <code class="file docutils literal notranslate"><span class="pre">tiffcomp.h</span></code> defines <code class="xref c c-macro docutils literal notranslate"><span class="pre">HAVE_IEEEFP</span></code> to be
 1 (<code class="xref c c-macro docutils literal notranslate"><span class="pre">BSDTYPES</span></code> is not defined).</p>
-</div>
-<div class="section" id="types-and-portability">
+</section>
+<section id="types-and-portability">
 <h2>Types and Portability<a class="headerlink" href="#types-and-portability" title="Permalink to this heading">¶</a></h2>
 <p>The software makes extensive use of C typedefs to promote portability.
 Two sets of typedefs are used, one for communication with clients
@@ -278,12 +273,12 @@ of the library and one for internal data structures and parsing of the
 TIFF format.  There are interactions between these two to be careful
 of, but for the most part you should be able to deal with portability
 purely by fiddling with the following machine-dependent typedefs:</p>
-<table class="colwidths-given docutils align-default" id="id3">
+<table class="docutils align-default" id="id3">
 <caption><span class="caption-text">Portability typedefs</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 60%" />
-<col style="width: 20%" />
+<col style="width: 20.0%" />
+<col style="width: 60.0%" />
+<col style="width: 20.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Typedef</p></th>
@@ -327,12 +322,12 @@ promoted to when passed by value in a function call.)</p>
 <p>The following typedefs are used throughout the library and interfaces
 to refer to certain objects whose size is dependent on the TIFF image
 structure:</p>
-<table class="colwidths-given docutils align-default" id="id4">
+<table class="docutils align-default" id="id4">
 <caption><span class="caption-text">TIFF image typedefs</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
+<col style="width: 33.3%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Typedef</p></th>
@@ -402,8 +397,8 @@ Finally, note that <code class="xref c c-type docutils literal notranslate"><spa
 manipulate internal data.  User-specified data references are
 passed as opaque handles and only cast at the lowest layers where
 their type is presumed.</p>
-</div>
-<div class="section" id="general-comments">
+</section>
+<section id="general-comments">
 <h2>General Comments<a class="headerlink" href="#general-comments" title="Permalink to this heading">¶</a></h2>
 <p>The library is designed to hide as much of the details of TIFF from
 applications as
@@ -411,8 +406,8 @@ possible.  In particular, TIFF directories are read in their entirety
 into an internal format.  Only the tags known by the library are
 available to a user and certain tag data may be maintained that a user
 does not care about (e.g. transfer function tables).</p>
-</div>
-<div class="section" id="adding-new-builtin-codecs">
+</section>
+<section id="adding-new-builtin-codecs">
 <h2>Adding New Builtin Codecs<a class="headerlink" href="#adding-new-builtin-codecs" title="Permalink to this heading">¶</a></h2>
 <p>To add builtin support for a new compression algorithm, you can either
 use the “tag-extension” trick to override the handling of the
@@ -430,25 +425,25 @@ are named <code class="file docutils literal notranslate"><span class="pre">tif_
 <li><p>Update build configuration to include new source file.</p></li>
 </ul>
 <p>A codec, say <code class="docutils literal notranslate"><span class="pre">foo</span></code>, can have many different entry points:</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">TIFFInitfoo</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">scheme</span><span class="p">)</span><span class="w"> </span><span class="cm">/* initialize scheme and setup entry points in tif */</span><span class="w"></span>
-<span class="n">fooSetupDecode</span><span class="p">(</span><span class="n">tif</span><span class="p">)</span><span class="w"> </span><span class="cm">/* called once per IFD after tags has been frozen */</span><span class="w"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">TIFFInitfoo</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">scheme</span><span class="p">)</span><span class="w"> </span><span class="cm">/* initialize scheme and setup entry points in tif */</span>
+<span class="n">fooSetupDecode</span><span class="p">(</span><span class="n">tif</span><span class="p">)</span><span class="w"> </span><span class="cm">/* called once per IFD after tags has been frozen */</span>
 <span class="n">fooPreDecode</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">sample</span><span class="p">)</span><span class="w"> </span><span class="cm">/* called once per strip/tile, after data is read,</span>
-<span class="cm">                             but before the first row is decoded */</span><span class="w"></span>
-<span class="n">fooDecode</span><span class="o">*</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">bp</span><span class="p">,</span><span class="w"> </span><span class="n">cc</span><span class="p">,</span><span class="w"> </span><span class="n">sample</span><span class="p">)</span><span class="w"> </span><span class="cm">/* decode cc bytes of data into the buffer */</span><span class="w"></span>
-<span class="w">    </span><span class="n">fooDecodeRow</span><span class="p">(...)</span><span class="w">       </span><span class="cm">/* called to decode a single scanline */</span><span class="w"></span>
-<span class="w">    </span><span class="n">fooDecodeStrip</span><span class="p">(...)</span><span class="w">     </span><span class="cm">/* called to decode an entire strip */</span><span class="w"></span>
-<span class="w">    </span><span class="n">fooDecodeTile</span><span class="p">(...)</span><span class="w">      </span><span class="cm">/* called to decode an entire tile */</span><span class="w"></span>
-<span class="w">    </span><span class="n">fooSetupEncode</span><span class="p">(</span><span class="n">tif</span><span class="p">)</span><span class="w">     </span><span class="cm">/* called once per IFD after tags has been frozen */</span><span class="w"></span>
+<span class="cm">                             but before the first row is decoded */</span>
+<span class="n">fooDecode</span><span class="o">*</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">bp</span><span class="p">,</span><span class="w"> </span><span class="n">cc</span><span class="p">,</span><span class="w"> </span><span class="n">sample</span><span class="p">)</span><span class="w"> </span><span class="cm">/* decode cc bytes of data into the buffer */</span>
+<span class="w">    </span><span class="n">fooDecodeRow</span><span class="p">(...)</span><span class="w">       </span><span class="cm">/* called to decode a single scanline */</span>
+<span class="w">    </span><span class="n">fooDecodeStrip</span><span class="p">(...)</span><span class="w">     </span><span class="cm">/* called to decode an entire strip */</span>
+<span class="w">    </span><span class="n">fooDecodeTile</span><span class="p">(...)</span><span class="w">      </span><span class="cm">/* called to decode an entire tile */</span>
+<span class="w">    </span><span class="n">fooSetupEncode</span><span class="p">(</span><span class="n">tif</span><span class="p">)</span><span class="w">     </span><span class="cm">/* called once per IFD after tags has been frozen */</span>
 <span class="w">    </span><span class="n">fooPreEncode</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">sample</span><span class="p">)</span><span class="w"> </span><span class="cm">/* called once per strip/tile, before the first row in</span>
-<span class="cm">                                 a strip/tile is encoded */</span><span class="w"></span>
-<span class="n">fooEncode</span><span class="o">*</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">bp</span><span class="p">,</span><span class="w"> </span><span class="n">cc</span><span class="p">,</span><span class="w"> </span><span class="n">sample</span><span class="p">)</span><span class="cm">/* encode cc bytes of user data (bp) */</span><span class="w"></span>
-<span class="w">    </span><span class="n">fooEncodeRow</span><span class="p">(...)</span><span class="w">       </span><span class="cm">/* called to decode a single scanline */</span><span class="w"></span>
-<span class="w">    </span><span class="n">fooEncodeStrip</span><span class="p">(...)</span><span class="w">     </span><span class="cm">/* called to decode an entire strip */</span><span class="w"></span>
-<span class="w">    </span><span class="n">fooEncodeTile</span><span class="p">(...)</span><span class="w">      </span><span class="cm">/* called to decode an entire tile */</span><span class="w"></span>
-<span class="n">fooPostEncode</span><span class="p">(</span><span class="n">tif</span><span class="p">)</span><span class="w">  </span><span class="cm">/* called once per strip/tile, just before data is written */</span><span class="w"></span>
+<span class="cm">                                 a strip/tile is encoded */</span>
+<span class="n">fooEncode</span><span class="o">*</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">bp</span><span class="p">,</span><span class="w"> </span><span class="n">cc</span><span class="p">,</span><span class="w"> </span><span class="n">sample</span><span class="p">)</span><span class="cm">/* encode cc bytes of user data (bp) */</span>
+<span class="w">    </span><span class="n">fooEncodeRow</span><span class="p">(...)</span><span class="w">       </span><span class="cm">/* called to decode a single scanline */</span>
+<span class="w">    </span><span class="n">fooEncodeStrip</span><span class="p">(...)</span><span class="w">     </span><span class="cm">/* called to decode an entire strip */</span>
+<span class="w">    </span><span class="n">fooEncodeTile</span><span class="p">(...)</span><span class="w">      </span><span class="cm">/* called to decode an entire tile */</span>
+<span class="n">fooPostEncode</span><span class="p">(</span><span class="n">tif</span><span class="p">)</span><span class="w">  </span><span class="cm">/* called once per strip/tile, just before data is written */</span>
 <span class="n">fooSeek</span><span class="p">(</span><span class="n">tif</span><span class="p">,</span><span class="w"> </span><span class="n">row</span><span class="p">)</span><span class="w">   </span><span class="cm">/* seek forwards row scanlines from the beginning</span>
-<span class="cm">                       of a strip (row will always be &lt;0 and &gt;rows/strip */</span><span class="w"></span>
-<span class="n">fooCleanup</span><span class="p">(</span><span class="n">tif</span><span class="p">)</span><span class="w"> </span><span class="cm">/* called when compression scheme is replaced by user */</span><span class="w"></span>
+<span class="cm">                       of a strip (row will always be &lt;0 and &gt;rows/strip */</span>
+<span class="n">fooCleanup</span><span class="p">(</span><span class="n">tif</span><span class="p">)</span><span class="w"> </span><span class="cm">/* called when compression scheme is replaced by user */</span>
 </pre></div>
 </div>
 <p>Note that the encoding and decoding variants are only needed when
@@ -458,8 +453,8 @@ scanline.  The sample parameter identifies which sample is to be
 encoded or decoded if the image is organized with <code class="docutils literal notranslate"><span class="pre">PlanarConfig=2</span></code>
 (separate planes).  This is important for algorithms such as JPEG.
 If <code class="docutils literal notranslate"><span class="pre">PlanarConfig=1</span></code> (interleaved), then sample will always be 0.</p>
-</div>
-<div class="section" id="other-comments">
+</section>
+<section id="other-comments">
 <h2>Other Comments<a class="headerlink" href="#other-comments" title="Permalink to this heading">¶</a></h2>
 <p>The library handles most I/O buffering.  There are two data buffers
 when decoding data: a raw data buffer that holds all the data in a
@@ -502,8 +497,8 @@ boundaries, and <code class="file docutils literal notranslate"><span class="pre
 complexity – it tracks the buffer boundary at a bit level.
 Of course, using a private compression scheme (or private tags) limits
 the portability of your TIFF files.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -570,13 +565,13 @@ the portability of your TIFF files.</p>
         <li class="right" >
           <a href="functions/_TIFFRewriteField.html" title="_TIFFRewriteField"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">LibTIFF 4.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LibTIFF 4.5.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Modifying The TIFF Library</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 1988-2022, LibTIFF contributors.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.2.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     </div>
   </body>
 </html>
