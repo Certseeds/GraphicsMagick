@@ -1,17 +1,14 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>libtiff &#8212; LibTIFF 4.5.0 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>libtiff &#8212; LibTIFF 4.5.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinxdoc.css" />
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -31,7 +28,7 @@
         <li class="right" >
           <a href="../functions.html" title="TIFF Functions Overview"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">LibTIFF 4.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">LibTIFF 4.5.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../functions.html" accesskey="U">TIFF Functions Overview</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">libtiff</a></li> 
       </ul>
@@ -42,18 +39,18 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="libtiff">
+  <section id="libtiff">
 <h1>libtiff<a class="headerlink" href="#libtiff" title="Permalink to this heading">¶</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tiffio.h&gt;</span><span class="cp"></span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tiffio.h&gt;</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cc file.c -ltiff
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cc<span class="w"> </span>file.c<span class="w"> </span>-ltiff
 </pre></div>
 </div>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p><strong class="program">libtiff</strong> is a library for reading and writing data files encoded with the
 <em>“Tag Image File”</em> format, Revision 6.0 (or revision 5.0 or revision 4.0). This file
@@ -89,8 +86,8 @@ fields are defined differently on a per-sample basis
 (in Rev. 6.0 the
 <code class="docutils literal notranslate"><span class="pre">Compression</span></code>
 tag is not defined on a per-sample basis, so this is immaterial).</p>
-</div>
-<div class="section" id="data-types">
+</section>
+<section id="data-types">
 <h2>Data types<a class="headerlink" href="#data-types" title="Permalink to this heading">¶</a></h2>
 <p>The library makes extensive use of C typedefs to promote portability.
 Two sets of typedefs are used, one for communication with clients
@@ -140,17 +137,17 @@ quantities, and BigTIFF file offsets are unsigned 64-bit quantities.
 A signed value is used because some interfaces return -1 on
 error. Finally, note that user-specified data references are passed as opaque
 handles and only cast at the lowest layers where their type is presumed.</p>
-</div>
-<div class="section" id="list-of-routines">
+</section>
+<section id="list-of-routines">
 <span id="id1"></span><h2>List of routines<a class="headerlink" href="#list-of-routines" title="Permalink to this heading">¶</a></h2>
 <p>The following routines are part of the library. Consult specific manual pages
 for details on their operation; on most systems doing <strong class="command">man function-name</strong>
 will work.</p>
-<table class="colwidths-given docutils align-default" id="id2">
+<table class="docutils align-default" id="id2">
 <caption><span class="caption-text"><em>Libtiff functions</em></span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
@@ -742,11 +739,11 @@ containing the pointer to a user-specific data object</p></td>
 </tr>
 </tbody>
 </table>
-<table class="colwidths-given docutils align-default" id="id3">
+<table class="docutils align-default" id="id3">
 <caption><span class="caption-text"><em>Libtiff auxillary functions</em></span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 20%" />
-<col style="width: 80%" />
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
@@ -801,421 +798,13 @@ to updating the TIFF directory structure in memory</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="tag-usage">
+</section>
+<section id="tag-usage">
 <h2>Tag usage<a class="headerlink" href="#tag-usage" title="Permalink to this heading">¶</a></h2>
-<p>The table below lists the TIFF
-tags that are recognized and handled by the library.
-If no use is indicated in the table, then the library
-reads and writes the tag, but does not use it internally.
-Note that some tags are meaningful only when a particular
-compression scheme is being used; e.g. <code class="docutils literal notranslate"><span class="pre">Group3Options</span></code>
-is only useful if <code class="docutils literal notranslate"><span class="pre">Compression</span></code>
-is set to CCITT Group 3 encoding.
-Tags of this sort are considered <em>codec-specific</em>
-tags and the library does not recognize them except when the
-<code class="docutils literal notranslate"><span class="pre">Compression</span></code>
-tag has been previously set to the relevant compression scheme.</p>
-<table class="colwidths-given docutils align-default" id="id4">
-<caption><span class="caption-text">libtiff supported tags</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col style="width: 34%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 52%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Tag name</p></th>
-<th class="head"><p>Value</p></th>
-<th class="head"><p>R/W</p></th>
-<th class="head"><p>Library Use/Notes</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Artist</span></code></p></td>
-<td><p>315</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BadFaxLines</span></code></p></td>
-<td><p>326</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BitsPerSample</span></code></p></td>
-<td><p>258</p></td>
-<td><p>R/W</p></td>
-<td><p>lots</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CellLength</span></code></p></td>
-<td><p>265</p></td>
-<td></td>
-<td><p>parsed but ignored</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CellWidth</span></code></p></td>
-<td><p>264</p></td>
-<td></td>
-<td><p>parsed but ignored</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CleanFaxData</span></code></p></td>
-<td><p>327</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ColorMap</span></code></p></td>
-<td><p>320</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ColorResponseUnit</span></code></p></td>
-<td><p>300</p></td>
-<td></td>
-<td><p>parsed but ignored</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Compression</span></code></p></td>
-<td><p>259</p></td>
-<td><p>R/W</p></td>
-<td><p>choosing codec</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ConsecutiveBadFaxLines</span></code></p></td>
-<td><p>328</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Copyright</span></code></p></td>
-<td><p>33432</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DataType</span></code></p></td>
-<td><p>32996</p></td>
-<td><p>R</p></td>
-<td><p>obsoleted by <code class="docutils literal notranslate"><span class="pre">SampleFormat</span></code> tag</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DateTime</span></code></p></td>
-<td><p>306</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DocumentName</span></code></p></td>
-<td><p>269</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DotRange</span></code></p></td>
-<td><p>336</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ExtraSamples</span></code></p></td>
-<td><p>338</p></td>
-<td><p>R/W</p></td>
-<td><p>lots</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FaxRecvParams</span></code></p></td>
-<td><p>34908</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FaxSubAddress</span></code></p></td>
-<td><p>34909</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FaxRecvTime</span></code></p></td>
-<td><p>34910</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FillOrder</span></code></p></td>
-<td><p>266</p></td>
-<td><p>R/W</p></td>
-<td><p>control bit order</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">FreeByteCounts</span></code></p></td>
-<td><p>289</p></td>
-<td></td>
-<td><p>parsed but ignored</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FreeOffsets</span></code></p></td>
-<td><p>288</p></td>
-<td></td>
-<td><p>parsed but ignored</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GrayResponseCurve</span></code></p></td>
-<td><p>291</p></td>
-<td></td>
-<td><p>parsed but ignored</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GrayResponseUnit</span></code></p></td>
-<td><p>290</p></td>
-<td></td>
-<td><p>parsed but ignored</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Group3Options</span></code></p></td>
-<td><p>292</p></td>
-<td><p>R/W</p></td>
-<td><p>used by Group 3 codec</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Group4Options</span></code></p></td>
-<td><p>293</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">HostComputer</span></code></p></td>
-<td><p>316</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ImageDepth</span></code></p></td>
-<td><p>32997</p></td>
-<td><p>R/W</p></td>
-<td><p>tile/strip calculations</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ImageDescription</span></code></p></td>
-<td><p>270</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ImageLength</span></code></p></td>
-<td><p>257</p></td>
-<td><p>R/W</p></td>
-<td><p>lots</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ImageWidth</span></code></p></td>
-<td><p>256</p></td>
-<td><p>R/W</p></td>
-<td><p>lots</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InkNames</span></code></p></td>
-<td><p>333</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">InkSet</span></code></p></td>
-<td><p>332</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">JPEGTables</span></code></p></td>
-<td><p>347</p></td>
-<td><p>R/W</p></td>
-<td><p>used by JPEG codec</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Make</span></code></p></td>
-<td><p>271</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Matteing</span></code></p></td>
-<td><p>32995</p></td>
-<td><p>R</p></td>
-<td><p>obsoleted by ExtraSamples tag</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MaxSampleValue</span></code></p></td>
-<td><p>281</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MinSampleValue</span></code></p></td>
-<td><p>280</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Model</span></code></p></td>
-<td><p>272</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">NewSubFileType</span></code></p></td>
-<td><p>254</p></td>
-<td><p>R/W</p></td>
-<td><p>called <code class="docutils literal notranslate"><span class="pre">SubFileType</span></code> in spec</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">NumberOfInks</span></code></p></td>
-<td><p>334</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Orientation</span></code></p></td>
-<td><p>274</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PageName</span></code></p></td>
-<td><p>285</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PageNumber</span></code></p></td>
-<td><p>297</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PhotometricInterpretation</span></code></p></td>
-<td><p>262</p></td>
-<td><p>R/W</p></td>
-<td><p>used by Group 3 and JPEG codecs</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PlanarConfiguration</span></code></p></td>
-<td><p>284</p></td>
-<td><p>R/W</p></td>
-<td><p>data i/o</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Predictor</span></code></p></td>
-<td><p>317</p></td>
-<td><p>R/W</p></td>
-<td><p>used by LZW and Deflate codecs</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PrimaryChromacities</span></code></p></td>
-<td><p>319</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ReferenceBlackWhite</span></code></p></td>
-<td><p>532</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ResolutionUnit</span></code></p></td>
-<td><p>296</p></td>
-<td><p>R/W</p></td>
-<td><p>used by Group 3 codec</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RowsPerStrip</span></code></p></td>
-<td><p>278</p></td>
-<td><p>R/W</p></td>
-<td><p>data i/o</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SampleFormat</span></code></p></td>
-<td><p>339</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SamplesPerPixel</span></code></p></td>
-<td><p>277</p></td>
-<td><p>R/W</p></td>
-<td><p>lots</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SMinSampleValue</span></code></p></td>
-<td><p>340</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SMaxSampleValue</span></code></p></td>
-<td><p>341</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Software</span></code></p></td>
-<td><p>305</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">StoNits</span></code></p></td>
-<td><p>37439</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">StripByteCounts</span></code></p></td>
-<td><p>279</p></td>
-<td><p>R/W</p></td>
-<td><p>data i/o</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">StripOffsets</span></code></p></td>
-<td><p>273</p></td>
-<td><p>R/W</p></td>
-<td><p>data i/o</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SubFileType</span></code></p></td>
-<td><p>255</p></td>
-<td><p>R/W</p></td>
-<td><p>called <code class="docutils literal notranslate"><span class="pre">OSubFileType</span></code> in spec</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TargetPrinter</span></code></p></td>
-<td><p>337</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Thresholding</span></code></p></td>
-<td><p>263</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TileByteCounts</span></code></p></td>
-<td><p>324</p></td>
-<td><p>R/W</p></td>
-<td><p>data i/o</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TileDepth</span></code></p></td>
-<td><p>32998</p></td>
-<td><p>R/W</p></td>
-<td><p>tile/strip calculations</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TileLength</span></code></p></td>
-<td><p>323</p></td>
-<td><p>R/W</p></td>
-<td><p>data i/o</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TileOffsets</span></code></p></td>
-<td><p>324</p></td>
-<td><p>R/W</p></td>
-<td><p>data i/o</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TileWidth</span></code></p></td>
-<td><p>322</p></td>
-<td><p>R/W</p></td>
-<td><p>data i/o</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TransferFunction</span></code></p></td>
-<td><p>301</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">WhitePoint</span></code></p></td>
-<td><p>318</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">XPosition</span></code></p></td>
-<td><p>286</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">XResolution</span></code></p></td>
-<td><p>282</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">YCbCrCoefficients</span></code></p></td>
-<td><p>529</p></td>
-<td><p>R/W</p></td>
-<td><p>used by <code class="docutils literal notranslate"><span class="pre">TIFFRGBAImage</span></code> support</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">YCbCrPositioning</span></code></p></td>
-<td><p>531</p></td>
-<td><p>R/W</p></td>
-<td><p>tile/strip size calculations</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">YCbCrSubsampling</span></code></p></td>
-<td><p>530</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">YPosition</span></code></p></td>
-<td><p>286</p></td>
-<td><p>R/W</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">YResolution</span></code></p></td>
-<td><p>283</p></td>
-<td><p>R/W</p></td>
-<td><p>used by Group 3 codec</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="pseudo-tags">
+<p>For a table of TIFF tags recognized by the library refer to
+<a class="reference internal" href="../specification/coverage.html"><span class="doc">LibTIFF Coverage of the TIFF 6.0 Specification</span></a>.</p>
+</section>
+<section id="pseudo-tags">
 <h2>“Pseudo tags”<a class="headerlink" href="#pseudo-tags" title="Permalink to this heading">¶</a></h2>
 <p>In addition to the normal TIFF
 tags the library supports a collection of
@@ -1223,13 +812,13 @@ tags whose values lie in a range outside the valid range of TIFF
 tags. These tags are termed <em>pseudo-tags</em>
 and are used to control various codec-specific functions within the library.
 The table below summarizes the defined pseudo-tags.</p>
-<table class="colwidths-given docutils align-default" id="id5">
-<caption><span class="caption-text">libtiff supported tags</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">libtiff supported tags</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 34%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 52%" />
+<col style="width: 34.5%" />
+<col style="width: 6.9%" />
+<col style="width: 6.9%" />
+<col style="width: 51.7%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Tag name</p></th>
@@ -1450,16 +1039,16 @@ to the SGILog codec when encoding and passed
 (valid only when decoding LogL-encoded data).</p>
 </div></blockquote>
 </div></blockquote>
-</div>
-<div class="section" id="diagnostics">
+</section>
+<section id="diagnostics">
 <h2>Diagnostics<a class="headerlink" href="#diagnostics" title="Permalink to this heading">¶</a></h2>
 <p>All error messages are directed through the <a class="reference internal" href="TIFFError.html#c.TIFFErrorExtR" title="TIFFErrorExtR"><code class="xref c c-func docutils literal notranslate"><span class="pre">TIFFErrorExtR()</span></code></a> routine.
 By default messages are directed to <code class="docutils literal notranslate"><span class="pre">stderr</span></code> in the form:
 <code class="docutils literal notranslate"><span class="pre">module:</span> <span class="pre">message\n</span></code>.
 Warning messages are likewise directed through the
 <a class="reference internal" href="TIFFWarning.html#c.TIFFWarningExtR" title="TIFFWarningExtR"><code class="xref c c-func docutils literal notranslate"><span class="pre">TIFFWarningExtR()</span></code></a> routine.</p>
-</div>
-<div class="section" id="see-also">
+</section>
+<section id="see-also">
 <h2>See also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="../tools/fax2tiff.html"><span class="doc">fax2tiff</span></a>,
 <a class="reference internal" href="../tools/pal2rgb.html"><span class="doc">pal2rgb</span></a>,
@@ -1479,8 +1068,8 @@ Warning messages are likewise directed through the
 an Aldus Technical Memorandum.</p>
 <p><strong>“The Spirit of TIFF Class F”</strong> ,
 an appendix to the TIFF 5.0 specification prepared by Cygnet Technologies.</p>
-</div>
-<div class="section" id="bugs">
+</section>
+<section id="bugs">
 <h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>The library does not support multi-sample images
@@ -1488,8 +1077,8 @@ where some samples have different bits/sample.</p></li>
 <li><p>The library does not support random access to compressed data
 that is organized with more than one row per tile or strip.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1559,14 +1148,14 @@ that is organized with more than one row per tile or strip.</p></li>
         <li class="right" >
           <a href="../functions.html" title="TIFF Functions Overview"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">LibTIFF 4.5.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">LibTIFF 4.5.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../functions.html" >TIFF Functions Overview</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">libtiff</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 1988-2022, LibTIFF contributors.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.2.1.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     </div>
   </body>
 </html>

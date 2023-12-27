@@ -123,9 +123,6 @@
    (Intel) */
 #undef HOST_BIGENDIAN
 
-/* Set the native cpu bit order (FILLORDER_LSB2MSB or FILLORDER_MSB2LSB) */
-#undef HOST_FILLORDER
-
 /* Support ISO JBIG compression (requires JBIG-KIT library) */
 #undef JBIG_SUPPORT
 

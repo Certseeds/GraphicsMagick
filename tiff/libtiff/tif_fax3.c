@@ -366,6 +366,7 @@ static int Fax3Decode2D(TIFF *tif, uint8_t *buf, tmsize_t occ, uint16_t s)
     }}                                            \
     (cp) += (n);
 
+
 /*
  * Bit-fill a row according to the white/black
  * runs generated during G3/G4 decoding.
@@ -540,7 +541,7 @@ static int Fax3SetupState(TIFF *tif)
       TIFFroundup and TIFFSafeMultiply return zero on integer overflow
     */
     dsp->runs = (uint32_t *)NULL;
-    dsp->nruns = TIFFroundup_32(rowpixels, 32);
+    dsp->nruns = TIFFroundup_32(rowpixels + 1, 32);
     if (needsRefLine)
     {
         dsp->nruns = TIFFSafeMultiply(uint32_t, dsp->nruns, 2);

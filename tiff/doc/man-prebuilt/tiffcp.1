@@ -1,8 +1,5 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "TIFFCP" "1" "Dec 13, 2022" "4.5" "LibTIFF"
-.SH NAME
-tiffcp \- copy (and possibly convert) a TIFF file
 .
 .nr rst2man-indent-level 0
 .
@@ -30,6 +27,9 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
+.TH "TIFFCP" "1" "Jun 10, 2023" "4.5" "LibTIFF"
+.SH NAME
+tiffcp \- copy (and possibly convert) a TIFF file
 .SH SYNOPSIS
 .sp
 \fBtiffcp\fP [ \fIoptions\fP ] \fIsrc1.tif\fP … \fIsrcN.tif\fP \fIdst.tif\fP
@@ -71,7 +71,7 @@ overwritten and not when it is appended to.
 .INDENT 0.0
 .TP
 .B \-C
-Suppress the use of “strip chopping” when reading images
+Suppress the use of \(dqstrip chopping\(dq when reading images
 that have a single strip/tile of uncompressed data.
 .UNINDENT
 .INDENT 0.0
