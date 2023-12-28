@@ -1,3 +1,18 @@
+2023-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: fixup LFS check for autoconf-2.72. Patch by Sam
+	James <sam@gentoo.org>
+
+	For the 'other' case, we were using the value of
+	ac_cv_sys_file_offset_bits for -D_FILE_OFFSET_BITS to pass down
+	into the Perl module build, but autoconf-2.72 drops the use of
+	ac_cv_sys_file_offset_bits in
+	cf09f48841b66fe76f606dd6018bb3a93242a7c9, so this ends up defining
+	'-D_FILE_OFFSET_BITS=' which then breaks the build.
+
+	I've just added a hack to preserve the old behaviour to avoid
+	passing a blank value.
+
 2023-12-27  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* tiff/ Update libtiff to 4.5.1.

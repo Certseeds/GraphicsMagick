@@ -37,6 +37,22 @@
 </div>
 
 <div class="document">
+<p>2023-12-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul>
+<li><p>configure.ac: fixup LFS check for autoconf-2.72. Patch by Sam
+James &lt;<a class="reference external" href="mailto:sam&#37;&#52;&#48;gentoo&#46;org">sam<span>&#64;</span>gentoo<span>&#46;</span>org</a>&gt;</p>
+<p>For the 'other' case, we were using the value of
+ac_cv_sys_file_offset_bits for -D_FILE_OFFSET_BITS to pass down
+into the Perl module build, but autoconf-2.72 drops the use of
+ac_cv_sys_file_offset_bits in
+cf09f48841b66fe76f606dd6018bb3a93242a7c9, so this ends up defining
+'-D_FILE_OFFSET_BITS=' which then breaks the build.</p>
+<p>I've just added a hack to preserve the old behaviour to avoid
+passing a blank value.</p>
+</li>
+</ul>
+</blockquote>
 <p>2023-12-27  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">

@@ -397,7 +397,7 @@ AC_FUNC_FSEEKO
 LFS_CPPFLAGS=''
 if test "$enable_largefile" != no
 then
-  if test "$ac_cv_sys_file_offset_bits" != 'no'
+  if test "$ac_cv_sys_file_offset_bits" != 'no' && test -n "$ac_cv_sys_file_offset_bits"
   then
     LFS_CPPFLAGS="$LFS_CPPFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
   fi
