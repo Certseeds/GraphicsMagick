@@ -50,7 +50,7 @@ every release, it is recommended to update to the most current
 release and not attempt to patch older releases.</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#id1" id="id3">1.3.43 (??? ???, 202?)</a></p></li>
+<li><p><a class="reference internal" href="#id1" id="id3">1.3.43 (??? ???, 2024)</a></p></li>
 <li><p><a class="reference internal" href="#september-23-2023" id="id4">1.3.42 (September 23, 2023)</a></p></li>
 <li><p><a class="reference internal" href="#august-12-2023" id="id5">1.3.41 (August 12, 2023)</a></p></li>
 <li><p><a class="reference internal" href="#january-14-2023" id="id6">1.3.40 (January 14, 2023)</a></p></li>
@@ -100,7 +100,7 @@ release and not attempt to patch older releases.</p>
 </ul>
 </div>
 <div class="section" id="id1">
-<h1><a class="toc-backref" href="#id3">1.3.43 (??? ???, 202?)</a></h1>
+<h1><a class="toc-backref" href="#id3">1.3.43 (??? ???, 2024)</a></h1>
 <p>Special Issues:</p>
 <ul class="simple">
 <li><p>GraphicsMagick really does need some additional productive
@@ -146,7 +146,9 @@ similar to an unexpected write error, as if the disk is full.</p></li>
 <li><p>BMP: Support BI_PNG compression (PNG inside BMP).</p></li>
 <li><p>BMP: Support reading 64 bits-per-pixel.</p></li>
 <li><p>BMP: Support reading 48 bits-per-pixel.</p></li>
-<li><p>HEIF: Call heif_init() and heif_deinit() if they are available.</p></li>
+<li><p>HEIF: Call heif_init() and heif_deinit() if they are
+available. Support setting image width limit.</p></li>
+<li><p>JXL: Improve JXL reader/writer exception information.</p></li>
 <li><p>TIFF: Remove miniswhite/minisblack prohibitions when using Group3
 and Group4 compression in order to allow using inverted photometric
 from the standard.</p></li>
@@ -158,7 +160,7 @@ realloc() fails.</p></li>
 </ul>
 <p>Windows Delegate Updates/Additions:</p>
 <ul class="simple">
-<li><p>None.</p></li>
+<li><p>libtiff: Update bundled libtiff sources to version 4.5.1.</p></li>
 </ul>
 <p>Build Changes:</p>
 <ul class="simple">
@@ -182,6 +184,7 @@ build to succeed.</p></li>
 the '_OPENMP' pre-processor define.</p></li>
 <li><p>Autotools-based build: No longer search for (and use) libtrio by
 default.  The user now needs to request using it.</p></li>
+<li><p>Autotools-based build: Fixes for autoconf-2.72.</p></li>
 <li><p>oss-fuzz build: The fuzzing/oss-fuzz-build.sh is re-written in order
 to support almost all possible dependency libraries.  For example,
 JXL and HEIF (with HEIC and AVIF reader support) are now included in

@@ -1,5 +1,7 @@
 2023-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Update the news as of December 28, 2023.
+
 	* configure.ac: fixup LFS check for autoconf-2.72. Patch by Sam
 	James <sam@gentoo.org>
 

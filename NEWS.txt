@@ -19,7 +19,7 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.43 (??? ???, 202?)
+1.3.43 (??? ???, 2024)
 ===========================
 
 Special Issues:
@@ -74,7 +74,10 @@ New Features:
 
 * BMP: Support reading 48 bits-per-pixel.
 
-* HEIF: Call heif_init() and heif_deinit() if they are available.
+* HEIF: Call heif_init() and heif_deinit() if they are
+  available. Support setting image width limit.
+
+* JXL: Improve JXL reader/writer exception information.
 
 * TIFF: Remove miniswhite/minisblack prohibitions when using Group3
   and Group4 compression in order to allow using inverted photometric
@@ -87,7 +90,7 @@ API Updates:
 
 Windows Delegate Updates/Additions:
 
-* None.
+* libtiff: Update bundled libtiff sources to version 4.5.1.
 
 Build Changes:
 
@@ -115,6 +118,8 @@ Build Changes:
 
 * Autotools-based build: No longer search for (and use) libtrio by
   default.  The user now needs to request using it.
+
+* Autotools-based build: Fixes for autoconf-2.72.
 
 * oss-fuzz build: The fuzzing/oss-fuzz-build.sh is re-written in order
   to support almost all possible dependency libraries.  For example,
