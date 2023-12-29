@@ -1,3 +1,11 @@
+2023-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resource.c: Add a resource 'highwater' value which is
+	updated to the maximum resources used for that resource type.
+	This value is currently only reliably updated for SummationLimit
+	LimitType.  Trace the highwater values when resource tracing is
+	enabled.
+
 2023-12-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update the news as of December 28, 2023.
