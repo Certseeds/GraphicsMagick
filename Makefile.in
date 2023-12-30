@@ -11601,7 +11601,7 @@ coverity:
 	$(RM) -rf $(COVERITY_COV_INT)
 	cov-build --dir $(COVERITY_COV_INT) $(MAKE)
 	tar caf $(COVERITY_TARBALL) cov-int
-	curl --limit-rate 34K \
+	curl \
 	--form token=`cat $$HOME/.coverity_key_gm` \
 	--form email=$(COVERITY_EMAIL) \
 	--form file=@$(COVERITY_TARBALL) \
