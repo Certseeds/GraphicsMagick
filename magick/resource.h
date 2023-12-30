@@ -53,13 +53,9 @@ extern MagickExport void
 
 #if defined(MAGICK_IMPLEMENTATION)
 
-/*
-  Define  declarations.
-*/
-#define MagickResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0) >> 1))
+#  include "magick/resource-private.h"
 
 #endif /* MAGICK_IMPLEMENTATION */
-
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

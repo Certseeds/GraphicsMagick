@@ -1,3 +1,8 @@
+2023-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/resource-private.h: New header file to contain private
+	definitions pertaining to resource allocation.
+
 2023-12-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/resource.c: Add a resource 'highwater' value which is

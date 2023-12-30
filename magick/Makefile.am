@@ -319,6 +319,7 @@ MAGICK_NOINST_HDRS = \
 	magick/random-private.h \
 	magick/registry-private.h \
 	magick/render-private.h \
+	magick/resource-private.h \
 	magick/semaphore.h \
 	magick/spinlock.h \
 	magick/static.h \
