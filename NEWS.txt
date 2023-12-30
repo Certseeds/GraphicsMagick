@@ -68,6 +68,12 @@ New Features:
   uncompressed bytes written.  The behavior when the limit is hit is
   similar to an unexpected write error, as if the disk is full.
 
+* Resource limit highwater: Resource highwater values are maintained
+  for successful resource requests and final values are traced
+  via -debug resource' at the end of program execution.  These values
+  may be used to understand the most restrictive resource limits which
+  may be applied while still achieving successful operation.
+
 * BMP: Support BI_PNG compression (PNG inside BMP).
 
 * BMP: Support reading 64 bits-per-pixel.

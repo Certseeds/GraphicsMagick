@@ -311,7 +311,8 @@ MagickExport void DestroyMagickResources(void)
             continue;
           LockSemaphoreInfo(info->semaphore);
           (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
-                                "Resource - %c%s Limit: %"MAGICK_INT64_F"d, Maximum Used: %"MAGICK_INT64_F"d",
+                                "Resource - %c%s Limit: %"MAGICK_INT64_F"d,"
+                                " Maximum Used: %"MAGICK_INT64_F"d",
                                 toupper((int) info->name[0]),info->name+1,
                                 info->maximum, (magick_int64_t) info->highwater);
           UnlockSemaphoreInfo(info->semaphore);
@@ -332,7 +333,8 @@ MagickExport void DestroyMagickResources(void)
         if (info->value != 0)
           {
             fprintf(stderr,"Resource[%s] %s! %"MAGICK_INT64_F"d remaining\n",
-                    info->name, info->value < 0 ? "underflow" : "leak", (magick_int64_t) info->value);
+                    info->name, info->value < 0 ? "underflow" : "leak",
+                    (magick_int64_t) info->value);
             assert(info->value == 0);
           }
         UnlockSemaphoreInfo(info->semaphore);
@@ -767,7 +769,10 @@ MagickExport void InitializeMagickResources(void)
   if (max_pixels >= 0)
     (void) SetMagickResourceLimit(PixelsResource,max_pixels);
   if (max_threads >= 0)
-    (void) SetMagickResourceLimit(ThreadsResource,max_threads);
+    {
+      (void) SetMagickResourceLimit(ThreadsResource,max_threads);
+      _UpdateMagickResourceHighwater(ThreadsResource,max_threads);
+    }
   if (max_width >= 0)
     (void) SetMagickResourceLimit(WidthResource,max_width);
   if (max_height >= 0)
@@ -984,6 +989,8 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
 %    ThreadsResource -- Threads
 %    WidthResource   -- Pixels
 %    HeightResource  -- Pixels
+%    ReadResource    -- Bytes
+%    WriteResource   -- Bytes
 %
 %  The format of the SetMagickResourceLimit() method is:
 %
@@ -1020,6 +1027,9 @@ MagickExport MagickPassFail SetMagickResourceLimit(const ResourceType type,
 
           FormatSize((magick_int64_t) limit, f_limit);
           info->maximum = limit;
+          /* Cap highwater to new maximum */
+          if (info->maximum < info->highwater)
+            info->highwater = info->maximum;
 #if defined(HAVE_OPENMP)
           if (ThreadsResource == type)
             omp_set_num_threads((int) limit);
@@ -1032,8 +1042,81 @@ MagickExport MagickPassFail SetMagickResourceLimit(const ResourceType type,
       else
         {
           (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
-                                "Ignored bogus request to set %s resource limit to %ld%s",
-                                info->name,(long) limit,info->units);
+                                "Ignored bogus request to set %s resource limit"
+                                " to %"MAGICK_INT64_F"d%s",
+                                info->name,limit,info->units);
+        }
+      UnlockSemaphoreInfo(info->semaphore);
+    }
+
+  return(status);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   _UpdateMagickResourceHighwater                                            %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  _UpdateMagickResourceHighwater() updates the highwater for the specified
+%  resource.  The highwater value is only updated if it is greater than the
+%  minimum value for the resource, less than the current maximum for the
+%  resource, and greater than the current highwater value for the resource.
+%  The intention is that highwater values are only updated for resources
+%  successfully used rather than for resources requested.
+%
+%  The format of the _UpdateMagickResourceHighwater() method is:
+%
+%      MagickPassFail _UpdateMagickResourceHighwater(const ResourceType type,
+%        const unsigned long limit)
+%
+%  A description of each parameter follows:
+%
+%    o type: The type of resource.
+%
+%    o limit: The new proposed highwater for the resource.
+%
+%
+*/
+extern MagickPassFail _UpdateMagickResourceHighwater(const ResourceType type,
+                                                     const magick_int64_t highwater)
+{
+  ResourceInfo
+    *info;
+
+  MagickPassFail
+    status;
+
+  status=MagickFail;
+
+  if ((info=GetResourceInfo(type)))
+    {
+      LockSemaphoreInfo(info->semaphore);
+      if ((highwater > info->minimum) && (highwater <= info->maximum)
+          && (highwater > info->highwater))
+        {
+          char
+            f_highwater[MaxTextExtent];
+
+
+          FormatSize((magick_int64_t) highwater, f_highwater);
+          info->highwater = highwater;
+          (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                                "Updated %s resource highwater to %s%s",
+                                info->name,f_highwater,info->units);
+          status=MagickPass;
+        }
+      else
+        {
+          (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                                "Ignored request to set %s highwater to"
+                                " %"MAGICK_INT64_F"d%s",
+                                info->name,highwater,info->units);
         }
       UnlockSemaphoreInfo(info->semaphore);
     }

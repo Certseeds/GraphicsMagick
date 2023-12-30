@@ -143,6 +143,11 @@ a file.</p></li>
 write or MAGICK_LIMIT_WRITE).  This imposes a limit on the number of
 uncompressed bytes written.  The behavior when the limit is hit is
 similar to an unexpected write error, as if the disk is full.</p></li>
+<li><p>Resource limit highwater: Resource highwater values are maintained
+for successful resource requests and final values are traced
+via -debug resource' at the end of program execution.  These values
+may be used to understand the most restrictive resource limits which
+may be applied while still achieving successful operation.</p></li>
 <li><p>BMP: Support BI_PNG compression (PNG inside BMP).</p></li>
 <li><p>BMP: Support reading 64 bits-per-pixel.</p></li>
 <li><p>BMP: Support reading 48 bits-per-pixel.</p></li>

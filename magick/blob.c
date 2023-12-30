@@ -1147,6 +1147,16 @@ MagickExport MagickPassFail CloseBlob(Image *image)
             }
         }
     }
+  else
+    {
+      /*
+        Update Read/Write resources which were *successfully* used.
+      */
+      if (blob->read_total != 0)
+        _UpdateMagickResourceHighwater(ReadResource,blob->read_total);
+      if (blob->write_total != 0)
+        _UpdateMagickResourceHighwater(WriteResource,blob->write_total);
+    }
 
   blob->mode=UndefinedBlobMode;
   blob->type=UndefinedStream;

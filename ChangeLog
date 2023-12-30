@@ -1,5 +1,13 @@
 2023-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Update the news as of December 30, 2023.
+
+	* magick/resource.c (_UpdateMagickResourceHighwater): New private
+	function to support updating highwater values where it otherwise
+	does not naturally happen.  The highwater values represent the
+	result of successful requests so they may be used to evaluate the
+	resource limit requirements of a particular request.
+
 	* magick/resource-private.h: New header file to contain private
 	definitions pertaining to resource allocation.
 
