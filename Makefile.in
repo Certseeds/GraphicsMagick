@@ -2790,7 +2790,7 @@ MODULECOMMONCPPFLAGS = $(AM_CPPFLAGS)
 # FIXME: Could use info from /etc/os-release, or output from
 # lsb_release.
 # New URL is https://scan.coverity.com/projects/graphicsmagick?tab=overview
-COVERITY_EMAIL = bfriesen@simple.dallas.tx.us
+COVERITY_EMAIL = bobjfriesenhahn@gmail.com
 COVERITY_TARBALL = GraphicsMagick.xz
 COVERITY_VERSION = snapshot-@PACKAGE_CHANGE_DATE@
 COVERITY_DESCRIPTION = 'Ubuntu Q@QuantumDepth@'
