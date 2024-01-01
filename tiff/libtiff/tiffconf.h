@@ -7,7 +7,8 @@
 #ifndef _TIFFCONF_
 #define _TIFFCONF_
 
-#include "../../src/webp/types.h"
+#include "../../webp/src/webp/types.h"
+//#include "types.h"
 
 /* The size of a `int', as computed by sizeof. */
 #define SIZEOF_INT 4

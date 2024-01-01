@@ -1,3 +1,7 @@
+2024-01-01  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* tiff/libtiff/tiffconf.h: Fix path to webp/types.h.
+
 2023-12-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update the news as of December 30, 2023.
