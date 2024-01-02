@@ -1036,7 +1036,7 @@ static Image *ExtractPostscript(Image *image,const ImageInfo *image_info,
   return(image);
 }
 
-int EnsureNextImage(const ImageInfo *image_info, Image **pp_image)
+static int EnsureNextImage(const ImageInfo *image_info, Image **pp_image)
 {
   if(pp_image==NULL) return -1;
   if(*pp_image==NULL) return -2;
@@ -1115,7 +1115,7 @@ typedef struct
 } WPGColorMapRec;
 
 
-void LoadPaletteRec(Image *image, WPGColorMapRec *pWPG_Palette, const int logging)
+static void LoadPaletteRec(Image *image, WPGColorMapRec *pWPG_Palette, const int logging)
 {
   pWPG_Palette->StartIndex=ReadBlobLSBShort(image);
   pWPG_Palette->NumOfEntries=ReadBlobLSBShort(image);

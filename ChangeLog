@@ -1,3 +1,8 @@
+2024-01-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/wpg.c Make two functions "EnsureNextImage()" 
+	and "LoadPaletteRec()" static.
+
 2024-01-02  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tiff/LIBRARY.txt: Exclude more tiff/port files.
