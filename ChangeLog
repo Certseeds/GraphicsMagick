@@ -1,3 +1,7 @@
+2024-01-02  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/tiff/LIBRARY.txt: Exclude more tiff/port files.
+
 2024-01-01  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* tiff/libtiff/tiffconf.h: Fix path to webp/types.h.
