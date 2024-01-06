@@ -4404,6 +4404,10 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
 #if defined(EXPERIMENTAL_EXIF_TAGS)
 #if TIFFLIB_VERSION >= 20120922
 
+#define FLAG_EXIF	1
+#define FLAG_GPS	2
+#define FLAG_BASE	4
+
 /*
 static TIFFField customFields[] = {
     {544, -1, -1, TIFF_LONG, 0, TIFF_SETGET_UINT32,
@@ -4447,17 +4451,112 @@ static const char *FipFieldName(const TIFFField *fip)
 }
 
 
-static int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging, MagickBool DryRun)
+static int AddIFDExifFields(TIFF *tiff, const unsigned char *profile_data, const unsigned char *IFD_data, size_t profile_length, MagickBool logging, uint16_t Flags)
 {
-const char EXIF[6] = {'E','x','i','f',0,0};
-uint32_t IFDpos;
+uint32_t(*LD_UINT32)(const unsigned char *Mem);
+uint16_t(*LD_UINT16)(const unsigned char *Mem);
+const TIFFField *fip;
 uint16_t EntryNum;
 uint16_t Tag, Field;
 uint32_t Long2, Value;
 int FieldCount = 0;
-uint32_t(*LD_UINT32)(const unsigned char *Mem);
-uint16_t(*LD_UINT16)(const unsigned char *Mem);
-const TIFFField *fip;
+
+  if(*profile_data=='M')
+  {
+    LD_UINT32 = LD_UINT32_HI;
+    LD_UINT16 = LD_UINT16_HI;
+  }
+  else
+  {
+    if(*profile_data!='I') return 0;
+    LD_UINT32 = LD_UINT32_LO;
+    LD_UINT16 = LD_UINT16_LO;
+
+  }
+
+  do
+  {
+    if(profile_length-(IFD_data-profile_data) < 2) return 0;
+    EntryNum = LD_UINT16(IFD_data);
+    profile_length-=2;
+    if(profile_length-(IFD_data-profile_data) < EntryNum*12) return 0;
+    IFD_data+=2;
+
+    while(EntryNum>0)
+    {
+      Tag = LD_UINT16(IFD_data);
+      Field = LD_UINT16(IFD_data+2);
+      Long2 = LD_UINT32(IFD_data+4);
+      Value = LD_UINT32(IFD_data+8);
+
+      fip = TIFFFindField(tiff, Tag, TIFF_ANY);
+      if(logging)
+        (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Extracted tag from EXIF %xh, Field %d, Long2 %d, val %d %s",
+                           Tag, Field, Long2, Value, FipFieldName(fip));
+
+      if(Tag == TIFFTAG_EXIFIFD)
+      {
+        if((Flags & FLAG_EXIF) != 0)
+          FieldCount += AddIFDExifFields(tiff, profile_data, profile_data+Value, profile_length, logging, Flags);
+        goto NextItem;
+      }
+      if(Tag == TIFFTAG_GPSIFD)
+      {
+        if((Flags & FLAG_GPS) != 0)
+          FieldCount += AddIFDExifFields(tiff, profile_data, profile_data+Value, profile_length, logging, Flags);
+        goto NextItem;
+      }
+
+      if(fip!=NULL && (Flags & FLAG_BASE)!= 0)		/* libtiff doesn't understand these */
+      {
+        const TIFFDataType FDT = TIFFFieldDataType(fip);
+        switch(Field)
+        {
+          case TIFF_ASCII:
+                         if(FDT!=TIFF_ASCII)
+                             break;	/* Incompatible recipe.*/
+                         if(Value>=profile_length-1) break;		/* String outside EXIF boundary. */
+                         if(TIFFSetField(tiff, Tag, profile_data+Value))
+                             FieldCount++;
+                         break;
+            case TIFF_BYTE:
+            case TIFF_SHORT:
+            case TIFF_LONG:
+                         if(FDT!=TIFF_BYTE && FDT!=TIFF_SHORT && FDT!=TIFF_LONG)
+                             break;
+                         if(TIFFSetField(tiff, Tag, Value))
+                             FieldCount++;
+                         break;
+            //case TIFF_SRATIONAL:  ??
+            case TIFF_RATIONAL:
+                         if(FDT == TIFF_RATIONAL)
+                         {
+                           double d = Value / (double)Long2;
+                           if(TIFFSetField(tiff, Tag, d))
+                               FieldCount++;
+                         }
+                         break;
+        }
+      }
+
+NextItem:
+      profile_length -=12;
+      IFD_data += 12;
+      EntryNum--;
+    }
+
+    if(profile_length-(IFD_data-profile_data) < 4) break;
+    Value = LD_UINT32(IFD_data);
+    IFD_data = profile_data+Value;
+  } while(Value>8);
+
+  return FieldCount;
+}
+
+
+static int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging, uint16_t Flags)
+{
+const char EXIF[6] = {'E','x','i','f',0,0};
 
   if(profile_data==NULL || profile_length<12+8) return 0;
   if(memcmp(EXIF,profile_data,6)==0)
@@ -4467,110 +4566,11 @@ const TIFFField *fip;
     if(profile_length<12+8) return 0;
   }
 
-  if(profile_data[0]=='I' && profile_data[1]=='I')
-  {
-    LD_UINT32 = LD_UINT32_LO;
-    LD_UINT16 = LD_UINT16_LO;
-  }
-  else
-  {
-    if(profile_data[0]=='M' && profile_data[1]=='M')
-    {
-      LD_UINT32 = LD_UINT32_HI;
-      LD_UINT16 = LD_UINT16_HI;
-    }
-    else
-        return 0;
-  }
+  if(profile_data[0] != profile_data[1]) return 0;
 
-/*
-  if(TIFFCreateCustomDirectory(tiff, &customFieldArray) != 0)
-  {
-    (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Error: TIFFCreateEXIFDirectory() failed.\n");
-  }
-*/
-
-  IFDpos = 4;
-  do
-  {
-    Value = LD_UINT32(profile_data+IFDpos);
-    if(Value<=IFDpos || Value<8) return FieldCount;	// 0 means stop; IFDPOS should progress.
-    IFDpos = Value;
-
-    EntryNum = LD_UINT16(profile_data+IFDpos);
-    IFDpos += 2;
-    while(EntryNum>0)
-    {
-      Tag = LD_UINT16(profile_data+IFDpos);
-      Field = LD_UINT16(profile_data+IFDpos+2);
-      Long2 = LD_UINT32(profile_data+IFDpos+4);
-      Value = LD_UINT32(profile_data+IFDpos+8);
-
-      fip = TIFFFindField(tiff, Tag, TIFF_ANY);
-
-      if(logging)
-        (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Extracted tag from EXIF %xh, Field %d, Long2 %d, val %d %s",
-                             Tag, Field, Long2, Value, FipFieldName(fip));
-
-      if(fip!=NULL)		/* libtiff doesn't understand these */
-      {
-        const TIFFDataType FDT = TIFFFieldDataType(fip);
-/*
-        if(FieldCount==0)
-        {
-          if(TIFFCreateEXIFDirectory(tiff) != 0)
-            if (logging)
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "TIFFCreateEXIFDirectory() failed.");
-        }
-*/
-        switch(Field)
-        {
-          case TIFF_ASCII:
-                           if(FDT!=TIFF_ASCII)
-                               break;	/* Incompatible recipe.*/
-                           if(Value>=profile_length-1) break;		/* String outside EXIF boundary. */
-                           if(DryRun) FieldCount++;
-                           else
-                           {
-                             if(TIFFSetField(tiff, Tag, profile_data+Value))
-                               FieldCount++;
-                           }
-                           break;
-          case TIFF_BYTE:
-          case TIFF_SHORT:
-          case TIFF_LONG:
-                           if(FDT!=TIFF_BYTE && FDT!=TIFF_SHORT && FDT!=TIFF_LONG)
-                               break;
-                           if(DryRun) FieldCount++;
-                           else
-                           {
-                             if(TIFFSetField(tiff, Tag, Value))
-                                 FieldCount++;
-                           }
-                           break;
-          //case TIFF_SRATIONAL:  ??
-          case TIFF_RATIONAL:
-                           if(FDT == TIFF_RATIONAL)
-                           {
-                             if(DryRun) FieldCount++;
-                             else
-                             {
-                               double d = Value / (double)Long2;
-                               if(TIFFSetField(tiff, Tag, d))
-                                 FieldCount++;
-                             }
-                           }
-                           break;
-        }
-      }
-      IFDpos += 12;	// Go to a next direntry.
-      if(IFDpos+12>=profile_length) return FieldCount;
-      EntryNum--;
-    }
-  } while(IFDpos+4 < profile_length);
-
-  return FieldCount;
+  return AddIFDExifFields(tiff, profile_data, 
+                profile_data + ((profile_data[0]=='M')?LD_UINT32_HI(profile_data+4):LD_UINT32_LO(profile_data+4)),
+                profile_length-2, logging, Flags);
 }
 
 #endif /* if TIFFLIB_VERSION >= 20120922 */
@@ -6663,7 +6663,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           {
             if(TIFFCreateEXIFDirectory(tiff) == 0)
             {
-              if(AddExifFields(tiff,profile_data,profile_length,logging,0) > 0)
+              if(AddExifFields(tiff,profile_data,profile_length,logging, FLAG_EXIF|FLAG_BASE) > 0)
               {             // Now write the directory of Exif data 
                 uint64_t dir_offset = 0;
                 if(!TIFFWriteCustomDirectory(tiff, &dir_offset)) 
@@ -6678,14 +6678,25 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               }
             }
 /*
-            uint64_t dir_offset = 0;
-            TIFFCreateEXIFDirectory(tiff);
-            TIFFSetField(tiff, EXIFTAG_SPECTRALSENSITIVITY,"EXIF Spectral Sensitivity");
-            AddExifFields(tiff,profile_data,profile_length,logging);
-            TIFFWriteCustomDirectory(tiff, &dir_offset);
-            TIFFSetDirectory(tiff, 0);
-            TIFFSetField(tiff, TIFFTAG_EXIFIFD, dir_offset);
-*/            
+            if(TIFFCreateGPSDirectory(tiff) == 0)
+            {
+              if(AddExifFields(tiff,profile_data,profile_length,logging, FLAG_GPS) > 0)
+              {             // Now write the directory of Exif data 
+                uint64_t dir_offset = 0;
+                if(!TIFFWriteCustomDirectory(tiff, &dir_offset)) 
+                {
+                  LogMagickEvent(CoderEvent,GetMagickModule(),"Failed TIFFWriteCustomDirectory() of the ExifGPS data");
+                }
+                else
+                {  // Go back to the first directory, and add the EXIFIFD pointer.
+                  TIFFSetDirectory(tiff, 0);
+                  TIFFSetField(tiff, TIFFTAG_GPSIFD, dir_offset);
+                }
+              }
+              else
+                TIFFSetDirectory(tiff, 0);
+            }
+*/
           }
         }
 #endif /* TIFFLIB_VERSION >= 20120922 */

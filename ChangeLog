@@ -1,3 +1,7 @@
+2024-01-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c Extract EXIFIFD part from EXIF profile.
+
 2024-01-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	coders/wpg.c Make two functions "EnsureNextImage()" 
