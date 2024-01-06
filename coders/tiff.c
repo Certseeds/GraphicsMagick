@@ -72,6 +72,8 @@
 #    include "zstd.h"
 #  endif /* if defined(COMPRESSION_ZSTD) && defined(HasZSTD) */
 
+#define EXPERIMENTAL_EXIF_TAGS
+
 /*
   JPEG headers are needed in order to obtain BITS_IN_JSAMPLE
 */
@@ -4445,7 +4447,7 @@ static const char *FipFieldName(const TIFFField *fip)
 }
 
 
-static int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging)
+static int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging, MagickBool DryRun)
 {
 const char EXIF[6] = {'E','x','i','f',0,0};
 uint32_t IFDpos;
@@ -4513,30 +4515,51 @@ const TIFFField *fip;
       if(fip!=NULL)		/* libtiff doesn't understand these */
       {
         const TIFFDataType FDT = TIFFFieldDataType(fip);
+/*
+        if(FieldCount==0)
+        {
+          if(TIFFCreateEXIFDirectory(tiff) != 0)
+            if (logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "TIFFCreateEXIFDirectory() failed.");
+        }
+*/
         switch(Field)
         {
           case TIFF_ASCII:
-                            if(FDT!=TIFF_ASCII)
+                           if(FDT!=TIFF_ASCII)
                                break;	/* Incompatible recipe.*/
                            if(Value>=profile_length-1) break;		/* String outside EXIF boundary. */
-                           if(TIFFSetField(tiff, Tag, profile_data+Value))
+                           if(DryRun) FieldCount++;
+                           else
+                           {
+                             if(TIFFSetField(tiff, Tag, profile_data+Value))
                                FieldCount++;
+                           }
                            break;
           case TIFF_BYTE:
           case TIFF_SHORT:
           case TIFF_LONG:
                            if(FDT!=TIFF_BYTE && FDT!=TIFF_SHORT && FDT!=TIFF_LONG)
                                break;
-                           if(TIFFSetField(tiff, Tag, Value))
-                               FieldCount++;
+                           if(DryRun) FieldCount++;
+                           else
+                           {
+                             if(TIFFSetField(tiff, Tag, Value))
+                                 FieldCount++;
+                           }
                            break;
           //case TIFF_SRATIONAL:  ??
           case TIFF_RATIONAL:
                            if(FDT == TIFF_RATIONAL)
                            {
-                             double d = Value / (double)Long2;
-                             if(TIFFSetField(tiff, Tag, d))
+                             if(DryRun) FieldCount++;
+                             else
+                             {
+                               double d = Value / (double)Long2;
+                               if(TIFFSetField(tiff, Tag, d))
                                  FieldCount++;
+                             }
                            }
                            break;
         }
@@ -6638,24 +6661,31 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           size_t profile_length;
           if((profile_data=GetImageProfile(image,"Exif",&profile_length)) != 0)
           {
-            if(AddExifFields(tiff,profile_data,profile_length,logging) > 0)
-            {             /* Now write the directory of Exif data */
-              uint64_t dir_offset = 0;
-              if(!TIFFWriteCustomDirectory(tiff, &dir_offset)) 
-              {
-                LogMagickEvent(CoderEvent,GetMagickModule(),"Failed TIFFWriteCustomDirectory() of the Exif data");
-              }
-              else
-              {  // Go back to the first directory, and add the EXIFIFD pointer.
-                TIFFSetDirectory(tiff, 0);
-                TIFFSetField(tiff, TIFFTAG_EXIFIFD, dir_offset);
-                /*if(!TIFFWriteDirectory(tiff))  This destroys part of EXIF from unknown reason, commented out.
+            if(TIFFCreateEXIFDirectory(tiff) == 0)
+            {
+              if(AddExifFields(tiff,profile_data,profile_length,logging,0) > 0)
+              {             // Now write the directory of Exif data 
+                uint64_t dir_offset = 0;
+                if(!TIFFWriteCustomDirectory(tiff, &dir_offset)) 
                 {
-                 (void)LogMagickEvent(CoderEvent,GetMagickModule(),
-                                "TIFFWriteDirectory EXIF returns failed status!");
-                }*/
+                  LogMagickEvent(CoderEvent,GetMagickModule(),"Failed TIFFWriteCustomDirectory() of the Exif data");
+                }
+                else
+                {  // Go back to the first directory, and add the EXIFIFD pointer.
+                  TIFFSetDirectory(tiff, 0);
+                  TIFFSetField(tiff, TIFFTAG_EXIFIFD, dir_offset);
+                }
               }
             }
+/*
+            uint64_t dir_offset = 0;
+            TIFFCreateEXIFDirectory(tiff);
+            TIFFSetField(tiff, EXIFTAG_SPECTRALSENSITIVITY,"EXIF Spectral Sensitivity");
+            AddExifFields(tiff,profile_data,profile_length,logging);
+            TIFFWriteCustomDirectory(tiff, &dir_offset);
+            TIFFSetDirectory(tiff, 0);
+            TIFFSetField(tiff, TIFFTAG_EXIFIFD, dir_offset);
+*/            
           }
         }
 #endif /* TIFFLIB_VERSION >= 20120922 */
