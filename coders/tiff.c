@@ -4527,11 +4527,12 @@ int FieldCount = 0;
                          if(TIFFSetField(tiff, Tag, Value))
                              FieldCount++;
                          break;
-            //case TIFF_SRATIONAL:  ??
+/*            case TIFF_SRATIONAL:
+                         break; */
             case TIFF_RATIONAL:
-                         if(FDT == TIFF_RATIONAL)
+                         if(FDT==TIFF_RATIONAL && Value!=0)
                          {
-                           double d = Value / (double)Long2;
+                           double d = Long2 / (double)Value;
                            if(TIFFSetField(tiff, Tag, d))
                                FieldCount++;
                          }

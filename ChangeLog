@@ -1,3 +1,9 @@
+2024-01-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c Fix TIFF_RATIONAL - Two LONGs: the first 
+        represents the numerator of a fraction, the second 
+        the denominator.
+
 2024-01-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	coders/tiff.c Extract EXIFIFD part from EXIF profile.
