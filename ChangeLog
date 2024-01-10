@@ -1,8 +1,17 @@
+2024-01-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (EXPERIMENTAL_EXIF_TAGS): Change
+	EXPERIMENTAL_EXIF_TAGS to a simple boolean (rather than an ifdef)
+	and default it to 0.  This needs to be in place until the TIFF
+	writer no longer crashes.
+
+	* fuzzing/oss-fuzz-build.sh: Skip missing libheif optional
+	dependencies in oss-fuzz build.
+
 2024-01-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c Fix TIFF_RATIONAL - Two LONGs: the first 
-        represents the numerator of a fraction, the second 
-        the denominator.
+	coders/tiff.c Fix TIFF_RATIONAL - Two LONGs: the first represents
+	the numerator of a fraction, the second the denominator.
 
 2024-01-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
@@ -10,8 +19,8 @@
 
 2024-01-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/wpg.c Make two functions "EnsureNextImage()" 
-	and "LoadPaletteRec()" static.
+	coders/wpg.c Make two functions "EnsureNextImage()" and
+	"LoadPaletteRec()" static.
 
 2024-01-02  Fojtik Jaroslav  <JaFojtik@yandex.com>
 

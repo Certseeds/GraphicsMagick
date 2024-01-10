@@ -72,7 +72,9 @@
 #    include "zstd.h"
 #  endif /* if defined(COMPRESSION_ZSTD) && defined(HasZSTD) */
 
-#define EXPERIMENTAL_EXIF_TAGS
+#if !defined(EXPERIMENTAL_EXIF_TAGS)
+#  define EXPERIMENTAL_EXIF_TAGS 0
+#endif /* if !defined(EXPERIMENTAL_EXIF_TAGS) */
 
 /*
   JPEG headers are needed in order to obtain BITS_IN_JSAMPLE
@@ -4401,7 +4403,7 @@ WritePTIFImage(const ImageInfo *image_info,Image *image)
 
 #if defined(HasTIFF)
 
-#if defined(EXPERIMENTAL_EXIF_TAGS)
+#if EXPERIMENTAL_EXIF_TAGS
 #if TIFFLIB_VERSION >= 20120922
 
 #define FLAG_EXIF	1
@@ -4575,7 +4577,7 @@ const char EXIF[6] = {'E','x','i','f',0,0};
 }
 
 #endif /* if TIFFLIB_VERSION >= 20120922 */
-#endif /* defined(EXPERIMENTAL_EXIF_TAGS) */
+#endif /* if EXPERIMENTAL_EXIF_TAGS */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -6654,7 +6656,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                                 "TIFFWriteDirectory returns failed status!");
         }
 
-#if defined(EXPERIMENTAL_EXIF_TAGS)
+#if EXPERIMENTAL_EXIF_TAGS
 #if TIFFLIB_VERSION >= 20120922
         if(status!=MagickFail)
         {
@@ -6701,7 +6703,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           }
         }
 #endif /* TIFFLIB_VERSION >= 20120922 */
-#endif /* defined(EXPERIMENTAL_EXIF_TAGS) */
+#endif /* if EXPERIMENTAL_EXIF_TAGS */
 
       if (image->next == (Image *) NULL)
         break;
