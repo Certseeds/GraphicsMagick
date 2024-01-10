@@ -314,74 +314,93 @@ then
     # Build libx265 (a C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static x265 --libs
     #    -L/work/lib -lx265 -lc++ -lm -lrt -lm -ldl -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl
-    pushd "$SRC/x265/build/linux"
-    printf "=== Building ${SRC}/libx265...\n"
-    cmake -G "Unix Makefiles" \
-          -DCMAKE_C_COMPILER=$CC \
-          -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
-          -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-          -DCMAKE_INSTALL_PREFIX="$WORK" \
-          -DENABLE_SHARED:bool=off \
-          ../../source
-    make clean
-    make -j$(nproc) x265-static
-    make install
-    popd
+    libx265="$SRC/x265"
+    libx265_build="${libx265}/build/linux"
+    if [ -d "${libx265_build}" ]
+    then
+        pushd "${libx265_build}"
+        printf "=== Building ${SRC}/libx265...\n"
+        cmake -G "Unix Makefiles" \
+              -DCMAKE_C_COMPILER=$CC \
+              -DCMAKE_CXX_COMPILER=$CXX \
+              -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+              -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+              -DCMAKE_INSTALL_PREFIX="$WORK" \
+              -DENABLE_SHARED:bool=off \
+                 ../../source
+        make clean
+        make -j$(nproc) x265-static
+        make install
+        popd
+    else
+        printf "=== Skipping missing ${libx265_build}! ===\n"
+    fi
 
     # Build libde265 (a C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libde265 --libs
     #     -L/work/lib -lde265 -lc++
-    printf "=== Building ${SRC}/libde265...\n"
-    pushd "$SRC/libde265"
-    ./autogen.sh
-    ./configure \
-        CFLAGS="$CFLAGS -fPIC" \
-        --prefix="$WORK" \
-        --disable-shared \
-        --enable-static \
-        --disable-dec265 \
-        --disable-sherlock265 \
-        --disable-hdrcopy \
-        --disable-enc265 \
-        --disable-acceleration_speed
-    make clean
-    make -j$(nproc)
-    # Fix broken libde265.pc
-    sed -i 's/@LIBS_PRIVATE@/-lc++/' libde265.pc
-    make install
-    popd
+    libde265="$SRC/libde265"
+    if [ -d "${libde265}" ]
+    then
+        printf "=== Building ${libde265}...\n"
+        pushd "${libde265}"
+        ./autogen.sh
+        ./configure \
+            CFLAGS="$CFLAGS -fPIC" \
+            --prefix="$WORK" \
+            --disable-shared \
+            --enable-static \
+            --disable-dec265 \
+            --disable-sherlock265 \
+            --disable-hdrcopy \
+            --disable-enc265 \
+            --disable-acceleration_speed
+        make clean
+        make -j$(nproc)
+        # Fix broken libde265.pc
+        sed -i 's/@LIBS_PRIVATE@/-lc++/' libde265.pc
+        make install
+        popd
+    else
+        printf "=== Skipping missing ${libde265}! ===\n"
+    fi
 
     # Build libaom (a mixed C/C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static aom --libs
     #    -L/work/lib -laom -lm -lpthread
-    printf "=== Building ${SRC}/aom...\n"
-    AOM_BUILD="${SRC}/aom_build"
-    rm -rf "${AOM_BUILD}"
-    mkdir -p "${AOM_BUILD}"
-    pushd "${AOM_BUILD}"
-    cmake -G "Unix Makefiles" \
-          -DCMAKE_C_COMPILER=$CC \
-          -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
-          -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-          -DCMAKE_INSTALL_PREFIX="$WORK" \
-          -DENABLE_SHARED:bool=off \
-          -DCONFIG_PIC=1 \
-          -DENABLE_EXAMPLES=0 \
-          -DENABLE_DOCS=0 \
-          -DENABLE_TESTS=0 \
-          -DCONFIG_SIZE_LIMIT=1 \
-          -DDECODE_HEIGHT_LIMIT=12288 \
-          -DDECODE_WIDTH_LIMIT=12288 \
-          -DDO_RANGE_CHECK_CLAMP=1 \
-          -DAOM_MAX_ALLOCABLE_MEMORY=536870912 \
-          -DAOM_TARGET_CPU=generic \
-          ${SRC}/aom
-    make clean
-    make -j$(nproc)
-    make install
-    popd
+    aom_src="${SRC}/aom"
+    if [ -d "${aom_src}" ]
+    then
+        printf "=== Building ${aom_src}...\n"
+        AOM_BUILD="${SRC}/aom_build"
+        rm -rf "${AOM_BUILD}"
+        mkdir -p "${AOM_BUILD}"
+        pushd "${AOM_BUILD}"
+        cmake -G "Unix Makefiles" \
+              -DCMAKE_C_COMPILER=$CC \
+              -DCMAKE_CXX_COMPILER=$CXX \
+              -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+              -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+              -DCMAKE_INSTALL_PREFIX="$WORK" \
+              -DENABLE_SHARED:bool=off \
+              -DCONFIG_PIC=1 \
+              -DENABLE_EXAMPLES=0 \
+              -DENABLE_DOCS=0 \
+              -DENABLE_TESTS=0 \
+              -DCONFIG_SIZE_LIMIT=1 \
+              -DDECODE_HEIGHT_LIMIT=12288 \
+              -DDECODE_WIDTH_LIMIT=12288 \
+              -DDO_RANGE_CHECK_CLAMP=1 \
+              -DAOM_MAX_ALLOCABLE_MEMORY=536870912 \
+              -DAOM_TARGET_CPU=generic \
+              ${aom_src}
+        make clean
+        make -j$(nproc)
+        make install
+        popd
+    else
+        printf "=== Skipping missing ${aom_src}! ===\n"
+    fi
 
     # Build libheif (a C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libheif --libs
