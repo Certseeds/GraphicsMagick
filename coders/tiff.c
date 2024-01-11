@@ -4498,7 +4498,8 @@ int FieldCount = 0;
 
       if(Tag==TIFFTAG_COMPRESSION ||
          Tag==TIFFTAG_IMAGELENGTH || Tag==TIFFTAG_IMAGEWIDTH ||
-         Tag==TIFFTAG_SAMPLESPERPIXEL || Tag==TIFFTAG_BITSPERSAMPLE || Tag==TIFFTAG_SAMPLEFORMAT)
+         Tag==TIFFTAG_SAMPLESPERPIXEL || Tag==TIFFTAG_BITSPERSAMPLE || Tag==TIFFTAG_SAMPLEFORMAT ||
+         Tag==TIFFTAG_ROWSPERSTRIP || Tag==TIFFTAG_STRIPBYTECOUNTS)
       {
           goto NextItem;	/* Banned TIFF tags that cannot be obtained from EXIF. */
       }
@@ -4524,9 +4525,17 @@ int FieldCount = 0;
           case TIFF_ASCII:
                          if(FDT!=TIFF_ASCII)
                              break;	/* Incompatible recipe.*/
-                         if(Value>=profile_length-1) break;		/* String outside EXIF boundary. */
-                         if(TIFFSetField(tiff, Tag, profile_data+Value))
+                         if(Long2<=4)
+                         {
+                           if(TIFFSetField(tiff, Tag, &Value))		/* The short string is inside Value. */
                              FieldCount++;
+                         }
+                         else
+                         {
+                           if(Value+Long2>=profile_length-1) break;		/* String outside EXIF boundary. */
+                           if(TIFFSetField(tiff, Tag, profile_data+Value))
+                             FieldCount++;
+                         }
                          break;
             case TIFF_BYTE:
             case TIFF_SHORT:
@@ -6693,7 +6702,6 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           */
             tdir_t current_mainifd = TIFFCurrentDirectory(tiff);
             if(TIFFCurrentDirOffset(tiff) > 0 && current_mainifd > 0) current_mainifd--;
-         
 
             if(TIFFCreateEXIFDirectory(tiff) == 0)
             {
@@ -6732,11 +6740,12 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             }
 */
               /* Save changed tiff-directory to file */
+/*
             if(!TIFFWriteDirectory(tiff))
             {
               (void)LogMagickEvent(CoderEvent, GetMagickModule(), "TIFFWriteDirectory returns failed status!");
             }
-              /* Re configure directory status for next image. Reset current IFD number. */
+              // Re configure directory status for next image. Reset current IFD number.
             if(!TIFFSetDirectory(tiff, current_mainifd))
             {
               fprintf(stderr, "TIFFSetDirectory() failed.\n");
@@ -6745,6 +6754,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             {
               fprintf(stderr, "TIFFCreateDirectory() failed.\n");
             }
+*/
           }
         }
 #endif /* TIFFLIB_VERSION >= 20120922 */
