@@ -73,7 +73,7 @@
 #  endif /* if defined(COMPRESSION_ZSTD) && defined(HasZSTD) */
 
 #if !defined(EXPERIMENTAL_EXIF_TAGS)
-#  define EXPERIMENTAL_EXIF_TAGS 0
+#  define EXPERIMENTAL_EXIF_TAGS 1 //0
 #endif /* if !defined(EXPERIMENTAL_EXIF_TAGS) */
 
 /*
@@ -4550,7 +4550,11 @@ int FieldCount = 0;
             case TIFF_RATIONAL:
                          if(FDT==TIFF_RATIONAL && Value!=0)
                          {
-                           double d = Long2 / (double)Value;
+                           double d;
+                           if(Value+8>=profile_length) break;
+                           d = LD_UINT32(profile_data+Value+4);
+                           if(d==0) break;		/* Prevent division by 0. */
+                           d = LD_UINT32(profile_data+Value) / d;
                            if(TIFFSetField(tiff, Tag, d))
                                FieldCount++;
                          }

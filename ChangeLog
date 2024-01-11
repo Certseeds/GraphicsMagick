@@ -1,3 +1,7 @@
+2024-01-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+        coders/tiff.c Fixed TIFF_RATIONAL extraction from EXIF.
+
 2024-01-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	coders/tiff.c Fix for multiple frames. Do not import 
