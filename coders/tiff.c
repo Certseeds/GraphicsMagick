@@ -4540,7 +4540,13 @@ int FieldCount = 0;
             case TIFF_BYTE:
             case TIFF_SHORT:
             case TIFF_LONG:
-                         if(FDT!=TIFF_BYTE && FDT!=TIFF_SHORT && FDT!=TIFF_LONG)
+                         if(FDT==TIFF_SHORT)
+                         {
+                           if(TIFFSetField(tiff, Tag, (uint16_t)Value))
+                             FieldCount++;
+                           break;
+                         }
+                         if(FDT!=TIFF_BYTE && FDT!=TIFF_LONG)
                              break;
                          if(TIFFSetField(tiff, Tag, Value))
                              FieldCount++;
@@ -6743,8 +6749,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                 TIFFSetDirectory(tiff, 0);
             }
 */
-              /* Save changed tiff-directory to file */
-/*
+                /* Save changed tiff-directory to file */
             if(!TIFFWriteDirectory(tiff))
             {
               (void)LogMagickEvent(CoderEvent, GetMagickModule(), "TIFFWriteDirectory returns failed status!");
@@ -6752,13 +6757,14 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               // Re configure directory status for next image. Reset current IFD number.
             if(!TIFFSetDirectory(tiff, current_mainifd))
             {
-              fprintf(stderr, "TIFFSetDirectory() failed.\n");
+              if(logging)
+                LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFSetDirectory() failed.\n");
             }
             if(!TIFFCreateDirectory(tiff))
             {
-              fprintf(stderr, "TIFFCreateDirectory() failed.\n");
+              if(logging)
+                LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFCreateDirectory() failed.\n");
             }
-*/
           }
         }
 #endif /* TIFFLIB_VERSION >= 20120922 */
