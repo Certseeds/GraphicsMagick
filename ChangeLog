@@ -1,3 +1,9 @@
+2024-01-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c Fix for multiple frames. Do not import 
+	TIFFTAG_COMPRESSION, TIFFTAG_IMAGELENGTH, TIFFTAG_IMAGEWIDTH ...
+	from EXIF.
+
 2024-01-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (EXPERIMENTAL_EXIF_TAGS): Change

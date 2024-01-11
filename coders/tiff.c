@@ -4496,16 +4496,23 @@ int FieldCount = 0;
         (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Extracted tag from EXIF %xh, Field %d, Long2 %d, val %d %s",
                            Tag, Field, Long2, Value, FipFieldName(fip));
 
+      if(Tag==TIFFTAG_COMPRESSION ||
+         Tag==TIFFTAG_IMAGELENGTH || Tag==TIFFTAG_IMAGEWIDTH ||
+         Tag==TIFFTAG_SAMPLESPERPIXEL || Tag==TIFFTAG_BITSPERSAMPLE || Tag==TIFFTAG_SAMPLEFORMAT)
+      {
+          goto NextItem;	/* Banned TIFF tags that cannot be obtained from EXIF. */
+      }
+
       if(Tag == TIFFTAG_EXIFIFD)
       {
         if((Flags & FLAG_EXIF) != 0)
-          FieldCount += AddIFDExifFields(tiff, profile_data, profile_data+Value, profile_length, logging, Flags);
+          FieldCount += AddIFDExifFields(tiff, profile_data, profile_data+Value, profile_length, logging, Flags|FLAG_BASE);
         goto NextItem;
       }
       if(Tag == TIFFTAG_GPSIFD)
       {
         if((Flags & FLAG_GPS) != 0)
-          FieldCount += AddIFDExifFields(tiff, profile_data, profile_data+Value, profile_length, logging, Flags);
+          FieldCount += AddIFDExifFields(tiff, profile_data, profile_data+Value, profile_length, logging, Flags|FLAG_BASE);
         goto NextItem;
       }
 
@@ -5992,6 +5999,21 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           (void) TIFFSetField(tiff,TIFFTAG_XRESOLUTION,image->x_resolution);
           (void) TIFFSetField(tiff,TIFFTAG_YRESOLUTION,image->y_resolution);
         }
+
+#if defined(EXPERIMENTAL_EXIF_TAGS)
+#if TIFFLIB_VERSION >= 20120922
+        if(status!=MagickFail)
+        {
+          const unsigned char *profile_data;
+          size_t profile_length;
+          if((profile_data=GetImageProfile(image,"Exif",&profile_length)) != 0)
+          {
+            AddExifFields(tiff,profile_data,profile_length,logging, FLAG_BASE);
+          }
+        }
+#endif /* TIFFLIB_VERSION >= 20120922 */
+#endif /* defined(EXPERIMENTAL_EXIF_TAGS) */
+
       if (image->chromaticity.white_point.x != 0.0)
         {
           float
@@ -6664,9 +6686,18 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           size_t profile_length;
           if((profile_data=GetImageProfile(image,"Exif",&profile_length)) != 0)
           {
+         /*
+          * Unfortunately it depends on the prehistory, what number TIFFCurrentDirectory() will get back.
+          * Therefore, the current main IFD number has to be adapted. However, this is an inconsistency in LibTIFF which should be
+          * corrected. This means that the provided code to determíne/handle current directory number here is just a current work around.
+          */
+            tdir_t current_mainifd = TIFFCurrentDirectory(tiff);
+            if(TIFFCurrentDirOffset(tiff) > 0 && current_mainifd > 0) current_mainifd--;
+         
+
             if(TIFFCreateEXIFDirectory(tiff) == 0)
             {
-              if(AddExifFields(tiff,profile_data,profile_length,logging, FLAG_EXIF|FLAG_BASE) > 0)
+              if(AddExifFields(tiff,profile_data,profile_length,logging, FLAG_EXIF) > 0)
               {             // Now write the directory of Exif data 
                 uint64_t dir_offset = 0;
                 if(!TIFFWriteCustomDirectory(tiff, &dir_offset)) 
@@ -6700,6 +6731,20 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                 TIFFSetDirectory(tiff, 0);
             }
 */
+              /* Save changed tiff-directory to file */
+            if(!TIFFWriteDirectory(tiff))
+            {
+              (void)LogMagickEvent(CoderEvent, GetMagickModule(), "TIFFWriteDirectory returns failed status!");
+            }
+              /* Re configure directory status for next image. Reset current IFD number. */
+            if(!TIFFSetDirectory(tiff, current_mainifd))
+            {
+              fprintf(stderr, "TIFFSetDirectory() failed.\n");
+            }
+            if(!TIFFCreateDirectory(tiff))
+            {
+              fprintf(stderr, "TIFFCreateDirectory() failed.\n");
+            }
           }
         }
 #endif /* TIFFLIB_VERSION >= 20120922 */
