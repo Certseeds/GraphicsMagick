@@ -73,7 +73,7 @@
 #  endif /* if defined(COMPRESSION_ZSTD) && defined(HasZSTD) */
 
 #if !defined(EXPERIMENTAL_EXIF_TAGS)
-#  define EXPERIMENTAL_EXIF_TAGS 1 //0
+#  define EXPERIMENTAL_EXIF_TAGS 0
 #endif /* if !defined(EXPERIMENTAL_EXIF_TAGS) */
 
 /*
@@ -4554,15 +4554,26 @@ int FieldCount = 0;
 /*            case TIFF_SRATIONAL:
                          break; */
             case TIFF_RATIONAL:
-                         if(FDT==TIFF_RATIONAL && Value!=0)
+                         if(Tag==EXIFTAG_LENSSPECIFICATION) break; // Needs 4 float values, will be implemented later
+
+                         if(FDT==TIFF_RATIONAL)
                          {
                            double d;
                            if(Value+8>=profile_length) break;
                            d = LD_UINT32(profile_data+Value+4);
                            if(d==0) break;		/* Prevent division by 0. */
                            d = LD_UINT32(profile_data+Value) / d;
-                           if(TIFFSetField(tiff, Tag, d))
+                           if(Tag==TIFFTAG_XRESOLUTION || Tag==TIFFTAG_YRESOLUTION)
+                           {
+                             const float f = d;
+                             if(TIFFSetField(tiff, Tag, f))
                                FieldCount++;
+                           }
+                           else
+                           {
+                             if(TIFFSetField(tiff, Tag, d))
+                               FieldCount++;
+                           }
                          }
                          break;
         }
