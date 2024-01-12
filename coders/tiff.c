@@ -4541,9 +4541,11 @@ int FieldCount = 0;
             case TIFF_BYTE:
             case TIFF_SHORT:
             case TIFF_LONG:
+                         if(WriteCount!=1)
+                             break;
                          if(FDT==TIFF_SHORT)
                          {
-                           if(TIFFSetField(tiff, Tag, (uint16_t)Value))
+                           if(TIFFSetField(tiff, Tag, (int)Value))
                              FieldCount++;
                            break;
                          }
