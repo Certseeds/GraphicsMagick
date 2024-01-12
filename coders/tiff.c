@@ -6030,7 +6030,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           (void) TIFFSetField(tiff,TIFFTAG_YRESOLUTION,image->y_resolution);
         }
 
-#if defined(EXPERIMENTAL_EXIF_TAGS)
+#if EXPERIMENTAL_EXIF_TAGS
 #if TIFFLIB_VERSION >= 20120922
         if(status!=MagickFail)
         {
