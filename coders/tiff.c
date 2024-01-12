@@ -4492,7 +4492,7 @@ int FieldCount = 0;
       Value = LD_UINT32(IFD_data+8);
 
       fip = TIFFFindField(tiff, Tag, TIFF_ANY);
-      if(logging)
+      if(logging && (Flags & FLAG_BASE)!=0)
         (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Extracted tag from EXIF %xh, Field %d, Long2 %d, val %d %s",
                            Tag, Field, Long2, Value, FipFieldName(fip));
 
@@ -4517,7 +4517,7 @@ int FieldCount = 0;
         goto NextItem;
       }
 
-      if(fip!=NULL && (Flags & FLAG_BASE)!= 0)		/* libtiff doesn't understand these */
+      if(fip!=NULL && (Flags & FLAG_BASE)!=0)		/* libtiff doesn't understand these */
       {
         const TIFFDataType FDT = TIFFFieldDataType(fip);
         const int WriteCount = TIFFFieldWriteCount(fip);
@@ -6756,20 +6756,23 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             }
 */
                 /* Save changed tiff-directory to file */
-            if(!TIFFWriteDirectory(tiff))
+            if(image->next != (Image *)NULL)
             {
-              (void)LogMagickEvent(CoderEvent, GetMagickModule(), "TIFFWriteDirectory returns failed status!");
-            }
+              if(!TIFFWriteDirectory(tiff))
+              {
+                (void)LogMagickEvent(CoderEvent, GetMagickModule(), "TIFFWriteDirectory returns failed status!");
+              }
               // Re configure directory status for next image. Reset current IFD number.
-            if(!TIFFSetDirectory(tiff, current_mainifd))
-            {
-              if(logging)
-                LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFSetDirectory() failed.\n");
-            }
-            if(!TIFFCreateDirectory(tiff))
-            {
-              if(logging)
-                LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFCreateDirectory() failed.\n");
+              if(!TIFFSetDirectory(tiff, current_mainifd))
+              {
+                if(logging)
+                  LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFSetDirectory() failed.\n");
+              }
+              if(!TIFFCreateDirectory(tiff))
+              {
+                if(logging)
+                  LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFCreateDirectory() failed.\n");
+              }
             }
           }
         }
