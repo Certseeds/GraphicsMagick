@@ -4520,6 +4520,7 @@ int FieldCount = 0;
       if(fip!=NULL && (Flags & FLAG_BASE)!= 0)		/* libtiff doesn't understand these */
       {
         const TIFFDataType FDT = TIFFFieldDataType(fip);
+        const int WriteCount = TIFFFieldWriteCount(fip);
         switch(Field)
         {
           case TIFF_ASCII:
@@ -4554,7 +4555,8 @@ int FieldCount = 0;
 /*            case TIFF_SRATIONAL:
                          break; */
             case TIFF_RATIONAL:
-                         if(Tag==EXIFTAG_LENSSPECIFICATION) break; // Needs 4 float values, will be implemented later
+                         if(WriteCount!=1)
+                             break;
 
                          if(FDT==TIFF_RATIONAL)
                          {
@@ -4563,17 +4565,8 @@ int FieldCount = 0;
                            d = LD_UINT32(profile_data+Value+4);
                            if(d==0) break;		/* Prevent division by 0. */
                            d = LD_UINT32(profile_data+Value) / d;
-                           if(Tag==TIFFTAG_XRESOLUTION || Tag==TIFFTAG_YRESOLUTION)
-                           {
-                             const float f = d;
-                             if(TIFFSetField(tiff, Tag, f))
+                           if(TIFFSetField(tiff, Tag, d))
                                FieldCount++;
-                           }
-                           else
-                           {
-                             if(TIFFSetField(tiff, Tag, d))
-                               FieldCount++;
-                           }
                          }
                          break;
         }
