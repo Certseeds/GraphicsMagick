@@ -4545,7 +4545,7 @@ int FieldCount = 0;
                              break;
                          if(FDT==TIFF_SHORT)
                          {
-                           if(TIFFSetField(tiff, Tag, (int)Value))
+                           if(TIFFSetField(tiff, Tag, (unsigned)Value & 0xFFFF))
                              FieldCount++;
                            break;
                          }
