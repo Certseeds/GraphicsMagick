@@ -258,11 +258,11 @@ MagickMonitorFormatted(const magick_int64_t quantum,
         It is theoretically possible for events to be delivered out of
         order if the handler takes so much time to complete that
         another thread is already delivering an event.  If the OS does
-        not provide any lock ordering sematics (first come, first
+        not provide any lock ordering semantics (first come, first
         served) then behavior is indeterminate.  FIXME: if the
         progress monitor is called by a thread while the lock is still
         held, maybe just cache the latest progress and deliver it once
-        the monitor hander returns so the most recent progress is
+        the monitor handler returns so the most recent progress is
         delivered. The current semaphore design does not provide "try
         lock" behavior.
       */

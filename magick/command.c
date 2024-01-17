@@ -1731,7 +1731,7 @@ static void BatchOptionUsage(void)
          "Unix escape allows the use backslash(\\), single quote(') and double quote(\") in\n"
          "the command line. Windows escape only uses double quote(\").  For example,\n"
          "\n"
-         "    Orignal             Unix escape              Windows escape\n"
+         "    Original            Unix escape              Windows escape\n"
          "    [a\\b\\c\\d]           [a\\\\b\\\\c\\\\d]             [a\\b\\c\\d]\n"
          "    [Text with space]   [Text\\ with\\ space]      [\"Text with space\"]\n"
          "    [Text with (\")]     ['Text with (\")']        [\"Text with (\"\")\"]\n"
@@ -2231,7 +2231,7 @@ BenchmarkImageCommand(ImageInfo *image_info,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  CheckOptionValue prints error message to stderr if value agrument is null
+%  CheckOptionValue prints error message to stderr if value argument is null
 %  and returns OPtionMissingValue. Otherwise return OptionSuccess.
 %
 %  The format of the CheckOptionValue method is:
@@ -6373,12 +6373,12 @@ static void ConvertUsage(void)
   (void) puts("  -flip                flip image in the vertical direction");
   (void) puts("  -flop                flop image in the horizontal direction");
   (void) puts("  -font name           render text with this font");
-  (void) puts("  -format \"string\"   output formatted image info for 'info:' format");
+  (void) puts("  -format \"string\"     output formatted image info for 'info:' format");
   (void) puts("  -frame geometry      surround image with an ornamental border");
   (void) puts("  -fuzz distance       colors within this distance are considered equal");
   (void) puts("  -gamma value         level of gamma correction");
   (void) puts("  -gaussian geometry   gaussian blur an image");
-  (void) puts("  -geometry geometry   perferred size or location of the image");
+  (void) puts("  -geometry geometry   preferred size or location of the image");
   (void) puts("  -green-primary point chomaticity green primary point");
   (void) puts("  -gravity type        horizontal and vertical text/object placement");
   (void) puts("  -hald-clut clut      apply a Hald CLUT to the image");
@@ -8178,7 +8178,7 @@ static OptionStatus GetOptionValue(const char *option, char *value,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  GetOptionValueRestricted searchs the value in the a list of predefined
+%  GetOptionValueRestricted searches the value in the a list of predefined
 %  values. If a match is found, it sets variable pointed by the result pointer
 %  and return OptionSuccess when the value is one. Otherwise, print error
 %  and returns OPtionInvalidValue.
@@ -8230,7 +8230,7 @@ static OptionStatus GetOptionValueRestricted(const char *option,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  GetOnOffOptionValue expectes the value to be either "on" or "off". It then
+%  GetOnOffOptionValue expects the value to be either "on" or "off". It then
 %  sets the corresponding value to the boolean variable pointed by the result
 %  pointer and return OptionSuccess. Otherwise, print error and returns
 %  OPtionInvalidValue.
@@ -14004,7 +14004,7 @@ static void MogrifyUsage(void)
   (void) puts("  -fuzz distance       colors within this distance are considered equal");
   (void) puts("  -gamma value         level of gamma correction");
   (void) puts("  -gaussian geometry   gaussian blur an image");
-  (void) puts("  -geometry geometry   perferred size or location of the image");
+  (void) puts("  -geometry geometry   preferred size or location of the image");
   (void) puts("  -gravity type        horizontal and vertical text/object placement");
   (void) puts("  -green-primary point chomaticity green primary point");
   (void) puts("  -implode amount      implode image pixels about the center");
@@ -14064,7 +14064,7 @@ static void MogrifyUsage(void)
   (void) puts("  -resample geometry   resample to horizontal and vertical resolution");
   (void) puts("  +repage              reset current page offsets to default");
   (void) puts("  -repage geometry     adjust current page offsets by geometry");
-  (void) puts("  -resize geometry     perferred size or location of the image");
+  (void) puts("  -resize geometry     preferred size or location of the image");
   (void) puts("  -roll geometry       roll an image vertically or horizontally");
   (void) puts("  -rotate degrees      apply Paeth rotation to the image");
   (void) puts("  -sample geometry     scale image with pixel sampling");
@@ -15896,7 +15896,7 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
           {
             ximage_info.frame=(*option == '-');
             MagickFreeMemory(argv[i]);
-            argv[i]=AcquireString("-ignore");  /* resolve option confict */
+            argv[i]=AcquireString("-ignore");  /* resolve option conflict */
             break;
           }
         MagickFatalError(OptionFatalError,UnrecognizedOption,option);
@@ -16380,7 +16380,7 @@ static void ImportUsage(void)
   (void) puts("  -frame               include window manager frame");
   (void) puts("  -encoding type       text encoding type");
   (void) puts("  -endian type         multibyte word order (LSB, MSB, or Native)");
-  (void) puts("  -geometry geometry   perferred size or location of the image");
+  (void) puts("  -geometry geometry   preferred size or location of the image");
   (void) puts("  -interlace type      None, Line, Plane, or Partition");
   (void) puts("  -help                print program options");
   (void) puts("  -label name          assign a label to an image");
@@ -17440,7 +17440,7 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  RegisterCommand() registers this appplication as the source for messages
+%  RegisterCommand() registers this application as the source for messages
 %  compatible with the windows event logging system. All this does is to set
 %  a registry value to point to either an EXE or DLL that contains a special
 %  binary resource containing all the messages that can be used.
@@ -17508,7 +17508,7 @@ static MagickPassFail RegisterCommand(ImageInfo *image_info,
       DWORD
         dwSupportedTypes;
 
-      /* set a pointer to thsi application as the source for our messages */
+      /* set a pointer to this application as the source for our messages */
       memset(szPathName, 0, MaxTextExtent*sizeof(char));
       FormatString(szPathName,"%.1024s%s%.1024s",
                    GetClientPath(),DirectorySeparator,GetClientName());

@@ -665,7 +665,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
              * The JXL API does return the pixels in their original colorspace
              * which has a large number of possibilities with profiles etc.
              *
-             * We need to try to convert this to the internel SRGB Colorspace
+             * We need to try to convert this to the internal SRGB Colorspace
              * as best as possibly. Better to read a image somewhat bogus then
              * to error out.
              *

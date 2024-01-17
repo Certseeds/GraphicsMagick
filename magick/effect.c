@@ -4683,7 +4683,7 @@ MagickExport MagickPassFail ThresholdImage(Image *image,const double threshold)
 %    o amount: The percentage of the difference between the original and the
 %      blur image that is added back into the original.
 %
-%    o threshold: The threshold in pixels needed to apply the diffence amount.
+%    o threshold: The threshold in pixels needed to apply the difference amount.
 %
 %    o exception: Return any errors or warnings in this structure.
 %
@@ -4827,7 +4827,7 @@ MagickExport Image *UnsharpMaskImage(const Image *image,const double radius,
 %    o amount: The percentage of the difference between the original and the
 %      blur image that is added back into the original.
 %
-%    o threshold: The threshold in pixels needed to apply the diffence amount.
+%    o threshold: The threshold in pixels needed to apply the difference amount.
 %
 %    o exception: Return any errors or warnings in this structure.
 %

@@ -2211,7 +2211,7 @@ MagickExport Image *ThumbnailImage(const Image *image,
 
   /*
     Thumbnailing defaults to a fast box filter, but allow user to
-    overide the filter used.
+    override the filter used.
   */
   if (UndefinedFilter != image->filter)
     resize_filter=image->filter;

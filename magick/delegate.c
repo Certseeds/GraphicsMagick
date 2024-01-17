@@ -1262,7 +1262,7 @@ MagickExport unsigned int ListDelegateInfo(FILE *file,ExceptionInfo *exception)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method ReadConfigureFile reads the delegate configuration file which maps
-%  delegate invokation strings to a particular image format.
+%  delegate invocation strings to a particular image format.
 %
 %  The format of the ReadConfigureFile method is:
 %

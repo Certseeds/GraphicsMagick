@@ -48,7 +48,7 @@ Items large and small which remain to be worked on.
 * Fix documentation for drawing rounded rectangle.  Parameters
   represent corners, not center.
 
-* Manage Options instance seperate from Image instance.  Possibly take
+* Manage Options instance separate from Image instance.  Possibly take
   this to the extreme by managing each contained structure
   independently.
 

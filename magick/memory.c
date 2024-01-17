@@ -113,7 +113,7 @@ MagickExport void MagickAllocFunctions(MagickFreeFunc free_func,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  MagickArraySize() returnes the size of an array given two size_t arguments.
+%  MagickArraySize() returns the size of an array given two size_t arguments.
 %  Zero is returned if the computed result overflows the size_t type.
 %
 %  The format of the MagickArraySize method is:

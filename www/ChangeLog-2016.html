@@ -46,7 +46,7 @@ BLACKANDWHITE.  Problem was reported by Aaron Boxer via email on
 December 31, 2016.</p></li>
 <li><p>TclMagick/generic/Makefile.am: Applied patch by Massimo Manghi
 (plus some fixes by me) to add a 'libttkcommon' shared library to
-contain codde common to the TclMagick/TkMagick loadable modules,
+contain code common to the TclMagick/TkMagick loadable modules,
 and particularly to allow TkMagick to access TclMagick functions
 without depending on dlopen() with RTLD_GLOBAL behavior.</p></li>
 </ul>
@@ -387,7 +387,7 @@ release.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>coders/tiff.c (ReadTIFFImage): Fix heap-based buffer read
-overflow.  TIFF sized attibutes were not being properly copied to
+overflow.  TIFF sized attributes were not being properly copied to
 a null-terminated string if the value was not null terminated.
 Problem was reported by Agostino Sarubbo on August 18, 2016.  This
 problem was assigned CVE-2016-7449 after the 1.3.25 release.</p></li>
@@ -463,7 +463,7 @@ detailed error reports when a gradient is rejected.</p></li>
 2016-07-07, Gustavo Grieco notified us of a heap overflow in
 EscapeParenthesis().  I was not able to reproduce the issue but
 changed the implementation with the suspicion that the
-implementation has a bug, and due to noticing arbitary limits and
+implementation has a bug, and due to noticing arbitrary limits and
 inefficiency.  This issue was assigned CVE-2016-7447 after the
 1.3.25 release.</p></li>
 </ul>
@@ -600,7 +600,7 @@ and height limits from &quot;-limit&quot; while reading or writing JNG files.</p
 <ul class="simple">
 <li><p>coders/url.c: Don't hide HTTP, FTP, and FILE URL support from
 '-list format' output.  Ignore HTTP, FTP, and FILE as a useful
-file extension for determing the file format.</p></li>
+file extension for determining the file format.</p></li>
 </ul>
 </blockquote>
 <p>2016-05-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -722,7 +722,7 @@ sample file provided by Hanno Böck on May 5, 2016.</p></li>
 <li><p>config/delegates.mgk.in: Gnuplot files are inherently insecure.
 Remove delegates support for reading them.  Reported by John
 Lightsey via private email.
-Added -dSAFER to Ghostscript invokations in delegates.mgk for more
+Added -dSAFER to Ghostscript invocations in delegates.mgk for more
 secure execution.  Reported by David Chan via SourceForge bug
 &quot;#386 ghostscript delegates should explicitly use -dSAFER.&quot;.</p></li>
 <li><p>magick/constitute.c (ReadImages): Avoid possible infinite

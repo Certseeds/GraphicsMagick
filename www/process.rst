@@ -53,7 +53,7 @@ Snapshot Phase
 Beta Phase
 ~~~~~~~~~~
 
-  The Beta phase (usually only occuring at the beginning of a major
+  The Beta phase (usually only occurring at the beginning of a major
   release cycle) is entered when the work is feature complete, the
   package passes all tests, and it is considered time for versioned
   releases. As the first step of entering the beta phase, a release

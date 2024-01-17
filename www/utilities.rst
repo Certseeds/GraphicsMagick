@@ -47,7 +47,7 @@ commands are as follows:
 
 ===============  =========================================================================
 animate_         Animate a sequence of images
-batch_           Executes an arbitary number of utility commands
+batch_           Executes an arbitrary number of utility commands
 benchmark_       Measure and report utility command performance.
 compare_         Compare two images using statistics and/or visual differencing
 composite_       Composite images together

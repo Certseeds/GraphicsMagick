@@ -30,7 +30,7 @@
 #include "magick/utility.h"
 
 /*
-  Obtain the maximum numer of threads to use based on image storage
+  Obtain the maximum number of threads to use based on image storage
   type, region size, and user options.  The maximum number of threads
   which may be used is that reported by omp_get_max_threads().  The
   number of threads to be used is returned.

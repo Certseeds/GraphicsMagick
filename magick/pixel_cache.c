@@ -932,12 +932,12 @@ SetCacheNexus(Image *image,const long x,const long y,
 #endif
     if ((cache_info->storage_class != UndefinedClass) &&
         (image->storage_class != cache_info->storage_class))
-      fprintf(stderr,"SetCacheNexus: Pixel cache storage class mis-match! (image: %s, cache: %s)\n",
+      fprintf(stderr,"SetCacheNexus: Pixel cache storage class mismatch! (image: %s, cache: %s)\n",
               ClassTypeToString(image->storage_class),ClassTypeToString(cache_info->storage_class));
 #if 0
     if ((cache_info->colorspace != UndefinedColorspace) &&
         (image->colorspace != cache_info->colorspace))
-      fprintf(stderr,"SetCacheNexus: Pixel cache colorspace mis-match! (image: %s, cache: %s)\n",
+      fprintf(stderr,"SetCacheNexus: Pixel cache colorspace mismatch! (image: %s, cache: %s)\n",
               ColorspaceTypeToString(image->colorspace), ColorspaceTypeToString(cache_info->colorspace));
 #endif
   }
@@ -4632,7 +4632,7 @@ ModifyCache(Image *image, ExceptionInfo *exception)
       {
         /*
           Indicate that image will be (possibly) modified, and unset
-          grayscale/monocrome flags.
+          grayscale/monochrome flags.
         */
         image->taint=MagickTrue;
         image->is_grayscale=MagickFalse;
@@ -4961,7 +4961,7 @@ SetCacheViewPixels(ViewInfo *view,const long x,const long y,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  SetImagePixels() initializes a pixel region for write-only access.
-%  If the region is successfully intialized a pointer to a PixelPacket
+%  If the region is successfully initialized a pointer to a PixelPacket
 %  array representing the region is returned, otherwise NULL is returned.
 %  The returned pointer may point to a temporary working buffer for the
 %  pixels or it may point to the final location of the pixels in memory.

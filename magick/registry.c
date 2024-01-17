@@ -416,7 +416,7 @@ void InitializeMagickRegistry(void)
 %    o blob: The address of a Binary Large OBject.
 %
 %    o length: For a registry type of ImageRegistryType use sizeof(Image)
-%      otherise the blob length in number of bytes.
+%      otherwise the blob length in number of bytes.
 %
 %    o exception: Return any errors or warnings in this structure.
 %

@@ -144,7 +144,7 @@ Since Mercurial_ is a distributed revision control system, you may
 clone the GraphicsMagick repository and work for days or weeks (making
 your own local commits) before you decide to push some or all of your
 changes to the GraphicsMagick development repository.  GraphicsMagick
-developers first commit changes to their own local respository, then
+developers first commit changes to their own local repository, then
 they push their changes to the GraphicsMagick development repository
 at hg.graphicsmagick.org, later on (after testing and possible fixes)
 I will push the changes to the stable repository at SourceForge.
@@ -186,7 +186,7 @@ The repository hierarchy is as follows:
 To build your local development repository (as quickly as possible),
 you may use these steps:
 
-1. Clone the stable respository at SourceForge or OSDN::
+1. Clone the stable repository at SourceForge or OSDN::
 
      hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
 

@@ -112,7 +112,7 @@ variables by specifying them on the configure command line, e.g.::
     ./configure CC=c99 CFLAGS=-O2 LIBS=-lposix
 
 Options which should be common to packages installed under the same
-directory heirarchy may be supplied via a 'config.site' file located
+directory hierarchy may be supplied via a 'config.site' file located
 under the installation prefix via the path ${prefix}/share/config.site
 where ${prefix} is the installation prefix. This file is used for all
 packages installed under that prefix. As an alternative, the CONFIG_SITE
@@ -636,7 +636,7 @@ Several configure options require special note:
   thread safe by using thread APIs to implement required locking.
   This is intended to allow the GraphicsMagick library to be used by
   multi-threaded programs using native POSIX threads. If the locking
-  or dependence on thread APIs is undesireable, then specify
+  or dependence on thread APIs is undesirable, then specify
   --without-threads.  Testing shows that the overhead from thread
   safety is virtually unmeasurable so usually there is no reason to
   disable multi-thread support.  While previous versions disabled
@@ -656,7 +656,7 @@ Several configure options require special note:
 
   By default, GraphicsMagick is compiled with support for OpenMP
   (http://www.openmp.org/) if the compilation environment supports it.
-  OpenMP automatically parallizes loops across concurrent threads
+  OpenMP automatically parallelizes loops across concurrent threads
   based on instructions in pragmas. OpenMP was introduced in GCC
   4.2. OpenMP is a well-established standard and was implemented in
   some other compilers in the late '90s, long before its appearance in

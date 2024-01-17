@@ -63,7 +63,7 @@ typedef struct
   magick_uint16_t TileWidth;    /* tile width in pixels */
   magick_uint16_t TileHeight;   /* tile height in pixels */
   magick_uint32_t TileOffsets;  /* offset to array of longints that contains
-                                   adresses of tiles in the raster (adreses
+                                   addresses of tiles in the raster (adreses
                                    are counted from 0) */
   magick_uint32_t TileByteCounts;/* offset to array of words, that contain amount of bytes stored in
                                    tiles. The tile size might vary depending on
@@ -642,7 +642,7 @@ NoMEZ:          /*Clean up palette and clone_info*/
         if(j<=ldblk)
         {
           if(j==MEZ[i])
-            j = (long) i; /* MEZ[i];   ignore MEZ!!! proper palete element after reindexing */
+            j = (long) i; /* MEZ[i];   ignore MEZ!!! proper palette element after reindexing */
           else
             j = MEZ[i];                 /* ?? I do not know, big mess ?? */
           if(j>=(long) image->colors) j=image->colors-1;
@@ -936,7 +936,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
     }
   }
 
-  status &= CloseBlob(image); /* valgrind reports write of unitialized data */
+  status &= CloseBlob(image); /* valgrind reports write of uninitialized data */
   MagickFreeResourceLimitedMemory(pixels);
 
   if (y != (long)image->rows)

@@ -1,4 +1,4 @@
-.TH gm 1 "2023/11/12" "GraphicsMagick"
+.TH gm 1 "2024/01/17" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -57,7 +57,7 @@ displays an animation (e.g. a GIF file) on any workstation display
 running an \fIX\fP server.
 
 \fBbatch\fP
-executes an arbitary number of the utility commands
+executes an arbitrary number of the utility commands
 (e.g. \fBconvert\fP) in the form of a simple linear batch script in
 order to improve execution efficiency, and/or to allow use as a
 subordinate co-process under the control of an arbitrary script or
@@ -407,7 +407,7 @@ writes files \fIimage00.miff, image01.miff,\fP etc. Only a single
 specification is allowed within an output filename. If more than one
 specification is present, it will be ignored. It is best to embed the
 scene number in the base part of the file name, not in the extension,
-because the extension will not be a recognizeable image type.
+because the extension will not be a recognizable image type.
 
 When running a commandline utility, you can
 prepend an at sign @ to a filename to read a list of image
@@ -513,7 +513,7 @@ encryption.  Encrypting images being written is not supported.
 .B "-auto-orient"
 \fRorient (rotate) image so it is upright
 
-Adjusts the image orienation so that it is suitable for viewing.  Uses
+Adjusts the image orientation so that it is suitable for viewing.  Uses
 the orientation tag obtained from the image file or as supplied by the
 \fB-orient\fP option.
 .TP
@@ -3064,7 +3064,7 @@ The amount of uncompressed data read when reading one image file may
 be limited by the \fBRead\fP limit.  Reading the image fails when the
 limit is hit.  This option is useful if the data is read from a stream
 (pipe) or from a compressed file such as a gzipped file.  Some files
-are very compressable and so a small compressed file can decompress to
+are very compressible and so a small compressed file can decompress to
 a huge amount of data.  This option also defends against files which
 produce seemingly endless loops while decoding by seeking backwards in
 the file.
@@ -3399,7 +3399,7 @@ This is a contrast enhancement technique based on the image histogram.
 
 When computing the contrast enhancement values, the histogram edges
 are truncated so that the majority of the image pixels are considered
-in the constrast enhancement, and outliers (e.g. random noise or
+in the contrast enhancement, and outliers (e.g. random noise or
 minute details) are ignored.  The default is that 0.1 percent of the
 histogram entries are ignored.  The percentage of the histogram to
 ignore may be specified by using the \fB-set\fP option with the
@@ -3772,7 +3772,7 @@ An attractive "half-tone" looking image can be obtained by first
 rotating the image 45 degrees, performing a 5x5 ordered-dither
 operation, then rotating it back to the original orientation and
 cropping to the original image dimensions.  If the original image
-is gamma-encoded, it is adviseable to convert it to linear intensity
+is gamma-encoded, it is advisable to convert it to linear intensity
 first, e.g., with the "-gamma 0.45455" option.
 .TP
 .B "-output-directory \fI<directory>"\fP
@@ -5139,7 +5139,7 @@ may reclaim such memory when needed.
 \fRMaximum amount of memory to allocate from the heap.
 .TP
 .B "MAGICK_LIMIT_PIXELS"
-\fRMaximum number of total pixels (image rows times image colums) to
+\fRMaximum number of total pixels (image rows times image columns) to
 allow for any image which is requested to be created or read.  This is
 useful to place a limit on how large an image may be.  If the input
 image file has image dimensions larger than the pixel limit, then the
@@ -5718,7 +5718,7 @@ of header identifying the window. The default is the image file name.
 .SH GM BATCH
 .SH DESCRIPTION
 
-\fBbatch\fP executes an arbitary number of the utility commands
+\fBbatch\fP executes an arbitrary number of the utility commands
 (e.g. \fBconvert\fP) in the form of a simple linear batch script in
 order to improve execution efficiency, and/or to allow use as a
 subordinate co-process under the control of an arbitrary script or

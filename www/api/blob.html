@@ -528,8 +528,8 @@ blob.  On return, it reflects the actual length of the blob.</p>
 <p>ImageToFile() copies the input image from an open blob stream to a file.
 It returns False if an error occurs otherwise True.  This function is used
 to handle coders which are unable to stream the data in using Blob I/O.
-Instead of streaming the data in, the data is streammed to a temporary
-file, and the coder accesses the temorary file directly.</p>
+Instead of streaming the data in, the data is streamed to a temporary
+file, and the coder accesses the temporary file directly.</p>
 <p>The format of the ImageToFile method is:</p>
 <pre class="literal-block">MagickPassFail ImageToFile( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *filename,
                             <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>

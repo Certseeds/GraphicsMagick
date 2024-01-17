@@ -52,7 +52,7 @@ For severely CPU-bound algorithms, it is not uncommon to see a linear
 speed-up (within the constraints of `Amdahl's law`_) due to the number
 of cores. For example, a two core system executes the algorithm twice
 as fast, and a four core system executes the algorithm four times as
-fast. Memory-bound algorithms scale based on the memory bandwith
+fast. Memory-bound algorithms scale based on the memory bandwidth
 available to the cores. For example, memory-bound algorithms scale up
 to almost 1.5X on my four core Opteron system due to its `NUMA`_
 architecture. Some systems/CPUs are able to immediately context switch
@@ -179,7 +179,7 @@ improve opportunity for OpenMP speed-up.
 OpenMP Variables
 ================
 
-According to the OpenMP specification, the OMP_NUM_THREADS evironment
+According to the OpenMP specification, the OMP_NUM_THREADS environment
 variable may be used to specify the number of threads available to the
 application. Typically this is set to the number of processor cores on
 the system but may be set lower to limit resource consumption or (in

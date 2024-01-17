@@ -13,7 +13,7 @@
   Module alias list entry
   Maintains modules.mgk path, and the module name corresponding
   to each magick tag.
-  Used to support module_list, which is intialized by reading modules.mgk,
+  Used to support module_list, which is initialized by reading modules.mgk,
 */
 typedef struct _ModuleInfo
 {

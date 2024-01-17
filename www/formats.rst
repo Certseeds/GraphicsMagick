@@ -186,7 +186,7 @@ image formats.
    | FPX          | RW   | FlashPix Format           | Requires FlashPix SDK.                           |
    +--------------+------+---------------------------+--------------------------------------------------+
    |              |      |                           | 8-bit RGB PseudoColor with up to 256 palette     |
-   |              |      |                           | entires. Specify the format "GIF87" to write the |
+   |              |      |                           | entries. Specify the format "GIF87" to write the |
    |              |      | CompuServe Graphics       | older version 87a of the format.                 |
    | GIF_         | RW   | Interchange Format        |                                                  |
    |              |      |                           | The PNG format provides a superior set of        |
@@ -441,7 +441,7 @@ image formats.
    |              |      |                           | Requires libwmf. By default, renders WMF files   |
    |              |      |                           | using the dimensions specified by the metafile   |
    |              |      |                           | header. Use the -density option to adjust the    |
-   |              |      |                           | output resolution, and thereby adjust the ouput  |
+   |              |      |                           | output resolution, and thereby adjust the output |
    | WMF_         |      | Windows Metafile          | size. The default output resolution is 72DPI so  |
    |              |      |                           | "-density 144" results in an image twice as      |
    |              |      |                           | large as the default. Use -background color_ to  |

@@ -45,7 +45,7 @@
 /*
     Verify that image colorspace is compatible with with requested
     channel type.  Only check mismatch between RGB and CMYK since user
-    might intentionally export some obsure colorspace channel.  We
+    might intentionally export some obscure colorspace channel.  We
     don't silently convert between RGB and CMYK since there is no one
     correct transform, and the transform is lossy.
   */

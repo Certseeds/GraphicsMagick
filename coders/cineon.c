@@ -115,7 +115,7 @@ typedef struct _CineonImageInfo
 {
   U8    orientation;               /* Image orientation */
   U8    channels;                  /* Number of image channels (1-8) */
-  U8    pad[2];                    /* Unused (2 byte space for word allignment */
+  U8    pad[2];                    /* Unused (2 byte space for word alignment */
   DPXImageChannel channel_info[8]; /* Description of channels */
   R32   white_point[2];            /* White point (color temperature) - x,y pair */
   R32   red_primary_chromaticity[2]; /* Red primary chromaticity - x,y pair */
@@ -154,7 +154,7 @@ typedef struct _CineonFilmInfo
   U8    film_mfg_id_code;          /* Film mfg. ID code (2 digits from film edge code) */
   U8    film_type;                 /* Film type (2 digits from film edge code) */
   U8    perfs_offset;              /* Offset in perfs (2 digits from film edge code) */
-  U8    unused;                    /* Unused, for word allignment */
+  U8    unused;                    /* Unused, for word alignment */
   U32   prefix;                    /* Prefix (6 digits from film edge code) */
   U32   count;                     /* Count (4 digits from film edge code) */
   ASCII format[32];                /* Format -- e.g. Academy */
@@ -555,7 +555,7 @@ static Image *ReadCINEONImage(const ImageInfo *image_info,
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Creation time \"%s\"", cin_file_info.creation_time);
   /*
-    Place arbitary limit on user defined length.
+    Place arbitrary limit on user defined length.
   */
   if (cin_file_info.user_defined_length > 16777216U)
     ThrowReaderException(CorruptImageError,ImproperImageHeader,image);

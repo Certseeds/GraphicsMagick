@@ -102,7 +102,7 @@ a read one byte beyond the oFFs chunk allocation size due to an
 error in specifying an offset into the chunk.</p></li>
 <li><p>coders/palm.c (ReadPALMImage): Fix SourceForge issue #529
 &quot;global-buffer-overflow in ReadPALMImage&quot;.  This issue only
-occured in builds with QuantumDepth=8 due to the small range of
+occurred in builds with QuantumDepth=8 due to the small range of
 IndexPacket.</p></li>
 </ul>
 </blockquote>
@@ -362,7 +362,7 @@ this interface is usually (but not exclusively) used from within
 the command-line utility program, in which case the only harm
 would be a program crash.</p></li>
 <li><p>magick/constitute.c (WriteImage): Assure that the errno present
-when the blob error status first occured is reported to the user.</p></li>
+when the blob error status first occurred is reported to the user.</p></li>
 <li><p>magick/blob.c (GetBlobStatus): Blob error status is now updated
 immediately upon the first error reported.
 (GetBlobFirstErrno): Returns errno value when the first blob error

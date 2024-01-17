@@ -4075,7 +4075,7 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
     xmlSubstituteEntitiesDefault(1) enables external ENTITY support
     (e.g. SVGResolveEntity() which allows XML to be downloaded from an
     external source.  This may be a security hazard if the input is
-    not trustworty or if connecting to the correct source is not
+    not trustworthy or if connecting to the correct source is not
     assured. If the XML is parsed on the backside of a firewall then
     it may be able to access unintended resources.
 

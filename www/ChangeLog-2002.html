@@ -188,7 +188,7 @@ identified by the compiler.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>magick/image.h: Moved function prototypes for functions
-implemented in code modules other than image.c to seperate header
+implemented in code modules other than image.c to separate header
 files with names based on the implementation files.</p></li>
 </ul>
 </blockquote>
@@ -706,7 +706,7 @@ gamma = 1.0.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>display.c: removed unnecessary SignatureImage() calls which
-dramatically slowed down loading images and quiting the program.</p></li>
+dramatically slowed down loading images and quitting the program.</p></li>
 <li><p>xwindow.c: optimized image size reduction for the case where the
 target size is a small fraction of the original size. This makes
 creation of display's panner and thumbnail images tremendously
@@ -916,9 +916,9 @@ by Glenn Randers-Pehrson.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>Arcs are now rendered properly.</p></li>
-<li><p>Use -authenticate to specifiy a password when viewing encrypted
+<li><p>Use -authenticate to specify a password when viewing encrypted
 PDF's.</p></li>
-<li><p>-page was previouly being ignored.</p></li>
+<li><p>-page was previously being ignored.</p></li>
 <li><p>Configure files are returned as blobs now (suggested by William
 Radcliffe).</p></li>
 </ul>
@@ -1039,7 +1039,7 @@ security feature suggested by Bob Friesenhahn).</p></li>
 <p>2002-07-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>Added SubstituteString to utility.c for performing substitions
+<li><p>Added SubstituteString to utility.c for performing substitutions
 on strings.</p></li>
 <li><p>Added support for performing Ghostscript-related substitutions
 while reading delegates.mgk and type.mgk files.</p></li>
@@ -1341,7 +1341,7 @@ QueryColorDatabase().</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>configure.ac (libtool_build_static_libs): Added
---enable-delegate-build option to suuport building ImageMagick
+--enable-delegate-build option to support building ImageMagick
 using delegate libraries in subdirectories of the ImageMagick
 source directory.</p></li>
 </ul>
@@ -1631,7 +1631,7 @@ previous functionality of -scene for import program.</p></li>
 <ul class="simple">
 <li><p>Geometry strings respect -gravity (e.g. -gravity SouthWest -crop
 100x100).</p></li>
-<li><p>Postive offsets in geometry strings move within the image canvas
+<li><p>Positive offsets in geometry strings move within the image canvas
 with respect to the gravity (SouthWest gravity is similar to
 Postscript page offsets).</p></li>
 </ul>

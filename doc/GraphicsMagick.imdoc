@@ -149,7 +149,7 @@ running an <i>X</i> server.</p>
 <format type=html>
 <a href="batch.html"><s>batch</s></a>
 </format>
-executes an arbitary number of the utility commands
+executes an arbitrary number of the utility commands
 (e.g. <s>convert</s>) in the form of a simple linear batch script in
 order to improve execution efficiency, and/or to allow use as a
 subordinate co-process under the control of an arbitrary script or

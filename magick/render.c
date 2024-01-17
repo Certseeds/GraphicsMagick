@@ -399,7 +399,7 @@ extern "C" {
 /*
   Ticket #562: Inconsistent results from qsort callback.
 
-  NOTE: The right-handed coordinate system is: x right postive, y down positive,
+  NOTE: The right-handed coordinate system is: x right positive, y down positive,
   z into the plane positive.
 
   Prior to fixing ticket #562, the compare procedure in CompareEdges() looked at the
@@ -1886,7 +1886,7 @@ DrawClipPath(Image *image,const DrawInfo *draw_info, const char *name)
   return(status);
 }
 
-/* code below for DrawCompositeMask() cloned/modifed from DrawClipPath() */
+/* code below for DrawCompositeMask() cloned/modified from DrawClipPath() */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -4543,7 +4543,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
     assert(j < (long) number_points);
 
     /*
-      The TraceXXX funtions that generate a dynamic number of points will automatically
+      The TraceXXX functions that generate a dynamic number of points will automatically
       grow the primitive array as needed.  To make sure that the simpler ones (TracePoint()
       TraceLine(), TraceRectangle(), etc.) have enough space, we make sure there are at
       least 100 elements available.
@@ -5691,7 +5691,7 @@ DrawPolygonPrimitive(Image *image,const DrawInfo *draw_info,
 
                     The previous version of this code substituted "OpaqueOpacity"
                     for q->opacity if q->opacity was transparent.  I think this was
-                    orignally done to avoid a divide-by-zero in AlphaCompositePixel().
+                    originally done to avoid a divide-by-zero in AlphaCompositePixel().
                     However, this substitution results in an incorrect result if the
                     background pixel is completely transparent.  Since the current
                     version of AlphaCompositePixel() has code in it to prevent a
@@ -6776,7 +6776,7 @@ TraceBezier(PrimitiveInfoMgr *p_PIMgr,
   primitive_info = *pp_PrimitiveInfo + p_PIMgr->StoreStartingAt;
 
   /*
-    Allocate coeficients.
+    Allocate coefficients.
   */
   quantum=number_coordinates;
   for (i=0; i < number_coordinates; i++)

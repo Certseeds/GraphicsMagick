@@ -2430,7 +2430,7 @@ MagickExport void NTWarningHandler(const ExceptionType warning,
 %  longer than the specified size, it is shortened to the specified size. If
 %  the file is shorter than the specified size, it is extended to the
 %  specified size by filling with zeros.
-%  This is a POSIX compatability function.
+%  This is a POSIX compatibility function.
 %
 %  The format of the NTftruncate method is:
 %

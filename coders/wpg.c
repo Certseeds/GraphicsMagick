@@ -430,7 +430,7 @@ static MagickPassFail ZeroFillMissingData(unsigned char *BImgBuff,unsigned long 
 
 
 /* WPG1 raster reader.
- * @return      0 - OK; -2 - alocation failure; -3 unaligned column; -4 - image row overflowl
+ * @return      0 - OK; -2 - allocation failure; -3 unaligned column; -4 - image row overflowl
                 -5 - blob read error; -6 - row insert problem  */
 static int UnpackWPGRaster(Image *image,int bpp)
 {
@@ -486,7 +486,7 @@ static int UnpackWPGRaster(Image *image,int bpp)
           }
         }
       else {
-        if(RunCount)   /* next runcount byte are readed directly */
+        if(RunCount)   /* next runcount byte are readd directly */
           {
             for(i=0;i < (int) RunCount;i++)
               {
@@ -1073,12 +1073,12 @@ return 0;
   (void)LogMagickEvent(CoderEvent,GetMagickModule(), \
                        "WPG Bitmap1 Header:\n" \
                        "    Width=%u\n" \
-                       "    Heigth=%u\n" \
+                       "    Height=%u\n" \
                        "    Depth=%u\n" \
                        "    HorzRes=%u\n" \
                        "    VertRes=%u", \
                             (unsigned int)_WPG_BITMAP_TYPE1.Width, \
-                            (unsigned int)_WPG_BITMAP_TYPE1.Heigth, \
+                            (unsigned int)_WPG_BITMAP_TYPE1.Height, \
                             (unsigned int)_WPG_BITMAP_TYPE1.Depth, \
                             (unsigned int)_WPG_BITMAP_TYPE1.HorzRes, \
                             (unsigned int)_WPG_BITMAP_TYPE1.VertRes)
@@ -1092,7 +1092,7 @@ return 0;
                        "    UpRightX=%u\n" \
                        "    UpRightY=%u\n" \
                        "    Width=%u\n" \
-                       "    Heigth=%u\n" \
+                       "    Height=%u\n" \
                        "    Depth=%u\n" \
                        "    HorzRes=%u\n" \
                        "    VertRes=%u", \
@@ -1102,7 +1102,7 @@ return 0;
                             (unsigned int)_WPG_BITMAP_TYPE2.UpRightX, \
                             (unsigned int)_WPG_BITMAP_TYPE2.UpRightY, \
                             (unsigned int)_WPG_BITMAP_TYPE2.Width, \
-                            (unsigned int)_WPG_BITMAP_TYPE2.Heigth, \
+                            (unsigned int)_WPG_BITMAP_TYPE2.Height, \
                             (unsigned int)_WPG_BITMAP_TYPE2.Depth, \
                             (unsigned int)_WPG_BITMAP_TYPE2.HorzRes, \
                             (unsigned int)_WPG_BITMAP_TYPE2.VertRes)
@@ -1197,7 +1197,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   typedef struct
   {
     unsigned int Width;
-    unsigned int Heigth;
+    unsigned int Height;
     unsigned int Depth;
     unsigned int HorzRes;
     unsigned int VertRes;
@@ -1206,7 +1206,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
   typedef struct
   {
     unsigned int Width;
-    unsigned int Heigth;
+    unsigned int Height;
     unsigned char Depth;
     unsigned char Compression;
   } WPG2BitmapType1;
@@ -1219,7 +1219,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
     unsigned int UpRightX;
     unsigned int UpRightY;
     unsigned int Width;
-    unsigned int Heigth;
+    unsigned int Height;
     unsigned int Depth;
     unsigned int HorzRes;
     unsigned int VertRes;
@@ -1380,8 +1380,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
             {
             case 0x0B: /* bitmap type 1 */
               BitmapHeader1.Width=ReadBlobLSBShort(image);
-              BitmapHeader1.Heigth=ReadBlobLSBShort(image);
-              if ((BitmapHeader1.Width == 0) || (BitmapHeader1.Heigth == 0))
+              BitmapHeader1.Height=ReadBlobLSBShort(image);
+              if ((BitmapHeader1.Width == 0) || (BitmapHeader1.Height == 0))
               {
                 MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -1404,7 +1404,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   image->y_resolution=BitmapHeader1.VertRes/470.0;
                 }
               image->columns=BitmapHeader1.Width;
-              image->rows=BitmapHeader1.Heigth;
+              image->rows=BitmapHeader1.Height;
               bpp=BitmapHeader1.Depth;
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1464,8 +1464,8 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               BitmapHeader2.UpRightX=ReadBlobLSBShort(image);
               BitmapHeader2.UpRightY=ReadBlobLSBShort(image);
               BitmapHeader2.Width=ReadBlobLSBShort(image);
-              BitmapHeader2.Heigth=ReadBlobLSBShort(image);
-              if ((BitmapHeader2.Width == 0) || (BitmapHeader2.Heigth == 0))
+              BitmapHeader2.Height=ReadBlobLSBShort(image);
+              if ((BitmapHeader2.Width == 0) || (BitmapHeader2.Height == 0))
               {
                 MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -1494,7 +1494,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                   image->y_resolution=BitmapHeader2.VertRes/470.0;
                 }
               image->columns=BitmapHeader2.Width;
-              image->rows=BitmapHeader2.Heigth;
+              image->rows=BitmapHeader2.Height;
               bpp=BitmapHeader2.Depth;
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
@@ -1732,11 +1732,11 @@ UnpackRaster1bpp:
 
             case 0x0E:
               Bitmap2Header1.Width=ReadBlobLSBShort(image);
-              Bitmap2Header1.Heigth=ReadBlobLSBShort(image);
+              Bitmap2Header1.Height=ReadBlobLSBShort(image);
               Bitmap2Header1.Depth=ReadBlobByte(image);
               Bitmap2Header1.Compression=ReadBlobByte(image);
 
-              if ((Bitmap2Header1.Width == 0) || (Bitmap2Header1.Heigth == 0))
+              if ((Bitmap2Header1.Width == 0) || (Bitmap2Header1.Height == 0))
               {
                 MagickFreeResourceLimitedMemory(pPalette);
                 ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
@@ -1766,7 +1766,7 @@ UnpackRaster1bpp:
                   continue;  /*Ignore raster with unknown depth*/
                 }
               image->columns=Bitmap2Header1.Width;
-              image->rows=Bitmap2Header1.Heigth;
+              image->rows=Bitmap2Header1.Height;
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "Image dimensions %lux%lu, bpp=%u", image->columns, image->rows, bpp);

@@ -865,7 +865,7 @@ void Magick::Image::draw ( const std::list<Magick::Drawable> &drawable_ )
   throwImageException();
 }
 
-// Hilight edges in image
+// Highlight edges in image
 void Magick::Image::edge ( const double radius_ )
 {
   ExceptionInfo exceptionInfo;
@@ -876,7 +876,7 @@ void Magick::Image::edge ( const double radius_ )
   throwImageException( exceptionInfo );
 }
 
-// Emboss image (hilight edges)
+// Emboss image (highlight edges)
 void Magick::Image::emboss ( const double radius_, const double sigma_ )
 {
   ExceptionInfo exceptionInfo;
@@ -1321,7 +1321,7 @@ void Magick::Image::modulate ( const double brightness_,
 // pixels, not counting the center pixel.  The sigma_ parameter
 // specifies the standard deviation of the Laplacian, in pixels.
 // The angle_ parameter specifies the angle the object appears
-// to be comming from (zero degrees is from the right).
+// to be coming from (zero degrees is from the right).
 void            Magick::Image::motionBlur ( const double radius_,
                                             const double sigma_,
                                             const double angle_ )
@@ -1928,7 +1928,7 @@ void Magick::Image::solarize ( const double factor_ )
   throwImageException();
 }
 
-// Spread pixels randomly within image by specified ammount
+// Spread pixels randomly within image by specified amount
 void Magick::Image::spread ( const unsigned int amount_ )
 {
   ExceptionInfo exceptionInfo;
@@ -2060,7 +2060,7 @@ void Magick::Image::trim ( void )
 //    the percentage of the difference between the original and
 //    the blur image that is added back into the original.
 // threshold_
-//   the threshold in pixels needed to apply the diffence amount.
+//   the threshold in pixels needed to apply the difference amount.
 void Magick::Image::unsharpmask ( const double radius_,
                                   const double sigma_,
                                   const double amount_,
@@ -3877,7 +3877,7 @@ Magick::Image& Magick::Image::operator=( const Magick::Image &image_ )
 //
 // Also see the Pixels class, which provides support for multiple
 // cache views. The low-level pixel access routines in the Image
-// class are provided in order to support backward compatability.
+// class are provided in order to support backward compatibility.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -4246,7 +4246,7 @@ void MagickDLLDecl Magick::InitializeMagick(const char *path_)
 
 //
 // Cleanup class to ensure that ImageMagick singletons are destroyed
-// so as to avoid any resemblence to a memory leak (which seems to
+// so as to avoid any resemblance to a memory leak (which seems to
 // confuse users)
 //
 namespace Magick

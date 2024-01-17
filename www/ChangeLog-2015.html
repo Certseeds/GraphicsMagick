@@ -260,7 +260,7 @@ Larumbe.</p></li>
 (<a class="reference external" href="http://hg.code.sf.net/u/zacmorris/graphicsmagick/rev/edcc4c184b42">http://hg.code.sf.net/u/zacmorris/graphicsmagick/rev/edcc4c184b42</a>)
 by Zac Morris to detect buffer overrun while reading zip
 compressed data.
-(ReadMIFFImage): Fixed some memory leaks which were occuring when
+(ReadMIFFImage): Fixed some memory leaks which were occurring when
 an exception was thrown from zip-compressed data reader.</p></li>
 </ul>
 </blockquote>
@@ -1413,7 +1413,7 @@ limit.</p></li>
 and png_pixels into the MngInfo struct.  This prevents
 memory leaks when reading malformed PNG images, but unfortunately
 triggers a new complaint about a possible race condition.</p></li>
-<li><p>coders/png.c (ReadOnePNGImage): Removed two superflous calls to
+<li><p>coders/png.c (ReadOnePNGImage): Removed two superfluous calls to
 CloseBlob().</p></li>
 <li><p>coders/png.c (ReadOnePNGImage): Do the allocation and free of
 quantum_scanline outside the &quot;pass&quot; loop, i.e., do it once per
@@ -1619,7 +1619,7 @@ alpha channel.</p></li>
 <li><p>coders/xpm.c (ReadXPMImage): Reading empty XPM file should not
 cause bad memory access.</p></li>
 <li><p>coders/gif.c (DecodeImage): Assure that GIF decoder does not use
-unitialized data.</p></li>
+uninitialized data.</p></li>
 <li><p>coders/jpeg.c (ReadJPEGImage): Verify that we support the number
 of output components before proceeding to decode the image.</p></li>
 </ul>
@@ -1964,7 +1964,7 @@ visually detected.  The problem has corrupted all such
 on 2007-06-17 (changeset 11686, first released in GraphicsMagick
 1.1.8).  GraphicsMagick preserves the endianness of input DPX
 files by default, defaults to big-endian, and DPX files are
-commonly big-endian, so this problem may not have occured for many
+commonly big-endian, so this problem may not have occurred for many
 usages.  Problem was reported by Steve Dabner on the
 GraphicsMagick discussion mailing list.</p></li>
 </ul>

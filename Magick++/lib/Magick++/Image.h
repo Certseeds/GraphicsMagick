@@ -305,10 +305,10 @@ namespace Magick
     // Draw on image using a drawable list
     void            draw ( const std::list<Magick::Drawable> &drawable_ );
 
-    // Edge image (hilight edges in image)
+    // Edge image (highlight edges in image)
     void            edge ( const double radius_ = 0.0 );
 
-    // Emboss image (hilight edges with 3D effect)
+    // Emboss image (highlight edges with 3D effect)
     // The radius_ parameter specifies the radius of the Gaussian, in
     // pixels, not counting the center pixel.  The sigma_ parameter
     // specifies the standard deviation of the Laplacian, in pixels.
@@ -492,7 +492,7 @@ namespace Magick
     // pixels, not counting the center pixel.  The sigma_ parameter
     // specifies the standard deviation of the Laplacian, in pixels.
     // The angle_ parameter specifies the angle the object appears
-    // to be comming from (zero degrees is from the right).
+    // to be coming from (zero degrees is from the right).
     void            motionBlur ( const double radius_,
                                  const double sigma_,
                                  const double angle_ );
@@ -698,7 +698,7 @@ namespace Magick
     // photographic film to light during the development process)
     void            solarize ( const double factor_ = 50.0 );
 
-    // Spread pixels randomly within image by specified ammount
+    // Spread pixels randomly within image by specified amount
     void            spread ( const unsigned int amount_ = 3 );
 
     // Add a digital watermark to the image (based on second image)
@@ -753,7 +753,7 @@ namespace Magick
     //    the percentage of the difference between the original and
     //    the blur image that is added back into the original.
     // threshold_
-    //   the threshold in pixels needed to apply the diffence amount.
+    //   the threshold in pixels needed to apply the difference amount.
     void            unsharpmask ( const double radius_,
                                   const double sigma_,
                                   const double amount_,

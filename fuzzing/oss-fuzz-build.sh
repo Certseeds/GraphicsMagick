@@ -25,7 +25,7 @@ export PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
 export PKG_CONFIG='pkg-config --static'
 export VERBOSE=TRUE
 
-# Dont check Coverage in CI as it gets killed
+# Don't check Coverage in CI as it gets killed
 if [[ -n "${OSS_FUZZ_CI-}" && "$SANITIZER" = coverage ]]; then
   touch $OUT/exit
   exit 0

@@ -70,10 +70,10 @@ testRead( 'input_palette_256_planar_contig.tiff', q//,
   'a570df6d4c214d08bccaaee856f617883fee4f96494af6ef5e25c76d86ea0e0a' );
 
 #
-# 7) Test reading PseudoColor using seperate planes
+# 7) Test reading PseudoColor using separate planes
 #
 ++$test;
-print("PseudoColor (256 color) seperate planes ...\n");
+print("PseudoColor (256 color) separate planes ...\n");
 testRead( 'input_palette_256_planar_separate.tiff', q//,
   'a570df6d4c214d08bccaaee856f617883fee4f96494af6ef5e25c76d86ea0e0a' );
 

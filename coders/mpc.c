@@ -17,7 +17,7 @@
 %                            M   M  P       CCCC                              %
 %                                                                             %
 %                                                                             %
-%              Read/Write Magick Persistant Cache Image Format.               %
+%              Read/Write Magick Persistent Cache Image Format.               %
 %                                                                             %
 %                                                                             %
 %                              Software Design                                %
@@ -355,7 +355,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Get values.
 
               Values not containing spaces are terminated by the first
-              white-space (or new-line) enountered.  Values containing
+              white-space (or new-line) encountered.  Values containing
               spaces and/or new-lines must be surrounded by braces.
             */
             values_length=MaxTextExtent;

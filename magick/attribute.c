@@ -593,7 +593,7 @@ TracePSClippingPath(unsigned char *blob,size_t length,
                         /*
                           First control point equals first anchor
                           point and last control point equals last
-                          anchow point. Straigt line between anchor
+                          anchor point. Straight line between anchor
                           points.
                         */
                         FormatString(message,"%.6f %.6f l\n",
@@ -610,7 +610,7 @@ TracePSClippingPath(unsigned char *blob,size_t length,
                     else if ((point[0].x == point[1].x) &&
                              (point[0].y == point[1].y))
                       {
-                        /* Last control point equals last anchow point. */
+                        /* Last control point equals last anchor point. */
                         FormatString(message,"%.6f %.6f %.6f %.6f y\n",
                                      last[2].x,last[2].y,
                                      point[1].x,point[1].y);
@@ -825,7 +825,7 @@ TraceSVGClippingPath(unsigned char *blob,
                         /*
                           First control point equals first anchor
                           point and last control point equals last
-                          anchow point. Straigt line between anchor
+                          anchor point. Straight line between anchor
                           points.
                         */
                         FormatString(message,"L %.6f,%.6f\n",
@@ -941,7 +941,7 @@ Generate8BIMAttribute(Image *image,const char *key)
 
   /*
     There may be spaces in resource names, but there are no newlines,
-    so use a newline as terminater to get the full name.
+    so use a newline as terminator to get the full name.
   */
   count=sscanf(key,"8BIM:%d,%d:%[^\n]\n%[^\n]",&start,&stop,name,format);
   if ((count != 2) && (count != 3) && (count != 4))

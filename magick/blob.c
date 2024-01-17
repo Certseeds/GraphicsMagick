@@ -352,7 +352,7 @@ static void *ExtendBlobWriteStream(Image *image,const size_t length)
 #if 0
           if (blob->logging)
             (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                                  "MagickReallocMemory failed! Detatching Blob...");
+                                  "MagickReallocMemory failed! Detaching Blob...");
 #endif
           DetachBlob(blob);
           return 0;
@@ -915,7 +915,7 @@ MagickExport BlobInfo *CloneBlobInfo(const BlobInfo *blob_info)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  CloseBlob() closes a stream associated with the image.  The final error
-%  status (based on any prior error occuring while doing I/O, including while
+%  status (based on any prior error occurring while doing I/O, including while
 %  closing the blob) is provided as a MagickPassFail indication.
 %
 %  If the blob 'exempt' member is MagickTrue, then any passed file descriptor
@@ -1046,7 +1046,7 @@ MagickExport MagickPassFail CloseBlob(Image *image)
   blob->status=status != 0;
 
   /*
-    If we are allowed to close the stream and detatch (destroy)
+    If we are allowed to close the stream and detach (destroy)
     the blob.
   */
   if (! blob->exempt )
@@ -1118,7 +1118,7 @@ MagickExport MagickPassFail CloseBlob(Image *image)
           }
         }
       /*
-        Detatch (destroy) the blob.
+        Detach (destroy) the blob.
       */
       DetachBlob(blob);
     }
@@ -2438,8 +2438,8 @@ MagickExport void *ImageToBlob(const ImageInfo *image_info,Image *image,
 %  ImageToFile() copies the input image from an open blob stream to a file.
 %  It returns False if an error occurs otherwise True.  This function is used
 %  to handle coders which are unable to stream the data in using Blob I/O.
-%  Instead of streaming the data in, the data is streammed to a temporary
-%  file, and the coder accesses the temorary file directly.
+%  Instead of streaming the data in, the data is streamed to a temporary
+%  file, and the coder accesses the temporary file directly.
 %
 %  The format of the ImageToFile method is:
 %
@@ -4940,7 +4940,7 @@ MagickExport void SetBlobTemporary(Image *image, MagickBool isTemporary)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  SyncBlob() flushes the datastream if it is a file or synchonizes the data
+%  SyncBlob() flushes the datastream if it is a file or synchronizes the data
 %  attributes if it is an blob.
 %
 %  The format of the SyncBlob method is:
@@ -4973,7 +4973,7 @@ static int SyncBlob(Image *image)
 
     /*
       FIXME: It is not clear why doing a sync on the blob stream
-      should try to propogate the blob stream object across the whole
+      should try to propagate the blob stream object across the whole
       image list.  Note that code below is not yet using the blob from
       the current image (as desired).
     */

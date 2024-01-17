@@ -140,7 +140,7 @@ profile length and 'nibbles'.  Use safer way to test for profile
 buffer overflow.
 (ReadOnePNGImage): Use size_t type to store 'ping_rowbytes',
 'length', and 'row_offset'.  Check png_pixels allocation for
-arithemetic overflow when computing the required allocation size.</p></li>
+arithmetic overflow when computing the required allocation size.</p></li>
 <li><p>coders/tiff.c (WriteNewsProfile): Use size_t type to store
 profile length.</p></li>
 <li><p>coders/pict.c (WritePICTImage): Avoid 'alloc-size-larger-than'
@@ -966,11 +966,11 @@ warning about comparison with a constant value.</p></li>
 <p>2019-04-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>magick/magic.c (struct): Ajust StaticMagic definition to be more
+<li><p>magick/magic.c (struct): Adjust StaticMagic definition to be more
 const-friendly.</p></li>
 <li><p>magick/color_lookup.c (struct): Adjust StaticColors definition
 to be more const-friendly.</p></li>
-<li><p>magick/attribute.c: Ajust tag_table definition to be more
+<li><p>magick/attribute.c: Adjust tag_table definition to be more
 const-friendly.</p></li>
 <li><p>magick/log.c: Allocate LogInfo from heap as we used to do.</p></li>
 <li><p>magick/locale.c (GetLocaleMessageFromTag): Adaptations to locale

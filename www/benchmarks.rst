@@ -31,7 +31,7 @@ less filtered.  Using the same command-line filter arguments causes
 GraphicsMagick to appear slower when it is actually doing far more
 work than ImageMagick.
 
-Due to it not being feasable to do a head to head performance
+Due to it not being feasible to do a head to head performance
 measurement between GraphicsMagick and ImageMagick, we have decided to
 not post results at the moment.  However, the strategy and a simple
 benchmark driver script are still provided for those who want to do
@@ -90,7 +90,7 @@ Here is the simple benchmark script::
   # Input file specification
   input_image='-size 1920x1080 tile:model.pnm'
 
-  # Ouput file specification
+  # Output file specification
   output_image="null:"
 
   # Should not need to change any of the rest

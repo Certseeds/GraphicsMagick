@@ -658,7 +658,7 @@ DrawImage&quot;. (Credit to OSS-Fuzz)</p></li>
 <p>2018-08-14  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/mat.c More aggresive data corruption checking.</p></li>
+<li><p>coders/mat.c More aggressive data corruption checking.</p></li>
 </ul>
 </blockquote>
 <p>2018-08-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1731,7 +1731,7 @@ added create/destroy logic, and implemented associated access
 functions.  Implemented SVG masks.</p></li>
 <li><p>magick/render.c (DrawImage, new function DrawCompositeMask):
 Defined new data structure DrawInfoExtra, added create/destroy
-logic, and implemented associated access functions.  Impemented
+logic, and implemented associated access functions.  Implemented
 SVG masks.</p></li>
 <li><p>magick/pixel_cache.c (SyncCacheNexus, new function
 CompositeCacheNexus):  Fixed references to Image::clip_mask.
@@ -1807,7 +1807,7 @@ previous behavior for clipping paths for non-SVG clients.</p></li>
 MVG commands for rendering an SVG file now includes
 new keyword &quot;svg-compliant&quot; (to indicate that certain
 graphical elements should be drawn according to the
-SVG spec), and includes an intialization of the SVG
+SVG spec), and includes an initialization of the SVG
 &quot;fill-rule&quot; to &quot;nonzero&quot; (the SVG default) instead of
 the internally initialized value of &quot;evenodd&quot;.</p></li>
 <li><p>coders/wpg.c: Fixed C99 &quot;//&quot; comments.</p></li>
@@ -1867,7 +1867,7 @@ Unknown signal in AllocateThreadViewDataSet&quot;. (Credit to OSS-Fuzz)</p></li>
 to 16.  Otherwise rescale map code blows up.  Fixes oss-fuzz 7435
 &quot;graphicsmagick/coder_DCM_fuzzer: Out-of-memory in
 graphicsmagick_coder_DCM_fuzzer&quot;. (Credit to OSS-Fuzz)</p></li>
-<li><p>coders/pix.c (ReadPIXImage): Detect EOF.  Reject RLE lenth of
+<li><p>coders/pix.c (ReadPIXImage): Detect EOF.  Reject RLE length of
 zero.  Fixes oss-fuzz 7440 &quot;graphicsmagick/coder_PIX_fuzzer:
 Out-of-memory in graphicsmagick_coder_PIX_fuzzer&quot;. (Credit to
 OSS-Fuzz)</p></li>
@@ -2213,7 +2213,7 @@ processed until the first available font family is found.
 If no font family is found, or if font substitution occurred,
 then the entire font family string is tested to see if it
 exactly matches a font name, or if the font family string
-with blanks changed to hypens exactly matches a font name.
+with blanks changed to hyphens exactly matches a font name.
 If a font name match is found, the matched font overrides
 the font substution.  The font name matching functionality
 is beyond what's in the SVG spec and is provided as a
@@ -2323,7 +2323,7 @@ pixel cache is compatible with the image dimensions.  Fixes
 oss-fuzz issues 5978 5988 5989 5990 5993 6016, and 6056, which are
 all related to the PICT writer. (Credit to OSS-Fuzz)</p></li>
 <li><p>magick/draw.c (DrawGetStrokeDashArray): Check for failure to
-allocate memory.  Patch submited by Petr Gajdos via email on
+allocate memory.  Patch submitted by Petr Gajdos via email on
 February 28, 2018.</p></li>
 </ul>
 </blockquote>
@@ -2532,7 +2532,7 @@ SVG coder now initializes the MVG coder (which renders
 SVG graphical elements) with the the SVG defaults for
 fill color, fill-opacity, stroke color, stroke-opacity,
 and stroke-width.  This makes the SVG coder independent
-of the MVG coder intial state.</p></li>
+of the MVG coder initial state.</p></li>
 </ul>
 </blockquote>
 <p>2018-02-19  Greg Wolfe  &lt;<a class="reference external" href="mailto:gregory&#46;wolfe&#37;&#52;&#48;kodakalaris&#46;com">gregory<span>&#46;</span>wolfe<span>&#64;</span>kodakalaris<span>&#46;</span>com</a>&gt;</p>
@@ -3041,7 +3041,7 @@ AcquireImagePixels() returns NULL.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>magick/static.c: Change static module initialization to be based
-on an initialized list rather than a squence of function calls in
+on an initialized list rather than a sequence of function calls in
 order to simplify maintenance and possibly address future
 requirements.</p></li>
 </ul>

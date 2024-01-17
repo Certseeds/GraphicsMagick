@@ -988,7 +988,7 @@ static Image *ReadMIFFImage(const ImageInfo *image_info,
               Get values.
 
               Values not containing spaces are terminated by the first
-              white-space (or new-line) enountered.  Values containing
+              white-space (or new-line) encountered.  Values containing
               spaces and/or new-lines must be surrounded by braces.
             */
             values_length=MaxTextExtent;

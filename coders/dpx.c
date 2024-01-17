@@ -63,7 +63,7 @@
 %    order should influence the image pixels.  The 1994 version of the
 %    specification suggests very strongly that *all* formats are
 %    accessed as an array of 32-bit words (therefore implying 32-bit
-%    swapping) but the 2003 specification has ammended this (ambiguously)
+%    swapping) but the 2003 specification has amended this (ambiguously)
 %    to imply the mixed use of 16 and 32 bit words.  As we all know,
 %    performing endian swapping on two 16-bit values does not have the
 %    same effect as performing endian swapping on one 32-bit value (the

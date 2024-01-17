@@ -186,7 +186,7 @@ encryption.  Encrypting images being written is not supported.</pp>
 <abs>orient (rotate) image so it is upright</abs>
 
 <pp>
-Adjusts the image orienation so that it is suitable for viewing.  Uses
+Adjusts the image orientation so that it is suitable for viewing.  Uses
 the orientation tag obtained from the image file or as supplied by the
 <s>-orient</s> option.</pp>
 </utils>
@@ -3277,7 +3277,7 @@ The amount of uncompressed data read when reading one image file may
 be limited by the <s>Read</s> limit.  Reading the image fails when the
 limit is hit.  This option is useful if the data is read from a stream
 (pipe) or from a compressed file such as a gzipped file.  Some files
-are very compressable and so a small compressed file can decompress to
+are very compressible and so a small compressed file can decompress to
 a huge amount of data.  This option also defends against files which
 produce seemingly endless loops while decoding by seeking backwards in
 the file.</pp>
@@ -3908,7 +3908,7 @@ This is a contrast enhancement technique based on the image histogram.</pp>
 <pp>
 When computing the contrast enhancement values, the histogram edges
 are truncated so that the majority of the image pixels are considered
-in the constrast enhancement, and outliers (e.g. random noise or
+in the contrast enhancement, and outliers (e.g. random noise or
 minute details) are ignored.  The default is that 0.1 percent of the
 histogram entries are ignored.  The percentage of the histogram to
 ignore may be specified by using the <s>-set</s> option with the
@@ -4196,7 +4196,7 @@ An attractive "half-tone" looking image can be obtained by first
 rotating the image 45 degrees, performing a 5x5 ordered-dither
 operation, then rotating it back to the original orientation and
 cropping to the original image dimensions.  If the original image
-is gamma-encoded, it is adviseable to convert it to linear intensity
+is gamma-encoded, it is advisable to convert it to linear intensity
 first, e.g., with the "-gamma 0.45455" option.</pp>
 
 </utils>

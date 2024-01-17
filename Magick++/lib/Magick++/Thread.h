@@ -19,7 +19,7 @@ struct win32_mutex {
         HANDLE id;
 };
 
-// This is a binary semphore -- increase for a counting semaphore
+// This is a binary semaphore -- increase for a counting semaphore
 #define MAXSEMLEN       1
 #endif // defined(_MT)
 #endif // defined(_VISUALC_)
@@ -69,7 +69,7 @@ namespace Magick
     // Construct with mutex lock (locks mutex)
     Lock( MutexLock *mutexLock_ );
 
-    // Destrutor (unlocks mutex)
+    // Destructor (unlocks mutex)
     ~Lock( void );
   private:
 
@@ -90,7 +90,7 @@ inline Magick::Lock::Lock( MutexLock *mutexLock_ )
   _mutexLock->lock();
 }
 
-// Destrutor (unlocks mutex)
+// Destructor (unlocks mutex)
 inline Magick::Lock::~Lock( void )
 {
   _mutexLock->unlock();

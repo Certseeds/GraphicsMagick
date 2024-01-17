@@ -97,7 +97,7 @@ Revision history for Perl extension Image::Magick.
 1.07  Tue May 06 1997
 	- Clone is an alias of Copy.
 1.05  Fri Apr 25 1997
-	- Added allignment to function Annotate (left, center, right).  Requires
+	- Added alignment to function Annotate (left, center, right).  Requires
 	  ImageMagick 3.8.5 to compile.
 1.03  Mon Apr 11 1997
 	- some objects were not being destroyed when dereferenced due to an

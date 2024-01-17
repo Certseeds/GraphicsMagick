@@ -864,7 +864,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
             }
 
           /*
-            BMP v3 defines width and hight as signed LONG (32 bit) values.  If
+            BMP v3 defines width and height as signed LONG (32 bit) values.  If
             height is a positive number, then the image is a "bottom-up"
             bitmap with origin in the lower-left corner.  If height is a
             negative number, then the image is a "top-down" bitmap with the
@@ -1211,7 +1211,7 @@ CheckBitSize:
             if (exception->severity >= ErrorException)
                 ThrowBMPReaderException(CoderError,JPEGCompressionNotSupported,image)
           }
-          goto ExitLoop;	/* I need to break a loop. Other BMPs in a chain are ignorred. */
+          goto ExitLoop;	/* I need to break a loop. Other BMPs in a chain are ignored. */
 
         case BI_PNG:
           offset = start_position + 14 + bmp_info.size;
@@ -1230,7 +1230,7 @@ CheckBitSize:
             if (exception->severity >= ErrorException)
                 ThrowBMPReaderException(CoderError,PNGCompressionNotSupported,image)
           }
-          goto ExitLoop;	/* I need to break a loop. Other BMPs in a chain are ignorred. */
+          goto ExitLoop;	/* I need to break a loop. Other BMPs in a chain are ignored. */
 
         default:
           ThrowBMPReaderException(CorruptImageError,UnrecognizedImageCompression,image)

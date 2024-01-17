@@ -841,7 +841,7 @@ typedef struct _Image
   unsigned int
     is_monochrome,      /* Private, True if image is known to be monochrome */
     is_grayscale,       /* Private, True if image is known to be grayscale */
-    taint;              /* Private, True if image has not been modifed */
+    taint;              /* Private, True if image has not been modified */
 
   /*
     Allow for expansion of Image without increasing its size.  The

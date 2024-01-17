@@ -346,7 +346,7 @@ layers&quot;.  Resolves SF bug #242 &quot;Can not convert PSD to JPG or PNG
 <blockquote>
 <ul class="simple">
 <li><p>coders/webp.c (WriteWEBPImage): WebP fix by Roman Hiestand to
-make WebP lossless format truely lossless.</p></li>
+make WebP lossless format truly lossless.</p></li>
 <li><p>tests/rwblob.tap (check_types): Added a test for WebP lossless.</p></li>
 <li><p>tests/rwfile.tap: Added a test for WebP lossless.</p></li>
 <li><p>tests/rwblob.c: Added support for -define.</p></li>
@@ -631,7 +631,7 @@ error with g++ -std=c++11&quot;.</p></li>
 <ul class="simple">
 <li><p>coders/png.c (ReadOnePNGImage): Free png_pixels and
 quantum_scanline before error return.  Use &quot;png_error()&quot;
-instead of &quot;ThrowException2()&quot; for errors occuring while
+instead of &quot;ThrowException2()&quot; for errors occurring while
 decoding a PNG so proper cleanup will happen.</p></li>
 </ul>
 </blockquote>
@@ -647,7 +647,7 @@ are promoted to errors for critical tags.</p></li>
 <ul class="simple">
 <li><p>coders/tiff.c (ReadTIFFImage): Be quite a lot more draconian
 when retrieving the baseline standard TIFF tags we need in order
-to avoid consuming uninitalized data later.  An error with these
+to avoid consuming uninitialized data later.  An error with these
 tags will result in failure to read the image file.</p></li>
 </ul>
 </blockquote>
@@ -664,7 +664,7 @@ or black respectively rather than being based on subtraction.</p></li>
 <ul class="simple">
 <li><p>Makefile.am (AUTOMAKE_OPTIONS): Be ultra-pedantic with CPPFLAGS
 and include paths in order to assure that only required
-directories are supplied, and to avoid accidential collision with
+directories are supplied, and to avoid accidental collision with
 system header files.</p></li>
 </ul>
 </blockquote>
@@ -697,7 +697,7 @@ specifiers 'g', 'A', 'C', 'D', 'G', 'H', 'M', 'O', 'P', 'Q', 'T',
 (GetMagickGeometry): Support '&gt;' and '&lt;' qualifiers with '&#64;'
 qualifier to specify if image should be resized if larger or
 lesser than given area specification.  Resolves SourceForge bug
-#216 &quot;&gt;&quot; wont take effect when use &#64; to specify the maximum area.</p></li>
+#216 &quot;&gt;&quot; won't take effect when use &#64; to specify the maximum area.</p></li>
 <li><p>magick/transform.c (GetImageMosaicDimensions): Move mosaic
 dimensions code to a static function for possible future re-use.</p></li>
 </ul>
@@ -993,7 +993,7 @@ __builtin extensions similar to the existing support for GCC.</p></li>
 <ul class="simple">
 <li><p>Magick++/lib/Image.cpp (thumbnail): New method for fast image
 resizing, particularly to make thumbnails.</p></li>
-<li><p>coders/gif.c: Log when Netscape loop exension is read and
+<li><p>coders/gif.c: Log when Netscape loop extension is read and
 written.</p></li>
 <li><p>coders/png.c (WriteOnePNGImage): In optimize mode, disable matte
 channel immediately if there are no non-opaque pixels.  Also added

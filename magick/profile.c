@@ -1150,7 +1150,7 @@ ProfileImage(Image *image,const char *name,unsigned char *profile,
         verify that the colorspace of the new profile is valid for the
         colorspace of the image. If LCMS is not available we should
         refuse to assign a new profile (just like we're refusing a
-        conversion above) as we can't be sure the assigment is valid.
+        conversion above) as we can't be sure the assignment is valid.
         We might be trying to assign a CMYK profile to an RGB image,
         for instance.
       */

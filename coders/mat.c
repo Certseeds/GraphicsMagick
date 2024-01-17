@@ -337,7 +337,7 @@ static void ZLIBFreeFunc(voidpf opaque, voidpf address)
   MagickFree(address);
 }
 
-/** This procedure decompreses an image block for a new MATLAB format. */
+/** This procedure decompresses an image block for a new MATLAB format. */
 static Image *DecompressBlock(Image *orig, magick_uint32_t *Size, ImageInfo *clone_info, ExceptionInfo *exception)
 {
 Image *image2;

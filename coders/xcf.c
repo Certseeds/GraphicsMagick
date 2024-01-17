@@ -328,7 +328,7 @@ static MagickPassFail load_tile (Image* image, Image* tile_image, XCFDocInfo* in
     *graydata;
 
   /*
-    Validate that claimed data length is sufficent for tile.
+    Validate that claimed data length is sufficient for tile.
   */
   {
     size_t
@@ -1012,7 +1012,7 @@ static MagickPassFail load_hierarchy (Image *image, XCFDocInfo* inDocInfo, XCFLa
     {
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                              "Heirarchy offset %" MAGICK_OFF_F "d is outside file bounds",
+                              "Hierarchy offset %" MAGICK_OFF_F "d is outside file bounds",
                               (magick_off_t) offset);
       ThrowBinaryException(CorruptImageError,InsufficientImageDataInFile,image->filename);
     }

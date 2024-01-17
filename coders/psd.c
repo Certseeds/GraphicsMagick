@@ -243,7 +243,7 @@ static unsigned int DecodeImage(Image *image,const int channel)
         }
     }
   /*
-    Guarentee the correct number of pixel packets.
+    Guarantee the correct number of pixel packets.
   */
   if (number_pixels > 0)
     {

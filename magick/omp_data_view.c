@@ -202,7 +202,7 @@ MagickExport void AssignThreadViewData
 }
 
 /*
-  Obtain the nuber of thread data views.
+  Obtain the number of thread data views.
 */
 MagickExport unsigned int
 GetThreadViewDataSetAllocatedViews

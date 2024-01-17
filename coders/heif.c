@@ -387,7 +387,7 @@ static Image *ReadColorProfile(struct heif_image_handle *heif_image_handle,
 
   Libheif issue 546 (https://github.com/strukturag/libheif/pull/546)
   suggests changing the return type of on_progress and start_progress
-  to "bool" so that one can implement cancelation support.
+  to "bool" so that one can implement cancellation support.
  */
 typedef struct ProgressUserData_
 {

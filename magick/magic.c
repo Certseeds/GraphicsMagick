@@ -209,7 +209,7 @@ DestroyMagicInfo(void)
 %  bytes and sets/updates the provided file format string buffer. The value
 %  MagickPass is returned if the format was successfully identified.  The
 %  value MagickFail is returned if the format was not identified or an
-%  exception occured.
+%  exception occurred.
 %
 %
 %  The format of the GetMagickFileFormat method is:

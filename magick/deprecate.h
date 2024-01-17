@@ -29,7 +29,7 @@ extern "C" {
   /*
     Compatibility definitions to handle the renaming of
     ExtendedSignedIntegralType and ExtendedUnsignedIntegralType to
-    MagickSignedType and MagickUnsignedType which occured in ImageMagick
+    MagickSignedType and MagickUnsignedType which occurred in ImageMagick
     5.5.8.  ImageMagick 5.5.8 also introduced MagickRationalType.
   */
 #if !defined(MagickSignedType)

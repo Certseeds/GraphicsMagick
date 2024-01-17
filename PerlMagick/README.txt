@@ -30,7 +30,7 @@ Installation
 
     PerlMagick is configured by default by GraphicsMagick in order to
     create a starting Makefile.PL.  Additional edits to Makefile.PL
-    may be required.  GraphicsMagick does not provide a seperate
+    may be required.  GraphicsMagick does not provide a separate
     distribution of PerlMagick.  Please follow the applicable steps
     described here in order to complete the installation of
     PerlMagick.

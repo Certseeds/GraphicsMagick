@@ -95,9 +95,9 @@ UNIX/Cygwin/MinGW COMPILATION
 
   Use 'configure' to automatically configure, build, and install
   ImageMagick. The configure script may be executed from the ImageMagick
-  source directory (e.g ./configure) or from a seperate build directory by
+  source directory (e.g ./configure) or from a separate build directory by
   specifying the full path to configure (e.g.
-  /src/ImageMagick-5.4.8/configure). The advantage of using a seperate
+  /src/ImageMagick-5.4.8/configure). The advantage of using a separate
   build directory is that multiple ImageMagick builds may share the same
   ImageMagick source directory while allowing each build to use a unique
   set of options.
@@ -125,7 +125,7 @@ UNIX/Cygwin/MinGW COMPILATION
       ./configure CC=c89 CFLAGS=-O2 LIBS=-lposix
 
   Options which should be common to packages installed under the same
-  directory heirarchy may be supplied via a 'config.site' file located
+  directory hierarchy may be supplied via a 'config.site' file located
   under the installation prefix via the path ${prefix}/share/config.site
   where ${prefix} is the installation prefix.  This file is used for all
   packages installed under that prefix.  This is an example config.site
@@ -184,7 +184,7 @@ UNIX/Cygwin/MinGW COMPILATION
 
   Optional Packages:
    --with-modules          enable support for dynamically loadable modules
-   --with-cache            set pixel cache threshhold (defaults to available memory)
+   --with-cache            set pixel cache threshold (defaults to available memory)
    --without-threads       disable threads support
    --without-frozenpaths   disable frozen delegate paths
    --without-magick-plus-plus disable build/install of Magick++
@@ -325,7 +325,7 @@ UNIX/Cygwin/MinGW COMPILATION
       saving full paths to programs.
 
     o --without-threads: By default, the ImageMagick library is compiled
-      with multi-thread support.  If this is undesireable, then specify
+      with multi-thread support.  If this is undesirable, then specify
       --without-threads.
 
     o --with-cache: Specify a different image pixel cache threshold
@@ -730,7 +730,7 @@ MAGICK DELEGATES
       must be explicitly enabled by editing libtiff Makefiles. The TIFF
       library no longer includes support for LZW compression due to patent
       issues. If you need to use LZW compression, support is available via
-      a seperate LZW compression kit (a patch) at the sites listed above.
+      a separate LZW compression kit (a patch) at the sites listed above.
 
     o ImageMagick requires libwmf 0.2.5 (or 0.2.2) available from
 

@@ -79,7 +79,7 @@ typedef struct _TGAInfo
 
   unsigned int
     x_origin,        /* (U16) X origin of image */
-    y_origin,        /* (U16) Y orgin of image */
+    y_origin,        /* (U16) Y origin of image */
     width,           /* (U16) Width of image */
     height;          /* (U16) Height of image */
 
@@ -484,7 +484,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                         }
                       else
                         {
-                          tga_devel.ExtensionSize = 0;      /* Invalidate TGA developper area. */
+                          tga_devel.ExtensionSize = 0;      /* Invalidate TGA developer area. */
                         }
                     }
                 }
@@ -707,7 +707,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
             {
               if ((tga_info.image_type == TGARLEColormap) ||
                   (tga_info.image_type == TGARLERGB) ||
-                  (tga_info.image_type == TGARLEMonochrome))  /* J.F. THIS WILLL NOT WORK! Some image sample should be obtained. */
+                  (tga_info.image_type == TGARLEMonochrome))  /* J.F. THIS WILL NOT WORK! Some image sample should be obtained. */
                 {
                   if (runlength != 0)
                     {

@@ -1905,7 +1905,7 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
     Retrieve image orientation from EXIF (if present) and store in
     image.
 
-    EXIF orienation enumerations match TIFF enumerations, which happen
+    EXIF orientation enumerations match TIFF enumerations, which happen
     to match the enumeration values used by GraphicsMagick.
   */
   if (status == MagickPass)

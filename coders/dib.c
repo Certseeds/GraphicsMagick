@@ -599,7 +599,7 @@ static Image *ReadDIBImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
 
   /*
-    BMP v3 defines width and hight as signed LONG (32 bit) values.  If
+    BMP v3 defines width and height as signed LONG (32 bit) values.  If
     height is a positive number, then the image is a "bottom-up"
     bitmap with origin in the lower-left corner.  If height is a
     negative number, then the image is a "top-down" bitmap with the
