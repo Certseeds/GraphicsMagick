@@ -2059,13 +2059,13 @@ ModuleExport void UnregisterBMPImage(void)
 
 typedef struct
 {
-    const char *FormatName;
-    const char *FormatNameDDot;
-    const char *Desc;
+    const char FormatName[5];
+    const char FormatNameDDot[6];
+    const char Desc[24];
 } TForeignFormatDesc;
 
-const TForeignFormatDesc StoreDescJPG = {"JPEG", "JPEG:", "  Creating jpeg_image."};
-const TForeignFormatDesc StoreDescPNG = {"PNG", "PNG:", "  Creating png_image."};
+static const TForeignFormatDesc StoreDescJPG = {"JPEG", "JPEG:", "  Creating jpeg_image."};
+static const TForeignFormatDesc StoreDescPNG = {"PNG", "PNG:", "  Creating png_image."};
 
 
 static int StoreAlienBlob(Image * image, const ImageInfo * image_info, const TForeignFormatDesc *pFormatDesc)

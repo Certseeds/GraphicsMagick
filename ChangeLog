@@ -1,5 +1,11 @@
 2024-01-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/symbols.h, wand/wand_symbols.h: Update Gm-prefixed
+	symbols.
+
+	* coders/bmp.c: Eliminate 'TForeignFormatDesc' and 'StoreDescPNG'
+	which were accidentally writeable globals.
+
 	* Fix spelling errors in code and documentation.
 
 2024-01-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
