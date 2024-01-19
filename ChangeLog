@@ -1,3 +1,7 @@
+2024-01-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c Temporary fix that supresses leak in tiff writer.
+
 2024-01-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/symbols.h, wand/wand_symbols.h: Update Gm-prefixed

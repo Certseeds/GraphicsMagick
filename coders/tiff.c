@@ -6705,6 +6705,11 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 
 #if EXPERIMENTAL_EXIF_TAGS
 #if TIFFLIB_VERSION >= 20120922
+
+/* !!!!!!!!!!!!!!! */
+        if(image->next == (Image *)NULL)	/* This  should be removed, one time fix */
+/* !!!!!!!!!!!!!!! */
+
         if(status!=MagickFail)
         {
           const unsigned char *profile_data;
