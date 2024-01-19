@@ -1,6 +1,6 @@
 2024-01-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c Place string terminator for more code safety.
+	coders/tiff.c: Place string terminator for more code safety.
 
 2024-01-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
@@ -23,7 +23,7 @@
 
 2024-01-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c Fixed TIFF_RATIONAL extraction from EXIF.
+	coders/tiff.c: Fixed TIFF_RATIONAL extraction from EXIF.
 
 2024-01-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
