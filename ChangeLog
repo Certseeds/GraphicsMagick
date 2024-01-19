@@ -1,6 +1,6 @@
 2024-01-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c Temporary fix that supresses leak in tiff writer.
+	coders/tiff.c: Temporary fix that supresses leak in tiff writer.
 
 2024-01-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -14,7 +14,7 @@
 
 2024-01-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c Prevent sign expansion and bogus contents in upper 2
+	coders/tiff.c: Prevent sign expansion and bogus contents in upper 2
 	bytes for TIFF_SHORT.
 
 2024-01-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
@@ -23,7 +23,7 @@
 
 2024-01-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c Fix for multiple frames. Do not import
+	coders/tiff.c: Fix for multiple frames. Do not import
 	TIFFTAG_COMPRESSION, TIFFTAG_IMAGELENGTH, TIFFTAG_IMAGEWIDTH ...
 	from EXIF.
 
@@ -39,16 +39,16 @@
 
 2024-01-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c Fix TIFF_RATIONAL - Two LONGs: the first represents
+	coders/tiff.c: Fix TIFF_RATIONAL - Two LONGs: the first represents
 	the numerator of a fraction, the second the denominator.
 
 2024-01-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c Extract EXIFIFD part from EXIF profile.
+	coders/tiff.c: Extract EXIFIFD part from EXIF profile.
 
 2024-01-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/wpg.c Make two functions "EnsureNextImage()" and
+	coders/wpg.c: Make two functions "EnsureNextImage()" and
 	"LoadPaletteRec()" static.
 
 2024-01-02  Fojtik Jaroslav  <JaFojtik@yandex.com>
@@ -99,7 +99,7 @@
 
 2023-12-27  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* tiff/ Update libtiff to 4.5.1.
+	* tiff/: Update libtiff to 4.5.1.
 
 2023-12-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -127,7 +127,7 @@
 
 2023-12-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/tiff.c Check for NULL in EXIF tag name being logged.
+	* coders/tiff.c: Check for NULL in EXIF tag name being logged.
 
 2023-12-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
@@ -137,11 +137,11 @@
 
 2023-12-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/tiff.c Attempt to store EXIF inside TIFF image.
+	* coders/tiff.c: Attempt to store EXIF inside TIFF image.
 
 2023-12-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/wpg.c Fix for oss-fuzz issue 64935:
+	* coders/wpg.c: Fix for oss-fuzz issue 64935:
 	"graphicsmagick:enhance_fuzzer: Heap-buffer-overflow in ReadBlob".
 
 2023-12-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -350,8 +350,8 @@
 
 2023-11-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/wpg.c Revert
-	* coders/mat.c Prevent against geometry injection.
+	* coders/wpg.c: Revert
+	* coders/mat.c: Prevent against geometry injection.
 
 2023-11-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -424,14 +424,14 @@
 	WIN64 build.
 
 2023-10-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	coders/wpg.c Remove code duplicity for loading WPG1 and WPG2 palette.
+	coders/wpg.c: Remove code duplicity for loading WPG1 and WPG2 palette.
 
 2023-10-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 	coders/wpg.c Fix loop end to 256 insert "Palette" chunk header
 	to debug log.
 
 2023-10-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	coders/wpg.c Fix for potentiall access to uninitialised
+	coders/wpg.c: Fix for potentiall access to uninitialised
 	object "Palette".
 
 2023-10-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
