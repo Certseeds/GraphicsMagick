@@ -73,7 +73,7 @@
 #  endif /* if defined(COMPRESSION_ZSTD) && defined(HasZSTD) */
 
 #if !defined(EXPERIMENTAL_EXIF_TAGS)
-#  define EXPERIMENTAL_EXIF_TAGS 0
+#  define EXPERIMENTAL_EXIF_TAGS 1
 #endif /* if !defined(EXPERIMENTAL_EXIF_TAGS) */
 
 /*
@@ -4528,6 +4528,7 @@ int FieldCount = 0;
                              break;	/* Incompatible recipe.*/
                          if(Long2<=4)
                          {
+                           ((char*)&Long2)[3] = 0;			/* Force string terminator for safety. */
                            if(TIFFSetField(tiff, Tag, &Value))		/* The short string is inside Value. */
                              FieldCount++;
                          }

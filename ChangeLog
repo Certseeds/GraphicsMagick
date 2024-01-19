@@ -1,4 +1,8 @@
-2024-01-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
+2024-01-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c Place string terminator for more code safety.
+
+2024-01-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	coders/tiff.c: Temporary fix that supresses leak in tiff writer.
 
