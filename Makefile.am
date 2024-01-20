@@ -446,7 +446,7 @@ coverity:
 	$(MAKE) clean
 	$(RM) -rf $(COVERITY_COV_INT)
 	cov-build --dir $(COVERITY_COV_INT) $(MAKE)
-	tar caf $(COVERITY_TARBALL) cov-int
+	tar caf $(COVERITY_TARBALL) $(COVERITY_COV_INT)
 	curl \
 	--form token=`cat $$HOME/.coverity_key_gm` \
 	--form email=$(COVERITY_EMAIL) \

@@ -21,7 +21,8 @@ GraphicsMagick Change Logs
               image processing, software development, TclMagick, Magick++
 
 .. _GraphicsMagick : index.html
-.. _2023 : Changelog.html
+.. _2024 : Changelog.html
+.. _2023 : ChangeLog-2023.html
 .. _2022 : ChangeLog-2022.html
 .. _2021 : ChangeLog-2021.html
 .. _2020 : ChangeLog-2020.html
