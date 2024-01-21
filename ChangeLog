@@ -1,3 +1,8 @@
+2024-01-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c: Do not copy TIFFTAG_XRESOLUTION & TIFFTAG_YRESOLUTION
+	that are already handled by gm functionality.
+
 2024-01-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/tests/common.sh, common.shi.in: Apply tight read and
