@@ -1,3 +1,17 @@
+2024-01-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* utilities/tests/common.sh, common.shi.in: Apply tight read and
+	write file size limits during testing.
+
+	* utilities/tests/hald-clut.tap (levels): Make messaging about
+	levels more distinct during Hald CLUT testing.
+
+	* fuzzing/utils.cc: Set a write resource limit during oss-fuzz
+	testing.
+
+	* magick/blob.c (ReadBlobByte): EOF detection requires reading
+	past the end of the file, so allow for that.
+
 2024-01-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Copyright.txt, scripts/html_fragments.py, ChangeLog.2023: Rotate

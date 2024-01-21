@@ -14,10 +14,3 @@ SUNRISE_MIFF="${TOP_SRCDIR_NATIVE}/utilities/tests/sunrise.miff"
 #CONVERT_FLAGS='-monitor'
 #COMPOSITE_FLAGS='-monitor'
 #MONTAGE_FLAGS='-monitor'
-
-MIFF_COMPRESS=none
-if [ "${MAGICK_FEATURE_BZLIB}" = "yes" ] ; then
-    MIFF_COMPRESS=bzip
-elif [ "${MAGICK_FEATURE_ZLIB}" = "yes" ] ; then
-    MIFF_COMPRESS=zip
-fi

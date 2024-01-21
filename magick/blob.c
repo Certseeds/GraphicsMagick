@@ -3550,7 +3550,12 @@ MagickExport int ReadBlobByte(Image *image)
 
   blob=image->blob;
 
-  if (blob->read_total >= blob->read_limit)
+  /*
+    EOF detection requires attempting to read beyond the file data so
+    use > rather than >=.  Otherwise there will be failure if the read
+    limit is the same as the file size.
+  */
+  if (blob->read_total > blob->read_limit)
     {
       blob->eof=1;
       ThrowException(&image->exception,ResourceLimitError,ReadLimitExceeded,
