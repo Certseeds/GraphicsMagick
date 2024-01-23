@@ -176,7 +176,7 @@ The repository hierarchy is as follows:
 
   The stable repository is available via http at
   "http://hg.code.sf.net/p/graphicsmagick/code" or
-  "https://hg.osdn.net/view/graphicsmagick/GM".  Any changes in the
+  "https://foss.heptapod.net/graphicsmagick/graphicsmagick".  Any changes in the
   unstable development repository are pushed to the stable
   repositories (by the developer responsible for this role) once any
   necessary adjustments have been made, documentation files have been
@@ -186,13 +186,13 @@ The repository hierarchy is as follows:
 To build your local development repository (as quickly as possible),
 you may use these steps:
 
-1. Clone the stable repository at SourceForge or OSDN::
+1. Clone the stable repository at SourceForge or Heptapod::
 
      hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
 
      or
 
-     hg clone https://hg.osdn.net/view/graphicsmagick/GM GM
+     hg clone https://foss.heptapod.net/graphicsmagick/graphicsmagick GM
 
 2. Adjust your local repository path default to use the unstable repository.
 
