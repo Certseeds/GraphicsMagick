@@ -4550,28 +4550,72 @@ int FieldCount = 0;
                                break;					/* Fixed size arrays not handled. */
                            if(Value+2*Long2>=profile_length-1) break;
                            if(Long2==0) break;
-                           Array = (uint16_t *)malloc(2*Long2);
+                           Array = MagickAllocateResourceLimitedMemory(uint16_t *, 2*Long2);
                            if(Array==NULL) break;
-                           for(i=0; i<Long2;i++)
+                           for(i=0; i<Long2; i++)
                                Array[i] = LD_UINT16(profile_data+Value+2*i);
                            if(WriteCount==TIFF_VARIABLE)
                            {
-                             if(TIFFSetField(tiff, Tag, (int)Long2, Array))	/* Argument 3 type int. */
+                             if(TIFFSetField(tiff, Tag, (int)Long2, Array))	/* Argument 3 type int, argument 4 uint16_t*. */
                                FieldCount++;
                            } else if(WriteCount==TIFF_VARIABLE2)
                            {
-                             if(TIFFSetField(tiff, Tag, Long2, Array))		 /* Argument 3 type uint32_t. */
+                             if(TIFFSetField(tiff, Tag, Long2, Array))		/* Argument 3 type uint32_t, argument 4 uint16_t*.. */
                                FieldCount++;
                            }
-                           free(Array);
+                           MagickFreeResourceLimitedMemory(Array);
+                           break;
+                         }
+                         goto Scalar;
+
+            case TIFF_LONG:
+                         if(WriteCount!=1)
+                         {
+                           uint32_t *Array;
+                           uint32_t i;
+                           if(FDT!=Field) break;			/* Incompatible array type, might be converted in future. */
+                           if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
+                               break;					/* Fixed size arrays not handled. */
+                           if(Value+4*Long2>=profile_length-1) break;
+                           if(Long2==0) break;
+                           Array = MagickAllocateResourceLimitedMemory(uint32_t *, 4*Long2);
+                           if(Array==NULL) break;
+                           for(i=0; i<Long2; i++)
+                               Array[i] = LD_UINT32(profile_data+Value+4*i);
+                           if(WriteCount==TIFF_VARIABLE)
+                           {
+                             if(TIFFSetField(tiff, Tag, (int)Long2, Array))	/* Argument 3 type int, argument 4 uint32_t*. */
+                               FieldCount++;
+                           } else if(WriteCount==TIFF_VARIABLE2)
+                           {
+                             if(TIFFSetField(tiff, Tag, Long2, Array))		 /* Argument 3 type uint32_t, argument 4 uint32_t*. */
+                               FieldCount++;
+                           }
+                           MagickFreeResourceLimitedMemory(Array);
                            break;
                          }
                          goto Scalar;
 
             case TIFF_BYTE:
-            case TIFF_LONG:
                          if(WriteCount!=1)
-                             break;
+                         {
+                           if(FDT!=Field) break;			/* Incompatible array type, might be converted in future. */
+                           if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
+                               break;					/* Fixed size arrays not handled. */
+                           if(Value+Long2>=profile_length-1) break;
+                               /* No need to convert endianity for BYTES. */
+                           if(WriteCount==TIFF_VARIABLE)
+                           {
+                             if(TIFFSetField(tiff, Tag, (int)Long2, profile_data+Value)) /* Argument 3 type int, argument 4 uint8_t*. */
+                               FieldCount++;
+                           } else if(WriteCount==TIFF_VARIABLE2)
+                           {
+                             if(TIFFSetField(tiff, Tag, Long2, profile_data+Value))	/* Argument 3 type uint32_t, argument 4 uint8_t*. */
+                               FieldCount++;
+                           }
+                           break;
+                         }
+
 Scalar:                  if(FDT==TIFF_SHORT)
                          {
                            if(TIFFSetField(tiff, Tag, (unsigned)Value & 0xFFFF))
@@ -4582,11 +4626,14 @@ Scalar:                  if(FDT==TIFF_SHORT)
                          if(TIFFSetField(tiff, Tag, Value))
                              FieldCount++;
                          break;
+
 /*            case TIFF_SRATIONAL:
                          break; */
             case TIFF_RATIONAL:
                          if(WriteCount!=1)
-                             break;
+                         {
+                           break;
+                         }
 
                          if(FDT==TIFF_RATIONAL)
                          {
