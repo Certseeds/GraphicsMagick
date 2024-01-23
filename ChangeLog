@@ -1,3 +1,7 @@
+2024-01-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c: Copy uint16_t EXIF arrays.
+
 2024-01-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	coders/tiff.c: Do not copy TIFFTAG_XRESOLUTION & TIFFTAG_YRESOLUTION

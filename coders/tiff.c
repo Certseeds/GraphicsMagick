@@ -4473,7 +4473,6 @@ int FieldCount = 0;
     if(*profile_data!='I') return 0;
     LD_UINT32 = LD_UINT32_LO;
     LD_UINT16 = LD_UINT16_LO;
-
   }
 
   do
@@ -4540,16 +4539,43 @@ int FieldCount = 0;
                              FieldCount++;
                          }
                          break;
-            case TIFF_BYTE:
+
             case TIFF_SHORT:
+                         if(WriteCount!=1)
+                         {
+                           uint16_t *Array;
+                           uint32_t i;
+                           if(FDT!=Field) break;			/* Incompatible array type, might be converted in future. */
+                           if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
+                               break;					/* Fixed size arrays not handled. */
+                           if(Value+2*Long2>=profile_length-1) break;
+                           if(Long2==0) break;
+                           Array = (uint16_t *)malloc(2*Long2);
+                           if(Array==NULL) break;
+                           for(i=0; i<Long2;i++)
+                               Array[i] = LD_UINT16(profile_data+Value+2*i);
+                           if(WriteCount==TIFF_VARIABLE)
+                           {
+                             if(TIFFSetField(tiff, Tag, (int)Long2, Array))	/* Argument 3 type int. */
+                               FieldCount++;
+                           } else if(WriteCount==TIFF_VARIABLE2)
+                           {
+                             if(TIFFSetField(tiff, Tag, Long2, Array))		 /* Argument 3 type uint32_t. */
+                               FieldCount++;
+                           }
+                           free(Array);
+                           break;
+                         }
+                         goto Scalar;
+
+            case TIFF_BYTE:
             case TIFF_LONG:
                          if(WriteCount!=1)
                              break;
-                         if(FDT==TIFF_SHORT)
+Scalar:                  if(FDT==TIFF_SHORT)
                          {
                            if(TIFFSetField(tiff, Tag, (unsigned)Value & 0xFFFF))
                              FieldCount++;
-                           break;
                          }
                          if(FDT!=TIFF_BYTE && FDT!=TIFF_LONG)
                              break;
