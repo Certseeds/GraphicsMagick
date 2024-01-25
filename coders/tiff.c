@@ -4420,24 +4420,24 @@ static TIFFFieldArray customFieldArray = {tfiatOther, 0, 1, customFields};
 */
 
 
-static uint32_t LD_UINT32_LO(const unsigned char *Mem)
+static magick_uint32_t LD_UINT32_LO(const unsigned char *Mem)
 {
-  return (uint32_t)Mem[0] | ((uint32_t)Mem[1] << 8) | ((uint32_t)Mem[2] << 16) | ((uint32_t)Mem[3] << 24);
+  return (magick_uint32_t)Mem[0] | ((magick_uint32_t)Mem[1] << 8) | ((magick_uint32_t)Mem[2] << 16) | ((magick_uint32_t)Mem[3] << 24);
 }
 
-static uint32_t LD_UINT32_HI(const unsigned char *Mem)
+static magick_uint32_t LD_UINT32_HI(const unsigned char *Mem)
 {
-  return ((uint32_t)Mem[0]<<24) | ((uint32_t)Mem[1] << 16) | ((uint32_t)Mem[2] << 8) | ((uint32_t)Mem[3]);
+  return ((magick_uint32_t)Mem[0]<<24) | ((magick_uint32_t)Mem[1] << 16) | ((magick_uint32_t)Mem[2] << 8) | ((magick_uint32_t)Mem[3]);
 }
 
-static uint16_t LD_UINT16_LO(const unsigned char *Mem)
+static magick_uint16_t LD_UINT16_LO(const unsigned char *Mem)
 {
-  return (uint32_t)Mem[0] | ((uint32_t)Mem[1] << 8);
+  return (magick_uint16_t)Mem[0] | ((magick_uint16_t)Mem[1] << 8);
 }
 
-static uint16_t LD_UINT16_HI(const unsigned char *Mem)
+static magick_uint16_t LD_UINT16_HI(const unsigned char *Mem)
 {
-  return ((uint32_t)Mem[0] << 8) | ((uint32_t)Mem[1]);
+  return ((magick_uint16_t)Mem[0] << 8) | ((magick_uint16_t)Mem[1]);
 }
 
 
@@ -4453,14 +4453,14 @@ static const char *FipFieldName(const TIFFField *fip)
 }
 
 
-static int AddIFDExifFields(TIFF *tiff, const unsigned char *profile_data, const unsigned char *IFD_data, size_t profile_length, MagickBool logging, uint16_t Flags)
+static int AddIFDExifFields(TIFF *tiff, const unsigned char *profile_data, const unsigned char *IFD_data, size_t profile_length, MagickBool logging, magick_uint16_t Flags)
 {
-uint32_t(*LD_UINT32)(const unsigned char *Mem);
-uint16_t(*LD_UINT16)(const unsigned char *Mem);
+magick_uint32_t(*LD_UINT32)(const unsigned char *Mem);
+magick_uint16_t(*LD_UINT16)(const unsigned char *Mem);
 const TIFFField *fip;
-uint16_t EntryNum;
-uint16_t Tag, Field;
-uint32_t Long2, Value;
+magick_uint16_t EntryNum;
+magick_uint16_t Tag, Field;
+magick_uint32_t Long2, Value;
 int FieldCount = 0;
 
   if(*profile_data=='M')
@@ -4543,14 +4543,14 @@ int FieldCount = 0;
             case TIFF_SHORT:
                          if(WriteCount!=1)
                          {
-                           uint16_t *Array;
-                           uint32_t i;
+                           magick_uint16_t *Array;
+                           magick_uint32_t i;
                            if(FDT!=Field) break;			/* Incompatible array type, might be converted in future. */
                            if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
                                break;					/* Fixed size arrays not handled. */
                            if(Value+2*Long2>=profile_length-1) break;
                            if(Long2==0) break;
-                           Array = MagickAllocateResourceLimitedMemory(uint16_t *, 2*Long2);
+                           Array = MagickAllocateResourceLimitedMemory(magick_uint16_t *, 2*Long2);
                            if(Array==NULL) break;
                            for(i=0; i<Long2; i++)
                                Array[i] = LD_UINT16(profile_data+Value+2*i);
@@ -4571,14 +4571,14 @@ int FieldCount = 0;
             case TIFF_LONG:
                          if(WriteCount!=1)
                          {
-                           uint32_t *Array;
-                           uint32_t i;
+                           magick_uint32_t *Array;
+                           magick_uint32_t i;
                            if(FDT!=Field) break;			/* Incompatible array type, might be converted in future. */
                            if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
                                break;					/* Fixed size arrays not handled. */
                            if(Value+4*Long2>=profile_length-1) break;
                            if(Long2==0) break;
-                           Array = MagickAllocateResourceLimitedMemory(uint32_t *, 4*Long2);
+                           Array = MagickAllocateResourceLimitedMemory(magick_uint32_t *, 4*Long2);
                            if(Array==NULL) break;
                            for(i=0; i<Long2; i++)
                                Array[i] = LD_UINT32(profile_data+Value+4*i);
@@ -4664,7 +4664,7 @@ NextItem:
 }
 
 
-static int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging, uint16_t Flags)
+static int AddExifFields(TIFF *tiff, const unsigned char *profile_data, size_t profile_length, MagickBool logging, magick_uint16_t Flags)
 {
 const char EXIF[6] = {'E','x','i','f',0,0};
 
@@ -6783,7 +6783,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 
 #if 0
 /* !!!!!!!!!!!!!!! */
-        if(image->next == (Image *)NULL)	/* This  should be removed, one time fix */
+/*         if(image->next == (Image *)NULL)	This  should be removed, one time fix */
 /* !!!!!!!!!!!!!!! */
 #endif
 
