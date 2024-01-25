@@ -1,3 +1,10 @@
+2024-01-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (WriteTIFFImage): TIFFFreeDirectory() statements
+	necessary to avoid memory leak in libtiff versions lacking merge
+	request 563 "Avoiding memory leaks when using
+	TIFFCreateDirectory()".
+
 2024-01-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jxl.c: Directly include jxl/version.h rather than

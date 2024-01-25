@@ -6781,9 +6781,11 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #if EXPERIMENTAL_EXIF_TAGS
 #if TIFFLIB_VERSION >= 20120922
 
+#if 0
 /* !!!!!!!!!!!!!!! */
         if(image->next == (Image *)NULL)	/* This  should be removed, one time fix */
 /* !!!!!!!!!!!!!!! */
+#endif
 
         if(status!=MagickFail)
         {
@@ -6799,6 +6801,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             tdir_t current_mainifd = TIFFCurrentDirectory(tiff);
             if(TIFFCurrentDirOffset(tiff) > 0 && current_mainifd > 0) current_mainifd--;
 
+            TIFFFreeDirectory(tiff);
             if(TIFFCreateEXIFDirectory(tiff) == 0)
             {
               if(AddExifFields(tiff,profile_data,profile_length,logging, FLAG_EXIF) > 0)
@@ -6848,6 +6851,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
                 if(logging)
                   LogMagickEvent(CoderEvent,GetMagickModule(),"TIFFSetDirectory() failed.\n");
               }
+              TIFFFreeDirectory(tiff);
               if(!TIFFCreateDirectory(tiff))
               {
                 if(logging)
