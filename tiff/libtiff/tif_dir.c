@@ -1679,6 +1679,8 @@ TIFFExtendProc TIFFSetTagExtender(TIFFExtendProc extender)
  */
 int TIFFCreateDirectory(TIFF *tif)
 {
+    /* Free previously allocated memory and setup default values. */
+    TIFFFreeDirectory(tif);
     TIFFDefaultDirectory(tif);
     tif->tif_diroff = 0;
     tif->tif_nextdiroff = 0;
@@ -1691,6 +1693,8 @@ int TIFFCreateDirectory(TIFF *tif)
 
 int TIFFCreateCustomDirectory(TIFF *tif, const TIFFFieldArray *infoarray)
 {
+   /* Free previously allocated memory and setup default values. */
+    TIFFFreeDirectory(tif);
     TIFFDefaultDirectory(tif);
 
     /*
