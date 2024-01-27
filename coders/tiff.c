@@ -4602,7 +4602,7 @@ int FieldCount = 0;
                            if(FDT!=Field) break;			/* Incompatible array type, might be converted in future. */
                            if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
                            {
-                             if(Long2<WriteCount) break;		/* Too small amount of mandatory items. */
+                             if((WriteCount<=0)||(Long2<(magick_uint32_t)WriteCount)) break;		/* Too small amount of mandatory items. */
                              if(Long2<=4)
                              {
                                if(TIFFSetField(tiff, Tag, IFD_data+8))	/* Argument 3 uint8_t[4]. */
@@ -4655,7 +4655,7 @@ Scalar:                  if(FDT==TIFF_SHORT)
                              if(Value+8*WriteCount>=profile_length-1) break;
                              ArrayD = MagickAllocateResourceLimitedMemory(double *, sizeof(double)*WriteCount);
                              if(ArrayD==NULL) break;
-                             for(i=0; i<WriteCount; i++)
+                             for(i=0; i<(magick_uint32_t)WriteCount; i++)
                              {
                                const magick_uint32_t val = LD_UINT32(profile_data+Value+4+8*i);
                                ArrayD[i] = (val==0) ? 0.0 : (LD_UINT32(profile_data+Value+8*i) / (double)val);

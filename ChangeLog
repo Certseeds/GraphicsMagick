@@ -1,6 +1,10 @@
+2024-01-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tiff.c (AddIFDExifFields): Avoid signed/unsigned comparison warnings.
+
 2024-01-27  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: EXIF GPS IFD tags are copyed now.
+	coders/tiff.c: EXIF GPS IFD tags are copied now.
 
 2024-01-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
