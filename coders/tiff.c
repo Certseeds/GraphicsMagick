@@ -4654,6 +4654,7 @@ Scalar:                  if(FDT==TIFF_SHORT)
                                double *ArrayD;
                                magick_uint32_t i;
                                if(Long2<WriteCount) break;		/* Too small amount of mandatory items. */
+                               if(Value+8*WriteCount>=profile_length-1) break;
                                ArrayD = MagickAllocateResourceLimitedMemory(double *, sizeof(double)*WriteCount);
                                if(ArrayD==NULL) break;
                                for(i=0; i<WriteCount; i++)
@@ -4661,6 +4662,7 @@ Scalar:                  if(FDT==TIFF_SHORT)
                                if(TIFFSetField(tiff, Tag, ArrayD))
                                    FieldCount++;
                                MagickFreeResourceLimitedMemory(ArrayD);
+                               break;
                              }
                            }
                            break;
