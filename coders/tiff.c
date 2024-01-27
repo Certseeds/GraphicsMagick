@@ -4647,23 +4647,30 @@ Scalar:                  if(FDT==TIFF_SHORT)
                          if(FDT!=TIFF_RATIONAL) break;
                          if(WriteCount!=1)
                          {
-                           if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
+                           if(WriteCount>0)
                            {
-                             if(WriteCount>0)
+                             double *ArrayD;
+                             magick_uint32_t i;
+                             if(Long2<(magick_uint32_t)WriteCount) break;		/* Too small amount of mandatory items. */
+                             if(Value+8*WriteCount>=profile_length-1) break;
+                             ArrayD = MagickAllocateResourceLimitedMemory(double *, sizeof(double)*WriteCount);
+                             if(ArrayD==NULL) break;
+                             for(i=0; i<WriteCount; i++)
                              {
-                               double *ArrayD;
-                               magick_uint32_t i;
-                               if(Long2<WriteCount) break;		/* Too small amount of mandatory items. */
-                               if(Value+8*WriteCount>=profile_length-1) break;
-                               ArrayD = MagickAllocateResourceLimitedMemory(double *, sizeof(double)*WriteCount);
-                               if(ArrayD==NULL) break;
-                               for(i=0; i<WriteCount; i++)
-                                   ArrayD[i] = LD_UINT32(profile_data+Value+8*i) / (double)LD_UINT32(profile_data+Value+4+8*i);
-                               if(TIFFSetField(tiff, Tag, ArrayD))
-                                   FieldCount++;
-                               MagickFreeResourceLimitedMemory(ArrayD);
-                               break;
+                               const magick_uint32_t val = LD_UINT32(profile_data+Value+4+8*i);
+                               ArrayD[i] = (val==0) ? 0.0 : (LD_UINT32(profile_data+Value+8*i) / (double)val);
                              }
+                             if(TIFFSetField(tiff, Tag, ArrayD))
+                                 FieldCount++;
+                             MagickFreeResourceLimitedMemory(ArrayD);
+                             break;
+                           }
+
+                           if(WriteCount==TIFF_VARIABLE || WriteCount==TIFF_VARIABLE2)
+                           {
+                             if(logging && (Flags & FLAG_BASE)!=0)
+                                 (void)LogMagickEvent(CoderEvent,GetMagickModule(),"Variable size fractional arrays are not supported yet.");
+                             break;
                            }
                            break;
                          }
