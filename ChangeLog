@@ -1,3 +1,7 @@
+2024-01-27  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c: EXIF GPS IFD tags are copyed now.
+
 2024-01-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	tiff/libtiff/tif_dir.c: Apply Su Laus leak fix from:

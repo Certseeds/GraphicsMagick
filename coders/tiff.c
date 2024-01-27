@@ -4501,7 +4501,7 @@ int FieldCount = 0;
          Tag==TIFFTAG_STRIPOFFSETS || Tag==TIFFTAG_ROWSPERSTRIP || Tag==TIFFTAG_STRIPBYTECOUNTS ||
          Tag==TIFFTAG_XRESOLUTION || Tag==TIFFTAG_YRESOLUTION)
       {
-          goto NextItem;	/* Banned TIFF tags that cannot be obtained from EXIF. */
+          goto NextItem;	/* Banned TIFF tags that cannot be copyed from EXIF. */
       }
 
       if(Tag == TIFFTAG_EXIFIFD)
@@ -4601,7 +4601,21 @@ int FieldCount = 0;
                          {
                            if(FDT!=Field) break;			/* Incompatible array type, might be converted in future. */
                            if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
-                               break;					/* Fixed size arrays not handled. */
+                           {
+                             if(Long2<WriteCount) break;		/* Too small amount of mandatory items. */
+                             if(Long2<=4)
+                             {
+                               if(TIFFSetField(tiff, Tag, IFD_data+8))	/* Argument 3 uint8_t[4]. */
+                                 FieldCount++;
+                             }
+                             else
+                             {
+                               if(Value+Long2>=profile_length-1) break;
+                               if(TIFFSetField(tiff, Tag, profile_data+Value))	/* Argument 3 uint8_t[4]. */
+                                 FieldCount++;
+                             }
+                             break;					/* Fixed size arrays not handled. */
+                           }
                            if(Value+Long2>=profile_length-1) break;
                                /* No need to convert endianity for BYTES. */
                            if(WriteCount==TIFF_VARIABLE)
@@ -4630,12 +4644,28 @@ Scalar:                  if(FDT==TIFF_SHORT)
 /*            case TIFF_SRATIONAL:
                          break; */
             case TIFF_RATIONAL:
+                         if(FDT!=TIFF_RATIONAL) break;
                          if(WriteCount!=1)
                          {
+                           if(WriteCount!=TIFF_VARIABLE && WriteCount!=TIFF_VARIABLE2)
+                           {
+                             if(WriteCount>0)
+                             {
+                               double *ArrayD;
+                               magick_uint32_t i;
+                               if(Long2<WriteCount) break;		/* Too small amount of mandatory items. */
+                               ArrayD = MagickAllocateResourceLimitedMemory(double *, sizeof(double)*WriteCount);
+                               if(ArrayD==NULL) break;
+                               for(i=0; i<WriteCount; i++)
+                                   ArrayD[i] = LD_UINT32(profile_data+Value+8*i) / (double)LD_UINT32(profile_data+Value+4+8*i);
+                               if(TIFFSetField(tiff, Tag, ArrayD))
+                                   FieldCount++;
+                               MagickFreeResourceLimitedMemory(ArrayD);
+                             }
+                           }
                            break;
                          }
-
-                         if(FDT==TIFF_RATIONAL)
+                         else
                          {
                            double d;
                            if(Value+8>=profile_length) break;
@@ -6781,18 +6811,14 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
 #if EXPERIMENTAL_EXIF_TAGS
 #if TIFFLIB_VERSION >= 20120922
 
-#if 0
-/* !!!!!!!!!!!!!!! */
-/*         if(image->next == (Image *)NULL)	This  should be removed, one time fix */
-/* !!!!!!!!!!!!!!! */
-#endif
-
         if(status!=MagickFail)
         {
           const unsigned char *profile_data;
           size_t profile_length;
           if((profile_data=GetImageProfile(image,"Exif",&profile_length)) != 0)
           {
+            magick_uint64_t dir_EXIF_offset = 0;
+            magick_uint64_t dir_GPS_offset = 0;
          /*
           * Unfortunately it depends on the prehistory, what number TIFFCurrentDirectory() will get back.
           * Therefore, the current main IFD number has to be adapted. However, this is an inconsistency in LibTIFF which should be
@@ -6806,38 +6832,36 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
             {
               if(AddExifFields(tiff,profile_data,profile_length,logging, FLAG_EXIF) > 0)
               {             // Now write the directory of Exif data 
-                uint64_t dir_offset = 0;
-                if(!TIFFWriteCustomDirectory(tiff, &dir_offset)) 
+                
+                if(!TIFFWriteCustomDirectory(tiff, &dir_EXIF_offset))
                 {
                   LogMagickEvent(CoderEvent,GetMagickModule(),"Failed TIFFWriteCustomDirectory() of the Exif data");
                 }
-                else
-                {  // Go back to the first directory, and add the EXIFIFD pointer.
-                  TIFFSetDirectory(tiff, 0);
-                  TIFFSetField(tiff, TIFFTAG_EXIFIFD, dir_offset);
-                }
               }
             }
-/*
+
             if(TIFFCreateGPSDirectory(tiff) == 0)
             {
               if(AddExifFields(tiff,profile_data,profile_length,logging, FLAG_GPS) > 0)
               {             // Now write the directory of Exif data 
-                uint64_t dir_offset = 0;
-                if(!TIFFWriteCustomDirectory(tiff, &dir_offset)) 
+                if(!TIFFWriteCustomDirectory(tiff, &dir_GPS_offset))
                 {
                   LogMagickEvent(CoderEvent,GetMagickModule(),"Failed TIFFWriteCustomDirectory() of the ExifGPS data");
-                }
-                else
-                {  // Go back to the first directory, and add the EXIFIFD pointer.
-                  TIFFSetDirectory(tiff, 0);
-                  TIFFSetField(tiff, TIFFTAG_GPSIFD, dir_offset);
                 }
               }
               else
                 TIFFSetDirectory(tiff, 0);
             }
-*/
+
+            if(dir_EXIF_offset>0 || dir_GPS_offset>0)
+            {          // Go back to the first directory, and add the EXIFIFD pointer.
+              TIFFSetDirectory(tiff, 0);
+              if(dir_EXIF_offset>0)
+                  TIFFSetField(tiff, TIFFTAG_EXIFIFD, dir_EXIF_offset);
+              if(dir_GPS_offset>0)
+                  TIFFSetField(tiff, TIFFTAG_GPSIFD, dir_GPS_offset);
+            }
+
                 /* Save changed tiff-directory to file */
             if(image->next != (Image *)NULL)
             {
