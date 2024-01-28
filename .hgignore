@@ -72,7 +72,7 @@ out_.*\.+
 ^wand/drawtest
 ^wand/wandtest
 ^www/ChangeLog-....\.rst
-^www/Changelog\.rst
+^www/ChangeLog\.rst
 www/Magick\+\+/ChangeLog.rst
 ^GraphicsMagick\.spec
 ^Magick\+\+/bin/GraphicsMagick\+\+-config
