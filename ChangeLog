@@ -1,3 +1,8 @@
+2024-01-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	coders/tiff.c: Fractional arrays needs either double[] or float[]
+	depending on TIFFFieldSetGetSize(fip).
+
 2024-01-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (AddIFDExifFields): Avoid signed/unsigned comparison warnings.
