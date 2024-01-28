@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="en" name="language">
-	<title></title>
+	<title>GraphicsMagick ChangeLog - 2004</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
 
@@ -36,7 +36,8 @@
 </ul>
 </div>
 
-<div class="document">
+<div class="document" id="graphicsmagick-changelog-2004">
+<h1 class="title">GraphicsMagick ChangeLog - 2004</h1>
 <p>2004-12-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -356,7 +357,7 @@ display command menu with GraphicsMagick logo.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>coders/png.c: Fixes for CERT security alert TA04-217A described
-at &quot;<a class="reference external" href="http://www.us-cert.gov/case/techalerts/TA04-217A.html">http://www.us-cert.gov/case/techalerts/TA04-217A.html</a>&quot;.</p></li>
+at &quot;<a class="reference external" href="http://www.us-cert.gov/cas/techalerts/TA04-217A.html">http://www.us-cert.gov/cas/techalerts/TA04-217A.html</a>&quot;.</p></li>
 </ul>
 </blockquote>
 <p>2004-08-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -423,7 +424,7 @@ implementation dependent and may return non NULL pointer on some
 compilers, like VC++ and gcc. This is not the case of Borland C++
 Builder&quot; - Thanks to Marti Maria that have supplied me this
 patched file: this will be part of the next lcms 1.14 which
-probably will be released on summer's end.</p></li>
+probabily will be released on summer's end.</p></li>
 </ul>
 </blockquote>
 <p>2004-07-20  Mike Chiarappa  &lt;<a class="reference external" href="mailto:mikechiarappa&#37;&#52;&#48;libero&#46;it">mikechiarappa<span>&#64;</span>libero<span>&#46;</span>it</a>&gt;</p>
@@ -431,7 +432,7 @@ probably will be released on summer's end.</p></li>
 <ul class="simple">
 <li><p>lcms/include/lcms.h: Modified to achieve BCBMagick DLL compilation.
 Included modifications was introduced in GM in 2004-01-16 and
-probably lost with latest update of library.</p></li>
+probabily lost with latest update of library.</p></li>
 </ul>
 </blockquote>
 <p>2004-07-20  Mike Chiarappa  &lt;<a class="reference external" href="mailto:mikechiarappa&#37;&#52;&#48;libero&#46;it">mikechiarappa<span>&#64;</span>libero<span>&#46;</span>it</a>&gt;</p>
@@ -760,7 +761,7 @@ feature back to 0xVAL.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>magick/utility.c (GetMagickDimension): New function to replace
-occurrences of scanf(geometry,&quot;%lfx%lf&quot;,&amp;w,&amp;h) since Linux scanf()
+occurances of scanf(geometry,&quot;%lfx%lf&quot;,&amp;w,&amp;h) since Linux scanf()
 and strtod() misbehave for strings that start with &quot;0x&quot;. The Linux
 versions always treat 0x as the start of a value expressed in hex
 and can't be forced to read the leading value as a double.  This
@@ -950,13 +951,13 @@ output.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>magick/constitute.c (DispatchImage): Removed some unreachable
-code that was accidentally left in the switch statement.</p></li>
+code that was accidentially left in the switch statement.</p></li>
 <li><p>magick/pixel_iterator.c (PixelIterateDualRead): Extended so that
 the region in each image may use a different origin.
 (PixelIterateDualModify): Extended so that
 the region in each image may use a different origin.</p></li>
 <li><p>magick/composite.c (CompositeImage): Fix XorCompositeOp overflow
-condition which occurred on non-Intel architectures.</p></li>
+condition which occured on non-Intel architectures.</p></li>
 </ul>
 </blockquote>
 <p>2004-03-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1039,7 +1040,7 @@ since this potentially loses a valuable setting.</p></li>
 <ul class="simple">
 <li><p>magick/annotate.c (RenderFreetype): If DrawAnnotation is called
 with a string containing only one character and this character is
-not recognized by the TrueType engine, a crash occurred due to the
+not recognized by the TrueType engine, a crash occured due to the
 failure of FT_Load_Glyph. The failure caused an uninitialized
 glyph.image pointer to be used by FT_Done_Glyph() later in the
 code. The solution is to initialize the glyph.image pointer to
@@ -1422,7 +1423,7 @@ BitStreamMSBRead() to indicate that it reads most significant bytes
 first (&quot;big endian&quot; order).  Rename BitStreamWrite() to
 BitStreamMSBWrite() to indicate that it writes most significant
 bytes first (&quot;big endian&quot; order).</p></li>
-<li><p>wand/magick_wand.c: Updated to latest ImageMagick API.</p></li>
+<li><p>wand/magick_wand.c: Updated to lastest ImageMagick API.</p></li>
 </ul>
 </blockquote>
 <p>2004-01-26  Mike Chiarappa  &lt;<a class="reference external" href="mailto:mikechiarappa&#37;&#52;&#48;libero&#46;it">mikechiarappa<span>&#64;</span>libero<span>&#46;</span>it</a>&gt;</p>

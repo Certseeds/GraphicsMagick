@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="en" name="language">
-	<title></title>
+	<title>GraphicsMagick ChangeLog - 2009</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
 
@@ -36,7 +36,8 @@
 </ul>
 </div>
 
-<div class="document">
+<div class="document" id="graphicsmagick-changelog-2009">
+<h1 class="title">GraphicsMagick ChangeLog - 2009</h1>
 <p>2009-12-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -475,7 +476,7 @@ set.</p></li>
 <li><p>magick/delegate.c (ListDelegateInfo): Fix insignificant memory
 leak.</p></li>
 <li><p>magick/compress.c (ImageToJPEGBlob): Preserve JPEG settings if
-feasible.</p></li>
+feasable.</p></li>
 </ul>
 </blockquote>
 <p>2009-09-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -641,7 +642,7 @@ embedded in an 8BIM profile.</p></li>
 <dl class="simple">
 <dt>2009-09-12 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</dt>
 <dd><ul class="simple">
-<li><p>coders/topol.c: Palette overflow fixed for subtype 3.</p></li>
+<li><p>coders/topol.c: Pallette overflow fixed for subtype 3.</p></li>
 </ul>
 </dd>
 </dl>
@@ -877,7 +878,7 @@ in names of png_struct members &quot;trans&quot; and &quot;trans_values&quot;).<
 <dl class="simple">
 <dt>2009-08-08 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;seznam&#46;cz">JaFojtik<span>&#64;</span>seznam<span>&#46;</span>cz</a>&gt;</dt>
 <dd><ul class="simple">
-<li><p>coders/topol.c: Palette is ignored for subtype 5 (RGB).</p></li>
+<li><p>coders/topol.c: Pallette is ignored for subtype 5 (RGB).</p></li>
 </ul>
 </dd>
 </dl>
@@ -1291,7 +1292,7 @@ semaphore a second time.</p></li>
 <li><p>magick/segment.c (Classify): Fix multi-thread issue detected by
 valgrind's helgrind tool.</p></li>
 <li><p>magick/render.c (DrawAffineImage): Use InterpolateViewColor() to
-evaluate a bi-linear interpolated point rather than obtaining a
+evalute a bi-linear interpolated point rather than obtaining a
 pixel value from a close pixel.  This provides better results.</p></li>
 </ul>
 </blockquote>
@@ -1323,7 +1324,7 @@ when comparing images.</p></li>
 <li><p>tests/Makefile.am (TESTS_XFAIL_TESTS): If Ghostscript is not
 available then XFAIL the tests which depend on it.</p></li>
 <li><p>magick/pixel_cache.c (GetCacheInfo): Assure that allocated
-structures do not occupy the same cache lines.</p></li>
+stuctures do not occupy the same cache lines.</p></li>
 </ul>
 </blockquote>
 <p>2009-05-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1332,7 +1333,7 @@ structures do not occupy the same cache lines.</p></li>
 <li><p>magick/studio.h (MAGICK_CACHE_LINE_SIZE): Allow cache line size
 to be set in one place in case we want to configure for it later.</p></li>
 <li><p>magick/effect.c (AllocateMedianList): Assure that allocated
-structures do not occupy the same cache lines.</p></li>
+stuctures do not occupy the same cache lines.</p></li>
 <li><p>magick/random.c (AcquireMagickRandomKernel): Assure that
 allocated random kernels do not occupy the same cache lines.</p></li>
 <li><p>magick/gem.c (GenerateDifferentialNoise): User is required to
@@ -1739,7 +1740,7 @@ option is working as it should.</p></li>
 <p>2009-03-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/{gray.c, rgb.c, cmyk.c}: Work toward supporting the
+<li><p>coders/{gray.c, rgb.c, cymk.c}: Work toward supporting the
 -endian option.  Not working properly yet.</p></li>
 <li><p>magick/enum_strings.c (EndianTypeToString): New function.
 (InterlaceTypeToString): New function.</p></li>

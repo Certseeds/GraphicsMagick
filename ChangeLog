@@ -1,6 +1,14 @@
+2024-01-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news as of January 28, 2024.
+
+	* scripts/changelog2rst.sh: Assure that generated ChangeLogs have a title.
+
+	* ChangeLog*: Tidy the ChangeLog syntax.
+
 2024-01-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Fractional arrays needs either double[] or float[]
+	* coders/tiff.c: Fractional arrays needs either double[] or float[]
 	depending on TIFFFieldSetGetSize(fip).
 
 2024-01-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -9,16 +17,16 @@
 
 2024-01-27  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: EXIF GPS IFD tags are copied now.
+	* coders/tiff.c: EXIF GPS IFD tags are copied now.
 
 2024-01-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	tiff/libtiff/tif_dir.c: Apply Su Laus leak fix from:
+	* tiff/libtiff/tif_dir.c: Apply Su Laus leak fix from:
 	https://gitlab.com/libtiff/libtiff/-/commit/376916d25f39bab69a3ed16963fd3f186870942c
 
 2024-01-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Refactor types to magick_uint16_t and
+	* coders/tiff.c: Refactor types to magick_uint16_t and
         magick_uint32_t.
 
 2024-01-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -35,18 +43,19 @@
 
 2024-01-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Copy uint32_t and uint8_t EXIF arrays into a tiff.
+	* coders/tiff.c: Copy uint32_t and uint8_t EXIF arrays into a tiff.
 
 2024-01-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/Hg.rst: Change from defunct OSDN to Heptpod.
+
 2024-01-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Copy uint16_t EXIF arrays into a tiff.
+	* coders/tiff.c: Copy uint16_t EXIF arrays into a tiff.
 
 2024-01-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Do not copy TIFFTAG_XRESOLUTION & TIFFTAG_YRESOLUTION
+	* coders/tiff.c: Do not copy TIFFTAG_XRESOLUTION & TIFFTAG_YRESOLUTION
 	that are already handled by gm functionality.
 
 2024-01-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -70,11 +79,11 @@
 
 2024-01-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Place string terminator for more code safety.
+	* coders/tiff.c: Place string terminator for more code safety.
 
 2024-01-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Temporary fix that supresses leak in tiff writer.
+	* coders/tiff.c: Temporary fix that supresses leak in tiff writer.
 
 2024-01-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -88,16 +97,16 @@
 
 2024-01-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Prevent sign expansion and bogus contents in upper 2
+	* coders/tiff.c: Prevent sign expansion and bogus contents in upper 2
 	bytes for TIFF_SHORT.
 
 2024-01-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Fixed TIFF_RATIONAL extraction from EXIF.
+	* coders/tiff.c: Fixed TIFF_RATIONAL extraction from EXIF.
 
 2024-01-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Fix for multiple frames. Do not import
+	* coders/tiff.c: Fix for multiple frames. Do not import
 	TIFFTAG_COMPRESSION, TIFFTAG_IMAGELENGTH, TIFFTAG_IMAGEWIDTH ...
 	from EXIF.
 
@@ -113,16 +122,16 @@
 
 2024-01-07  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Fix TIFF_RATIONAL - Two LONGs: the first represents
+	* coders/tiff.c: Fix TIFF_RATIONAL - Two LONGs: the first represents
 	the numerator of a fraction, the second the denominator.
 
 2024-01-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/tiff.c: Extract EXIFIFD part from EXIF profile.
+	* coders/tiff.c: Extract EXIFIFD part from EXIF profile.
 
 2024-01-03  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/wpg.c: Make two functions "EnsureNextImage()" and
+	* coders/wpg.c: Make two functions "EnsureNextImage()" and
 	"LoadPaletteRec()" static.
 
 2024-01-02  Fojtik Jaroslav  <JaFojtik@yandex.com>

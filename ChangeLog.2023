@@ -24,7 +24,7 @@
 	* NEWS.txt: Update the news as of December 28, 2023.
 
 	* configure.ac: fixup LFS check for autoconf-2.72. Patch by Sam
-	James <sam@gentoo.org>
+	James <sam@gentoo.org>.
 
 	For the 'other' case, we were using the value of
 	ac_cv_sys_file_offset_bits for -D_FILE_OFFSET_BITS to pass down
@@ -332,7 +332,7 @@
 
 2023-11-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	PerlMagick/t/input1_PS.wpg PerlMagick/t/input2_PS.wpg Add 2
+	* PerlMagick/t/input1_PS.wpg PerlMagick/t/input2_PS.wpg: Add 2
 	samples of WPG that really contain embedded EPS.
 
 2023-11-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -342,7 +342,7 @@
 
 2023-10-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	coders/wpg.c Do not touch to image structure from palette reader.
+	* coders/wpg.c: Do not touch to image structure from palette reader.
 	"RecordLength" is a 32bit variable, it should not be long that expands
 	to 64bits.
 
@@ -363,15 +363,18 @@
 	WIN64 build.
 
 2023-10-21  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	coders/wpg.c: Remove code duplicity for loading WPG1 and WPG2 palette.
+
+	* coders/wpg.c: Remove code duplicity for loading WPG1 and WPG2 palette.
 
 2023-10-20  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	coders/wpg.c Fix loop end to 256 insert "Palette" chunk header
+
+	* coders/wpg.c Fix loop end to 256 insert "Palette" chunk header
 	to debug log.
 
 2023-10-19  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	coders/wpg.c: Fix for potentiall access to uninitialised
-	object "Palette".
+
+	* coders/wpg.c: Fix for potential access to uninitialised object
+	"Palette".
 
 2023-10-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
@@ -489,10 +492,8 @@
 
 2023-09-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/bmp.c: Emit error when OS/2 bitmap with compression BI_JPEG
-	or BI_PNG is detected.
-
-	Read files compressed with BI_PNG.
+	* coders/bmp.c: Emit error when OS/2 bitmap with compression
+	BI_JPEG or BI_PNG is detected. Read files compressed with BI_PNG.
 
 2023-09-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
@@ -706,7 +707,7 @@
 2023-08-28  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/bmp.c: Remove code duplicity and evaluate BiCompression
-        only on one place.
+	only on one place.
 
 2023-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1151,7 +1152,7 @@
 2023-05-02  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/topol.c: Fix a problem when filename contains garbage only.
-        Reported as oss-fuzz-58544.
+	Reported as oss-fuzz-58544.
 
 2023-04-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1245,8 +1246,9 @@
 	configure.exe
 	* VisualMagick/README.txt: Update description for building
 	configure.exe
-	* VisualMagick/configure/CStringEx.cpp,
-	VisualMagick/configure/CStringEx.h: removed useless code.
+	* VisualMagick/configure/CStringEx.cpp:
+	* VisualMagick/configure/CStringEx.h:
+	removed useless code.
 
 2023-04-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1325,10 +1327,11 @@
 
 2023-03-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* magick/nt_base.h Improve compatibility witholder versions
-        of MSVC.
-        *VisualMagick/configure/configure.rc Disable checkbox 
-        for MSVC6 format - it is not workable.
+	* magick/nt_base.h: Improve compatibility witholder versions of
+	MSVC.
+
+	* VisualMagick/configure/configure.rc Disable checkbox for MSVC6
+	format - it is not workable.
 
 2023-03-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1337,13 +1340,13 @@
 
 2023-03-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/png.c There were 2 defects that prevented eXIf chunk
-        to be read.
+	* coders/png.c: There were 2 defects that prevented eXIf chunk to
+	be read.
 
 2023-03-18  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/png.c Variable "png_byte unused_chunks" should be const
-        and not be placed on a stack.
+	* coders/png.c: Variable "png_byte unused_chunks" should be const
+	and not be placed on a stack.
 
 2023-03-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1437,10 +1440,10 @@
 
 2023-02-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-        * VisualMagick/configure/configure.rc	Changed "Configure.EXE" to "configure.exe"
-        * VisualMagick/configure/configure.exe
+	* VisualMagick/configure/configure.rc: Changed "Configure.EXE" to "configure.exe"
+	* VisualMagick/configure/configure.exe:
 	Configure.exe has been blacklisted with 6 antiviruses.
-        https://www.virustotal.com/gui/file/3a0e54c8439200faf666b5680e0608e93fd67b5cda0d72dc32f54f0308574aba
+	https://www.virustotal.com/gui/file/3a0e54c8439200faf666b5680e0608e93fd67b5cda0d72dc32f54f0308574aba
 
 2023-02-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1470,7 +1473,7 @@
 
 2023-01-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat Add missing tests of fileformats.
+	* VisualMagick/tests/runtest.bat: Add missing tests of fileformats.
 
 2023-01-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1480,7 +1483,8 @@
 
 	* coders/wpg.c: Change line terminations back to ISO standard
 	format.
-	(RegisterWPGImage): WPG currently only supports one frame.
+
+	* (RegisterWPGImage): WPG currently only supports one frame.
 
 	* Makefile.am: No longer produce ".sig" files since the ".asc"
 	files can do everything that the ".sig" files can do.
@@ -1488,7 +1492,8 @@
 2023-01-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat
-	* coders/wpg.c Added WPG writer ... cross your fingers.
+
+	* coders/wpg.c: Added WPG writer ... cross your fingers.
 
 2023-01-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1504,12 +1509,12 @@
 
 2023-01-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/wpg.c Fixed Monochromatic bilevel WPG should answer to
+	* coders/wpg.c: Fixed Monochromatic bilevel WPG should answer to
 	gm identify file.wpg ..... PseudoClass 2c 8-bit
 
 2023-01-08  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/wpg.c Fixed deffect in WPG header reading.
+	* coders/wpg.c: Fixed deffect in WPG header reading.
 
 2023-01-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1524,7 +1529,7 @@
 
 2023-01-08 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat Added new tests for WEBP, BMP2 & BMP3.
+	* VisualMagick/tests/runtest.bat: Added new tests for WEBP, BMP2 & BMP3.
 	These tests are passing.
 
 2023-01-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
@@ -1551,31 +1556,31 @@
 
 2023-01-05 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/installer/inc/body.isx 64 bit distribution MUST NOT
+	* VisualMagick/installer/inc/body.isx: 64 bit distribution MUST NOT
 	be installed on pure 32 bit system. Sanity check added.
 
 2023-01-05 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/installer/inc/body.isx
-	* VisualMagick/installer/inc/files-dlls.isx
+	* VisualMagick/installer/inc/body.isx:
+	* VisualMagick/installer/inc/files-dlls.isx:
 	(VisualMagick/installer/redist/VC2008SP1/vcredist_x64.exe must be downloaded from www).
 	(VisualMagick/installer/redist/VC2008SP1/vcredist_x86.exe must be downloaded from www).
 	Fix graphics magick installer for Windows.
 
 2023-01-04 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat Added new tests for PGX (jp2),
+	* VisualMagick/tests/runtest.bat: Added new tests for PGX (jp2),
 	MAT, uncommented test for EPDF and PICON.
 
 2023-01-03 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/jp2/src/appl/UTILITY.txt removed fuzz.c.
+	* VisualMagick/jp2/src/appl/UTILITY.txt: removed fuzz.c.
 
 2023-01-03 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/jp2/src/libjasper/pgx/LIBRARY.txt
-	* jp2/src/libjasper/include/jasper/jas_config.h
-	PGX codec was not compilled into gm, now added.
+	* VisualMagick/jp2/src/libjasper/pgx/LIBRARY.txt,
+	jp2/src/libjasper/include/jasper/jas_config.h: PGX codec was not
+	compiled into gm, now added.
 
 2023-01-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1588,9 +1593,9 @@
 
 2023-01-02 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* jp2/* Update lib jasper to 2.0.33. Code cleanly compilles, but
+	* jp2/*: Update lib jasper to 2.0.33. Code cleanly compilles, but
 	there is still some problem. Will be solved later.
-	jp2/src/lib/jasper/include/jasper/stdbool2.h No longer needed.
+	* jp2/src/lib/jasper/include/jasper/stdbool2.h: No longer needed.
 
 2023-01-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
@@ -1605,4 +1610,4 @@
 
 2023-01-01 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* jp2/* Update lib jasper to 2.0.0.
+	* jp2/*: Update lib jasper to 2.0.0.

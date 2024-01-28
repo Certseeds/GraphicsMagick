@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="en" name="language">
-	<title></title>
+	<title>GraphicsMagick ChangeLog - 2023</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
 
@@ -36,7 +36,8 @@
 </ul>
 </div>
 
-<div class="document">
+<div class="document" id="graphicsmagick-changelog-2023">
+<h1 class="title">GraphicsMagick ChangeLog - 2023</h1>
 <p>2023-12-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -65,7 +66,7 @@ enabled.</p></li>
 <ul>
 <li><p>NEWS.txt: Update the news as of December 28, 2023.</p></li>
 <li><p>configure.ac: fixup LFS check for autoconf-2.72. Patch by Sam
-James &lt;<a class="reference external" href="mailto:sam&#37;&#52;&#48;gentoo&#46;org">sam<span>&#64;</span>gentoo<span>&#46;</span>org</a>&gt;</p>
+James &lt;<a class="reference external" href="mailto:sam&#37;&#52;&#48;gentoo&#46;org">sam<span>&#64;</span>gentoo<span>&#46;</span>org</a>&gt;.</p>
 <p>For the 'other' case, we were using the value of
 ac_cv_sys_file_offset_bits for -D_FILE_OFFSET_BITS to pass down
 into the Perl module build, but autoconf-2.72 drops the use of
@@ -401,8 +402,10 @@ tests using TEST_VERBOSE=1.</p></li>
 </blockquote>
 <p>2023-11-05  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>PerlMagick/t/input1_PS.wpg PerlMagick/t/input2_PS.wpg Add 2
-samples of WPG that really contain embedded EPS.</p>
+<ul class="simple">
+<li><p>PerlMagick/t/input1_PS.wpg PerlMagick/t/input2_PS.wpg: Add 2
+samples of WPG that really contain embedded EPS.</p></li>
+</ul>
 </blockquote>
 <p>2023-11-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -413,9 +416,11 @@ which is being replaced.</p></li>
 </blockquote>
 <p>2023-10-21  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/wpg.c Do not touch to image structure from palette reader.
+<ul class="simple">
+<li><p>coders/wpg.c: Do not touch to image structure from palette reader.
 &quot;RecordLength&quot; is a 32bit variable, it should not be long that expands
-to 64bits.</p>
+to 64bits.</p></li>
+</ul>
 </blockquote>
 <p>2023-10-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -431,19 +436,26 @@ point math to compute them.</p></li>
 WIN64 build.</p></li>
 </ul>
 </blockquote>
-<dl class="simple">
-<dt>2023-10-21  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
-<dd><p>coders/wpg.c: Remove code duplicity for loading WPG1 and WPG2 palette.</p>
-</dd>
-<dt>2023-10-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
-<dd><p>coders/wpg.c Fix loop end to 256 insert &quot;Palette&quot; chunk header
-to debug log.</p>
-</dd>
-<dt>2023-10-19  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
-<dd><p>coders/wpg.c: Fix for potentiall access to uninitialised
-object &quot;Palette&quot;.</p>
-</dd>
-</dl>
+<p>2023-10-21  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/wpg.c: Remove code duplicity for loading WPG1 and WPG2 palette.</p></li>
+</ul>
+</blockquote>
+<p>2023-10-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/wpg.c Fix loop end to 256 insert &quot;Palette&quot; chunk header
+to debug log.</p></li>
+</ul>
+</blockquote>
+<p>2023-10-19  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/wpg.c: Fix for potential access to uninitialised object
+&quot;Palette&quot;.</p></li>
+</ul>
+</blockquote>
 <p>2023-10-18  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -583,11 +595,9 @@ modules.</p></li>
 </blockquote>
 <p>2023-09-23  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<ul>
-<li><p>coders/bmp.c: Emit error when OS/2 bitmap with compression BI_JPEG
-or BI_PNG is detected.</p>
-<p>Read files compressed with BI_PNG.</p>
-</li>
+<ul class="simple">
+<li><p>coders/bmp.c: Emit error when OS/2 bitmap with compression
+BI_JPEG or BI_PNG is detected. Read files compressed with BI_PNG.</p></li>
 </ul>
 </blockquote>
 <p>2023-09-22  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
@@ -1492,8 +1502,9 @@ filename.</p></li>
 configure.exe</p></li>
 <li><p>VisualMagick/README.txt: Update description for building
 configure.exe</p></li>
-<li><p>VisualMagick/configure/CStringEx.cpp,
-VisualMagick/configure/CStringEx.h: removed useless code.</p></li>
+<li><p>VisualMagick/configure/CStringEx.cpp:</p></li>
+<li><p>VisualMagick/configure/CStringEx.h:
+removed useless code.</p></li>
 </ul>
 </blockquote>
 <p>2023-04-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1576,10 +1587,10 @@ image-&gt;colors is 1 to 65536.</p></li>
 <p>2023-03-26  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>magick/nt_base.h Improve compatibility witholder versions
-of MSVC.
-*VisualMagick/configure/configure.rc Disable checkbox
-for MSVC6 format - it is not workable.</p></li>
+<li><p>magick/nt_base.h: Improve compatibility witholder versions of
+MSVC.</p></li>
+<li><p>VisualMagick/configure/configure.rc Disable checkbox for MSVC6
+format - it is not workable.</p></li>
 </ul>
 </blockquote>
 <p>2023-03-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1592,14 +1603,14 @@ HorizontalFilter()/VerticalFilter() loops.</p></li>
 <p>2023-03-18  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/png.c There were 2 defects that prevented eXIf chunk
-to be read.</p></li>
+<li><p>coders/png.c: There were 2 defects that prevented eXIf chunk to
+be read.</p></li>
 </ul>
 </blockquote>
 <p>2023-03-18  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/png.c Variable &quot;png_byte unused_chunks&quot; should be const
+<li><p>coders/png.c: Variable &quot;png_byte unused_chunks&quot; should be const
 and not be placed on a stack.</p></li>
 </ul>
 </blockquote>
@@ -1696,8 +1707,8 @@ blob_support to false.</p></li>
 <p>2023-02-05  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/configure/configure.rc   Changed &quot;Configure.EXE&quot; to &quot;configure.exe&quot;</p></li>
-<li><p>VisualMagick/configure/configure.exe
+<li><p>VisualMagick/configure/configure.rc: Changed &quot;Configure.EXE&quot; to &quot;configure.exe&quot;</p></li>
+<li><p>VisualMagick/configure/configure.exe:
 Configure.exe has been blacklisted with 6 antiviruses.
 <a class="reference external" href="https://www.virustotal.com/gui/file/3a0e54c8439200faf666b5680e0608e93fd67b5cda0d72dc32f54f0308574aba">https://www.virustotal.com/gui/file/3a0e54c8439200faf666b5680e0608e93fd67b5cda0d72dc32f54f0308574aba</a></p></li>
 </ul>
@@ -1737,7 +1748,7 @@ storage_class == PseudoClass.</p></li>
 <p>2023-01-24  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/tests/runtest.bat Add missing tests of fileformats.</p></li>
+<li><p>VisualMagick/tests/runtest.bat: Add missing tests of fileformats.</p></li>
 </ul>
 </blockquote>
 <p>2023-01-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1746,8 +1757,8 @@ storage_class == PseudoClass.</p></li>
 <li><p>tests/rwblob.tap: Add sanity test for WPG format.</p></li>
 <li><p>tests/rwfile.tap: Add sanity test for WPG format.</p></li>
 <li><p>coders/wpg.c: Change line terminations back to ISO standard
-format.
-(RegisterWPGImage): WPG currently only supports one frame.</p></li>
+format.</p></li>
+<li><p>(RegisterWPGImage): WPG currently only supports one frame.</p></li>
 <li><p>Makefile.am: No longer produce &quot;.sig&quot; files since the &quot;.asc&quot;
 files can do everything that the &quot;.sig&quot; files can do.</p></li>
 </ul>
@@ -1756,7 +1767,7 @@ files can do everything that the &quot;.sig&quot; files can do.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>VisualMagick/tests/runtest.bat</p></li>
-<li><p>coders/wpg.c Added WPG writer ... cross your fingers.</p></li>
+<li><p>coders/wpg.c: Added WPG writer ... cross your fingers.</p></li>
 </ul>
 </blockquote>
 <p>2023-01-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1776,14 +1787,14 @@ files can do everything that the &quot;.sig&quot; files can do.</p></li>
 <p>2023-01-11  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/wpg.c Fixed Monochromatic bilevel WPG should answer to
+<li><p>coders/wpg.c: Fixed Monochromatic bilevel WPG should answer to
 gm identify file.wpg ..... PseudoClass 2c 8-bit</p></li>
 </ul>
 </blockquote>
 <p>2023-01-08  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/wpg.c Fixed deffect in WPG header reading.</p></li>
+<li><p>coders/wpg.c: Fixed deffect in WPG header reading.</p></li>
 </ul>
 </blockquote>
 <p>2023-01-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1800,7 +1811,7 @@ that.  Partially addresses concerns raised by SourceForge bug #682
 <p>2023-01-08 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/tests/runtest.bat Added new tests for WEBP, BMP2 &amp; BMP3.
+<li><p>VisualMagick/tests/runtest.bat: Added new tests for WEBP, BMP2 &amp; BMP3.
 These tests are passing.</p></li>
 </ul>
 </blockquote>
@@ -1829,15 +1840,15 @@ where binary operator is needed.</p></li>
 <p>2023-01-05 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/installer/inc/body.isx 64 bit distribution MUST NOT
+<li><p>VisualMagick/installer/inc/body.isx: 64 bit distribution MUST NOT
 be installed on pure 32 bit system. Sanity check added.</p></li>
 </ul>
 </blockquote>
 <p>2023-01-05 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/installer/inc/body.isx</p></li>
-<li><p>VisualMagick/installer/inc/files-dlls.isx
+<li><p>VisualMagick/installer/inc/body.isx:</p></li>
+<li><p>VisualMagick/installer/inc/files-dlls.isx:
 (VisualMagick/installer/redist/VC2008SP1/vcredist_x64.exe must be downloaded from www).
 (VisualMagick/installer/redist/VC2008SP1/vcredist_x86.exe must be downloaded from www).
 Fix graphics magick installer for Windows.</p></li>
@@ -1846,22 +1857,22 @@ Fix graphics magick installer for Windows.</p></li>
 <p>2023-01-04 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/tests/runtest.bat Added new tests for PGX (jp2),
+<li><p>VisualMagick/tests/runtest.bat: Added new tests for PGX (jp2),
 MAT, uncommented test for EPDF and PICON.</p></li>
 </ul>
 </blockquote>
 <p>2023-01-03 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/jp2/src/appl/UTILITY.txt removed fuzz.c.</p></li>
+<li><p>VisualMagick/jp2/src/appl/UTILITY.txt: removed fuzz.c.</p></li>
 </ul>
 </blockquote>
 <p>2023-01-03 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/jp2/src/libjasper/pgx/LIBRARY.txt</p></li>
-<li><p>jp2/src/libjasper/include/jasper/jas_config.h
-PGX codec was not compilled into gm, now added.</p></li>
+<li><p>VisualMagick/jp2/src/libjasper/pgx/LIBRARY.txt,
+jp2/src/libjasper/include/jasper/jas_config.h: PGX codec was not
+compiled into gm, now added.</p></li>
 </ul>
 </blockquote>
 <p>2023-01-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1880,9 +1891,9 @@ dimension of 1.</p></li>
 <p>2023-01-02 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>jp2/* Update lib jasper to 2.0.33. Code cleanly compilles, but
-there is still some problem. Will be solved later.
-jp2/src/lib/jasper/include/jasper/stdbool2.h No longer needed.</p></li>
+<li><p>jp2/*: Update lib jasper to 2.0.33. Code cleanly compilles, but
+there is still some problem. Will be solved later.</p></li>
+<li><p>jp2/src/lib/jasper/include/jasper/stdbool2.h: No longer needed.</p></li>
 </ul>
 </blockquote>
 <p>2023-01-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1900,7 +1911,7 @@ ReadSUNImage&quot;, which is due to a new problem added since the
 <p>2023-01-01 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>jp2/* Update lib jasper to 2.0.0.</p></li>
+<li><p>jp2/*: Update lib jasper to 2.0.0.</p></li>
 </ul>
 </blockquote>
 </div>

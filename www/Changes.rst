@@ -21,7 +21,7 @@ GraphicsMagick Change Logs
               image processing, software development, TclMagick, Magick++
 
 .. _GraphicsMagick : index.html
-.. _2024 : Changelog.html
+.. _2024 : ChangeLog.html
 .. _2023 : ChangeLog-2023.html
 .. _2022 : ChangeLog-2022.html
 .. _2021 : ChangeLog-2021.html
@@ -47,6 +47,8 @@ GraphicsMagick Change Logs
 .. _2001 : ChangeLog-2001.html
 
 The following are the ``GraphicsMagick`` change logs since 2001:
+
+  * 2024_ (nothing yet released)
 
   * 2023_ (1.3.40, 1.3.41, 1.3.42 released)
 
@@ -82,7 +84,7 @@ The following are the ``GraphicsMagick`` change logs since 2001:
 
   * 2007_ (1.1.8 - 1.1.10 released)
 
-  * 2006_
+  * 2006_ (nothing released)
 
   * 2005_ (1.1.5 - 1.1.7 released)
 

@@ -41,7 +41,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to December 20, 2023</p>
+<p>This file was last updated to reflect changes up to January 28, 2024</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -157,6 +157,10 @@ available. Support setting image width limit.</p></li>
 <li><p>TIFF: Remove miniswhite/minisblack prohibitions when using Group3
 and Group4 compression in order to allow using inverted photometric
 from the standard.</p></li>
+<li><p>TIFF: Store EXIF IFD and GPS IFD tag information natively in TIFF
+sub-IFDs, the same as it would be produced in a camera supporting
+TIFF.  This allows an EXIF profile from HEIF, JPEG, JXL, PNG, WebP,
+or from the META coder to be preserved in TIFF.</p></li>
 </ul>
 <p>API Updates:</p>
 <ul class="simple">

@@ -50,7 +50,7 @@ version of this page.
 .. _OSSCC : http://www.osscc.net/en/index.html
 .. _OpenMP : http://www.openmp.org/
 .. _`read about OpenMP in GraphicsMagick` : OpenMP.html
-.. _`ChangeLog` : Changelog.html
+.. _`ChangeLog` : ChangeLog.html
 .. _`Flickr` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
 .. _`Etsy` : http://codeascraft.etsy.com/2010/07/09/batch-processing-millions-of-images/
 .. _`John Allspaw's presentation` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/

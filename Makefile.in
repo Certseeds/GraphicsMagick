@@ -4498,7 +4498,7 @@ RST2HTML_TARGETS = \
 	$(WWWDIR)/ChangeLog-2021.html \
 	$(WWWDIR)/ChangeLog-2022.html \
 	$(WWWDIR)/ChangeLog-2023.html \
-	$(WWWDIR)/Changelog.html \
+	$(WWWDIR)/ChangeLog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
 	$(WWWDIR)/FAQ.html \
@@ -4621,7 +4621,7 @@ WWW_HTML_FILES = \
 	$(WWWDIR)/ChangeLog-2021.html \
 	$(WWWDIR)/ChangeLog-2022.html \
 	$(WWWDIR)/ChangeLog-2023.html \
-	$(WWWDIR)/Changelog.html \
+	$(WWWDIR)/ChangeLog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
 	$(WWWDIR)/FAQ.html \
@@ -11206,105 +11206,105 @@ uninstall-data-html:
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
 @MAINTAINER_MODE_TRUE@	$(RST2HTML5)  --stylesheet=`$(RELPATH) $(top_srcdir)/www $@`docutils-articles.css --url-prefix=`$(RELPATH) $(top_srcdir)/www $@` $<  | $(OMP_DECIMAL_ALIGN) > $@
 
-@MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
+@MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog.rst: $(top_srcdir)/ChangeLog
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2023.rst: $(top_srcdir)/ChangeLog.2023
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2023' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2022.rst: $(top_srcdir)/ChangeLog.2022
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2022' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2021.rst: $(top_srcdir)/ChangeLog.2021
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2021' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2020.rst: $(top_srcdir)/ChangeLog.2020
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2020' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2019.rst: $(top_srcdir)/ChangeLog.2019
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2019' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2018.rst: $(top_srcdir)/ChangeLog.2018
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2018' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2017.rst: $(top_srcdir)/ChangeLog.2017
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2017' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2016.rst: $(top_srcdir)/ChangeLog.2016
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2016' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2015.rst: $(top_srcdir)/ChangeLog.2015
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2015' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2014.rst: $(top_srcdir)/ChangeLog.2014
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2014' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2013.rst: $(top_srcdir)/ChangeLog.2013
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2013' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2012.rst: $(top_srcdir)/ChangeLog.2012
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2012' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2011.rst: $(top_srcdir)/ChangeLog.2011
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2011' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2010.rst: $(top_srcdir)/ChangeLog.2010
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2010' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2009.rst: $(top_srcdir)/ChangeLog.2009
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2009' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2008.rst: $(top_srcdir)/ChangeLog.2008
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2008' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2007.rst: $(top_srcdir)/ChangeLog.2007
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2007' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2006.rst: $(top_srcdir)/ChangeLog.2006
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2006' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2005.rst: $(top_srcdir)/ChangeLog.2005
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2005' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2004.rst: $(top_srcdir)/ChangeLog.2004
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2004' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2003.rst: $(top_srcdir)/ChangeLog.2003
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2003' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2002.rst: $(top_srcdir)/ChangeLog.2002
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2002' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/ChangeLog-2001.rst: $(top_srcdir)/ChangeLog.2001
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2001' < $^ > $@
 
 @MAINTAINER_MODE_TRUE@$(top_srcdir)/www/Magick++/ChangeLog.rst: $(top_srcdir)/Magick++/ChangeLog
 @MAINTAINER_MODE_TRUE@	@printf "Updating $@ ...\n"
-@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) < $^ > $@
+@MAINTAINER_MODE_TRUE@	$(CHANGELOG2RST) 'Magick++ ChangeLog' < $^ > $@
 
 # Build color.html
 @MAINTAINER_MODE_TRUE@$(WWWDIR)/color.html : $(NAMED_COLORS)
