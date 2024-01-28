@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="en" name="language">
-	<title></title>
+	<title>GraphicsMagick ChangeLog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
 
@@ -36,7 +36,23 @@
 </ul>
 </div>
 
-<div class="document">
+<div class="document" id="graphicsmagick-changelog">
+<h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-01-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Update the news as of January 28, 2024.</p></li>
+<li><p>scripts/changelog2rst.sh: Assure that generated ChangeLogs have a title.</p></li>
+<li><p>ChangeLog*: Tidy the ChangeLog syntax.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-28  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Fractional arrays needs either double[] or float[]
+depending on TIFFFieldSetGetSize(fip).</p></li>
+</ul>
+</blockquote>
 <p>2024-01-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -45,17 +61,23 @@
 </blockquote>
 <p>2024-01-27  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: EXIF GPS IFD tags are copied now.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: EXIF GPS IFD tags are copied now.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-26  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>tiff/libtiff/tif_dir.c: Apply Su Laus leak fix from:
-<a class="reference external" href="https://gitlab.com/libtiff/libtiff/-/commit/376916d25f39bab69a3ed16963fd3f186870942c">https://gitlab.com/libtiff/libtiff/-/commit/376916d25f39bab69a3ed16963fd3f186870942c</a></p>
+<ul class="simple">
+<li><p>tiff/libtiff/tif_dir.c: Apply Su Laus leak fix from:
+<a class="reference external" href="https://gitlab.com/libtiff/libtiff/-/commit/376916d25f39bab69a3ed16963fd3f186870942c">https://gitlab.com/libtiff/libtiff/-/commit/376916d25f39bab69a3ed16963fd3f186870942c</a></p></li>
+</ul>
 </blockquote>
 <p>2024-01-26  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Refactor types to magick_uint16_t and
-magick_uint32_t.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Refactor types to magick_uint16_t and
+magick_uint32_t.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -75,7 +97,9 @@ depending on it being implicitly included by other jxl headers.</p></li>
 </blockquote>
 <p>2024-01-24  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Copy uint32_t and uint8_t EXIF arrays into a tiff.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Copy uint32_t and uint8_t EXIF arrays into a tiff.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -83,18 +107,18 @@ depending on it being implicitly included by other jxl headers.</p></li>
 <li><p>www/Hg.rst: Change from defunct OSDN to Heptpod.</p></li>
 </ul>
 </blockquote>
-<div class="system-message">
-<p class="system-message-title">System Message: WARNING/2 (<span class="docutils literal">&lt;string&gt;</span>, line 38)</p>
-<p>Block quote ends without a blank line; unexpected unindent.</p>
-</div>
 <p>2024-01-23  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Copy uint16_t EXIF arrays into a tiff.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Copy uint16_t EXIF arrays into a tiff.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Do not copy TIFFTAG_XRESOLUTION &amp; TIFFTAG_YRESOLUTION
-that are already handled by gm functionality.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Do not copy TIFFTAG_XRESOLUTION &amp; TIFFTAG_YRESOLUTION
+that are already handled by gm functionality.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -118,11 +142,15 @@ ChangeLog and update copyright statements for 2024.</p></li>
 </blockquote>
 <p>2024-01-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Place string terminator for more code safety.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Place string terminator for more code safety.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-19  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Temporary fix that supresses leak in tiff writer.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Temporary fix that supresses leak in tiff writer.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -136,18 +164,24 @@ which were accidentally writeable globals.</p></li>
 </blockquote>
 <p>2024-01-13  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Prevent sign expansion and bogus contents in upper 2
-bytes for TIFF_SHORT.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Prevent sign expansion and bogus contents in upper 2
+bytes for TIFF_SHORT.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-12  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Fixed TIFF_RATIONAL extraction from EXIF.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Fixed TIFF_RATIONAL extraction from EXIF.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-11  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Fix for multiple frames. Do not import
+<ul class="simple">
+<li><p>coders/tiff.c: Fix for multiple frames. Do not import
 TIFFTAG_COMPRESSION, TIFFTAG_IMAGELENGTH, TIFFTAG_IMAGEWIDTH ...
-from EXIF.</p>
+from EXIF.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -162,17 +196,23 @@ dependencies in oss-fuzz build.</p></li>
 </blockquote>
 <p>2024-01-07  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Fix TIFF_RATIONAL - Two LONGs: the first represents
-the numerator of a fraction, the second the denominator.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Fix TIFF_RATIONAL - Two LONGs: the first represents
+the numerator of a fraction, the second the denominator.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-06  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/tiff.c: Extract EXIFIFD part from EXIF profile.</p>
+<ul class="simple">
+<li><p>coders/tiff.c: Extract EXIFIFD part from EXIF profile.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-03  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/wpg.c: Make two functions &quot;EnsureNextImage()&quot; and
-&quot;LoadPaletteRec()&quot; static.</p>
+<ul class="simple">
+<li><p>coders/wpg.c: Make two functions &quot;EnsureNextImage()&quot; and
+&quot;LoadPaletteRec()&quot; static.</p></li>
+</ul>
 </blockquote>
 <p>2024-01-02  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
