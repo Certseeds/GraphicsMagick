@@ -4654,6 +4654,7 @@ Scalar:                  if(FDT==TIFF_SHORT)
                              int i;
                              if(Long2<(magick_uint32_t)WriteCount) break;	/* Too small amount of mandatory items. */
                              if(Value+8*WriteCount>=profile_length-1) break;	/* Array falls over blob boundary. */
+#if TIFFLIB_VERSION >= 20230609
                              switch(TIFFFieldSetGetSize(fip))
                              {
                                case 8:		/* double array is required in input. */
@@ -4687,6 +4688,7 @@ Scalar:                  if(FDT==TIFF_SHORT)
                                  }
                                  break;
                              }
+#endif
                              break;
                            }
 
@@ -6873,6 +6875,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               }
             }
 
+#if TIFFLIB_VERSION >= 20230609
             if(TIFFCreateGPSDirectory(tiff) == 0)
             {
               if(AddExifFields(tiff,profile_data,profile_length,logging, FLAG_GPS) > 0)
@@ -6885,6 +6888,7 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
               else
                 TIFFSetDirectory(tiff, 0);
             }
+#endif
 
             if(dir_EXIF_offset>0 || dir_GPS_offset>0)
             {          // Go back to the first directory, and add the EXIFIFD pointer.
