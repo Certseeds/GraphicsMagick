@@ -1,3 +1,7 @@
+2024-02-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tiff.c: Performance improvement for lo endian architecture.
+
 2024-01-29  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c: Allow succesfull compilation for older libtiff.

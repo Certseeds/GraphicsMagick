@@ -4423,7 +4423,11 @@ static TIFFFieldArray customFieldArray = {tfiatOther, 0, 1, customFields};
 
 static magick_uint32_t LD_UINT32_LO(const unsigned char *Mem)
 {
+#ifdef WORDS_BIGENDIAN
   return (magick_uint32_t)Mem[0] | ((magick_uint32_t)Mem[1] << 8) | ((magick_uint32_t)Mem[2] << 16) | ((magick_uint32_t)Mem[3] << 24);
+#else
+  return *(magick_uint32_t*)Mem;
+#endif
 }
 
 static magick_uint32_t LD_UINT32_HI(const unsigned char *Mem)
@@ -4433,7 +4437,11 @@ static magick_uint32_t LD_UINT32_HI(const unsigned char *Mem)
 
 static magick_uint16_t LD_UINT16_LO(const unsigned char *Mem)
 {
+#ifdef WORDS_BIGENDIAN
   return (magick_uint16_t)Mem[0] | ((magick_uint16_t)Mem[1] << 8);
+#else
+  return *(magick_uint16_t*)Mem;
+#endif
 }
 
 static magick_uint16_t LD_UINT16_HI(const unsigned char *Mem)
