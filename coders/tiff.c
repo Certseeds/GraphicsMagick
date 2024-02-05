@@ -4462,6 +4462,34 @@ static const char *FipFieldName(const TIFFField *fip)
 }
 
 
+static int CheckAndStoreStr(TIFF *tiff, const magick_uint16_t Tag, const char *String, const magick_uint32_t StrSize)
+{
+magick_uint32_t i = StrSize;
+
+	/* Look for zero terminator. */
+  while(i>0)
+  {
+    i--;
+    if(String[i]==0)
+      return TIFFSetField(tiff, Tag, String);
+  }
+
+  if(StrSize>0)
+  {	/* Try to duplicate unterminated string. */
+    char *StringDup = MagickAllocateResourceLimitedMemory(char *, StrSize+1);
+    if(StringDup!=NULL)
+    {
+      memcpy(StringDup,String,StrSize);
+      StringDup[StrSize] = 0;
+      i = TIFFSetField(tiff, Tag, String);
+      MagickFreeResourceLimitedMemory(StringDup);
+      return i;
+    }
+  }
+  return 0;
+}
+
+
 static int AddIFDExifFields(TIFF *tiff, const unsigned char *profile_data, const unsigned char *IFD_data, size_t profile_length, MagickBool logging, magick_uint16_t Flags)
 {
 magick_uint32_t(*LD_UINT32)(const unsigned char *Mem);
@@ -4544,7 +4572,7 @@ int FieldCount = 0;
                          else
                          {
                            if(Value+Long2>=profile_length-1) break;		/* String outside EXIF boundary. */
-                           if(TIFFSetField(tiff, Tag, profile_data+Value))
+                           if(CheckAndStoreStr(tiff, Tag, profile_data+Value, Long2))
                              FieldCount++;
                          }
                          break;

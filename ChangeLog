@@ -1,3 +1,7 @@
+2024-02-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tiff.c: Ability to handle EXIF strings without zero termination.
+
 2024-02-04  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c: Performance improvement for lo endian architecture.
