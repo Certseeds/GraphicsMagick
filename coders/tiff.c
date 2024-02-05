@@ -4562,11 +4562,10 @@ int FieldCount = 0;
         {
           case TIFF_ASCII:
                          if(FDT!=TIFF_ASCII)
-                             break;	/* Incompatible recipe.*/
+                             break;		/* Incompatible recipe.*/
                          if(Long2<=4)
                          {
-                           ((char*)&Long2)[3] = 0;			/* Force string terminator for safety. */
-                           if(TIFFSetField(tiff, Tag, &Value))		/* The short string is inside Value. */
+                           if(CheckAndStoreStr(tiff, Tag, IFD_data+8, Long2))	/* The short string is inside Value. */
                              FieldCount++;
                          }
                          else

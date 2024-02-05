@@ -1,3 +1,7 @@
+2024-02-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tiff.c: Fix endianity problem related to string packed in a DWORD.
+
 2024-02-05  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c: Ability to handle EXIF strings without zero termination.
