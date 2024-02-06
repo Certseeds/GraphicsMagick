@@ -2474,6 +2474,7 @@ EXEEXT = @EXEEXT@
 EditorDelegate = @EditorDelegate@
 FGREP = @FGREP@
 FIGDecodeDelegate = @FIGDecodeDelegate@
+FILECMD = @FILECMD@
 FREETYPE_CFLAGS = @FREETYPE_CFLAGS@
 FREETYPE_LIBS = @FREETYPE_LIBS@
 GMDelegate = @GMDelegate@

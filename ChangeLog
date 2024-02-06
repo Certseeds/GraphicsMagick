@@ -1,3 +1,7 @@
+2024-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* m4/ltversion.m4: Update to libtool 2.4.7.
+
 2024-02-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c: Fix endianity problem related to string packed in a DWORD.
