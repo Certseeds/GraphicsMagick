@@ -4565,13 +4565,13 @@ int FieldCount = 0;
                              break;		/* Incompatible recipe.*/
                          if(Long2<=4)
                          {
-                           if(CheckAndStoreStr(tiff, Tag, IFD_data+8, Long2))	/* The short string is inside Value. */
+                           if(CheckAndStoreStr(tiff, Tag, (const char *) IFD_data+8, Long2))	/* The short string is inside Value. */
                              FieldCount++;
                          }
                          else
                          {
                            if(Value+Long2>=profile_length-1) break;		/* String outside EXIF boundary. */
-                           if(CheckAndStoreStr(tiff, Tag, profile_data+Value, Long2))
+                           if(CheckAndStoreStr(tiff, Tag, (const char *) profile_data+Value, Long2))
                              FieldCount++;
                          }
                          break;

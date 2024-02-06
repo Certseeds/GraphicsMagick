@@ -1,5 +1,8 @@
 2024-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (AddIFDExifFields): Add casts to prevent signed vs
+	unsigned char pointer warnings.
+
 	* m4/ltversion.m4: Update to libtool 2.4.7.
 
 2024-02-06  Fojtik Jaroslav  <JaFojtik@yandex.com>
