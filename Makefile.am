@@ -417,7 +417,7 @@ snapshot: distcheck
 	done
 	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
 	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc " $$f $$f ; done` \
-	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+	$(top_srcdir)/ChangeLog $(top_srcdir)/www/ChangeLog.html
 
 else
 
@@ -437,7 +437,7 @@ snapshot: distcheck
 	  mv $${file}.asc $(SNAPSHOT_DIRECTORY)/ ; \
 	done
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
-	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
+	cp $(top_srcdir)/www/ChangeLog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
 
 endif # HasGRAPHICSMAGICK_SNAPSHOT_COPY
 
