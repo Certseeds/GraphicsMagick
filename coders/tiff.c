@@ -4686,42 +4686,44 @@ Scalar:                  if(FDT==TIFF_SHORT)
                          {
                            if(WriteCount>1)
                            {
-                             int i;
                              if(Long2<(magick_uint32_t)WriteCount) break;	/* Too small amount of mandatory items. */
                              if(Value+8*WriteCount>=profile_length-1) break;	/* Array falls over blob boundary. */
 #if TIFFLIB_VERSION >= 20230609
-                             switch(TIFFFieldSetGetSize(fip))
                              {
-                               case 8:		/* double array is required in input. */
+                               int i;
+                               switch(TIFFFieldSetGetSize(fip))
                                  {
-                                   double *ArrayD;
-                                   ArrayD = MagickAllocateResourceLimitedMemory(double *, sizeof(double)*WriteCount);
-                                   if(ArrayD==NULL) break;
-                                   for(i=0; i<WriteCount; i++)
+                                 case 8:		/* double array is required in input. */
                                    {
-                                     const magick_uint32_t val = LD_UINT32(profile_data+Value+4+8*i);
-                                     ArrayD[i] = (val==0) ? 0.0 : (LD_UINT32(profile_data+Value+8*i) / (double)val);
-                                   }
-                                   if(TIFFSetField(tiff, Tag, ArrayD))
+                                     double *ArrayD;
+                                     ArrayD = MagickAllocateResourceLimitedMemory(double *, sizeof(double)*WriteCount);
+                                     if(ArrayD==NULL) break;
+                                     for(i=0; i<WriteCount; i++)
+                                       {
+                                         const magick_uint32_t val = LD_UINT32(profile_data+Value+4+8*i);
+                                         ArrayD[i] = (val==0) ? 0.0 : (LD_UINT32(profile_data+Value+8*i) / (double)val);
+                                       }
+                                     if(TIFFSetField(tiff, Tag, ArrayD))
                                        FieldCount++;
-                                   MagickFreeResourceLimitedMemory(ArrayD);
-                                 }
-                                 break;
-                               case 4:		/* float array is required in input. */
-                                 {
-                                   float *ArrayF;
-                                   ArrayF = MagickAllocateResourceLimitedMemory(float *, sizeof(float)*WriteCount);
-                                   if(ArrayF==NULL) break;
-                                   for(i=0; i<WriteCount; i++)
+                                     MagickFreeResourceLimitedMemory(ArrayD);
+                                   }
+                                   break;
+                                 case 4:		/* float array is required in input. */
                                    {
-                                     const magick_uint32_t val = LD_UINT32(profile_data+Value+4+8*i);
-                                     ArrayF[i] = (val==0) ? 0.0f : (LD_UINT32(profile_data+Value+8*i) / (float)val);
-                                   }
-                                   if(TIFFSetField(tiff, Tag, ArrayF))
+                                     float *ArrayF;
+                                     ArrayF = MagickAllocateResourceLimitedMemory(float *, sizeof(float)*WriteCount);
+                                     if(ArrayF==NULL) break;
+                                     for(i=0; i<WriteCount; i++)
+                                       {
+                                         const magick_uint32_t val = LD_UINT32(profile_data+Value+4+8*i);
+                                         ArrayF[i] = (val==0) ? 0.0f : (LD_UINT32(profile_data+Value+8*i) / (float)val);
+                                       }
+                                     if(TIFFSetField(tiff, Tag, ArrayF))
                                        FieldCount++;
-                                   MagickFreeResourceLimitedMemory(ArrayF);
+                                     MagickFreeResourceLimitedMemory(ArrayF);
+                                   }
+                                   break;
                                  }
-                                 break;
                              }
 #endif
                              break;

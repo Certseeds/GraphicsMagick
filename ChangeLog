@@ -1,3 +1,13 @@
+2024-02-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (WriteJPEGImage): Do some preparation to implement
+	support for libjpeg-turbo 3.X APIs while writing deep JPEG.
+
+	* coders/tiff.c (AddIFDExifFields): Fix a compilation warning.
+
+	* coders/jpeg.c (ReadJPEGImage): Support libjpeg-turbo 3.X APIs to
+	read deep JPEG.
+
 2024-02-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (AddIFDExifFields): Add casts to prevent signed vs
