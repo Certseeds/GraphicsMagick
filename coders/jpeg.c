@@ -1129,15 +1129,10 @@ EstimateJPEGQuality(const struct jpeg_decompress_struct *jpeg_info,
   return save_quality;
 }
 
-/*
-  Format JPEG color space to a string.
-*/
-static void
-FormatJPEGColorSpace(const J_COLOR_SPACE colorspace,
-                     char *colorspace_name)
+static const char *JPEGColorSpaceToString(const J_COLOR_SPACE colorspace)
 {
   const char
-    *s = NULL;
+    *s;
 
   switch (colorspace)
     {
@@ -1161,7 +1156,17 @@ FormatJPEGColorSpace(const J_COLOR_SPACE colorspace,
       s = "YCCK";
       break;
     }
-  (void) strlcpy(colorspace_name,s,MaxTextExtent);
+  return s;
+}
+
+/*
+  Format JPEG color space to a string buffer of length MaxTextExtent.
+*/
+static void
+FormatJPEGColorSpace(const J_COLOR_SPACE colorspace,
+                     char *colorspace_name)
+{
+  (void) strlcpy(colorspace_name,JPEGColorSpaceToString(colorspace),MaxTextExtent);
 }
 
 /*
@@ -2661,9 +2666,6 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   magick_jpeg_pixels_t
     jpeg_pixels; /* Contents freed by FreeMagickClientData() */
 
-  JSAMPROW
-    scanline[1];
-
   char
     *sampling_factors,
     *preserve_settings;
@@ -2676,9 +2678,6 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
 
   register const PixelPacket
     *p;
-
-  register JSAMPLE
-    *q;
 
   register long
     x;
@@ -2744,6 +2743,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   */
   if ((value=AccessDefinition(image_info,"jpeg","max-warnings")))
     client_data->max_warning_count=strtol(value,(char **) NULL, 10);
+  client_data->jpeg_pixels = &jpeg_pixels;
   jpeg_info.client_data=(void *) client_data;
   if (setjmp(client_data->error_recovery) != 0)
     {
@@ -2917,14 +2917,6 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
 
   jpeg_set_defaults(&jpeg_info);
 
-#if defined(HAVE_JPEG12_WRITE_SCANLINES) && HAVE_JPEG12_WRITE_SCANLINES
-#endif /* if defined(HAVE_JPEG12_WRITE_SCANLINES) && HAVE_JPEG12_WRITE_SCANLINES */
-
-#if defined(HAVE_JPEG16_WRITE_SCANLINES) && HAVE_JPEG16_WRITE_SCANLINES
-#if defined(HAVE_JPEG_ENABLE_LOSSLESS) && HAVE_JPEG_ENABLE_LOSSLESS
-#endif /* if defined(HAVE_JPEG_ENABLE_LOSSLESS) && HAVE_JPEG_ENABLE_LOSSLESS */
-#endif /* if defined(HAVE_JPEG16_WRITE_SCANLINES) && HAVE_JPEG16_WRITE_SCANLINES */
-
   /*
     Determine bit depth (valid range in 8-16).
   */
@@ -2940,6 +2932,38 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
       sample_size=8;
     jpeg_info.data_precision=sample_size;
   }
+
+  /*
+    Allow the user to set/override the data precision (8/12/16)
+  */
+  if ((value=AccessDefinition(image_info,"jpeg","data-precision")))
+    {
+      unsigned int data_precision_prop = 0;
+      if (sscanf(value,"%u",&data_precision_prop) == 1)
+        {
+          switch(data_precision_prop)
+            {
+            default:
+            case 8:
+              jpeg_info.data_precision=8;
+              break;
+#if defined(HAVE_JPEG12_WRITE_SCANLINES) && HAVE_JPEG12_WRITE_SCANLINES
+            case 12:
+              jpeg_info.data_precision=12;
+              break;
+#endif /* if defined(HAVE_JPEG12_WRITE_SCANLINES) && HAVE_JPEG12_WRITE_SCANLINES */
+#if defined(HAVE_JPEG16_WRITE_SCANLINES) && HAVE_JPEG16_WRITE_SCANLINES
+#if defined(HAVE_JPEG_ENABLE_LOSSLESS) && HAVE_JPEG_ENABLE_LOSSLESS
+#if defined(C_LOSSLESS_SUPPORTED)
+            case 16:
+              jpeg_info.data_precision=16;
+              break;
+#endif /* if defined(C_LOSSLESS_SUPPORTED) */
+#endif /* if defined(HAVE_JPEG_ENABLE_LOSSLESS) && HAVE_JPEG_ENABLE_LOSSLESS */
+#endif /* if defined(HAVE_JPEG16_WRITE_SCANLINES) && HAVE_JPEG16_WRITE_SCANLINES */
+            }
+        }
+    }
   if ((image->x_resolution == 0) || (image->y_resolution == 0))
     {
       image->x_resolution=72.0;
@@ -3006,7 +3030,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
 
     huffman_memory = 0;
 
-#ifdef C_ARITH_CODING_SUPPORTED
+#if defined(C_ARITH_CODING_SUPPORTED) && C_ARITH_CODING_SUPPORTED
     /*
       Allow the user to turn on/off arithmetic coder.
     */
@@ -3018,7 +3042,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
           jpeg_info.arith_code = True;
       }
     if (!jpeg_info.arith_code)     /* jpeg_info.optimize_coding must not be set to enable arithmetic. */
-#endif
+#endif /* if defined(C_ARITH_CODING_SUPPORTED) && C_ARITH_CODING_SUPPORTED */
       {
         if ((value=AccessDefinition(image_info,"jpeg","optimize-coding")))
           {
@@ -3066,38 +3090,61 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Interlace:  nonprogressive");
 #endif
-  if ((image->compression == LosslessJPEGCompression) ||
-      (quality > 100))
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Compression: %s",
+                          CompressionTypeToString(image->compression));
+  if (image->compression == LosslessJPEGCompression)
     {
-#if !defined(LIBJPEG_TURBO_VERSION_NUMBER) && defined(C_LOSSLESS_SUPPORTED)
-      if (quality < 100)
-        ThrowException(&image->exception,CoderWarning,
-                       LosslessToLossyJPEGConversion,(char *) NULL);
-      else
+#if defined(C_LOSSLESS_SUPPORTED)
         {
           int
             point_transform,
             predictor;
 
-          predictor=quality/100;  /* range 1-7 */
-          point_transform=quality % 20;  /* range 0-15 */
-          jpeg_simple_lossless(&jpeg_info,predictor,point_transform);
+          predictor=1;  /* range 1-7 */
+          point_transform=0;  /* range 0 to precision-1 */
+
+          /*
+            Right-shift the input samples by the specified number of
+            bits as a form of color quantization.  Useful range of 0
+            to precision-1.  Use zero for true lossless compression!
+           */
+          if ((value=AccessDefinition(image_info,"jpeg","lossless-precision")))
+            {
+              int point_transform_v = 0;
+              if ((sscanf(value,"%u",&point_transform_v) == 1) && (point_transform_v >= 0))
+                point_transform = point_transform_v;
+            }
+
+          if ((value=AccessDefinition(image_info,"jpeg","lossless-predictor")))
+            {
+              int predictor_v = predictor;
+              if ((sscanf(value,"%u",&predictor_v) == 1) && (predictor_v >= 0))
+                predictor = predictor_v;
+            }
+
           if (image->logging)
             {
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Compression: lossless");
+                "Compression: lossless");
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Predictor: %d",predictor);
+                "DPCM Predictor: %d",predictor);
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Point Transform: %d",point_transform);
+                "DPCM Point Transform: %d",point_transform);
             }
+#if !defined(LIBJPEG_TURBO_VERSION_NUMBER)
+          jpeg_simple_lossless(&jpeg_info, predictor, point_transform);
+#elif defined(LIBJPEG_TURBO_VERSION_NUMBER)
+          jpeg_enable_lossless(&jpeg_info, predictor, point_transform);
+#endif
         }
 #else
-      {
-        jpeg_set_quality(&jpeg_info,100,True);
-        if (image->logging)
-          (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Quality: 100");
-      }
+        {
+          jpeg_set_quality(&jpeg_info,100,True);
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Quality: 100");
+        }
 #endif
     }
   else
@@ -3105,8 +3152,9 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
       jpeg_set_quality(&jpeg_info,(int) quality,True);
       if (image->logging)
         (void) LogMagickEvent(CoderEvent,GetMagickModule(),"Quality: %lu",
-                              quality);
+          quality);
     }
+
   if (sampling_factors != (char *) NULL)
     {
       double
@@ -3269,8 +3317,39 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
   /*
     Convert MIFF to JPEG raster pixels.
   */
-  jpeg_pixels.t.j=MagickAllocateResourceLimitedArray(JSAMPLE *,
-                                                     (size_t)jpeg_info.input_components*image->columns,sizeof(JSAMPLE));
+  switch (jpeg_info.data_precision)
+    {
+#if defined(HAVE_JPEG16_WRITE_SCANLINES) && HAVE_JPEG16_WRITE_SCANLINES
+#if defined(HAVE_JPEG_ENABLE_LOSSLESS) && HAVE_JPEG_ENABLE_LOSSLESS
+#if defined(C_LOSSLESS_SUPPORTED)
+    case 16:
+      jpeg_pixels.t.j16 =
+        MagickAllocateResourceLimitedClearedArray(J16SAMPLE *,
+                                                  jpeg_info.input_components,
+                                                  MagickArraySize(image->columns,
+                                                                  sizeof(J16SAMPLE)));
+      break;
+#endif /* if defined(C_LOSSLESS_SUPPORTED) */
+#endif /* if defined(HAVE_JPEG_ENABLE_LOSSLESS) && HAVE_JPEG_ENABLE_LOSSLESS */
+#endif /* if defined(HAVE_JPEG16_WRITE_SCANLINES) && HAVE_JPEG16_WRITE_SCANLINES */
+#if defined(HAVE_JPEG12_WRITE_SCANLINES) && HAVE_JPEG12_WRITE_SCANLINES
+    case 12:
+      jpeg_pixels.t.j12 =
+        MagickAllocateResourceLimitedClearedArray(J12SAMPLE *,
+                                                  jpeg_info.input_components,
+                                                  MagickArraySize(image->columns,
+                                                                  sizeof(J12SAMPLE)));
+      break;
+#endif /* if defined(HAVE_JPEG12_WRITE_SCANLINES) && HAVE_JPEG12_WRITE_SCANLINES */
+    default:
+      {
+        jpeg_pixels.t.j=
+          MagickAllocateResourceLimitedArray(JSAMPLE *,
+                                             jpeg_info.input_components,
+                                             MagickArraySize(image->columns,
+                                                             sizeof(JSAMPLE)));
+      }
+    }
   if (jpeg_pixels.t.v == (JSAMPLE *) NULL)
     {
       if (huffman_memory)
@@ -3278,233 +3357,200 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
       ThrowJPEGWriterException(ResourceLimitError,MemoryAllocationFailed,image);
     }
   client_data->jpeg_pixels = &jpeg_pixels;
-  scanline[0]=(JSAMPROW) jpeg_pixels.t.j;
-  if (jpeg_info.data_precision > 8 && jpeg_info.data_precision <= 16)
-    { /* Deep pixels */
-      unsigned int
-        scale_short;
 
-      scale_short=65535U/MaxValueGivenBits(jpeg_info.data_precision);
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "Writing %u bit %s samples...",
+                          jpeg_info.data_precision,
+                          JPEGColorSpaceToString(jpeg_info.in_color_space));
 
-      if (jpeg_info.in_color_space == JCS_GRAYSCALE)
-        { /* Start deep JCS_GRAYSCALE */
-          if (image->logging)
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Writing %d bit JCS_GRAYSCALE samples",
-                                  jpeg_info.data_precision);
-          for (y=0; y < (long) image->rows; y++)
-            {
-              p=AcquireImagePixels(image,0,y,image->columns,1,
-                                   &image->exception);
-              if (p == (const PixelPacket *) NULL)
-                break;
-              q=jpeg_pixels.t.j;
-              if (image->is_grayscale)
-                {
-                  for (x=0; x < (long) image->columns; x++)
-                    {
-                      *q++=(JSAMPLE) (ScaleQuantumToShort(GetGraySample(p))/
-                                      scale_short);
-                      p++;
-                    }
-                }
-              else
-                {
-                  for (x=0; x < (long) image->columns; x++)
-                    {
-                      *q++=(JSAMPLE)
-                        (ScaleQuantumToShort(PixelIntensityToQuantum(p))/scale_short);
-                      p++;
-                    }
-                }
-              (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
-#if !USE_LIBJPEG_PROGRESS
-              if (QuantumTick(y,image->rows))
-                if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                            SaveImageText,image->filename,
-                                            image->columns,image->rows))
-                  break;
-#endif /* !USE_LIBJPEG_PROGRESS */
-            }
-        } /* End deep JCS_GRAYSCALE */
-      else
-        if ((jpeg_info.in_color_space == JCS_RGB) ||
-            (jpeg_info.in_color_space == JCS_YCbCr))
-          {  /* Start deep JCS_RGB || JCS_YCbCr */
-            if (image->logging)
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Writing %d bit JCS_RGB or "
-                                    "JCS_YCbCr samples",
-                                    jpeg_info.data_precision);
-            for (y=0; y < (long) image->rows; y++)
-              {
-                p=AcquireImagePixels(image,0,y,image->columns,1,
-                                     &image->exception);
-                if (p == (const PixelPacket *) NULL)
-                  break;
-                q=jpeg_pixels.t.j;
-                for (x=0; x < (long) image->columns; x++)
-                  {
-                    *q++=(JSAMPLE) (ScaleQuantumToShort(p->red)/16);
-                    *q++=(JSAMPLE) (ScaleQuantumToShort(p->green)/16);
-                    *q++=(JSAMPLE) (ScaleQuantumToShort(p->blue)/16);
-                    p++;
-                  }
-                (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
-#if !USE_LIBJPEG_PROGRESS
-                if (QuantumTick(y,image->rows))
-                  if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                              SaveImageText,image->filename,
-                                              image->columns,image->rows))
-                    break;
-#endif /* !USE_LIBJPEG_PROGRESS */
-              }
-          } /* End deep JCS_RGB || JCS_YCbCr */
-        else
-          { /* Start deep JCS_CMYK */
-            if (image->logging)
-              (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                    "Writing %d bit JCS_CMYK samples",
-                                    jpeg_info.data_precision);
-            for (y=0; y < (long) image->rows; y++)
-              {
-                p=AcquireImagePixels(image,0,y,image->columns,1,
-                                     &image->exception);
-                if (p == (const PixelPacket *) NULL)
-                  break;
-                q=jpeg_pixels.t.j;
-                for (x=0; x < (long) image->columns; x++)
-                  {
-                    /*
-                      Convert DirectClass packets to contiguous CMYK scanlines.
-                    */
-                    *q++=(JSAMPLE) (4095-ScaleQuantumToShort(p->red)/16);
-                    *q++=(JSAMPLE) (4095-ScaleQuantumToShort(p->green)/16);
-                    *q++=(JSAMPLE) (4095-ScaleQuantumToShort(p->blue)/16);
-                    *q++=(JSAMPLE) (4095-ScaleQuantumToShort(p->opacity)/16);
-                    p++;
-                  }
-                (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
-#if !USE_LIBJPEG_PROGRESS
-                if (QuantumTick(y,image->rows))
-                  if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                              SaveImageText,image->filename,
-                                              image->columns,image->rows))
-                    break;
-#endif /* !USE_LIBJPEG_PROGRESS */
-              }
-          } /* End deep JCS_CMYK */
-    } /* End deep pixels */
-  else
-    { /* Common 8-bit samples */
-      if (jpeg_info.in_color_space == JCS_GRAYSCALE)
-        {  /* Start 8-bit JCS_GRAYSCALE */
-          if (image->logging)
-            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                  "Writing %d bit JCS_GRAYSCALE samples",
-                                  jpeg_info.data_precision);
-          for (y=0; y < (long) image->rows; y++)
-            {
-              p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
-              if (p == (const PixelPacket *) NULL)
-                break;
-              q=jpeg_pixels.t.j;
-              if (image->is_grayscale)
-                {
-                  for (x=0; x < (long) image->columns; x++)
-                    {
-                      *q++=(JSAMPLE) ScaleQuantumToChar(GetGraySample(p));
-                      p++;
-                    }
-                }
-              else
-                {
-                  for (x=0; x < (long) image->columns; x++)
-                    {
-                      *q++=(JSAMPLE)
-                        ScaleQuantumToChar(PixelIntensityToQuantum(p));
-                      p++;
-                    }
-                }
-              (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
-#if !USE_LIBJPEG_PROGRESS
-              if (QuantumTick(y,image->rows))
-                if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                            SaveImageText,image->filename,
-                                            image->columns,image->rows))
-                  break;
-#endif /* !USE_LIBJPEG_PROGRESS */
-            }
-        } /* End 8-bit JCS_GRAYSCALE */
-      else
+  for (y=0; y < (long) image->rows; y++)
+    {
+      p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
+      if (p == (const PixelPacket *) NULL)
+        break;
+
+#if defined(HAVE_JPEG16_WRITE_SCANLINES) && HAVE_JPEG16_WRITE_SCANLINES
+#if defined(HAVE_JPEG_ENABLE_LOSSLESS) && HAVE_JPEG_ENABLE_LOSSLESS
+#if defined(C_LOSSLESS_SUPPORTED)
+      if (jpeg_info.data_precision == 16)
         {
-          if ((jpeg_info.in_color_space == JCS_RGB) ||
-              (jpeg_info.in_color_space == JCS_YCbCr))
-            {  /* Start 8-bit JCS_RGB || JCS_YCbCr */
-              if (image->logging)
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "Writing %d bit JCS_RGB or JCS_YCbCr samples",
-                                      jpeg_info.data_precision);
-              for (y=0; y < (long) image->rows; y++)
-                {
-                  p=AcquireImagePixels(image,0,y,image->columns,1,
-                                       &image->exception);
-                  if (p == (const PixelPacket *) NULL)
-                    break;
-                  q=jpeg_pixels.t.j;
-                  for (x=0; x < (long) image->columns; x++)
-                    {
-                      *q++=(JSAMPLE) ScaleQuantumToChar(p->red);
-                      *q++=(JSAMPLE) ScaleQuantumToChar(p->green);
-                      *q++=(JSAMPLE) ScaleQuantumToChar(p->blue);
-                      p++;
-                    }
-                  (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
+          {
+            J16SAMPROW
+              scanline[1];
+
+            if (jpeg_info.in_color_space == JCS_GRAYSCALE)
+              { /* Start deep JCS_GRAYSCALE */
+                if (image->is_grayscale)
+                  {
+                    i=0;
+                    for (x=0; x < (long) image->columns; x++)
+                      {
+                        jpeg_pixels.t.j16[i++]=(J16SAMPLE)(ScaleQuantumToShort(GetGraySample(p)));
+                        p++;
+                      }
+                  }
+                else
+                  {
+                    i=0;
+                    for (x=0; x < (long) image->columns; x++)
+                      {
+                        jpeg_pixels.t.j16[i++] = (J16SAMPLE)(ScaleQuantumToShort(PixelIntensityToQuantum(p)));
+                        p++;
+                      }
+                  }
+              } /* End deep JCS_GRAYSCALE */
+            else if ((jpeg_info.in_color_space == JCS_RGB) ||
+                     (jpeg_info.in_color_space == JCS_YCbCr))
+              { /* Start deep JCS_RGB || JCS_YCbCr */
+                i=0;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    jpeg_pixels.t.j16[i++] = (J16SAMPLE)(ScaleQuantumToShort(p->red));
+                    jpeg_pixels.t.j16[i++] = (J16SAMPLE)(ScaleQuantumToShort(p->green));
+                    jpeg_pixels.t.j16[i++] = (J16SAMPLE)(ScaleQuantumToShort(p->blue));
+                    p++;
+                  }
+              } /* End deep JCS_RGB || JCS_YCbCr */
+            else if (jpeg_info.in_color_space == JCS_CMYK)
+              { /* Start deep JCS_CMYK */
+                i=0;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    jpeg_pixels.t.j16[i++] = (J16SAMPLE)(ScaleQuantumToShort(p->red));
+                    jpeg_pixels.t.j16[i++] = (J16SAMPLE)(ScaleQuantumToShort(p->green));
+                    jpeg_pixels.t.j16[i++] = (J16SAMPLE)(ScaleQuantumToShort(p->blue));
+                    jpeg_pixels.t.j16[i++] = (J16SAMPLE)(ScaleQuantumToShort(p->opacity));
+                    p++;
+                  }
+              } /* End deep JCS_CMYK */
+
+            scanline[0]=(J16SAMPROW) jpeg_pixels.t.j16;
+            (void) jpeg16_write_scanlines(&jpeg_info,scanline,1);
+          }
+        } else
+#endif /* if defined(C_LOSSLESS_SUPPORTED) */
+#endif /* if defined(HAVE_JPEG_ENABLE_LOSSLESS) && HAVE_JPEG_ENABLE_LOSSLESS */
+#endif /* if defined(HAVE_JPEG16_WRITE_SCANLINES) && HAVE_JPEG16_WRITE_SCANLINES */
+
+#if defined(HAVE_JPEG12_WRITE_SCANLINES) && HAVE_JPEG12_WRITE_SCANLINES
+        if (jpeg_info.data_precision == 12)
+          {
+            J12SAMPROW
+              scanline[1];
+
+            if (jpeg_info.in_color_space == JCS_GRAYSCALE)
+              { /* Start deep JCS_GRAYSCALE */
+                if (image->is_grayscale)
+                  {
+                    i=0;
+                    for (x=0; x < (long) image->columns; x++)
+                      {
+                        jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(GetGraySample(p))/16);
+                        p++;
+                      }
+                  }
+                else
+                  {
+                    i=0;
+                    for (x=0; x < (long) image->columns; x++)
+                      {
+                        jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(PixelIntensityToQuantum(p))/16);
+                        p++;
+                      }
+                  }
+              } /* End deep JCS_GRAYSCALE */
+            else if ((jpeg_info.in_color_space == JCS_RGB) ||
+                     (jpeg_info.in_color_space == JCS_YCbCr))
+              { /* Start deep JCS_RGB || JCS_YCbCr */
+                i=0;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(p->red)/16);
+                    jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(p->green)/16);
+                    jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(p->blue)/16);
+                    p++;
+                  }
+              } /* End deep JCS_RGB || JCS_YCbCr */
+            else if (jpeg_info.in_color_space == JCS_CMYK)
+              { /* Start deep JCS_CMYK */
+                i=0;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(p->red)/16);
+                    jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(p->green)/16);
+                    jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(p->blue)/16);
+                    jpeg_pixels.t.j12[i++] = (J12SAMPLE)(ScaleQuantumToShort(p->opacity)/16);
+                    p++;
+                  }
+              } /* End deep JCS_CMYK */
+
+            scanline[0]=(J12SAMPROW) jpeg_pixels.t.j12;
+            (void) jpeg12_write_scanlines(&jpeg_info,scanline,1);
+          } else
+#endif /* if defined(HAVE_JPEG12_WRITE_SCANLINES) && HAVE_JPEG12_WRITE_SCANLINES */
+          {
+            JSAMPROW
+              scanline[1];
+
+            if (jpeg_info.in_color_space == JCS_GRAYSCALE)
+              { /* Start deep JCS_GRAYSCALE */
+                if (image->is_grayscale)
+                  {
+                    i=0;
+                    for (x=0; x < (long) image->columns; x++)
+                      {
+                        jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(GetGraySample(p)));
+                        p++;
+                      }
+                  }
+                else
+                  {
+                    i=0;
+                    for (x=0; x < (long) image->columns; x++)
+                      {
+                        jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(PixelIntensityToQuantum(p)));
+                        p++;
+                      }
+                  }
+              } /* End deep JCS_GRAYSCALE */
+            else if ((jpeg_info.in_color_space == JCS_RGB) ||
+                     (jpeg_info.in_color_space == JCS_YCbCr))
+              { /* Start deep JCS_RGB || JCS_YCbCr */
+                i=0;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(p->red));
+                    jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(p->green));
+                    jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(p->blue));
+                    p++;
+                  }
+              } /* End deep JCS_RGB || JCS_YCbCr */
+            else if (jpeg_info.in_color_space == JCS_CMYK)
+              { /* Start deep JCS_CMYK */
+                i=0;
+                for (x=0; x < (long) image->columns; x++)
+                  {
+                    jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(p->red));
+                    jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(p->green));
+                    jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(p->blue));
+                    jpeg_pixels.t.j[i++]=(JSAMPLE)(ScaleQuantumToChar(p->opacity));
+                    p++;
+                  }
+              } /* End deep JCS_CMYK */
+
+            scanline[0]=(JSAMPROW) jpeg_pixels.t.j;
+            (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
 #if !USE_LIBJPEG_PROGRESS
-                  if (QuantumTick(y,image->rows))
-                    if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                                SaveImageText,image->filename,
-                                                image->columns,image->rows))
-                      break;
+            if (QuantumTick(y,image->rows))
+              if (!MagickMonitorFormatted(y,image->rows,&image->exception,
+                                          SaveImageText,image->filename,
+                                          image->columns,image->rows))
+                break;
 #endif /* !USE_LIBJPEG_PROGRESS */
-                }
-            } /* End 8-bit JCS_RGB || JCS_YCbCr */
-          else
-            { /* 8-bit CMYK */
-              if (image->logging)
-                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                      "Writing %d bit JCS_CMYK samples",
-                                      jpeg_info.data_precision);
-              for (y=0; y < (long) image->rows; y++)
-                {
-                  p=AcquireImagePixels(image,0,y,image->columns,1,
-                                       &image->exception);
-                  if (p == (const PixelPacket *) NULL)
-                    break;
-                  q=jpeg_pixels.t.j;
-                  for (x=0; x < (long) image->columns; x++)
-                    {
-                      /*
-                        Convert DirectClass packets to contiguous CMYK scanlines.
-                      */
-                      *q++=(JSAMPLE) (ScaleQuantumToChar(MaxRGB-p->red));
-                      *q++=(JSAMPLE) (ScaleQuantumToChar(MaxRGB-p->green));
-                      *q++=(JSAMPLE) (ScaleQuantumToChar(MaxRGB-p->blue));
-                      *q++=(JSAMPLE) (ScaleQuantumToChar(MaxRGB-p->opacity));
-                      p++;
-                    }
-                  (void) jpeg_write_scanlines(&jpeg_info,scanline,1);
-#if !USE_LIBJPEG_PROGRESS
-                  if (QuantumTick(y,image->rows))
-                    if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                                SaveImageText,image->filename,
-                                                image->columns,image->rows))
-                      break;
-#endif /* !USE_LIBJPEG_PROGRESS */
-                }
-            } /* End 8-bit CMYK */
-        }
-    } /* End common 8-bit samples */
+          }
+    }
+
   if (image->logging)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "Finishing JPEG compression");

@@ -1,4 +1,4 @@
-.TH gm 1 "2024/01/20" "GraphicsMagick"
+.TH gm 1 "2024/02/11" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -1386,6 +1386,41 @@ behaves.
 .in 20
 Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
+
+.in 15
+.in 15
+.B "jpeg:data-precision=<value>"
+.in 20
+ \fR
+.in 20
+Selects the JPEG sample storage size.  Normal JPEG uses
+8. Turbo-jpeg and some variants of IJG JPEG also support 12 and 16
+bits.
+
+.in 15
+.in 15
+.B "jpeg:lossless-precision=<value>"
+.in 20
+ \fR
+.in 20
+Selects a degree of precision to use while performing DPCM-based
+compression.  The available range 0 to precision-1.  For example, if
+the output depth is 16, then the available range is 0 to 15.  When the
+precision is non-zero, then the pixels are right-shifted to
+effectively support fewer bits (fewer colors), but offering an
+improved compression ratio.  Use a value of 0 to achieve lossless
+compression.
+
+.in 15
+.in 15
+.B "jpeg:lossless-predictor=<value>"
+.in 20
+ \fR
+.in 20
+Selects the predictor to use for lossless compression.  The
+supported values are in the range of 1 to 7 and select a pre-defined
+predictor algorithm to use, which considers surrounding pixels. The
+best predictor for a particular image depends on the image.
 
 .in 15
 .in 15

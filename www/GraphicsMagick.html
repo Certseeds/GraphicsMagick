@@ -1596,6 +1596,26 @@ behaves.
 <dd>Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
 </dd>
+<dt>jpeg:data-precision=&lt;value&gt;</dt>
+<dd>Selects the JPEG sample storage size.  Normal JPEG uses
+8. Turbo-jpeg and some variants of IJG JPEG also support 12 and 16
+bits.
+</dd>
+<dt>jpeg:lossless-precision=&lt;value&gt;</dt>
+<dd>Selects a degree of precision to use while performing DPCM-based
+compression.  The available range 0 to precision-1.  For example, if
+the output depth is 16, then the available range is 0 to 15.  When the
+precision is non-zero, then the pixels are right-shifted to
+effectively support fewer bits (fewer colors), but offering an
+improved compression ratio.  Use a value of 0 to achieve lossless
+compression.
+</dd>
+<dt>jpeg:lossless-predictor=&lt;value&gt;</dt>
+<dd>Selects the predictor to use for lossless compression.  The
+supported values are in the range of 1 to 7 and select a pre-defined
+predictor algorithm to use, which considers surrounding pixels. The
+best predictor for a particular image depends on the image.
+</dd>
 <dt>jpeg:max-scan-number=&lt;value&gt;</dt>
 <dd>Specifies an integer value for the maximum number of progressive
 scans allowed in a JPEG file.  The default maximum is 100 scans.  This

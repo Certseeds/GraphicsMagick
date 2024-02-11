@@ -38,6 +38,21 @@
 
 <div class="document" id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-02-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/enum_strings.c (StringToCompressionType): Recognize
+&quot;LosslessJPEG&quot; as indicating LosslessJPEGCompression.</p></li>
+<li><p>coders/jpeg.c (WriteJPEGImage): Added support for writing lossy
+or lossless 12 bits, and lossless 16-bits using libjpeg-turbo-3.0.
+Added the -define options 'jpeg:data-precision',
+'jpeg:lossless-precision', and 'jpeg:lossless-predictor', to
+provide control over the parameters used.  Please note that most
+applications do not support lossless JPEG compression (and only
+support a sample size of 8) so take care not to use these features
+if it not known that all involved software can support them!</p></li>
+</ul>
+</blockquote>
 <p>2024-02-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

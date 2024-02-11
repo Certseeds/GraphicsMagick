@@ -27567,9 +27567,10 @@ $as_echo "#define HasJPEG 1" >>confdefs.h
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         have_jpeg='yes'
-        # Test for interesting libjpeg-turbo 3.0 functions (which may also appear in other JPEG libraries)
+        # Test for interesting libjpeg-turbo 3.0 and libjpeg functions)
         for ac_func in jpeg_enable_lossless jpeg12_write_scanlines jpeg16_write_scanlines \
-                        jpeg12_read_scanlines jpeg16_read_scanlines
+                        jpeg12_read_scanlines jpeg16_read_scanlines \
+                        jpeg_simple_lossless jpeg_enable_lossless
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
