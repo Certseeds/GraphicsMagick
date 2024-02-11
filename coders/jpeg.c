@@ -3030,7 +3030,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
 
     huffman_memory = 0;
 
-#if defined(C_ARITH_CODING_SUPPORTED) && C_ARITH_CODING_SUPPORTED
+#if defined(C_ARITH_CODING_SUPPORTED)
     /*
       Allow the user to turn on/off arithmetic coder.
     */
@@ -3042,7 +3042,7 @@ static MagickPassFail WriteJPEGImage(const ImageInfo *image_info,Image *imagep)
           jpeg_info.arith_code = True;
       }
     if (!jpeg_info.arith_code)     /* jpeg_info.optimize_coding must not be set to enable arithmetic. */
-#endif /* if defined(C_ARITH_CODING_SUPPORTED) && C_ARITH_CODING_SUPPORTED */
+#endif /* if defined(C_ARITH_CODING_SUPPORTED) */
       {
         if ((value=AccessDefinition(image_info,"jpeg","optimize-coding")))
           {
