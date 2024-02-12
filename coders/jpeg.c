@@ -241,7 +241,8 @@ static MagickClientData *FreeMagickClientData(MagickClientData *client_data)
           MagickFreeMemory(client_data->profiles[i].name);
           MagickFreeResourceLimitedMemory(client_data->profiles[i].info);
         }
-      MagickFreeResourceLimitedMemory(client_data->jpeg_pixels->t.v);
+      if (client_data->jpeg_pixels != (magick_jpeg_pixels_t *) NULL)
+        MagickFreeResourceLimitedMemory(client_data->jpeg_pixels->t.v);
 
       MagickFreeMemory(client_data);
     }

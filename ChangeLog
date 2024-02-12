@@ -1,3 +1,11 @@
+2024-02-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (FreeMagickClientData): Assure that jpeg_pixels is
+	non-NULL before dereferencing it. Resolves oss-fuzz issue 66666:
+	"graphicsmagick:coder_DCM_fuzzer: Null-dereference READ in
+	ReadJPEGImage".  This is an issue introduced by yesterday's
+	submission.
+
 2024-02-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/enum_strings.c (StringToCompressionType): Recognize
