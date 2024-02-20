@@ -653,19 +653,23 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                     pixel.blue = ScaleCharToQuantum(ScaleColor5to8(pixel.blue));
                     break;
                   }
-                case 24:
-                case 32:                        /* TODO: J.Fojtik - is this true? 32 bits, but only 24 bits read. Possible bug! */
-                  {
-                    /*
-                      8 bits each of blue, green and red.
-                    */
+
+                case 24:     /* 8 bits each of blue, green and red. */
                     if (ReadBlob(image, 3, readbuffer) != 3)
                       ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
                     pixel.blue = ScaleCharToQuantum(readbuffer[0]);
                     pixel.green = ScaleCharToQuantum(readbuffer[1]);
                     pixel.red = ScaleCharToQuantum(readbuffer[2]);
                     break;
-                  }
+
+                case 32:     /* 8 bits each of blue, green and red + alpha. */
+                    if (ReadBlob(image, 4, readbuffer) != 4)
+                      ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+                    pixel.blue = ScaleCharToQuantum(readbuffer[0]);
+                    pixel.green = ScaleCharToQuantum(readbuffer[1]);
+                    pixel.red = ScaleCharToQuantum(readbuffer[2]);
+                    pixel.opacity = ScaleCharToQuantum(readbuffer[3]);
+                    break;
                 }
               image->colormap[i]=pixel;
             }
