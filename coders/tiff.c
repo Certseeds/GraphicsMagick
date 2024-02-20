@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2023 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -28,7 +28,7 @@
 %                             Bob Friesenhahn                                 %
 %                                2002-2015                                    %
 %                             Jaroslav Fojtik                                 %
-%                                   2023                                      %
+%                                2023-2024                                    %
 %                                                                             %
 %                                                                             %
 %                                                                             %

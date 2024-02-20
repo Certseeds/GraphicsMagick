@@ -148,29 +148,24 @@ typedef struct _TGADevel
     /* Color Correction Table - Field 27 (2K Bytes) */
 } TGADevel;
 
+
+static OrientationType ConvOrientation(unsigned TgaOrientation)
+{
+  switch((TgaOrientation >> 4) & 3)
+    {
+    case 0: return BottomLeftOrientation;
+    case 1: return BottomRightOrientation;
+    case 2: return TopLeftOrientation;
+    case 3: return TopRightOrientation;
+    }
+  return UndefinedOrientation;
+}
+
+
 
 static void LogTGAInfo(const TGAInfo *tga_info)
 {
-  OrientationType orientation = UndefinedOrientation;
-  unsigned int attribute_bits;
-
-  attribute_bits = tga_info->attributes & 0xf;
-
-  switch((tga_info->attributes >> 4) & 3)
-    {
-    case 0:
-      orientation=BottomLeftOrientation;
-      break;
-    case 1:
-      orientation=BottomRightOrientation;
-      break;
-    case 2:
-      orientation=TopLeftOrientation;
-      break;
-    case 3:
-      orientation=TopRightOrientation;
-      break;
-    }
+  const unsigned int attribute_bits = tga_info->attributes & 0xf;
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Targa Header:\n"
@@ -199,7 +194,7 @@ static void LogTGAInfo(const TGAInfo *tga_info)
                         tga_info->x_origin, tga_info->y_origin,
                         tga_info->width, tga_info->height,
                         (unsigned int) tga_info->bits_per_pixel,
-                        tga_info->attributes,attribute_bits,OrientationTypeToString(orientation));
+                        tga_info->attributes, attribute_bits, OrientationTypeToString(ConvOrientation(tga_info->attributes)));
 }
 
 
@@ -511,6 +506,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
     {
       if (image->logging)
         LogTGAInfo(&tga_info);
+      image->orientation = ConvOrientation(tga_info.attributes);
 
       if (EOFBlob(image))
         ThrowReaderException(CorruptImageError,UnexpectedEndOfFile,image);
