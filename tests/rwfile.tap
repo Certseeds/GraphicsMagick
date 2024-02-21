@@ -1,6 +1,6 @@
 #!/bin/sh
 # -*- shell-script -*-
-# Copyright (C) 2004-2023 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 . ./common.shi
 . ${top_srcdir}/tests/common.shi
 
@@ -12,7 +12,7 @@ check_types='bilevel gray palette truecolor truecolor_1x266'
 check_types_noone='bilevel gray palette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 838 # 828
+test_plan_fn 848
 
 # ART format
 for type in ${check_types}
@@ -159,6 +159,13 @@ for type in ${check_types}
 do
   test_command_fn "GRAY ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" GRAY
   test_command_fn "GRAY ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" GRAY
+done
+
+# HRZ format
+for type in ${check_types}
+do
+  test_command_fn "HRZ ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" HRZ
+  test_command_fn "HRZ ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" HRZ
 done
 
 # ICB format

@@ -207,7 +207,7 @@ static unsigned int WriteHRZImage(const ImageInfo *image_info,Image *image)
   /*
     Allocate memory for pixels.
   */
-  pixels = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)hrz_image->columns*3*sizeof(*pixels));
+  pixels = MagickAllocateResourceLimitedArray(unsigned char *,(size_t)hrz_image->columns,3*sizeof(*pixels));
   if(pixels == (unsigned char *) NULL)
   {
     DestroyImage(hrz_image);
@@ -288,8 +288,10 @@ ModuleExport void RegisterHRZImage(void)
   entry=SetMagickInfo("HRZ");
   entry->decoder = (DecoderHandler)ReadHRZImage;
   entry->encoder = (EncoderHandler)WriteHRZImage;
+  entry->seekable_stream=MagickTrue; /* FIXME: Requiring this is a bug */
   entry->description="HRZ: Slow scan TV";
   entry->module="HRZ";
+  entry->adjoin=MagickFalse;
   (void) RegisterMagickInfo(entry);
 }
 
