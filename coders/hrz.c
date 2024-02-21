@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2009-2020 GraphicsMagick Group
+% Copyright (C) 2009-2024 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -15,12 +15,12 @@
 %                            H   H  R  R   ZZZZZ                              %
 %                                                                             %
 %                                                                             %
-%                              Slow scan TV.                                  %
+%                               Slow scan TV.                                 %
 %                                                                             %
 %                                                                             %
 %                              Software Design                                %
 %                              Jaroslav Fojtik                                %
-%                                March 2009                                   %
+%                                 2009-2024                                   %
 %                                                                             %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,6 +37,7 @@
 #include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
+#include "magick/resize.h"
 #include "magick/utility.h"
 #include "magick/constitute.h"
 
@@ -157,31 +158,103 @@ DONE_READING:
 %                                                                             %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%  Function WriteHRZImage writes an HRZ image to a file.
+%  WriteHRZImage() writes an image to a file in HRZ X image format.
 %
 %  The format of the WriteHRZImage method is:
 %
-%      unsigned int WriteHRZImage(const ImageInfo *image_info,Image *image)
+%      MagickBooleanType WriteHRZImage(const ImageInfo *image_info,
+%        Image *image,ExceptionInfo *exception)
 %
 %  A description of each parameter follows.
 %
-%    o status: Function WriteHRZImage return True if the image is written.
-%      False is returned is there is a memory shortage or if the image file
-%      fails to write.
+%    o image_info: the image info.
 %
-%    o image_info: Specifies a pointer to a ImageInfo structure.
+%    o image:  The image.
 %
-%    o image:  A pointer to an Image structure.
+%    o exception: return any errors or warnings in this structure.
 %
 */
-/*static unsigned int WriteHRZImage(const ImageInfo *image_info,Image *image)
+static unsigned int WriteHRZImage(const ImageInfo *image_info,Image *image)
 {
-    if (logging)
+  int logging;
+  Image *hrz_image;
+  unsigned status;
+  unsigned long x, y;
+  ssize_t count;
+  unsigned char *pixels, *q;
+
+  /*
+    Open output image file.
+  */
+  assert(image_info != (const ImageInfo *) NULL);
+  assert(image_info->signature == MagickSignature);
+  assert(image != (Image *) NULL);
+  assert(image->signature == MagickSignature);
+  assert(image->exception.signature == MagickSignature);
+
+  logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter HRZ");
+
+  status = OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
+  if(status == MagickFail)
+    ThrowWriterException(FileOpenError,UnableToOpenFile,image);
+
+  hrz_image = ResizeImage(image,256,240,image->filter,1.0,&image->exception);
+  if(hrz_image == (Image *)NULL)
+  {
+    CloseBlob(image);
+    return(MagickFalse);
+  }
+  /*
+    Allocate memory for pixels.
+  */
+  pixels = MagickAllocateResourceLimitedMemory(unsigned char *,(size_t)hrz_image->columns*3*sizeof(*pixels));
+  if(pixels == (unsigned char *) NULL)
+  {
+    DestroyImage(hrz_image);
+    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+  }
+  /*
+    Convert MIFF to HRZ raster pixels.
+  */
+  for(y=0; y<hrz_image->rows; y++)
+  {
+    if(AcquireImagePixels(image,0,y,image->columns,1,&image->exception) == (const PixelPacket *)NULL)
+    {
+      status=MagickFail;
+      break;
+    }
+    if(ExportImagePixelArea(image,RGBQuantum,8,pixels,0,0) != MagickPass)
+    {
+      status = MagickFail;
+      break;
+    }
+    q = pixels;
+    for(x=0; x < hrz_image->columns; x++)
+    {
+      *q++ /= 4;
+      *q++ /= 4;
+      *q++ /= 4;
+    }
+    count = WriteBlob(image,(size_t) (q-pixels),pixels);
+    if(count != (ssize_t)(q-pixels))
+    {
+      status = MagickFail;
+      break;
+    }
+    /* status = SetImageProgress(image,SaveImageTag,y,hrz_image->rows);
+    if(status == MagickFalse)
+      break; */
+  }
+  MagickFreeResourceLimitedMemory(pixels);
+  DestroyImage(hrz_image);
+  status &= CloseBlob(image);
+
+  if(logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return HRZ");
 
   return(status);
-} */
+}
+
 
 
 /*
@@ -214,7 +287,7 @@ ModuleExport void RegisterHRZImage(void)
 
   entry=SetMagickInfo("HRZ");
   entry->decoder = (DecoderHandler)ReadHRZImage;
-/*entry->encoder = (EncoderHandler)WriteHRZImage; */
+  entry->encoder = (EncoderHandler)WriteHRZImage;
   entry->description="HRZ: Slow scan TV";
   entry->module="HRZ";
   (void) RegisterMagickInfo(entry);
