@@ -1,3 +1,9 @@
+2024-02-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/configure/configure.rc Disable static single threaded
+	runtime choice. This runtime is not suported in Visual Studio 2008
+	and all newer versions.
+
 2024-02-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/psd.c: If module gets built, but EnableBrokenCoders is
