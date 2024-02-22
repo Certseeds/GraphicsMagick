@@ -1,3 +1,9 @@
+2024-02-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am: Rename coders/acppfile.cpp to magick/acppfile.cpp
+	and include some in-progress changes which are necessary for the
+	build to still work.
+
 2024-02-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat: G,K and Y tests started to fail

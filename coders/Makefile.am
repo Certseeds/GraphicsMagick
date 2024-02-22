@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2022 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -18,7 +18,7 @@ endif
 
 if HasFPX
 MAGICK_FPX_MODULES = coders/fpx.la
-MAGICK_FPX_SRCS = coders/fpx.c coders/acppfile.cpp
+MAGICK_FPX_SRCS = coders/fpx.c $(ACPPFILE)
 endif
 
 if HasWINGDI32
@@ -28,7 +28,7 @@ endif
 
 if HasHEIF
 MAGICK_HEIF_MODULES = coders/heif.la
-MAGICK_HEIF_SRCS = coders/heif.c coders/acppfile.cpp
+MAGICK_HEIF_SRCS = coders/heif.c $(ACPPFILE)
 endif
 
 if HasJBIG
@@ -48,7 +48,7 @@ endif
 
 if HasJXL
 MAGICK_JXL_MODULES = coders/jxl.la
-MAGICK_JXL_SRCS = coders/jxl.c coders/acppfile.cpp
+MAGICK_JXL_SRCS = coders/jxl.c $(ACPPFILE)
 endif
 
 if HasPNG
@@ -401,7 +401,7 @@ coders_fits_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_fits_la_LIBADD      = $(LIBMAGICK) $(LIB_MATH)
 
 # FPX coder module
-coders_fpx_la_SOURCES      = coders/fpx.c coders/acppfile.cpp
+coders_fpx_la_SOURCES      = coders/fpx.c $(ACPPFILE)
 coders_fpx_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_fpx_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_fpx_la_LIBADD       = $(LIBMAGICK) $(LIB_FPX)
@@ -425,7 +425,7 @@ coders_gradient_la_LDFLAGS = $(MODULECOMMONFLAGS)
 coders_gradient_la_LIBADD  = $(LIBMAGICK)
 
 # HEIF coder module
-coders_heif_la_SOURCES     = coders/heif.c coders/acppfile.cpp
+coders_heif_la_SOURCES     = coders/heif.c $(ACPPFILE)
 coders_heif_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_heif_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_heif_la_LIBADD      = $(LIBMAGICK) $(LIB_HEIF)
@@ -491,7 +491,7 @@ coders_jp2_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_jp2_la_LIBADD       = $(LIBMAGICK) $(LIB_JP2) $(LIB_HEIF) $(LIB_JPEG) $(LIB_MATH)
 
 # JXL coder module
-coders_jxl_la_SOURCES     = coders/jxl.c coders/acppfile.cpp
+coders_jxl_la_SOURCES     = coders/jxl.c $(ACPPFILE)
 coders_jxl_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_jxl_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_jxl_la_LIBADD      = $(LIBMAGICK) $(LIB_JXL)
