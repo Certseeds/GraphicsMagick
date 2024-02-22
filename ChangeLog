@@ -1,6 +1,6 @@
 2024-02-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* VisualMagick/tests/runtest.bat G,K and Y tests started to fail
+	* VisualMagick/tests/runtest.bat: G,K and Y tests started to fail
 	before several months without knowing why. Do not stop. Too bad.
 	Added test for HRZ format.
 
