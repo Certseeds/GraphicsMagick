@@ -1,5 +1,8 @@
 2024-02-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/psd.c: If module gets built, but EnableBrokenCoders is
+	not true, then include empty registration functions.
+
 	* Makefile.am: Rename coders/acppfile.cpp to magick/acppfile.cpp
 	and include some in-progress changes which are necessary for the
 	build to still work.

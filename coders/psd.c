@@ -1518,6 +1518,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   return(image);
 }
+#endif /* if defined(EnableBrokenCoders) && EnableBrokenCoders */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1544,6 +1545,7 @@ static Image *ReadPSDImage(const ImageInfo *image_info,ExceptionInfo *exception)
 */
 ModuleExport void RegisterPSDImage(void)
 {
+#if defined(EnableBrokenCoders) && EnableBrokenCoders
   MagickInfo
     *entry;
 
@@ -1555,6 +1557,7 @@ ModuleExport void RegisterPSDImage(void)
   entry->module="PSD";
   entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
+#endif /* if defined(EnableBrokenCoders) && EnableBrokenCoders */
 }
 
 /*
@@ -1578,8 +1581,11 @@ ModuleExport void RegisterPSDImage(void)
 */
 ModuleExport void UnregisterPSDImage(void)
 {
+#if defined(EnableBrokenCoders) && EnableBrokenCoders
   (void) UnregisterMagickInfo("PSD");
+#endif /* if defined(EnableBrokenCoders) && EnableBrokenCoders */
 }
+#if defined(EnableBrokenCoders) && EnableBrokenCoders
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
