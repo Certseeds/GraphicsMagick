@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2023 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2002 - 2022 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -25,7 +25,7 @@
 %                                John Cristy                                  %
 %                                 July 1992                                   %
 %                              Jaroslav Fojtik                                %
-%                                   2022                                      %
+%                                 2022-2024                                   %
 %                                                                             %
 %                                                                             %
 %                                                                             %
@@ -1192,6 +1192,14 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
           tga_info.colormap_length=(unsigned short) image->colors;
           tga_info.colormap_size=24;
         }
+
+      switch(image->orientation)
+      {
+        case BottomLeftOrientation:	break;
+        case BottomRightOrientation: tga_info.attributes|=0x10; break;
+        case TopLeftOrientation:     tga_info.attributes|=0x20; break;
+        case TopRightOrientation:    tga_info.attributes|=0x30; break;
+      }
 
       if (image->logging)
         LogTGAInfo(&tga_info);
