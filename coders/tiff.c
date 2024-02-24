@@ -4536,6 +4536,7 @@ int FieldCount = 0;
          Tag==TIFFTAG_IMAGELENGTH || Tag==TIFFTAG_IMAGEWIDTH ||
          Tag==TIFFTAG_SAMPLESPERPIXEL || Tag==TIFFTAG_BITSPERSAMPLE || Tag==TIFFTAG_SAMPLEFORMAT ||
          Tag==TIFFTAG_STRIPOFFSETS || Tag==TIFFTAG_ROWSPERSTRIP || Tag==TIFFTAG_STRIPBYTECOUNTS ||
+         Tag==TIFFTAG_ORIENTATION ||		/* Orientation is handled different way. */
          Tag==TIFFTAG_XRESOLUTION || Tag==TIFFTAG_YRESOLUTION)
       {
           goto NextItem;	/* Banned TIFF tags that cannot be copyed from EXIF. */
