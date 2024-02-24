@@ -1195,10 +1195,10 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
 
       switch(image->orientation)
       {
-        case BottomLeftOrientation:  break;
-        case BottomRightOrientation: tga_info.attributes|=0x10; break;
-        case TopLeftOrientation:     tga_info.attributes|=0x20; break;
-        case TopRightOrientation:    tga_info.attributes|=0x30; break;
+        case BottomLeftOrientation:  break;				/* 01 Bottom left */
+        case BottomRightOrientation: tga_info.attributes|=0x10; break;	/* 01 Bottom right */
+        case TopLeftOrientation:     tga_info.attributes|=0x20; break;	/* 10 Top left */
+        case TopRightOrientation:    tga_info.attributes|=0x30; break;	/* 11 TopRight */
         default: break;
       }
 
@@ -1256,7 +1256,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
       tga_pixels = MagickAllocateResourceLimitedMemory(unsigned char *,count);
       if (tga_pixels == (unsigned char *) NULL)
         ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-      for (y=(long)(image->rows-1); y>=0; y--)
+      for (y=0; y<(long)(image->rows); y++)
         {
           p = AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
           if (p == (const PixelPacket *) NULL)

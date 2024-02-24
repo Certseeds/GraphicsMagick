@@ -5,6 +5,7 @@
 2024-02-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tga.c: Propagate orientation in TGA writer.
+	The linescan order must be reverted.
 
 2024-02-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
