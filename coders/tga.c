@@ -268,7 +268,6 @@ static int LoadHeaderTGA(TGAInfo *tga_info, Image *image)
 }
 
 
-
 static int ValidateHeaderTGA(const TGAInfo *tga_info)
 {
   if (((tga_info->image_type != TGAColormap) &&
@@ -358,7 +357,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
     base,
     flag,
     offset,
-    real,
+//    real,
     skip;
 
   unsigned int
@@ -689,17 +688,17 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
       base=0;
       flag=0;
       skip=MagickFalse;
-      real=0;
+//    real=0;
       index=0;
       runlength=0;
       offset=0;
       pixel.opacity=OpaqueOpacity;
       for (y=0; y < (long) image->rows; y++)
         {
-          real=offset;
-          if (((tga_info.attributes & 0x20) >> 5) == 0)
-            real=image->rows-real-1;
-          q=SetImagePixels(image,0,(long) real,image->columns,1);
+//          real=offset;
+//          if (((tga_info.attributes & 0x20) >> 5) == 0)
+//            real=image->rows-real-1;
+          q=SetImagePixels(image,0,(long)offset,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
           indexes=AccessMutableIndexes(image);
@@ -839,13 +838,15 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
             FIXME: Need to research what case was expected to be
             tested here.  This test case can never be true and so it
             is commented out for the moment.
+            J.Fojtik - Looks like some form of interlacing, untested.
+            this testcase could be true based on image data.
 
             if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 4)
             offset+=4;
             else
           */
           if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 2)
-            offset+=2;
+            offset+=2;		/* J.Fojtik - please note that this also never triggers! */
           else
             offset++;
           if (offset >= image->rows)
