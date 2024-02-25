@@ -376,6 +376,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
+  LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   image = AllocateImage(image_info);
   status = OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFalse)
@@ -1075,6 +1076,12 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   image_list_length=GetImageListLength(image);
+  LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
+  if(image->logging)
+    (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "%" MAGICK_SIZE_T_F "u image frames in list",
+                          (MAGICK_SIZE_T) image_list_length);
+
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFalse)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
@@ -1196,11 +1203,15 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
 
       switch(image->orientation)
       {
+        case UndefinedOrientation:
         case BottomLeftOrientation:  break;				/* 01 Bottom left */
         case BottomRightOrientation: tga_info.attributes|=0x10; break;	/* 01 Bottom right */
         case TopLeftOrientation:     tga_info.attributes|=0x20; break;	/* 10 Top left */
         case TopRightOrientation:    tga_info.attributes|=0x30; break;	/* 11 TopRight */
-        default: break;
+        default: if(image->logging)
+                     (void)LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Warning: Orientation %d is not supported, use -auto-orient switch.\n", (int)image->orientation);
+                 break;
       }
 
       if (image->logging)

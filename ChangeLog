@@ -3,6 +3,9 @@
 	* coders/tiff.c: Do not copy TIFFTAG_ORIENTATION from EXIF.
 	It is already handled by image->orientation variable.
 
+	* coders/tga.c: Emit warning to logs when orientation is 
+	not supported.
+
 2024-02-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tga.c (WriteTGAImage): Eliminate compiler warnings.
