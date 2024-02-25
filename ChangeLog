@@ -5,6 +5,9 @@
 
 	* coders/tga.c: Emit warning to logs when orientation is 
 	not supported.
+	FIED: Need to research what case was expected to be
+	tested here. This test case can never be true and so it
+	is commented out for the moment.
 
 2024-02-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

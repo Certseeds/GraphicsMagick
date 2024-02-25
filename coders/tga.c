@@ -835,21 +835,13 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                 ThrowReaderException(CorruptImageError,UnableToReadImageData,image);
               *q++=pixel;
             }
-          /*
-            FIXME: Need to research what case was expected to be
-            tested here.  This test case can never be true and so it
-            is commented out for the moment.
-            J.Fojtik - Looks like some form of interlacing, untested.
-            this testcase could be true based on image data.
-
-            if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 4)
-            offset+=4;
-            else
-          */
-          if (((unsigned char) (tga_info.attributes & 0xc0) >> 6) == 2)
-            offset+=2;		/* J.Fojtik - please note that this also never triggers! */
-          else
-            offset++;
+          switch((unsigned char) (tga_info.attributes & 0xc0) >> 6)
+            {				/* http://www.paulbourke.net/dataformats/tga/ */
+            case 3:			/* 11 = reserved. - process without interleaving. */
+            case 0: offset++; break;	/* 00 = non-interleaved. */
+            case 1: offset+=2;break;	/* 01 = two-way (even/odd) interleaving. */
+            case 2: offset+=4;break;	/* 10 = four way interleaving. */
+            }
           if (offset >= image->rows)
             {
               base++;
