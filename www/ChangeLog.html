@@ -38,6 +38,13 @@
 
 <div class="document" id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-02-25  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Do not copy TIFFTAG_ORIENTATION from EXIF.
+It is already handled by image-&gt;orientation variable.</p></li>
+</ul>
+</blockquote>
 <p>2024-02-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -47,7 +54,8 @@
 <p>2024-02-24  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c: Propagate orientation in TGA writer.</p></li>
+<li><p>coders/tga.c: Propagate orientation in TGA writer.
+The linescan order must be reverted.</p></li>
 </ul>
 </blockquote>
 <p>2024-02-23  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
