@@ -43,6 +43,11 @@
 <ul class="simple">
 <li><p>coders/tiff.c: Do not copy TIFFTAG_ORIENTATION from EXIF.
 It is already handled by image-&gt;orientation variable.</p></li>
+<li><p>coders/tga.c: Emit warning to logs when orientation is
+not supported.
+FIED: Need to research what case was expected to be
+tested here. This test case can never be true and so it
+is commented out for the moment.</p></li>
 </ul>
 </blockquote>
 <p>2024-02-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
