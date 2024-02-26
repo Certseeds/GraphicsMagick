@@ -292,7 +292,6 @@ ModuleExport void RegisterHRZImage(void)
   entry->decoder = (DecoderHandler)ReadHRZImage;
   entry->encoder = (EncoderHandler)WriteHRZImage;
   entry->seekable_stream = MagickFalse;
-  /* entry->seekable_stream=MagickTrue; /* FIXME: Requiring this is a bug */
   entry->description="HRZ: Slow scan TV";
   entry->module="HRZ";
   entry->adjoin=MagickFalse;
