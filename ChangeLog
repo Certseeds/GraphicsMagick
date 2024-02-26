@@ -1,3 +1,7 @@
+2024-02-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/hrz.c: Seekable blob should not be needed.
+
 2024-02-25  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c: Do not copy TIFFTAG_ORIENTATION from EXIF.
