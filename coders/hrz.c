@@ -104,8 +104,11 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   ldblk = (long)(3*width);
 
-  if(GetBlobSize(image)!=((magick_off_t) ((size_t)ldblk*height)))
-    ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  if(BlobIsSeekable(image))
+  {
+    if(GetBlobSize(image)!=((magick_off_t) ((size_t)ldblk*height)))
+      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+  }
 
   image->columns = width;
   image->rows = height;
@@ -288,7 +291,8 @@ ModuleExport void RegisterHRZImage(void)
   entry=SetMagickInfo("HRZ");
   entry->decoder = (DecoderHandler)ReadHRZImage;
   entry->encoder = (EncoderHandler)WriteHRZImage;
-  entry->seekable_stream=MagickTrue; /* FIXME: Requiring this is a bug */
+  entry->seekable_stream = MagickFalse;
+  /* entry->seekable_stream=MagickTrue; /* FIXME: Requiring this is a bug */
   entry->description="HRZ: Slow scan TV";
   entry->module="HRZ";
   entry->adjoin=MagickFalse;
