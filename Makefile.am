@@ -28,20 +28,6 @@ ACLOCAL_AMFLAGS = -I m4
 MODULECOMMONFLAGS = -no-undefined -export-symbols-regex ".*" -shared -module -avoid-version
 MODULECOMMONCPPFLAGS = $(AM_CPPFLAGS)
 
-# A dummy C++ file to force libtool linkage with the C++ compiler via simple inclusion.
-# FIXME: Need condition code to handle the cases where:
-#  C++ is not needed at all (don't include acppfile.cpp in compile at all)
-#  C++ is needed and a static build (acppfile.cpp added to libGraphicsMagick.a and utilities/gm)
-#  C++ is needed but a shared (non-module) build (acppfile.cpp added to only libGraphicsMagick.so)
-#  C++ is needed, but a shared modules build (acppfile.cpp added to only to C++-dependent modules)
-ACPPFILE = magick/acppfile.cpp
-
-# if WITH_MODULES # Building modules
-# if WITH_SHARED_LIBS # Building shared libraries
-# if HasFPX
-# if HasHEIF
-# if HasJXL
-
 # Coverity parameters
 # FIXME: Could use info from /etc/os-release, or output from
 # lsb_release.

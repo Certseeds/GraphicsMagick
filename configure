@@ -971,6 +971,9 @@ AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
 AM_V
+CSCOPE
+ETAGS
+CTAGS
 am__untar
 am__tar
 AMTAR
@@ -3939,6 +3942,20 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
+
+
+# Variables for tags utilities; see am/tags.am
+if test -z "$CTAGS"; then
+  CTAGS=ctags
+fi
+
+if test -z "$ETAGS"; then
+  ETAGS=etags
+fi
+
+if test -z "$CSCOPE"; then
+  CSCOPE=cscope
+fi
 
 
 
@@ -32311,8 +32328,8 @@ else
   MAGICK_DEP_LIBS="$LIBS"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
-printf "MAGICK_DEP_LIBS=${MAGICK_DEP_LIBS}\n"
-printf "MAGICK_EXTRA_DEP_LIBS=${MAGICK_EXTRA_DEP_LIBS}\n"
+#printf "MAGICK_DEP_LIBS=${MAGICK_DEP_LIBS}\n"
+#printf "MAGICK_EXTRA_DEP_LIBS=${MAGICK_EXTRA_DEP_LIBS}\n"
 
 
 
