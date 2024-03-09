@@ -4,6 +4,7 @@
 	force C++ linkage by introducing a C++ file for components which
 	should have C++ linkage.  A libtool bug, and an Automake weakness
 	prevented this from working as expected.
+	(UTILITIES_CLEANFILES): Clean-up utilities/tests/composite_tmp.msl.
 
 2024-02-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 

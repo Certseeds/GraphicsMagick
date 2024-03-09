@@ -57,6 +57,7 @@ UTILITIES_CLEANFILES = \
 	utilities/tests/*_out.miff \
 	utilities/tests/*_out.pnm \
 	utilities/tests/*_out.txt \
+	utilities/tests/composite_tmp.msl \
 	utilities/tests/demo*.miff \
 	utilities/tests/gm.core \
 	utilities/tests/core
