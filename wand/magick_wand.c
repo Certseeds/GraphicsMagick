@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2019 GraphicsMagick Group */
+/* Copyright (C) 2003-2024 GraphicsMagick Group */
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -6496,6 +6496,7 @@ WandExport unsigned int MagickPingImage(MagickWand *wand,const char *filename)
     return(False);
   AppendImageToList(&wand->images,images);
   wand->image=GetLastImageInList(wand->images);
+  wand->images=GetFirstImageInList(wand->image);
   return(True);
 }
 
@@ -7135,6 +7136,7 @@ WandExport unsigned int MagickReadImage(MagickWand *wand,const char *filename)
     return(False);
   AppendImageToList(&wand->images,images);
   wand->image=GetLastImageInList(wand->images);
+  wand->images=GetFirstImageInList(wand->image);
   return(True);
 }
 
@@ -7178,6 +7180,7 @@ WandExport unsigned int MagickReadImageBlob(MagickWand *wand,
     return(False);
   AppendImageToList(&wand->images,images);
   wand->image=GetLastImageInList(wand->images);
+  wand->images=GetFirstImageInList(wand->image);
   return(True);
 }
 
@@ -7224,6 +7227,7 @@ WandExport unsigned int MagickReadImageFile(MagickWand *wand,FILE *file)
     return(False);
   AppendImageToList(&wand->images,images);
   wand->image=GetLastImageInList(wand->images);
+  wand->images=GetFirstImageInList(wand->image);
   return(True);
 }
 

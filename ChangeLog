@@ -1,3 +1,13 @@
+2024-03-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* wand/magick_wand.c (MagickPingImage, MagickReadImage)
+	(MagickReadImageBlob, MagickReadImageFile): AppendImageToList()
+	now leaves the image pointer pointing to the end of the list.  The
+	Wand implementation expects that wand->images points to the
+	begining of the list.  Update wand->images to point to the
+	beginning of the list.  Resolves SourceForge issue #735
+	"[MagickWand] Potential regression when creating GIFs".
+
 2024-03-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/Makefile.am: Give up on the attempt to selectively

@@ -38,6 +38,18 @@
 
 <div class="document" id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-03-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>wand/magick_wand.c (MagickPingImage, MagickReadImage)
+(MagickReadImageBlob, MagickReadImageFile): AppendImageToList()
+now leaves the image pointer pointing to the end of the list.  The
+Wand implementation expects that wand-&gt;images points to the
+begining of the list.  Update wand-&gt;images to point to the
+beginning of the list.  Resolves SourceForge issue #735
+&quot;[MagickWand] Potential regression when creating GIFs&quot;.</p></li>
+</ul>
+</blockquote>
 <p>2024-03-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
