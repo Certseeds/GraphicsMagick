@@ -9,7 +9,7 @@ GraphicsMagick Types
 .. contents::
   :local:
 
-.. _quantize: /quantize.html
+.. _quantize: quantize.html
 
 
 AffineMatrix
@@ -1253,7 +1253,7 @@ ImageType indicates the type classification of the image.
    +------------------------------+------------------------------------------------------------------+
    |GrayscaleType                 |Grayscale image                                                   |
    +------------------------------+------------------------------------------------------------------+
-   |GrayscaleMatteType            |Grayscale image with opcaity                                      |
+   |GrayscaleMatteType            |Grayscale image with opacity                                      |
    +------------------------------+------------------------------------------------------------------+
    |PaletteType                   |Indexed color (palette) image                                     |
    +------------------------------+------------------------------------------------------------------+
