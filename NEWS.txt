@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to January 28, 2024
+This file was last updated to reflect changes up to March 16, 2024
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -83,6 +83,11 @@ New Features:
 * HEIF: Call heif_init() and heif_deinit() if they are
   available. Support setting image width limit.
 
+* HRZ: Added support for Slow scan TV format.
+
+* JPEG: Added support for reading and writing lossy or lossless 12
+  bits, and lossless 16-bits using libjpeg-turbo-3.0
+
 * JXL: Improve JXL reader/writer exception information.
 
 * TIFF: Remove miniswhite/minisblack prohibitions when using Group3
@@ -100,6 +105,8 @@ API Updates:
   realloc() fails.
 
 Windows Delegate Updates/Additions:
+
+* libjpeg: Update bundled IJG JPEG sources to version 9f.
 
 * libtiff: Update bundled libtiff sources to version 4.5.1.
 

@@ -1,5 +1,7 @@
 2024-03-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* NEWS.txt: Update the news.
+
 	* www/api/types.rst: Fix spelling errors and out-of-date
 	information in types.rst.  Resolves SourceForge patch #80 "Update
 	types.rst documentation".

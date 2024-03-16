@@ -41,7 +41,7 @@
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
 <!-- See http://docutils.sourceforge.net/rst.html for details. -->
-<p>This file was last updated to reflect changes up to January 28, 2024</p>
+<p>This file was last updated to reflect changes up to March 16, 2024</p>
 <p>Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
 ChangeLog file, and/or the Mercurial changesets, for full details.</p>
@@ -153,6 +153,9 @@ may be applied while still achieving successful operation.</p></li>
 <li><p>BMP: Support reading 48 bits-per-pixel.</p></li>
 <li><p>HEIF: Call heif_init() and heif_deinit() if they are
 available. Support setting image width limit.</p></li>
+<li><p>HRZ: Added support for Slow scan TV format.</p></li>
+<li><p>JPEG: Added support for reading and writing lossy or lossless 12
+bits, and lossless 16-bits using libjpeg-turbo-3.0</p></li>
 <li><p>JXL: Improve JXL reader/writer exception information.</p></li>
 <li><p>TIFF: Remove miniswhite/minisblack prohibitions when using Group3
 and Group4 compression in order to allow using inverted photometric
@@ -169,6 +172,7 @@ realloc() fails.</p></li>
 </ul>
 <p>Windows Delegate Updates/Additions:</p>
 <ul class="simple">
+<li><p>libjpeg: Update bundled IJG JPEG sources to version 9f.</p></li>
 <li><p>libtiff: Update bundled libtiff sources to version 4.5.1.</p></li>
 </ul>
 <p>Build Changes:</p>
