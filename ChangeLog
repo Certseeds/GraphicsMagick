@@ -1,5 +1,9 @@
 2024-03-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* VisualMagick/tests/runtest.bat: Remove tests for format
+	identifiers which are not even images, or require special add-on
+	software, or could otherwise not work.
+
 	* tests/constitute.c: Handle capital 'Y' and 'K' while checking if
 	a CMYK map is specified.
 
