@@ -2,6 +2,7 @@
 set TESTS=0
 set PROBLEMS=0
 set TYPE=NONE
+set MAGICK_DEBUG=exception
 set exedir=..\bin\
 
 if exist %exedir%rwblob.exe goto _binaryexists
