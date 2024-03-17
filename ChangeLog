@@ -1,3 +1,12 @@
+2024-03-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* VisualMagick/bin/log-eventlog.mgk: Logger configuration suitable
+	for non-console apps (was log.mgk).
+
+	* VisualMagick/bin/log.mgk: Change default configuration to be
+	suitable for 'console' apps with working 'stderr', such as used by
+	the test suite.
+
 2024-03-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update the news.
