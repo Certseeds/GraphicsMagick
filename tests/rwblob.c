@@ -11,7 +11,7 @@
  * any data corruption problems. This does not verify that the image is
  * correct, only that encode/decode process is repeatable.
  *
- * Written by Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
+ * Written by Bob Friesenhahn <bfriesen@GraphicsMagick.org>
  *
  * The image returned by both reads must be identical in order for the
  * test to pass.

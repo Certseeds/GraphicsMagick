@@ -1,5 +1,8 @@
 2024-03-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* tests/constitute.c: Handle capital 'Y' and 'K' while checking if
+	a CMYK map is specified.
+
 	* VisualMagick/tests/run_constitute.bat: Re-generate test script
 	based on what current tests/constitute.tap does.
 
