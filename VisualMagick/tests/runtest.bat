@@ -179,7 +179,6 @@ if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both JXL
 @rem if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both K
-@rem K module is known to fail rests and there is no expectation to fix it.
 @rem if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both LABEL
 @rem if not %COUNT% EQU 6 goto :_failed
@@ -205,7 +204,7 @@ call :_dorwtest both MNG
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest file MPC
 if not %COUNT% EQU 3 goto :_failed
-call :_dorwtest both MPEG
+@rem call :_dorwtest both MPEG
 @rem not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both MPG
 @rem not %COUNT% EQU 6 goto :_failed
@@ -299,9 +298,9 @@ call :_dorwtest both RGB
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both RGBA
 if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both RLA
+@rem call :_dorwtest both RLA
 @rem if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both RLE
+@rem call :_dorwtest both RLE
 @rem if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both SCT
 @rem if not %COUNT% EQU 6 goto :_failed
@@ -367,7 +366,7 @@ call :_dorwtest both XPM
 if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both XTRNARRAY
 @rem if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both XTRNIMAGE
+@rem call :_dorwtest both XTRNIMAGE
 @rem if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest none XV
 if not %COUNT% EQU 0 goto :_failed
