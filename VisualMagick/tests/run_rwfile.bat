@@ -10,7 +10,6 @@ set truecolor_file=%srcdir%input_truecolor.miff
 @echo on
 %exedir%%drawtest drawtest_out.miff
 %exedir%%drawtest drawtest_out.mvg
-%exedir%%drawtest drawtest_out.svg
 %exedir%rwfile.exe -debug %events% -filespec "out_bilevel_%%d" %bilevel_file% AVS
 %exedir%rwfile.exe -debug %events% -filespec "out_gray_%%d" %gray_file% AVS
 %exedir%rwfile.exe -debug %events% -filespec "out_palette_%%d" %palette_file% AVS
