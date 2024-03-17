@@ -1048,7 +1048,7 @@ consisting of one or more of the following domains:
 <tt>Resource</tt>,
 <tt>TemporaryFile</tt>,
 <tt>Transform</tt>,
-<tt>User</tt>.
+<tt>User</tt>,
 <tt>Warning</tt>, or
 <tt>X11</tt>,
 For example, to log cache and blob events, use</pp>
