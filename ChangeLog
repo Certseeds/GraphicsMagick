@@ -1,5 +1,8 @@
 2024-03-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* VisualMagick/tests/run_constitute.bat: Re-generate test script
+	based on what current tests/constitute.tap does.
+
 	* VisualMagick/bin/log-eventlog.mgk: Logger configuration suitable
 	for non-console apps (was log.mgk).
 
