@@ -1,6 +1,7 @@
 @echo off
 set exedir=..\bin\
 set srcdir=..\..\tests\
+@echo Running constitute tests...
 @echo on
 %exedir%constitute.exe -storagetype char %srcdir%input_truecolor.miff bgr
 %exedir%constitute.exe -storagetype char %srcdir%input_truecolor.miff bgro
