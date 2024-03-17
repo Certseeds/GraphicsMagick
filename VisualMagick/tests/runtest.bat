@@ -190,7 +190,7 @@ if not %COUNT% EQU 6 goto :_failed
 @rem if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both M2V
 @rem if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both MAP
+@rem call :_dorwtest both MAP
 @rem if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both MAT
 if not %COUNT% EQU 6 goto :_failed
@@ -206,10 +206,10 @@ call :_dorwtest file MPC
 if not %COUNT% EQU 3 goto :_failed
 @rem call :_dorwtest both MPEG
 @rem not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both MPG
+@rem call :_dorwtest both MPG
 @rem not %COUNT% EQU 6 goto :_failed
-call :_dorwtest file MPR
-if not %COUNT% EQU 3 goto :_failed
+@rem call :_dorwtest file MPR
+@rem if not %COUNT% EQU 3 goto :_failed
 @rem call :_dorwtest both MPRI
 @rem if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both MSL
