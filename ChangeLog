@@ -1,3 +1,14 @@
+2024-03-21  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news.
+
+	* www/index.rst: GraphicsMagick is released on March 23, 2024.
+
+	* www/Changes.rst: 1.3.43 is released in 2024.
+
+	* version.sh: Update library versioning in preparation for
+	release.
+
 2024-03-17  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat: Enable additional logging

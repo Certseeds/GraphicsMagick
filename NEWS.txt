@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to March 16, 2024
+This file was last updated to reflect changes up to March 23, 2024
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -19,16 +19,25 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.43 (??? ???, 2024)
+1.3.43 (March 23, 2024)
 ===========================
 
 Special Issues:
+
+* Due to my Internet provider (which I have used since 2001) failing
+  to support the antiquated technology which hosts GraphicsMagick.org,
+  and the simple.dallas.tx.us domain I have used since 1994, these
+  services are now failing.  To make matters worse, due to dramatic
+  changes in US domain registration in recent years, I do not know how
+  to update the DNS registrations for simple.dallas.tx.us and my
+  historical email address may be lost.  As time permits,
+  GraphicsMagick.org will be re-hosted in the cloud at Linode.
 
 * GraphicsMagick really does need some additional productive
   volunteers.  For several years now, the burden has entirely been on
   me (Bob Friesenhahn).  I have been sheparding the project for 22
   years already (and contributed to ImageMagick and GraphicsMagick
-  combined for 27 years already).  It is not reasonable to expect
+  combined for 28 years already).  It is not reasonable to expect
   someone with a full time job (and expecting to retire in a few
   years) to do all of the work.
 
@@ -112,17 +121,10 @@ Windows Delegate Updates/Additions:
 
 Build Changes:
 
-* Since it seems that OSDN has mostly died, Hepapod is now used to
-  provide a redundant https-capable Hg service and may provide
-  services that SourceForge does not offer.  Hg checkouts may now be
-  made from "https://foss.heptapod.net/graphicsmagick/graphicsmagick".
-
-* Autotools-based build: When libraries dependend upon are implemented
-  in C++ (e.g. JXL, libheif dependencies) the only portable way to
-  assure correct operation is to link using the C++ compiler.  This
-  particularly applies for static builds.  Therefore, an effort is
-  made to link using the C++ compiler when deemed necessary.  The
-  method used to use the C++ compiler as the linker is still in flux.
+* Since it seems that OSDN has died, Hepapod is now used to provide a
+  redundant https-capable Hg service and may provide services that
+  SourceForge does not offer.  Hg checkouts may now be made from
+  "https://foss.heptapod.net/graphicsmagick/graphicsmagick".
 
 * Autotools-based build: pkg-config provided data is now used to the
   maximal extent possible.  However, if pkg-config fails to provide
@@ -137,7 +139,8 @@ Build Changes:
 * Autotools-based build: No longer search for (and use) libtrio by
   default.  The user now needs to request using it.
 
-* Autotools-based build: Fixes for autoconf-2.72.
+* Autotools-based build: Fixes for autoconf-2.72.  Bootstrapped using
+  Autoconf 2.69, Automake 1.16.5, and Libtool 2.4.7.
 
 * oss-fuzz build: The fuzzing/oss-fuzz-build.sh is re-written in order
   to support almost all possible dependency libraries.  For example,
