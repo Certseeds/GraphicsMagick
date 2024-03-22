@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -285,9 +285,9 @@ XYZTransformPackets(void *mutable_data,          /* User provided mutable data *
       y_index = ScaleQuantumToMap(pixels[i].green);
       z_index = ScaleQuantumToMap(pixels[i].blue);
 
-      r = xform->x[x_index].x + xform->y[y_index].x + xform->z[z_index].x + xform->primary_info.x;
-      g = xform->x[x_index].y + xform->y[y_index].y + xform->z[z_index].y + xform->primary_info.y;
-      b = xform->x[x_index].z + xform->y[y_index].z + xform->z[z_index].z + xform->primary_info.z;
+      r = (double) (xform->x[x_index].x + xform->y[y_index].x + xform->z[z_index].x + xform->primary_info.x);
+      g = (double) (xform->x[x_index].y + xform->y[y_index].y + xform->z[z_index].y + xform->primary_info.y);
+      b = (double) (xform->x[x_index].z + xform->y[y_index].z + xform->z[z_index].z + xform->primary_info.z);
 
       r = r < 0.0 ? 0.0 : r > MaxMapDouble ? MaxMapDouble : (r + 0.5);
       g = g < 0.0 ? 0.0 : g > MaxMapDouble ? MaxMapDouble : (g + 0.5);
@@ -634,8 +634,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             I and Q, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=((MaxMap+1)/2);
-          xform.primary_info.z=((MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -738,8 +738,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             Cb and Cr, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=((MaxMap+1)/2);
-          xform.primary_info.z=((MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -771,8 +771,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             Cb and Cr, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=((MaxMap+1)/2);
-          xform.primary_info.z=((MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -847,8 +847,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             I and Q, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=((MaxMap+1)/2);
-          xform.primary_info.z=((MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -880,8 +880,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             Pb and Pr, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.
           */
-          xform.primary_info.y=((MaxMap+1)/2);
-          xform.primary_info.z=((MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -914,8 +914,8 @@ MagickExport MagickPassFail RGBTransformImage(Image *image,
             U and V, normally -0.5 through 0.5, are normalized to the range 0
             through MaxRGB.  Note that U = 0.493*(B-Y), V = 0.877*(R-Y).
           */
-          xform.primary_info.y=((MaxMap+1)/2);
-          xform.primary_info.z=((MaxMap+1)/2);
+          xform.primary_info.y=(float) ((MaxMap+1)/2);
+          xform.primary_info.z=(float) ((MaxMap+1)/2);
 #if MaxMap > 255
 #  if defined(HAVE_OPENMP)
 #    pragma omp parallel for schedule(static,64)
@@ -1293,9 +1293,9 @@ RGBTransformPackets(void *mutable_data,         /* User provided mutable data */
       g_index = ScaleQuantumToMap(pixels[i].green);
       b_index = ScaleQuantumToMap(pixels[i].blue);
 
-      r = xform->r[r_index].r + xform->g[g_index].r + xform->b[b_index].r;
-      g = xform->r[r_index].g + xform->g[g_index].g + xform->b[b_index].g;
-      b = xform->r[r_index].b + xform->g[g_index].b + xform->b[b_index].b;
+      r = (double) (xform->r[r_index].r + xform->g[g_index].r + xform->b[b_index].r);
+      g = (double) (xform->r[r_index].g + xform->g[g_index].g + xform->b[b_index].g);
+      b = (double) (xform->r[r_index].b + xform->g[g_index].b + xform->b[b_index].b);
 
       r = r < 0.0 ? 0.0 : r > MaxMapDouble ? MaxMapDouble : (r + 0.5);
       g = g < 0.0 ? 0.0 : g > MaxMapDouble ? MaxMapDouble : (g + 0.5);

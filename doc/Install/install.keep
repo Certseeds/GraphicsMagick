@@ -144,9 +144,9 @@ ftp://ftp.gnu.org/gnu/gzip/gzip-1.2.4a.tar</a><br>
 <p>
   Use 'configure' to automatically configure, build, and install
   ImageMagick. The configure script may be executed from the ImageMagick
-  source directory (e.g ./configure) or from a seperate build directory by
+  source directory (e.g ./configure) or from a separate build directory by
   specifying the full path to configure (e.g.
-  /src/ImageMagick-5.4.8/configure). The advantage of using a seperate
+  /src/ImageMagick-5.4.8/configure). The advantage of using a separate
   build directory is that multiple ImageMagick builds may share the same
   ImageMagick source directory while allowing each build to use a unique
   set of options.
@@ -181,7 +181,7 @@ ftp://ftp.gnu.org/gnu/gzip/gzip-1.2.4a.tar</a><br>
 
 <p>
   Options which should be common to packages installed under the same
-  directory heirarchy may be supplied via a 'config.site' file located
+  directory hierarchy may be supplied via a 'config.site' file located
   under the installation prefix via the path ${prefix}/share/config.site
   where ${prefix} is the installation prefix.  This file is used for all
   packages installed under that prefix.  This is an example config.site
@@ -255,7 +255,7 @@ ftp://ftp.gnu.org/gnu/gzip/gzip-1.2.4a.tar</a><br>
   Optional Packages:<BR>
 <PRE>
    --with-modules          enable support for dynamically loadable modules
-   --with-cache            set pixel cache threshhold (defaults to available memory)
+   --with-cache            set pixel cache threshold (defaults to available memory)
    --without-threads       disable threads support
 </PRE>
 <p>
@@ -407,7 +407,7 @@ ftp://ftp.gnu.org/gnu/gzip/gzip-1.2.4a.tar</a><br>
       saving full paths to programs.
 
   <LI> --without-threads: By default, the ImageMagick library is compiled
-      with multi-thread support.  If this is undesireable, then specify
+      with multi-thread support.  If this is undesirable, then specify
       --without-threads.
 
   <LI> --with-cache: Specify a different image pixel cache threshold
@@ -962,7 +962,7 @@ http://www.libtiff.org/</a><br>
       must be explicitly enabled by editing libtiff Makefiles. The TIFF
       library no longer includes support for LZW compression due to patent
       issues. If you need to use LZW compression, support is available via
-      a seperate LZW compression kit (a patch) at the sites listed above.
+      a separate LZW compression kit (a patch) at the sites listed above.
 </PRE>
 
 <UL>

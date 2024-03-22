@@ -20,13 +20,13 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # Directory where autotools helper scripts lives.
 AC_CONFIG_AUX_DIR([config])
-
 # Include the TAP driver
 AC_REQUIRE_AUX_FILE([tap-driver.sh])
 
 #
 # Save initial user-tunable values
 #
+#printf "LIBS=${LIBS}\n"
 LIBS_USER=$LIBS
 for var in CC CFLAGS  CPPFLAGS CXX CXXCPP LDFLAGS LIBS ; do
   eval isset=\${$var+set}
@@ -41,6 +41,7 @@ AC_SUBST(DISTCHECK_CONFIG_FLAGS)
 . ${srcdir}/version.sh
 
 echo "configuring ${PACKAGE_NAME} ${PACKAGE_VERSION}${PACKAGE_VERSION_ADDENDUM}"
+
 dnl Compute the canonical host (run-time) system type variable
 AC_CANONICAL_HOST
 
@@ -330,17 +331,28 @@ then
   fi
 fi
 
+# Search for the pkg-config tool and set the PKG_CONFIG variable to first found in the path.
+PKG_PROG_PKG_CONFIG()
+
 #
 # Determine options necessary to enable OpenMP support
 #
 # Sets Set the OPENMP_CFLAGS / OPENMP_CXXFLAGS / OPENMP_FFLAGS
 # variable to these options.
+#
+
+# https://clang.llvm.org/docs/UsersManual.html#openmp-features
+# https://clang.llvm.org/docs/OpenMPSupport.html
+#
+# Clang needs -fopenmp=libomp "Intel OpenMP" or CFLAGS=-fopenmp "GNU OpenMP".
+# FIXME: AC_OPENMP() does not set OPENMP_CFLAGS for Clang 13 on Linux!
 
 AC_OPENMP([C])
 CFLAGS="$OPENMP_CFLAGS $CFLAGS"
 #CXXFLAGS="$OPENMP_CXXFLAGS $CXXFLAGS"
 #LDFLAGS="$LDFLAGS $OPENMP_CFLAGS"
 AC_SUBST([OPENMP_CFLAGS])
+AC_CHECK_DECL([_OPENMP],[OPENMP_ENABLED='yes'],[OPENMP_ENABLED='no'],[])
 
 # Allow the user to disable use of OpenMP where algorithms sometimes run slower.
 AC_ARG_ENABLE([openmp-slow],
@@ -385,7 +397,7 @@ AC_FUNC_FSEEKO
 LFS_CPPFLAGS=''
 if test "$enable_largefile" != no
 then
-  if test "$ac_cv_sys_file_offset_bits" != 'no'
+  if test "$ac_cv_sys_file_offset_bits" != 'no' && test -n "$ac_cv_sys_file_offset_bits"
   then
     LFS_CPPFLAGS="$LFS_CPPFLAGS -D_FILE_OFFSET_BITS=$ac_cv_sys_file_offset_bits"
   fi
@@ -779,13 +791,13 @@ if test "$with_tiff" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-tiff=$with_tiff "
 fi
 
-# Disable TRIO.
+# Enable TRIO.
 AC_ARG_WITH([trio],
-              AS_HELP_STRING([--without-trio],
-                             [disable TRIO support]),
+              AS_HELP_STRING([--with-trio],
+                             [enable TRIO support]),
               [with_trio=$withval],
-              [with_trio='yes'])
-if test "$with_trio" != 'yes' ; then
+              [with_trio='no'])
+if test "$with_trio" != 'no' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-trio=$with_trio "
 fi
 
@@ -1470,8 +1482,112 @@ case "${build_os}" in
 esac
 AC_DEFINE_UNQUOTED([X11ConfigurePath],["X11ConfigurePath"],[Location of X11 configure files])
 
+
+# Shell function to distribute pkg-config derived PKG_FLAGS,
+# PKG_CFLAGS to Autoconf standard compilation flags (CPPFLAGS, CFLAGS,
+# LDFLAGS) while also deduplicating values.  The final result is
+# visible via the configuration summary.
 #
-# Find Posix threads library
+# pkg_config_to_flags(pkg_name,pkg_libs,pkg_cflags)
+pkg_config_to_flags() {
+    #set -x
+    pkg_name=$1
+    pkg_libs=$2
+    pkg_cflags=$3
+
+    #printf "pkg_name=${pkg_name}\n"
+    #printf "pkg_libs=${pkg_libs}\n"
+    #printf "pkg_cflags=${pkg_cflags}\n"
+
+    for token in $pkg_cflags
+    do
+        case $token in
+            -I* | -D*)
+                # Add token to CPPFLAGS if not already present
+                add=yes;
+                for test_token in $CPPFLAGS
+                do
+                    if test $token = $test_token
+                    then
+                        add=no
+                        break
+                    fi
+                done
+                if test $add = yes
+                then
+                    CPPFLAGS="$CPPFLAGS ${token}"
+                fi
+                ;;
+            *)
+                # Discard
+                ;;
+        esac
+    done
+    # -L* | -Wl,* | -R*)
+    for token in $pkg_libs
+    do
+        case $token in
+            -L* | -Wl,* | -R*)
+                # Add token to LDFLAGS if not already present
+                add=yes;
+                for test_token in $LDFLAGS
+                do
+                    if test $token = $test_token
+                    then
+                        add=no
+                        break
+                    fi
+                done
+                if test $add = yes
+                then
+                    LDFLAGS="$LDFLAGS $token"
+                fi
+                ;;
+            *)
+                ;;
+       esac
+    done
+    # -l
+    reverse_pkg_libs=""
+    for token in $pkg_libs
+    do
+        reverse_pkg_libs="$token $reverse_pkg_libs"
+    done
+    for token in $reverse_pkg_libs
+    do
+        case $token in
+            -l*)
+                # Add token to LIBS if not already present
+                add=yes;
+                for test_token in $LIBS
+                do
+                    if test $token = $test_token
+                    then
+                        add=no
+                        break
+                    fi
+                done
+                if test $add = yes
+                then
+                    LIBS="$token $LIBS"
+                fi
+                ;;
+            *)
+                # Discard
+                ;;
+       esac
+    done
+
+    #printf "CPPFLAGS=${CPPFLAGS}\n"
+    #printf "LDFLAGS=${LDFLAGS}\n"
+    #printf "LIBS=${LIBS}\n\n"
+
+    #set +x
+    return $?
+}
+
+#
+# Find Posix threads library (no pkg-config support!)
 #
 LIB_THREAD=''
 if test "$with_threads" != 'no' && test "$have_threads" = 'yes'
@@ -1498,7 +1614,7 @@ fi
 AC_SUBST([LIB_THREAD])
 
 #
-# Check for Google perftools tcmalloc library
+# Check for Google perftools tcmalloc library (no pkg-config support!)
 #
 have_tcmalloc='no'
 LIB_TCMALLOC=''
@@ -1532,7 +1648,7 @@ AM_CONDITIONAL([HasTCMALLOC], [test "$have_tcmalloc" = 'yes'])
 AC_SUBST([LIB_TCMALLOC])
 
 #
-# Check for Solaris-derived libumem
+# Check for Solaris-derived libumem (no pkg-config support!)
 #
 have_umem='no'
 LIB_UMEM=''
@@ -1566,7 +1682,7 @@ AM_CONDITIONAL([HasUMEM],[test "$have_umem" = 'yes'])
 AC_SUBST([LIB_UMEM])
 
 #
-# Check for Solaris-derived mtmalloc library
+# Check for Solaris-derived mtmalloc library (no pkg-config support!)
 #
 have_mtmalloc='no'
 LIB_MTMALLOC=''
@@ -1600,10 +1716,10 @@ AM_CONDITIONAL([HasMTMALLOC], [test "$have_mtmalloc" = 'yes'])
 AC_SUBST([LIB_MTMALLOC])
 
 #
-# Find OpenMP library
+# Find OpenMP library (no pkg-config support!)
 #
 LIB_OMP=''
-if test "${OPENMP_CFLAGS}x" != 'x'
+if test "${OPENMP_ENABLED}" == 'yes'
 then
   if test "${GCC}" = "yes"
   then
@@ -1619,7 +1735,7 @@ then
         AC_CHECK_LIB([omp],[GOMP_parallel_start],[LIB_OMP="-lomp"],,)
       fi
     fi
-    # GCC
+    # GCC/Clang
     if test "x$LIB_OMP" = x ; then
       AC_CHECK_LIB([gomp],[GOMP_parallel_start],[LIB_OMP="-lgomp"],,)
     fi
@@ -1630,32 +1746,38 @@ then
     fi
     # AIX xlc
     if test "x$LIB_OMP" = x ; then
-    AC_CHECK_LIB([xlsmp],[_xlsmpFlush],[LIB_OMP="-lxlsmp"],,)
+      AC_CHECK_LIB([xlsmp],[_xlsmpFlush],[LIB_OMP="-lxlsmp"],,)
     fi
     # SGI IRIX 6.5 MIPSpro C/C++
     if test "x$LIB_OMP" = x ; then
-    AC_CHECK_LIB([mp],[mp_destroy],[LIB_OMP="-lmp"],,)
+      AC_CHECK_LIB([mp],[mp_destroy],[LIB_OMP="-lmp"],,)
     fi
   fi
-  LIBS="$LIB_OMP $LIBS"
+  #LIBS="$LIB_OMP $LIBS"
+  AC_MSG_CHECKING([for OpenMP library ])
+  if test "x$LIB_OMP" = x ; then
+    AC_MSG_RESULT([not found!])
+  else
+    AC_MSG_RESULT([${LIB_OMP}])
+  fi
 fi
 AC_SUBST([LIB_OMP])
 
 #
-# Find math library
+# Find math library (no pkg-config support!)
 #
 LIB_MATH=''
-AC_CHECK_LIB([m],[sqrt],[LIB_MATH="-lm"],,)
+AC_CHECK_LIB([m],[sqrt],[LIB_MATH='-lm'],,)
 LIBS="$LIB_MATH $LIBS"
+#printf "LIBS=${LIBS}\n"
 AC_SUBST([LIB_MATH])
-
 
 #
 # If vsnprintf is missing, look for TRIO
 #
 have_trio='no'
 LIB_TRIO=''
-if test "$ac_cv_func_vsnprintf" != 'yes' && test "$with_trio" != 'no'
+if test "$ac_cv_have_decl_vsnprintf" != 'yes' && test "$with_trio" != 'no'
 then
    AC_MSG_CHECKING([for TRIO vsnprintf replacement])
    AC_CHECK_LIB([trio],[trio_vsnprintf],[have_trio='yes'],,)
@@ -1673,7 +1795,7 @@ AC_SUBST([LIB_TRIO])
 
 
 #
-# Optionally check for libltdl if using it is still enabled
+# Optionally check for libltdl if using it is still enabled (no pkg-config support!)
 #
 # Only use/depend on libtdl if we are building modules.  This is a
 # change from previous releases (prior to 1.3.17) which supported
@@ -1712,21 +1834,37 @@ then
   fi
 fi
 AM_CONDITIONAL([WITH_LTDL],[test "$have_ltdl" != 'no'])
-
 #
 # Check for ZLIB
 #
 have_zlib='no'
 LIB_ZLIB=''
-dnl PNG requires zlib so enable zlib check if PNG is requested
+dnl PNG requires zlib 'libz' so enable zlib check if PNG is requested
 if test "$with_zlib" != 'no' || test "$with_png" != 'no'
 then
   AC_MSG_CHECKING([for ZLIB support ])
   AC_MSG_RESULT()
 
+  OLD_CPPFLAGS=$CPPFLAGS
+  OLD_LDFLAGS=$LDFLAGS
+  OLD_LIBS=$LIBS
   failed=0
   passed=0
-  # PKG_CHECK_MODULES([ZLIB], [zlib], [], [])
+  PKG_CHECK_MODULES([ZLIB], [zlib], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+  if test $failed -eq 0 ; then
+    if test -n "$VERBOSE"
+    then
+      printf "ZLIB_LIBS=${ZLIB_LIBS}\n"
+      printf "ZLIB_CFLAGS=${ZLIB_CFLAGS}\n"
+    fi
+    pkg_config_to_flags 'zlib' "${ZLIB_LIBS}" "${ZLIB_CFLAGS}"
+  else
+    if test -n "${ZLIB_PKG_ERRORS}"
+    then
+      printf "${ZLIB_PKG_ERRORS}\n"
+    fi
+    failed=0
+  fi
   AC_CHECK_HEADER([zconf.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
   AC_CHECK_HEADER([zlib.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
   AC_CHECK_LIB([z],[compress],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
@@ -1742,12 +1880,18 @@ then
     then
       AC_MSG_RESULT([no -- some components failed test])
       have_zlib='no (failed tests)'
+      ZLIB_LIBS=''
+      ZLIB_CFLAGS=''
+      CPPFLAGS=$OLD_CPPFLAGS
+      LDFLAGS=$OLD_LDFLAGS
+      LIBS=$OLD_LIBS
     else
       LIB_ZLIB='-lz'
-      LIBS="$LIB_ZLIB $LIBS"
+      pkg_config_to_flags 'zlib' "${LIB_ZLIB}" ''
       AC_DEFINE([HasZLIB],[1],[Define if you have zlib compression library])
       AC_MSG_RESULT([yes])
       have_zlib='yes'
+      #printf "LIBS=${LIBS}\n"
     fi
   else
     AC_MSG_RESULT([no])
@@ -1757,7 +1901,8 @@ AM_CONDITIONAL([HasZLIB],[test "$have_zlib" = 'yes'])
 AC_SUBST([LIB_ZLIB])
 
 #
-# Check for BZLIB
+# Check for BZLIB (no pkg-config support!)
+#
 #
 have_bzlib='no'
 if test "$with_bzlib" != 'no'
@@ -1818,9 +1963,26 @@ if test "$with_lzma" != 'no'
 then
   AC_MSG_CHECKING([for LZMA support ])
   AC_MSG_RESULT()
-  # PKG_CHECK_MODULES([LZMA], [liblzma], [], [])
+  OLD_CPPFLAGS=$CPPFLAGS
+  OLD_LDFLAGS=$LDFLAGS
+  OLD_LIBS=$LIBS
   failed=0
   passed=0
+  PKG_CHECK_MODULES([LZMA], [liblzma], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+  if test $failed -eq 0 ; then
+    if test -n "$VERBOSE"
+    then
+      printf "LZMA_LIBS=${LZMA_LIBS}\n"
+      printf "LZMA_CFLAGS=${LZMA_CFLAGS}\n"
+    fi
+    pkg_config_to_flags 'liblzma' "${LZMA_LIBS}" "${LZMA_CFLAGS}"
+  else
+    if test -n "${LZMA_PKG_ERRORS}"
+    then
+      printf "${LZMA_PKG_ERRORS}\n"
+    fi
+    failed=0
+  fi
   AC_CHECK_HEADER([lzma.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
   AC_CHECK_LIB([lzma],[lzma_code],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
   AC_MSG_CHECKING([if LZMA package is complete])
@@ -1830,9 +1992,20 @@ then
     then
       AC_MSG_RESULT([no -- some components failed test])
       have_lzma='no (failed tests)'
+      CPPFLAGS=$OLD_CPPFLAGS
+      LDFLAGS=$OLD_LDFLAGS
+      LIBS=$OLD_LIBS
     else
-      LIB_LZMA='-llzma'
-      LIBS="$LIB_LZMA $LIBS"
+      LIB_LZMA=''
+      for token in ${LZMA_LIBS}
+      do
+        case $token in
+          -l*)
+            LIB_LZMA="$LIB_LZMA $token"
+            ;;
+        esac
+      done
+      pkg_config_to_flags 'liblzma' "${LIB_LZMA}" ''
       AC_DEFINE([HasLZMA],[1],[Define if you have lzma compression library])
       AC_MSG_RESULT([yes])
       have_lzma='yes'
@@ -1855,7 +2028,25 @@ then
   AC_MSG_RESULT()
   failed=0
   passed=0
-  # PKG_CHECK_MODULES([ZSTD], [libzstd], [], [])
+  OLD_CPPFLAGS=$CPPFLAGS
+  OLD_LDFLAGS=$LDFLAGS
+  OLD_LIBS=$LIBS
+  PKG_CHECK_MODULES([ZSTD], [libzstd], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+  if test $failed -eq 0
+  then
+    if test -n "$VERBOSE"
+    then
+      printf "ZSTD_LIBS=${ZSTD_LIBS}\n"
+      printf "ZSTD_CFLAGS=${ZSTD_CFLAGS}\n"
+    fi
+    pkg_config_to_flags 'libzstd' "${ZSTD_LIBS}" "${ZSTD_CFLAGS}"
+  else
+    if test -n "${ZSTD_PKG_ERRORS}"
+    then
+      printf "${ZSTD_PKG_ERRORS}\n"
+    fi
+    failed=0
+  fi
   AC_CHECK_HEADER([zstd.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
   AC_CHECK_LIB([zstd],[ZSTD_createDStream],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
   AC_MSG_CHECKING([if Zstd package is complete])
@@ -1865,9 +2056,13 @@ then
     then
       AC_MSG_RESULT([no -- some components failed test])
       have_zstd='no (failed tests)'
+      CPPFLAGS=$OLD_CPPFLAGS
+      LDFLAGS=$OLD_LDFLAGS
+      LIBS=$OLD_LIBS
     else
       LIB_ZSTD='-lzstd'
-      LIBS="$LIB_ZSTD $LIBS"
+      pkg_config_to_flags 'libzstd' "${LIB_ZSTD}" ''
+      #LIBS="$LIB_ZSTD $LIBS"
       AC_DEFINE([HasZSTD],[1],[Define if you have zstd compression library])
       AC_MSG_RESULT([yes])
       have_zstd='yes'
@@ -1878,6 +2073,82 @@ then
 fi
 AM_CONDITIONAL([HasZSTD],[test "$have_zstd" = 'yes'])
 AC_SUBST([LIB_ZSTD])
+
+#
+# Check for XML
+#
+have_xml='no'
+LIB_XML=''
+LIB_XML_DEPS=''
+LIB_XML2_BASE=''
+if test "$with_xml" != 'no'
+then
+    AC_MSG_CHECKING([for XML support ])
+    AC_MSG_RESULT([])
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
+    failed=0
+    passed=0
+    PKG_CHECK_MODULES([XML], [libxml-2.0], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0
+    then
+      if test -n "$VERBOSE"
+      then
+        printf "XML_LIBS=${XML_LIBS}\n"
+        printf "XML_CFLAGS=${XML_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libxml-2.0' "${XML_LIBS}" "${XML_CFLAGS}"
+    else
+      if test -n "${XML_PKG_ERRORS}"
+      then
+        printf "${XML_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+    failed=0
+    passed=0
+
+    # libxml2 normally requires pkg-config in order to produce the
+    # necessary additional include path.  For example
+    # "-I/usr/include/libxml2", but if pkg-config was not available,
+    # the user could supply that manually using CPPFLAGS.
+    #
+    # Incantation tested with libxml2 2.7.8 configured with
+    #   --with-minimum --with-http --with-ftp --with-push --with-zlib --with-sax1
+    # Note that SAX1 interfaces don't seem to be directly used but parsers fail to work
+    # as expected without SAX1 support compiled in.
+    AC_CHECK_HEADER([libxml/parser.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([xml2],[xmlSAXVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
+    # Next two require --with-push to be enabled
+    AC_CHECK_LIB([xml2],[xmlParseChunk],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
+    AC_CHECK_LIB([xml2],[xmlCreatePushParserCtxt],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
+    AC_MSG_CHECKING([if XML package is complete ])
+    if test $passed -gt 0
+    then
+        if test $failed -gt 0
+        then
+            AC_MSG_RESULT([no -- some components failed test])
+            have_xml='no (failed tests)'
+            CPPFLAGS=$OLD_CPPFLAGS
+            LDFLAGS=$OLD_LDFLAGS
+            LIBS=$OLD_LIBS
+        else
+            LIB_XML="-lxml2"
+            pkg_config_to_flags 'libxml-2.0' "${LIB_XML}" ''
+            AC_DEFINE([HasXML],[1],[Define if you have XML library])
+            AC_MSG_RESULT([yes])
+            have_xml='yes'
+            AC_CHECK_FUNCS([xmlNanoHTTPOpen \
+                            xmlNanoFTPNewCtxt])
+        fi
+    else
+        AC_MSG_RESULT([no])
+    fi
+fi
+AM_CONDITIONAL([HasXML], [test "$have_xml" = 'yes'])
+AC_SUBST([LIB_XML])
+AC_SUBST([LIB_XML_DEPS])
 
 #
 # Find the X11 include and library directories.
@@ -2046,11 +2317,28 @@ if test "$with_lcms2" != 'no'
 then
     AC_MSG_CHECKING([for lcms v2 support])
     AC_MSG_RESULT()
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
     failed=0
     passed=0
     have_lcms_header='no'
 
-    # PKG_CHECK_MODULES([LCMS2], [lcms2], [], [])
+    PKG_CHECK_MODULES([LCMS2], [lcms2], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0 ; then
+      if test -n "$VERBOSE"
+      then
+        printf "LCMS2_LIBS=${LCMS2_LIBS}\n"
+        printf "LCMS2_CFLAGS=${LCMS2_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'lcms2' "${LCMS2_LIBS}" "${LCMS2_CFLAGS}"
+    else
+      if test -n "${LCMS2_PKG_ERRORS}"
+      then
+        printf "${LCMS2_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
 
     # Check for <lcms2.h>
     AC_CHECK_HEADER([lcms2.h],[have_lcms_header='yes'],,)
@@ -2085,9 +2373,15 @@ then
       then
         AC_MSG_RESULT([no -- some components failed test])
         have_lcms2='no (failed tests)'
+        LCMS2_LIBS=''
+        LCMS2_CFLAGS=''
+        CPPFLAGS=$OLD_CPPFLAGS
+        LDFLAGS=$OLD_LDFLAGS
+        LIBS=$OLD_LIBS
       else
         LIB_LCMS='-llcms2'
-        LIBS="$LIB_LCMS $LIBS"
+        pkg_config_to_flags 'lcms2' "${LIB_LCMS}" ''
+        #LIBS="$LIB_LCMS $LIBS"
         #AC_DEFINE(HasLCMS2,1,Define if you have LCMS v2 library)
         AC_MSG_RESULT([yes])
         have_lcms2='yes'
@@ -2107,27 +2401,39 @@ AC_SUBST([LIB_LCMS])
 
 have_png='no'
 LIB_PNG=''
-if test "$have_zlib" = 'yes'
+if test "$have_zlib" = 'yes' -a "$with_png" = 'yes'
 then
   #
   # Check for PNG delegate library.
   #
-  AC_ARG_WITH([png],
-      [AS_HELP_STRING([--without-png],[disable PNG support])],
-      [with_png=$withval],
-      [with_png='yes'])
-      # PKG_CHECK_MODULES([PNG], [libpng], [], [])
+  OLD_CPPFLAGS=$CPPFLAGS
+  OLD_LDFLAGS=$LDFLAGS
+  OLD_LIBS=$LIBS
+  failed=0
+  passed=0
+  PKG_CHECK_MODULES([PNG], [libpng], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+  if test $failed -eq 0 ; then
+    if test -n "$VERBOSE"
+    then
+      printf "PNG_LIBS=${PNG_LIBS}\n"
+      printf "PNG_CFLAGS=${PNG_CFLAGS}\n"
+    fi
+    pkg_config_to_flags 'libpng' "${PNG_LIBS}" "${PNG_CFLAGS}"
+  else
+    if test -n "${PNG_PKG_ERRORS}"
+    then
+      printf "${PNG_PKG_ERRORS}\n"
+    fi
+    failed=0
+  fi
 
   if test "$with_png" != 'yes'; then
       DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-png=$with_png "
   fi
 
-
   if test "$with_png" != 'no' ; then
     AC_MSG_CHECKING([for PNG support ])
     AC_MSG_RESULT()
-    failed=0
-    passed=0
     AC_CHECK_HEADER([png.h],[passed=`expr $passed + 1`],
        [failed=`expr $failed + 1`],)
 
@@ -2196,14 +2502,18 @@ return 0;
               AC_MSG_CHECKING([if ${pnglib} package is complete])
               if test $passed -gt 0 ; then
                 if test $failed -gt 0 ; then
-                AC_MSG_RESULT([no -- some components failed test])
-                have_png='no (failed tests)'
+                  AC_MSG_RESULT([no -- some components failed test])
+                  have_png='no (failed tests)'
+                  CPPFLAGS=$OLD_CPPFLAGS
+                  LDFLAGS=$OLD_LDFLAGS
+                  LIBS=$OLD_LIBS
                 else
-                LIB_PNG="-l${pnglib}"
-                LIBS="$LIB_PNG $LIBS"
-                AC_DEFINE([HasPNG],[1],[Define if you have PNG library])
-                AC_MSG_RESULT([yes])
-                have_png='yes'
+                  LIB_PNG="-l${pnglib}"
+                  pkg_config_to_flags 'libpng' "${LIB_PNG}" ''
+                  #LIBS="$LIB_PNG $LIBS"
+                  AC_DEFINE([HasPNG],[1],[Define if you have PNG library])
+                  AC_MSG_RESULT([yes])
+                  have_png='yes'
                 fi
               fi
             fi
@@ -2227,10 +2537,30 @@ if test "$with_jpeg" != 'no'
 then
     AC_MSG_CHECKING([for JPEG support ])
     AC_MSG_RESULT()
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
     failed=0
     passed=0
 
-    # PKG_CHECK_MODULES([JPEG], [libturbojpeg, libjpeg], [], [])
+    #PKG_CHECK_MODULES([JPEG], [libturbojpeg, libjpeg], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    PKG_CHECK_MODULES([JPEG], [libturbojpeg], [passed=`expr $passed + 1`],
+                              [PKG_CHECK_MODULES([JPEG], [libjpeg], [passed=`expr $passed + 1`],
+                                                         [failed=`expr $failed + 1`])])
+    if test $failed -eq 0 ; then
+      if test -n "$VERBOSE"
+      then
+        printf "JPEG_LIBS=${JPEG_LIBS}\n"
+        printf "JPEG_CFLAGS=${JPEG_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libjpeg' "${JPEG_LIBS}" "${JPEG_CFLAGS}"
+    else
+      if test -n "${JPEG_PKG_ERRORS}"
+      then
+        printf "${JPEG_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
 
     AC_CHECK_HEADER([jconfig.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     AC_CHECK_HEADER([jerror.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
@@ -2244,15 +2574,20 @@ then
     then
         AC_MSG_RESULT([no -- some components failed test])
         have_jpeg='no (failed tests)'
+        CPPFLAGS=$OLD_CPPFLAGS
+        LDFLAGS=$OLD_LDFLAGS
+        LIBS=$OLD_LIBS
     else
         LIB_JPEG='-ljpeg'
-        LIBS="$LIB_JPEG $LIBS"
+        pkg_config_to_flags 'libjpeg' "${LIB_JPEG}" ''
+        #LIBS="$LIB_JPEG $LIBS"
         AC_DEFINE([HasJPEG],[1],[Define if you have JPEG library])
         AC_MSG_RESULT([yes])
         have_jpeg='yes'
-        # Test for interesting libjpeg-turbo 3.0 functions (which may also appear in other JPEG libraries)
+        # Test for interesting libjpeg-turbo 3.0 and libjpeg functions)
         AC_CHECK_FUNCS([jpeg_enable_lossless jpeg12_write_scanlines jpeg16_write_scanlines \
-                        jpeg12_read_scanlines jpeg16_read_scanlines])
+                        jpeg12_read_scanlines jpeg16_read_scanlines \
+                        jpeg_simple_lossless jpeg_enable_lossless])
     fi
     else
         AC_MSG_RESULT([no])
@@ -2260,43 +2595,6 @@ then
 fi
 AM_CONDITIONAL([HasJPEG],[test "$have_jpeg" = 'yes'])
 AC_SUBST([LIB_JPEG])
-
-#
-# Check for JPEG Version 2 (Jasper)
-#
-have_jp2='no'
-LIB_JP2=''
-if test "$with_jp2" != 'no'
-then
-    AC_MSG_CHECKING([for JPEG version 2 support ])
-    AC_MSG_RESULT()
-    failed=0
-    passed=0
-    AC_CHECK_HEADER([jasper/jasper.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-    AC_CHECK_LIB([jasper],[jas_stream_fopen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
-    AC_CHECK_LIB([jasper],[jas_image_strtofmt],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
-    AC_CHECK_LIB([jasper],[jas_image_decode],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
-    AC_MSG_CHECKING([if JPEG version 2 support package is complete])
-    if test $passed -gt 0
-    then
-    if test $failed -gt 0
-    then
-        AC_MSG_RESULT([no -- some components failed test])
-        have_jp2='no (failed tests)'
-    else
-        LIB_JP2='-ljasper'
-        LIBS="$LIB_JP2 $LIBS"
-        AC_DEFINE([HasJP2],[1],[Define if you have JPEG version 2 "Jasper" library])
-        AC_MSG_RESULT([yes])
-        have_jp2='yes'
-        AC_CHECK_FUNCS([jas_init_library])
-    fi
-    else
-    AC_MSG_RESULT([no])
-    fi
-fi
-AM_CONDITIONAL([HasJP2],[test "$have_jp2" = 'yes'])
-AC_SUBST([LIB_JP2])
 
 # #
 # # Check for MPEG2 library
@@ -2335,10 +2633,6 @@ AC_SUBST([LIB_JP2])
 #
 # Check for TTF
 #
-# Use pkg-config if available.  If pkg-config is not available, then
-# try legacy freetype-config script.  If neither is available, then go
-# with defaults.
-#
 have_ttf='no'
 LIB_TTF=''
 if test "$with_ttf" != 'no'
@@ -2348,8 +2642,9 @@ then
     failed=0
     passed=0
 
-    OLD_LDFLAGS="$LDFLAGS"
-    OLD_CPPFLAGS="$CPPFLAGS"
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
     # https://autotools.io/pkgconfig/pkg_check_modules.html
     # PKG_CHECK_MODULES(prefix, list-of-modules, action-if-found, action-if-not-found)
     # % pkg-config --libs freetype2
@@ -2357,79 +2652,35 @@ then
     # % pkg-config --cflags freetype2
     # -I/usr/include/freetype2 -I/usr/include/libpng12
     #
-    # % grep FT_ config.status
-    # S["FT_LIBS"]="-R/usr/lib -lfreetype  "
-    # S["FT_CFLAGS"]="-I/usr/include/freetype2
+    # % grep FREETYPE_ config.status
+    # S["FREETYPE_LIBS"]="-R/usr/lib -lfreetype  "
+    # S["FREETYPE_CFLAGS"]="-I/usr/include/freetype2
     freetype_cflags=''
     freeype_libs=''
     freetype_config=''
-    AC_PATH_PROG([freetype_config],[freetype-config],)dnl
-    PKG_CHECK_MODULES([FT], [freetype2],
-      [freetype_cflags=$FT_CFLAGS; freeype_libs=$FT_LIBS],
-      [if test -n "$freetype_config"
+    PKG_CHECK_MODULES([FREETYPE], [freetype2], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0 ; then
+      if test -n "$VERBOSE"
       then
-        freetype_cflags=`${freetype_config} --cflags`
-        freeype_libs=`${freetype_config}  --libs`
-      fi])
-      # freetype-config --cflags may output values such as
-      # -I/usr/local/include/freetype2 -I/usr/local/include
-      # Take only the first -I option since non-Freetype include
-      # directories (not needed by the FreeType API) may pollute
-      # the include path.
-      for flag in $freetype_cflags
-      do
-        case $flag in
-          -I*)
-            CPPFLAGS="$CPPFLAGS $flag"
-            break
-            ;;
-          *)
-            ;;
-        esac
-      done
-      # freetype-config --libs may output values such as
-      # -L/usr/local/lib -lfreetype -lz
-      #    or
-      # -L/usr/lib/x86_64-linux-gnu -lfreetype -lz -lpng12
-      #
-      # Problems will surely result if we have already successfully
-      # configured different dependency libraries than freetype was
-      # built against.  For this reason, we only take the first
-      # argument of each type, assuming that they are specific to
-      # Freetype.  In the future we may need to do something different
-      # if the FreeType library was to depend on some weird library
-      # that we don't normally test for.
-      for flag in $freeype_libs
-      do
-        case $flag in
-          -L*)
-            LDFLAGS="$LDFLAGS $flag"
-            break
-            ;;
-          *)
-            ;;
-        esac
-      done
-      for flag in $freeype_libs
-      do
-        case $flag in
-          -l*)
-            LIB_TTF_BASE=`echo $flag | sed -e 's/^-l//'`
-            break
-            ;;
-          *)
-            ;;
-        esac
-      done
+        printf "FREETYPE_LIBS=${FREETYPE_LIBS}\n"
+        printf "FREETYPE_CFLAGS=${FREETYPE_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'freetype2' "${FREETYPE_LIBS}" "${FREETYPE_CFLAGS}"
+    else
+      if test -n "${FREETYPE_PKG_ERRORS}"
+      then
+        printf "${FREETYPE_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
 
 dnl First see if there is a library
-    AC_CHECK_LIB([$LIB_TTF_BASE],[FT_Init_FreeType],[LIB_TTF="-l$LIB_TTF_BASE"],[LIB_TTF=''],[])
+    AC_CHECK_LIB([freetype],[FT_Init_FreeType],[LIB_TTF="-lfreetype"],[LIB_TTF=''],[])
     if test "$LIB_TTF" != ''
     then
       passed=`expr $passed + 1`
     else
       failed=`expr $failed + 1`
-      LDFLAGS="$OLD_LDFLAGS"
     fi
 
 dnl Now test for the headers
@@ -2449,7 +2700,6 @@ dnl Now test for the headers
         passed=`expr $passed + 1`
     else
         failed=`expr $failed + 1`
-        CPPFLAGS="$OLD_CPPFLAGS"
     fi
 
     AC_MSG_CHECKING([if FreeType package is complete])
@@ -2460,8 +2710,14 @@ dnl Now test for the headers
             LIB_TTF=''
             AC_MSG_RESULT([no -- some components failed test])
             have_ttf='no (failed tests)'
+            FREETYPE_LIBS=''
+            FREETYPE_CFLAGS=''
+            CPPFLAGS=$OLD_CPPFLAGS
+            LDFLAGS=$OLD_LDFLAGS
+            LIBS=$OLD_LIBS
         else
-            LIBS="$LIB_TTF $LIBS"
+            pkg_config_to_flags 'freetype2' "${LIB_TTF}" ''
+            #LIBS="$LIB_TTF $LIBS"
             AC_DEFINE([HasTTF],[1],[Define if you have FreeType (TrueType font) library])
             if test "$ac_cv_header_ft2build_h" = 'yes'
             then
@@ -2477,52 +2733,110 @@ fi
 AM_CONDITIONAL([HasTTF],[test "$have_ttf" = 'yes'])
 AC_SUBST([LIB_TTF])
 
+
 #
-# Check for TIFF
+# Check for WEBP
 #
-have_tiff='no'
-LIB_TIFF=''
-if test "$with_tiff" != 'no'
+have_webp='no'
+LIB_WEBP=''
+if test "$with_webp" != 'no'
 then
-    AC_MSG_CHECKING([for TIFF support ])
+    AC_MSG_CHECKING([for WEBP support ])
     AC_MSG_RESULT()
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
     failed=0
     passed=0
-    # PKG_CHECK_MODULES([TIFF], [libtiff-4], [], [])
-    AC_CHECK_HEADER([tiff.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-    AC_CHECK_HEADER([tiffio.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-    AC_CHECK_LIB([tiff],[TIFFOpen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
-    AC_CHECK_LIB([tiff],[TIFFClientOpen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
-    AC_CHECK_LIB([tiff],[TIFFIsByteSwapped],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
-    AC_CHECK_LIB([tiff],[TIFFReadRGBATile],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
-    AC_CHECK_LIB([tiff],[TIFFReadRGBAStrip],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
-    AC_MSG_CHECKING([if TIFF package is complete])
+
+    # libwebpdemux depends on webp
+    # libwebpmux depends on webp
+    # libwebp depends on libsharpyuv
+
+    # FIXME: For static build to succeed the link order needs to be
+    # "-lwebp -lwebpmux -lsharpyuv" but "-lsharpyuv -lwebp -lwebpmux"
+    # is being produced! Order is reversed!  Maybe fixed now.
+    # WEBPMUX_LIBS=-L/work/lib -lwebpmux -lm -lwebp -lm -lsharpyuv -lm
+    # WEBP_LIBS=-L/work/lib -lwebp -lm -lsharpyuv -lm
+
+    # Need to add libsharp    libsharpyuv.pc
+
+    # libwebp, libwebpmux, libwebpdemux
+    PKG_CHECK_MODULES([WEBPMUX], [libwebpmux], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0 ; then
+      if test -n "$VERBOSE"
+      then
+        printf "WEBPMUX_LIBS=${WEBPMUX_LIBS}\n"
+        printf "WEBPMUX_CFLAGS=${WEBPMUX_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libwebpmux' "${WEBPMUX_LIBS}" "${WEBPMUX_CFLAGS}"
+    else
+      if test -n "${WEBPMUX_PKG_ERRORS}"
+      then
+        printf "${WEBPMUX_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+
+    # We are not currently using libwebpdemux
+    #PKG_CHECK_MODULES([WEBPDEMUX], [libwebpdemux], [], [])
+    #if test $failed -eq 0 ; then
+    #  if test -n "$VERBOSE"
+    #  then
+    #    printf "WEBPDMUX_LIBS=${WEBPDMUX_LIBS}\n"
+    #    printf "WEBPDMUX_CFLAGS=${WEBPDMUX_CFLAGS}\n"
+    #  fi
+    #  pkg_config_to_flags 'libwebpdemux' "${WEBPDMUX_LIBS}" "${WEBPDMUX_CFLAGS}"
+    #else
+    #  failed=0
+    #fi
+
+    # pkg-config libwebp --static --libs
+    #-L/work/lib -lwebp -lm -lsharpyuv -lm
+    PKG_CHECK_MODULES([WEBP], [libwebp], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0 ; then
+      if test -n "$VERBOSE"
+      then
+        printf "WEBP_LIBS=${WEBP_LIBS}\n"
+        printf "WEBP_CFLAGS=${WEBP_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libwebp' "${WEBP_LIBS}" "${WEBP_CFLAGS}"
+    else
+      if test -n "${WEBP_PKG_ERRORS}"
+      then
+        printf "${WEBP_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+
+    AC_CHECK_HEADER([webp/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_CHECK_HEADER([webp/encode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_CHECK_LIB([webp],[WebPDecodeRGB],[passed=`expr $passed + 1`; LIB_WEBP='-lwebp'],[failed=`expr $failed + 1`],[])
+    AC_CHECK_LIB([webpmux],[WebPMuxSetImage],[LIB_WEBP="$LIB_WEBP -lwebpmux"],[],[-lwebp])
+    AC_CHECK_LIB([sharpyuv],[SharpYuvConvert],[LIB_WEBP="$LIB_WEBP -lsharpyuv"],[],[])
+    AC_MSG_CHECKING([if WEBP package is complete])
     if test $passed -gt 0
     then
         if test $failed -gt 0
         then
             AC_MSG_RESULT([no -- some components failed test])
-            have_tiff='no (failed tests)'
+            have_webp='no (failed tests)'
+            CPPFLAGS=$OLD_CPPFLAGS
+            LDFLAGS=$OLD_LDFLAGS
+            LIBS=$OLD_LIBS
         else
-            LIB_TIFF='-ltiff'
-            LIBS="$LIB_TIFF $LIBS"
-            AC_DEFINE([HasTIFF],[1],[Define if you have TIFF library])
+            pkg_config_to_flags 'libwebp' "${LIB_WEBP}" ''
+            # LIBS="$LIB_WEBP $LIBS"
+            AC_DEFINE([HasWEBP],[1],[Define if you have WEBP library])
             AC_MSG_RESULT([yes])
-            have_tiff='yes'
-            AC_CHECK_HEADERS([tiffconf.h])
-            AC_CHECK_FUNCS([TIFFIsCODECConfigured \
-                            TIFFMergeFieldInfo \
-                            TIFFSetErrorHandlerExt \
-                            TIFFSetTagExtender \
-                            TIFFSetWarningHandlerExt \
-                            TIFFSwabArrayOfTriples])
+            have_webp='yes'
         fi
     else
         AC_MSG_RESULT([no])
     fi
 fi
-AM_CONDITIONAL([HasTIFF], [test "$have_tiff" = 'yes'])
-AC_SUBST([LIB_TIFF])
+AM_CONDITIONAL([HasWEBP],[test "$have_webp" = 'yes'])
+AC_SUBST([LIB_WEBP])
 
 #
 # Check for JBIG
@@ -2559,6 +2873,78 @@ AM_CONDITIONAL([HasJBIG],[test "$have_jbig" = 'yes'])
 AC_SUBST([LIB_JBIG])
 
 #
+# Check for TIFF
+#
+have_tiff='no'
+LIB_TIFF=''
+if test "$with_tiff" != 'no'
+then
+    AC_MSG_CHECKING([for TIFF support ])
+    AC_MSG_RESULT()
+    failed=0
+    passed=0
+    # CFLAGS CPPFLAGS CXXFLAGS DEFS LDFLAGS LIBS
+    OLD_CFLAGS=$CFLAGS
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LIBS=$LIBS
+    PKG_CHECK_MODULES([TIFF], [libtiff-4], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    #set -x
+    if test $failed -eq 0
+    then
+        if test -n "$VERBOSE"
+        then
+            printf "TIFF_LIBS=${TIFF_LIBS}\n"
+            printf "TIFF_CFLAGS=${TIFF_CFLAGS}\n"
+        fi
+        pkg_config_to_flags 'libtiff-4' "${TIFF_LIBS}" "${TIFF_CFLAGS}"
+    else
+      if test -n "${TIFF_PKG_ERRORS}"
+      then
+        printf "${TIFF_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+    #set +x
+    AC_CHECK_HEADER([tiff.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_HEADER([tiffio.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([tiff],[TIFFOpen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([tiff],[TIFFClientOpen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([tiff],[TIFFIsByteSwapped],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([tiff],[TIFFReadRGBATile],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([tiff],[TIFFReadRGBAStrip],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_MSG_CHECKING([if TIFF package is complete])
+    if test $passed -gt 0
+    then
+        if test $failed -gt 0
+        then
+            AC_MSG_RESULT([no -- some components failed test])
+            have_tiff='no (failed tests)'
+            CFLAGS=$OLD_CFLAGS
+            CPPFLAGS=$OLD_CPPFLAGS
+            LIBS=$OLD_LIBS
+        else
+            LIB_TIFF='-ltiff'
+            pkg_config_to_flags 'libtiff-4' "${LIB_TIFF}" ''
+            #LIBS="$LIB_TIFF $LIBS"
+            AC_DEFINE([HasTIFF],[1],[Define if you have TIFF library])
+            AC_MSG_RESULT([yes])
+            have_tiff='yes'
+            AC_CHECK_HEADERS([tiffconf.h])
+            AC_CHECK_FUNCS([TIFFIsCODECConfigured \
+                            TIFFMergeFieldInfo \
+                            TIFFSetErrorHandlerExt \
+                            TIFFSetTagExtender \
+                            TIFFSetWarningHandlerExt \
+                            TIFFSwabArrayOfTriples])
+        fi
+    else
+        AC_MSG_RESULT([no])
+    fi
+fi
+AM_CONDITIONAL([HasTIFF], [test "$have_tiff" = 'yes'])
+AC_SUBST([LIB_TIFF])
+
+#
 # Check for JXL
 #
 have_jxl='no'
@@ -2567,34 +2953,99 @@ if test "$with_jxl" != 'no'
 then
     AC_MSG_CHECKING([for JXL support ])
     AC_MSG_RESULT()
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
     failed=0
     passed=0
     AC_LANG_PUSH([C++])
+
+    # For dynamic linkage, it should not normally be necessary to test for more than libjxl
+    # libjxl, libjxl_threads, libhwy, libbrotlidec, libbrotlienc, libbrotlicommon
+    # libjxl needs libhwy to build but it is built as a static library so is not a dynamic dependency
+    #
+    # pkg-config --static --libs libjxl
+    # -L/usr/local/lib -ljxl -lm -lhwy -lbrotlienc -lbrotlidec -lbrotlicommon
+
+    # libjxl_threads
+    PKG_CHECK_MODULES([LIBJXL_THREADS], [libjxl_threads], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0
+    then
+      if test -n "$VERBOSE"
+      then
+        printf "LIBJXL_THREADS_LIBS=${LIBJXL_THREADS_LIBS}\n"
+        printf "LIBJXL_THREADS_CFLAGS=${LIBJXL_THREADS_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libjxl_threads' "${LIBJXL_THREADS_LIBS}" "${LIBJXL_THREADS_CFLAGS}"
+    else
+      if test -n "${LIBJXL_THREADS_PKG_ERRORS}"
+      then
+        printf "${LIBJXL_THREADS_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+
+    # [libjxl
+    PKG_CHECK_MODULES([LIBJXL], [libjxl], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0
+    then
+      if test -n "$VERBOSE"
+      then
+        printf "LIBJXL_LIBS=${LIBJXL_LIBS}\n"
+        printf "LIBJXL_CFLAGS=${LIBJXL_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libjxl' "${LIBJXL_LIBS}" "${LIBJXL_CFLAGS}"
+    else
+      if test -n "${LIBJXL_PKG_ERRORS}"
+      then
+        printf "${LIBJXL_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+
     AC_CHECK_HEADER([jxl/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
     # jxl always requires hwy/brotli no extra test needed
-    AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-lhwy -lbrotlidec -lbrotlienc])
-    AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([jxl],[JxlDecoderCreate],[passed=`expr $passed + 1`; LIB_JXL='-ljxl'],[failed=`expr $failed + 1`],[-lhwy -lbrotlidec -lbrotlienc -lbrotlicommon])
+    AC_CHECK_LIB([jxl_threads],[JxlThreadParallelRunnerCreate],[passed=`expr $passed + 1`; LIB_JXL="${LIB_JXL} -ljxl_threads"],[])
     # Testing for decoder should also cover encoder
-    AC_CHECK_LIB([brotlidec],[BrotliDecoderVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_CHECK_LIB([brotlidec],[BrotliDecoderVersion],[passed=`expr $passed + 1`; LIB_JXL="${LIB_JXL} -lbrotlidec -lbrotlicommon"],[failed=`expr $failed + 1`],[-lbrotlicommon])
     AC_LANG_POP
     AC_MSG_CHECKING([if JXL package is complete])
     if test $passed -gt 0
     then
-    if test $failed -gt 0
-    then
-        AC_MSG_RESULT([no -- some components failed test])
-        have_jxl='no (failed tests)'
-    else
-        # JXL is a C++ Lib so requires linking with stdc++.
-        # TODO: A better solution would be to tell automake to do any linking with
-        # c++, but I can't figure out a way to get this working.
-        LIB_JXL='-ljxl -ljxl_threads -lhwy -lbrotlidec -lbrotlienc -lstdc++'
-        LIBS="$LIB_JXL $LIBS"
-        AC_DEFINE([HasJXL],[1],[Define if you have JXL library])
-        AC_MSG_RESULT([yes])
-        have_jxl='yes'
-        PERLMAINCC="$CXX"
-    fi
+        if test $failed -gt 0
+        then
+            AC_MSG_RESULT([no -- some components failed test])
+            have_jxl='no (failed tests)'
+            CPPFLAGS=$OLD_CPPFLAGS
+            LDFLAGS=$OLD_LDFLAGS
+            LIBS=$OLD_LIBS
+        else
+            # JXL is a C++ Lib so it requires linking with stdc++.  This
+            # is handled by inserting a C++ dummy shim file when JXL is
+            # part of the build.
+            if test -n "${LIBJXL_LIBS}"
+            then
+               # Use pkg-config info
+               LIB_JXL=''
+               for token in ${LIBJXL_LIBS} ${LIBJXL_THREADS_LIBS}
+               do
+                   case $token in
+                       -l*)
+                           LIB_JXL="$LIB_JXL $token"
+                           ;;
+                   esac
+               done
+            else
+                # Without pkg-config, use LIB_JXL we built via testing
+                pkg_config_to_flags 'libjxl' "${LIB_JXL}" ''
+            fi
+            #LIBS="$LIB_JXL $LIBS"
+            AC_DEFINE([HasJXL],[1],[Define if you have JXL library])
+            AC_MSG_RESULT([yes])
+            have_jxl='yes'
+            PERLMAINCC="$CXX"
+        fi
     else
         AC_MSG_RESULT([no])
     fi
@@ -2603,240 +3054,7 @@ AM_CONDITIONAL([HasJXL],[test "$have_jxl" = 'yes'])
 AC_SUBST([LIB_JXL])
 
 #
-# Check for WEBP
-#
-have_webp='no'
-LIB_WEBP=''
-if test "$with_webp" != 'no'
-then
-    AC_MSG_CHECKING([for WEBP support ])
-    AC_MSG_RESULT()
-    failed=0
-    passed=0
-    # PKG_CHECK_MODULES([WEBP], [libwebp], [], [])
-    AC_CHECK_HEADER([webp/decode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
-    AC_CHECK_HEADER([webp/encode.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
-    AC_CHECK_LIB([webp],[WebPDecodeRGB],[passed=`expr $passed + 1`; LIB_WEBP='-lwebp'],[failed=`expr $failed + 1`],[])
-    AC_CHECK_LIB([webpmux],[WebPMuxSetImage],[LIB_WEBP="$LIB_WEBP -lwebpmux"],[],[-lwebp])
-    AC_CHECK_LIB([sharpyuv],[SharpYuvConvert],[LIB_WEBP="$LIB_WEBP -lsharpyuv"],[],[])
-    AC_MSG_CHECKING([if WEBP package is complete])
-    if test $passed -gt 0
-    then
-        if test $failed -gt 0
-        then
-            AC_MSG_RESULT([no -- some components failed test])
-            have_webp='no (failed tests)'
-        else
-            LIBS="$LIB_WEBP $LIBS"
-            AC_DEFINE([HasWEBP],[1],[Define if you have WEBP library])
-            AC_MSG_RESULT([yes])
-            have_webp='yes'
-        fi
-    else
-        AC_MSG_RESULT([no])
-    fi
-fi
-AM_CONDITIONAL([HasWEBP],[test "$have_webp" = 'yes'])
-AC_SUBST([LIB_WEBP])
-
-# Check for HEIF
-#
-have_heif='no'
-LIB_HEIF=''
-if test "$with_heif" != 'no'
-then
-    AC_MSG_CHECKING([for HEIF support ])
-    AC_MSG_RESULT()
-    failed=0
-    passed=0
-    heif_libs=''
-    # Use pkg-config to handle different optional codec libs
-    # and if pkg-config is not available fallback to manual search.
-    PKG_CHECK_MODULES([HEIF], [libheif],
-        [heif_libs=$HEIF_LIBS; passed=1;],
-        [AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-        # Assume sensible default for codec; This will fail with a static
-        # libheif that contains a avif codec.
-        heif_libs="-lheif -lde265"])
-    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$heif_libs])
-    AC_MSG_CHECKING([if HEIF package is complete])
-    if test $passed -gt 0
-    then
-    if test $failed -gt 0
-    then
-        AC_MSG_RESULT([no -- some components failed test])
-        have_heif='no (failed tests)'
-    else
-        LIB_HEIF="$heif_libs"
-        LIBS="$LIB_HEIF $LIBS"
-        AC_DEFINE([HasHEIF],[1],[Define if you have HEIF library])
-        AC_MSG_RESULT([yes])
-        have_heif='yes'
-    fi
-    else
-        AC_MSG_RESULT([no])
-    fi
-fi
-AM_CONDITIONAL([HasHEIF],[test "$have_heif" = 'yes'])
-AC_SUBST([LIB_HEIF])
-
-#
-# Check for XML
-#
-have_xml='no'
-LIB_XML=''
-LIB_XML_DEPS=''
-LIB_XML2_BASE=''
-if test "$with_xml" != 'no'
-then
-    OLD_LDFLAGS=$LDFLAGS
-    OLD_CPPFLAGS=$CPPFLAGS
-    AC_MSG_CHECKING([for XML support ])
-    AC_MSG_RESULT([])
-    xml2_config=''
-    xml2_cflags=''
-    xml2_libs=''
-    AC_PATH_PROG([xml2_config],[xml2-config],[])dnl
-    PKG_CHECK_MODULES([XML], [libxml-2.0],
-      [xml2_cflags=$XML_CFLAGS; xml2_libs=$XML_LIBS],
-      [if test -n "$xml2_config"
-       then
-          # Sample output from xml2-config --cflags:
-          # -I/usr/include/libxml2
-          # -I/usr/local/include/libxml2 -I/usr/local/include
-          xml2_cflags=`"$xml2_config" --cflags`
-          # Sample output from xml2-config --libs:
-          # -lxml2
-          # -L/usr/lib -R/usr/lib -lxml2 -lz -lpthread -lm -lsocket -lnsl
-          #-L/usr/local/lib -lxml2 -lz -L/usr/local/lib -liconv -lm
-          xml2_libs=`$xml2_config  --libs`
-       fi
-      ])
-      for flag in $xml2_cflags
-      do
-        case $flag in
-             -I*)
-                # Add flag to CPPFLAGS if not already present
-                    add=yes;
-                    for test_flag in $CPPFLAGS
-                    do
-                        if test $flag = $test_flag
-                        then
-                            add=no
-                            break
-                        fi
-                    done
-                    if test $add = yes
-                    then
-                        CPPFLAGS="$CPPFLAGS $flag"
-                    fi
-                    break
-                    ;;
-                *)
-                    ;;
-        esac
-      done
-      for flag in $xml2_libs
-      do
-            case $flag in
-                -L*)
-                    # Add flag to LDFLAGS if not already present
-                    add=yes;
-                    for test_flag in $LDFLAGS
-                    do
-                        if test $flag = $test_flag
-                        then
-                            add=no
-                            break
-                        fi
-                    done
-                    if test $add = yes
-                    then
-                        LDFLAGS="$LDFLAGS $flag"
-                    fi
-                    break
-                    ;;
-                *)
-                    ;;
-            esac
-      done
-      for flag in $xml2_libs
-      do
-            case $flag in
-                -l*)
-                    # The first library listed is assumed to be the
-                    # name of the library and all others are assumed
-                    # to be its dependencies.
-                    if test "x$LIB_XML2_BASE" = "x"
-                    then
-                        LIB_XML2_BASE=`echo $flag | sed -e 's/^-l//'`
-                    else
-                        LIB_XML_DEPS="$LIB_XML_DEPS $flag"
-                    fi
-                    ;;
-                *)
-                    ;;
-            esac
-      done
-    if test "x$LIB_XML2_BASE" = "x"
-    then
-        LIB_XML2_BASE=xml2
-    fi
-    failed=0
-    passed=0
-    # Incantation tested with libxml2 2.7.8 configured with
-    #   --with-minimum --with-http --with-ftp --with-push --with-zlib --with-sax1
-    # Note that SAX1 interfaces don't seem to be directly used but parsers fail to work
-    # as expected without SAX1 support compiled in.
-    AC_CHECK_HEADER([libxml/parser.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-    AC_CHECK_LIB([$LIB_XML2_BASE],[xmlSAXVersion],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
-    # Next two require --with-push to be enabled
-    AC_CHECK_LIB([$LIB_XML2_BASE],[xmlParseChunk],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
-    AC_CHECK_LIB([$LIB_XML2_BASE],[xmlCreatePushParserCtxt],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[$LIB_XML_DEPS])
-    AC_MSG_CHECKING([if XML package is complete ])
-    if test $passed -gt 0
-    then
-    if test $failed -gt 0
-    then
-        AC_MSG_RESULT([no -- some components failed test])
-        have_xml='no (failed tests)'
-        LDFLAGS="$OLD_LDFLAGS"
-        CPPFLAGS="$OLD_CPPFLAGS"
-    else
-        LIB_XML="-l$LIB_XML2_BASE"
-        # Add lib to LIBS if not already present
-        for test_lib in $LIB_XML $LIB_XML_DEPS
-        do
-            add=yes;
-            for lib in $LIBS
-            do
-                if test $lib = $test_lib
-                then
-                    add=no
-                    break
-                fi
-            done
-            if test $add = yes
-            then
-                LIBS="$test_lib $LIBS"
-            fi
-        done
-        AC_DEFINE([HasXML],[1],[Define if you have XML library])
-        AC_MSG_RESULT([yes])
-        have_xml='yes'
-        AC_CHECK_FUNCS([xmlNanoHTTPOpen \
-                        xmlNanoFTPNewCtxt])
-    fi
-    else
-        AC_MSG_RESULT([no])
-    fi
-fi
-AM_CONDITIONAL([HasXML], [test "$have_xml" = 'yes'])
-AC_SUBST([LIB_XML])
-AC_SUBST([LIB_XML_DEPS])
-
-#
-# Check for WMF
+# Check for WMF (no pkg-config support!)
 #
 # We require libwmflite and now refuse to use full libwmf.  Typical
 # dependencies for libwmflite are '-lpthread -lm' (which we already
@@ -2847,7 +3065,7 @@ AC_SUBST([LIB_XML_DEPS])
 have_wmf='no'
 LIB_WMF=''
 LIB_WMF_DEPS=''
-OLIBS="$LIBS"
+OLD_LIBS="$LIBS"
 if test "$with_wmf" != 'no'
 then
     AC_MSG_CHECKING([for WMF support ])
@@ -2872,7 +3090,7 @@ then
             AC_MSG_RESULT([no -- some components failed test])
             have_wmf='no (failed tests)'
             have_wmflite='no (failed tests)'
-            LIBS="$OLIBS"
+            LIBS="$OLD_LIBS"
             LIB_WMF=''
         fi
     fi
@@ -2888,6 +3106,131 @@ AM_CONDITIONAL([HasWMF], [test "$have_wmf" = 'yes'])
 AC_SUBST([LIB_WMF])
 AC_SUBST([LIB_WMF_DEPS])
 
+
+# Check for HEIF
+#
+have_heif='no'
+LIB_HEIF=''
+if test "$with_heif" != 'no'
+then
+    AC_MSG_CHECKING([for HEIF support ])
+    AC_MSG_RESULT()
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
+    failed=0
+    passed=0
+    # Use pkg-config to handle different optional codec libs
+    # and if pkg-config is not available fallback to manual search.
+    #
+    # pkg-config --libs libheif
+    #  -lheif
+    # pkg-config --cflags libheif
+    #  nada
+    PKG_CHECK_MODULES([HEIF], [libheif], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0 ; then
+      if test -n "$VERBOSE"
+      then
+        printf "HEIF_LIBS=${HEIF_LIBS}\n"
+        printf "HEIF_CFLAGS=${HEIF_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'libheif' "${HEIF_LIBS}" "${HEIF_CFLAGS}"
+    else
+      if test -n "${HEIF_PKG_ERRORS}"
+      then
+        printf "${HEIF_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+    AC_CHECK_HEADER([libheif/heif.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([heif],[heif_context_alloc],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[${HEIF_LIBS}])
+    AC_CHECK_FUNCS([heif_init heif_deinit heif_context_set_maximum_image_size_limit])
+    AC_MSG_CHECKING([if HEIF package is complete])
+    if test $passed -gt 0
+    then
+      if test $failed -gt 0
+      then
+        AC_MSG_RESULT([no -- some components failed test])
+        have_heif='no (failed tests)'
+        CPPFLAGS=$OLD_CPPFLAGS
+        LDFLAGS=$OLD_LDFLAGS
+        LIBS=$OLD_LIBS
+        LIB_HEIF=''
+      else
+        LIB_HEIF='-lheif'
+        pkg_config_to_flags 'libheif' "${LIB_HEIF}" ''
+        #LIBS="$LIB_HEIF $LIBS"
+        AC_DEFINE([HasHEIF],[1],[Define if you have HEIF library])
+        AC_MSG_RESULT([yes])
+        have_heif='yes'
+     fi
+     else
+        AC_MSG_RESULT([no])
+     fi
+fi
+AM_CONDITIONAL([HasHEIF],[test "$have_heif" = 'yes'])
+AC_SUBST([LIB_HEIF])
+
+#
+# Check for JPEG Version 2 (Jasper)
+#
+have_jp2='no'
+LIB_JP2=''
+if test "$with_jp2" != 'no'
+then
+    AC_MSG_CHECKING([for JPEG version 2 "Jasper" support ])
+    AC_MSG_RESULT()
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
+    failed=0
+    passed=0
+
+    PKG_CHECK_MODULES([JASPER], [jasper], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0 ; then
+      if test -n "$VERBOSE"
+      then
+        printf "JASPER_LIBS=${JASPER_LIBS}\n"
+        printf "JASPER_CFLAGS=${JASPER_CFLAGS}\n"
+      fi
+      pkg_config_to_flags 'jasper' "${JASPER_LIBS}" "${JASPER_CFLAGS}"
+    else
+      if test -n "${JASPER_PKG_ERRORS}"
+      then
+        printf "${JASPER_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+
+    AC_CHECK_HEADER([jasper/jasper.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
+    AC_CHECK_LIB([jasper],[jas_stream_fopen],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([jasper],[jas_image_strtofmt],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_CHECK_LIB([jasper],[jas_image_decode],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+    AC_MSG_CHECKING([if JPEG version 2 support package is complete])
+    if test $passed -gt 0
+    then
+    if test $failed -gt 0
+    then
+        AC_MSG_RESULT([no -- some components failed test])
+        have_jp2='no (failed tests)'
+        CPPFLAGS=$OLD_CPPFLAGS
+        LDFLAGS=$OLD_LDFLAGS
+        LIBS=$OLD_LIBS
+    else
+        LIB_JP2='-ljasper'
+        pkg_config_to_flags 'jasper' "${LIB_JP2}" ''
+        #LIBS="$LIB_JP2 $LIBS"
+        AC_DEFINE([HasJP2],[1],[Define if you have JPEG version 2 "Jasper" library])
+        AC_MSG_RESULT([yes])
+        have_jp2='yes'
+        AC_CHECK_FUNCS([jas_init_library])
+    fi
+    else
+    AC_MSG_RESULT([no])
+    fi
+fi
+AM_CONDITIONAL([HasJP2],[test "$have_jp2" = 'yes'])
+AC_SUBST([LIB_JP2])
 
 #
 # Check for Windows gdi32/user32 libraries (for Windows clipboard support)
@@ -3848,20 +4191,48 @@ then
 fi
 
 #
-# Build library dependency list for libMagick
+# Build library dependency list for libGraphicsMagick
 #
 
 # The build_modules variable is set to 'yes' if coders and filters are
 # to be built as modules.  This requires libltdl ($LIB_LTDL).
 # Removed $LIB_OMP and $LIB_THREAD
 
+#printf "LIBS=${LIBS}\n"
+
 if test "$build_modules" != 'no'
 then
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_LCMS $LIB_TTF $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $LIB_ZLIB $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS=''
+  for token in $LCMS2_LIBS $FREETYPE_LIBS $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIBS_USER $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
+  do
+    case $token in
+      -l*)
+        # Add token to MAGICK_DEP_LIBS if not already present
+        add=yes;
+        for test_token in $MAGICK_DEP_LIBS
+        do
+          if test $token = $test_token
+          then
+            add=no
+            break
+          fi
+        done
+        if test $add = yes
+        then
+          MAGICK_DEP_LIBS="$MAGICK_DEP_LIBS $token"
+        fi
+        ;;
+      *)
+        # Discard
+        ;;
+    esac
+  done
 else
-  MAGICK_DEP_LIBS="$LIBS_USER $LIB_JBIG $LIB_WEBP $LIB_JP2 $LIB_HEIF $LIB_LCMS $LIB_TIFF $LIB_TTF $LIB_JPEG $LIB_JXL $LIB_GS $LIB_PNG $LIB_FPX $LIB_WMF $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_LZMA $LIB_BZLIB $LIB_XML $LIB_ZLIB $LIB_ZSTD $LIB_TRIO $LIB_GDI32 $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC"
+  MAGICK_DEP_LIBS="$LIBS"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
+#printf "MAGICK_DEP_LIBS=${MAGICK_DEP_LIBS}\n"
+#printf "MAGICK_EXTRA_DEP_LIBS=${MAGICK_EXTRA_DEP_LIBS}\n"
 AC_SUBST([MAGICK_DEP_LIBS])
 AC_SUBST([MAGICK_EXTRA_DEP_LIBS])
 
@@ -3970,6 +4341,7 @@ printf "Static libraries  --enable-static=$enable_static\t\t$libtool_build_stati
 printf "GNU ld            --with-gnu-ld=$with_gnu_ld    \t\t$lt_cv_prog_gnu_ld\n"
 printf "Quantum depth     --with-quantum-depth=$with_quantum_depth\t$with_quantum_depth\n"
 printf "Modules           --with-modules=$with_modules  \t\t$build_modules\n"
+printf "OpenMP            --enable-openmp=$enable_openmp\t\t${OPENMP_ENABLED} ${LIB_OMP}\n"
 printf "\n"
 printf "Delegate Configuration:\n"
 printf "BZLIB             --with-bzlib=$with_bzlib         \t$have_bzlib\n"
@@ -4038,5 +4410,5 @@ printf "  CXX      = $CXX\n"
 printf "  CXXFLAGS = $CXXFLAGS\n"
 printf "  DEFS     = $DEFS\n"
 printf "  LDFLAGS  = $LDFLAGS\n"
-printf "  LIBS     = $MAGICK_API_DEP_LIBS\n"
+printf "  LIBS     = $MAGICK_API_DEP_LIBS $MAGICK_EXTRA_DEP_LIBS\n"
 printf "\n"

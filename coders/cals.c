@@ -334,10 +334,9 @@ static Image *ReadCALSImage(const ImageInfo *image_info,ExceptionInfo *exception
       (void) LiberateTemporaryFile(filename);
       ThrowReaderException(CoderError,UnableToWriteTemporaryFile,image);
     }
+  CloseBlob(image);
   DestroyImage(image);
-  clone_info=CloneImageInfo(image_info);
-  clone_info->blob=(void *) NULL;
-  clone_info->length=0;
+  clone_info=CloneImageInfo((ImageInfo *) NULL);
   FormatString(clone_info->filename,"tiff:%.1024s",filename);
   image=ReadImage(clone_info,exception);
   (void) LiberateTemporaryFile(filename);
@@ -545,7 +544,7 @@ static MagickPassFail WriteCALSImage(const ImageInfo *image_info,Image *image)
   /*
     Close output file and return image
   */
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return status;
 }
 

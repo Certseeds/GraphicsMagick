@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2017 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002, 2003 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -53,7 +53,8 @@
 %
 %  AppendImageToList() appends an image to the end of the list.  Please
 %  note that this API allows the list pointer to be updated and in fact
-%  it now updates the list pointer to be the image which was just added.
+%  it now updates the list pointer to be the image (or the end of the
+%  image list) which was just added.
 %
 %  The format of the AppendImageToList method is:
 %
@@ -85,6 +86,8 @@ MagickExport void AppendImageToList(Image **images,Image *image)
   for (p=(*images); p->next != (Image *) NULL; p=p->next);
   p->next=image;
   image->previous=p;
+  *images=image;
+  for (p=(*images); p->next != (Image *) NULL; p=p->next);
   *images=image;
 }
 
@@ -385,7 +388,7 @@ MagickExport long GetImageIndexInList(const Image *images)
 */
 MagickExport unsigned long GetImageListLength(const Image *images)
 {
-  register long
+  register unsigned long
     i;
 
   if (images == (Image *) NULL)

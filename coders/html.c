@@ -363,7 +363,7 @@ static unsigned int WriteHTMLImage(const ImageInfo *image_info,Image *image)
       (void) WriteBlobString(image,"</center>\n");
       (void) WriteBlobString(image,"</body>\n");
       (void) WriteBlobString(image,"</html>\n");
-      CloseBlob(image);
+      status &= CloseBlob(image);
       /*
         Write the image as transparent GIF.
       */
@@ -441,7 +441,7 @@ static unsigned int WriteHTMLImage(const ImageInfo *image_info,Image *image)
             }
         }
   (void) WriteBlobString(image,"</map>\n");
-  CloseBlob(image);
+  status &= CloseBlob(image);
   (void) strlcpy(image->filename,filename,MaxTextExtent);
   return(status);
 }

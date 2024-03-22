@@ -2309,7 +2309,7 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
                        profile_info);
     }
   /*
-    Ouput ICM profile.
+    Output ICM profile.
   */
   profile_info=GetImageProfile(image,"ICM",&profile_length);
   if (profile_info != (unsigned char *) NULL)
@@ -2562,6 +2562,6 @@ static unsigned int WritePICTImage(const ImageInfo *image_info,Image *image)
   MagickFreeResourceLimitedMemory(scanline);
   MagickFreeResourceLimitedMemory(packed_scanline);
   MagickFreeResourceLimitedMemory(buffer);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

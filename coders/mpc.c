@@ -17,7 +17,7 @@
 %                            M   M  P       CCCC                              %
 %                                                                             %
 %                                                                             %
-%              Read/Write Magick Persistant Cache Image Format.               %
+%              Read/Write Magick Persistent Cache Image Format.               %
 %                                                                             %
 %                                                                             %
 %                              Software Design                                %
@@ -355,7 +355,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
               Get values.
 
               Values not containing spaces are terminated by the first
-              white-space (or new-line) enountered.  Values containing
+              white-space (or new-line) encountered.  Values containing
               spaces and/or new-lines must be surrounded by braces.
             */
             values_length=MaxTextExtent;
@@ -678,7 +678,7 @@ static Image *ReadMPCImage(const ImageInfo *image_info,ExceptionInfo *exception)
                     i=number_of_profiles;
 
                     new_profiles=MagickReallocateResourceLimitedArray(ProfileInfo *,profiles,
-                                                                      number_of_profiles+1,sizeof(ProfileInfo));
+                        (size_t)number_of_profiles+1,sizeof(ProfileInfo));
                     if (new_profiles == (ProfileInfo *) NULL)
                       ThrowMPCReaderException(ResourceLimitError,MemoryAllocationFailed,image);
                     profiles=new_profiles;
@@ -1488,6 +1488,6 @@ static MagickPassFail WriteMPCImage(const ImageInfo *image_info,Image *image)
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return(status);
 }

@@ -182,7 +182,7 @@ MagickShmCtl(int shmid, int cmd, struct shmid_ds *buf)
   return status;
 }
 /*
-  Detatch from shared memory.
+  Detach from shared memory.
 */
 static int
 MagickShmDt(void *shmaddr)
@@ -191,14 +191,14 @@ MagickShmDt(void *shmaddr)
   if ((result=shmdt(shmaddr)) == -1)
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),
-                            "shm detatch at address 0x%p failed (%s)",
+                            "shm detach at address 0x%p failed (%s)",
                             shmaddr,
                             strerror(errno));
     }
   else
     {
       (void) LogMagickEvent(X11Event,GetMagickModule(),
-                            "shm detatch at address 0x%p",
+                            "shm detach at address 0x%p",
                             shmaddr);
     }
   return (result);
@@ -7298,7 +7298,7 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
           for (i=0; i < (long) height; i+=magnify)
           {
             /*
-              Propogate pixel magnify rows.
+              Propagate pixel magnify rows.
             */
             for (j=0; j < magnify; j++)
             {
@@ -7310,12 +7310,12 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
               for (k=0; k < width; k+=magnify)
               {
                 /*
-                  Propogate pixel magnify columns.
+                  Propagate pixel magnify columns.
                 */
                 for (l=0; l < magnify; l++)
                 {
                   /*
-                    Propogate each bit plane.
+                    Propagate each bit plane.
                   */
                   for (plane=0; (int) plane < ximage->bits_per_pixel; plane++)
                   {
@@ -7368,7 +7368,7 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
           for (i=0; i < (long) height; i+=magnify)
           {
             /*
-              Propogate pixel magnify rows.
+              Propagate pixel magnify rows.
             */
             for (j=0; j < magnify; j++)
             {
@@ -7380,12 +7380,12 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
               for (k=0; k < width; k+=magnify)
               {
                 /*
-                  Propogate pixel magnify columns.
+                  Propagate pixel magnify columns.
                 */
                 for (l=0; l < magnify; l++)
                 {
                   /*
-                    Propogate each bit plane.
+                    Propagate each bit plane.
                   */
                   for (plane=0; (int) plane < ximage->bits_per_pixel; plane++)
                   {
@@ -7432,7 +7432,7 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
         for (i=0; i < (long) height; i+=magnify)
         {
           /*
-            Propogate pixel magnify rows.
+            Propagate pixel magnify rows.
           */
           for (j=0; j < magnify; j++)
           {
@@ -7441,7 +7441,7 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
             for (k=0; k < width; k+=magnify)
             {
               /*
-                Propogate pixel magnify columns.
+                Propagate pixel magnify columns.
               */
               for (l=0; l < magnify; l++)
                 *q++=(*p);
@@ -7466,7 +7466,7 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
         for (i=0; i < (long) height; i+=magnify)
         {
           /*
-            Propogate pixel magnify rows.
+            Propagate pixel magnify rows.
           */
           for (j=0; j < magnify; j++)
           {
@@ -7475,7 +7475,7 @@ MagickXMakeMagnifyImage(Display *display,MagickXWindows *windows)
             for (k=0; k < width; k+=magnify)
             {
               /*
-                Propogate pixel magnify columns.
+                Propagate pixel magnify columns.
               */
               for (l=0; l < magnify; l++)
                 for (m=0; m < bytes_per_pixel; m++)

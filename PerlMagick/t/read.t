@@ -1,5 +1,5 @@
 #!/usr/local/bin/perl
-# Copyright (C) 2003-2022 GraphicsMagick Group
+# Copyright (C) 2003-2023 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1991-1999 E. I. du Pont de Nemours and Company
 #
@@ -11,7 +11,7 @@
 # Test reading formats supported directly by GraphicsMagick
 #
 # Whenever a new test is added/removed, be sure to update the
-# 1..n ouput.
+# 1..n output.
 #
 BEGIN { $| = 1; $test=1; print "TAP version 13\n1..88\n"; }
 END {print "not ok $test\n" unless $loaded;}
@@ -60,19 +60,22 @@ testRead('input.dib', q//,
 
 print("Flexible Image Transport System 8-bit ...\n");
 ++$test;
-testReadCompare('input_gray_08bit.fits', 'reference/read/input_gray_08bit_fits.miff', q//, 0, 0);
+#testReadCompare('input_gray_08bit.fits', 'reference/read/input_gray_08bit_fits.miff', q//, 0, 0);
 # This one produces a different signature each time!
-#testRead('input_gray_08bit.fits', q//,, ,'863a70f43cb481512e805babd7e09360ef6e5c7fe75725712242b367f0d0ef28');
+testRead('input_gray_08bit.fits', q//,, ,'863a70f43cb481512e805babd7e09360ef6e5c7fe75725712242b367f0d0ef28');
 
 print("Flexible Image Transport System LSB 16-bit ...\n");
 ++$test;
 testRead('input_gray_16bit.fits',  q//,
-         'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+         'acfbc25e7afd4b80db3e961fe4432cc9acab0d8f599728593ee950cb9099b10e',
+         'ee9617706ce2af8c4f40536d6e0f17626c5b080f5af4ed7a05f72445fb9dd3ca');
 
 print("Flexible Image Transport System LSB 32-bit ...\n");
 ++$test;
 testRead('input_gray_32bit.fits', q//,
-         'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+         'fb49d38988edb04b20bfa89c5e16378c3e18c559716194f2c9c712f8f232b11f',
+         '33fe0fb5e1dc38f8b74dce16a854a54bd2ea33052bf73ced9736ee86f3e6d0a8',
+         'b46acb2a1e91421d06f3c2a094f3e31eaa304721dba57890472c822b14da4abc');
 
 print("Flexible Image Transport System LSB double ...\n");
 ++$test;
@@ -81,17 +84,22 @@ testReadCompare('input_gray_lsb_double.fits', 'reference/read/input_gray_lsb_dou
 print("Flexible Image Transport System MSB 16-bit ...\n");
 ++$test;
 testRead('input_gray_msb_16bit.fits', q//,
-         'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+         'acfbc25e7afd4b80db3e961fe4432cc9acab0d8f599728593ee950cb9099b10e',
+         'ee9617706ce2af8c4f40536d6e0f17626c5b080f5af4ed7a05f72445fb9dd3ca');
 
 print("Flexible Image Transport System MSB 32-bit ...\n");
 ++$test;
 testRead('input_gray_msb_32bit.fits', q//,
-         'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+         'fb49d38988edb04b20bfa89c5e16378c3e18c559716194f2c9c712f8f232b11f',
+         '33fe0fb5e1dc38f8b74dce16a854a54bd2ea33052bf73ced9736ee86f3e6d0a8',
+         'b46acb2a1e91421d06f3c2a094f3e31eaa304721dba57890472c822b14da4abc');
 
 print("Flexible Image Transport System MSB 64-bit ...\n");
 ++$test;
 testRead('input_gray_msb_64bit.fits', q//,
-         'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+         '96bb41e5cb2053972958b7cc8293a2ee5f7d72920479cf586358d3364747d137',
+         'ab8c63ef21f01a4f94b757909a918cbb154f039b658816731c927003bf49eca5',
+         '4dcd8bb105383a45eb803a213f354af6655b5bad4d3e8a9c7355c28b2d5b738a');
 
 print("Flexible Image Transport System MSB float ...\n");
 ++$test;

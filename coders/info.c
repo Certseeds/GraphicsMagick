@@ -213,7 +213,7 @@ WriteINFOImage(const ImageInfo *image_info,Image *image)
       (void) LiberateTemporaryFile(temporary_filename);
     }
 
-  CloseBlob(image);
+  status &= CloseBlob(image);
 
   return status;
 }

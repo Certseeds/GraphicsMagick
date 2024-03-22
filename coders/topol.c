@@ -63,7 +63,7 @@ typedef struct
   magick_uint16_t TileWidth;    /* tile width in pixels */
   magick_uint16_t TileHeight;   /* tile height in pixels */
   magick_uint32_t TileOffsets;  /* offset to array of longints that contains
-                                   adresses of tiles in the raster (adreses
+                                   addresses of tiles in the raster (adreses
                                    are counted from 0) */
   magick_uint32_t TileByteCounts;/* offset to array of words, that contain amount of bytes stored in
                                    tiles. The tile size might vary depending on
@@ -550,7 +550,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   /* If ping is true, then only set image size and colors without reading any image data. */
   if (image_info->ping) goto DONE_READING;
 
-  if(((magick_uint64_t)(depth*Header.Cols+7)/8) * (magick_uint64_t)Header.Rows > (magick_uint64_t)GetBlobSize(image)-512)
+  if((((magick_uint64_t)depth*Header.Cols+7)/8) * (magick_uint64_t)Header.Rows > (magick_uint64_t)GetBlobSize(image)-512)
       goto TOPOL_KO;    /* Check for forged image that overflows file size. */
 
   /* ----- Handle the reindexing mez file ----- */
@@ -558,7 +558,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   if(j<=0 || j>256) j=256;
   for(i=0; i<(size_t) j; i++)
   {
-    MEZ[i] = (unsigned char)((i*255) / (j-1));
+    MEZ[i] = (unsigned char)((i*255) / ((size_t)j-1));
   }
 
   if(Header.FileType>=5) goto NoMEZ;
@@ -642,7 +642,7 @@ NoMEZ:          /*Clean up palette and clone_info*/
         if(j<=ldblk)
         {
           if(j==MEZ[i])
-            j = i; /* MEZ[i];   ignore MEZ!!! proper palete element after reindexing */
+            j = (long) i; /* MEZ[i];   ignore MEZ!!! proper palette element after reindexing */
           else
             j = MEZ[i];                 /* ?? I do not know, big mess ?? */
           if(j>=(long) image->colors) j=image->colors-1;
@@ -693,7 +693,7 @@ NoPalette:
      {
        if (ReadBlob(image, ldblk, (char *)BImgBuff) != (size_t) ldblk)
          ThrowTOPOLReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-       InsertRow(depth, BImgBuff, i, image, 0, image->columns, &import_options);
+       InsertRow(depth, BImgBuff, (long)i, image, 0, image->columns, &import_options);
      }
      break;
   case 2:
@@ -723,7 +723,7 @@ NoPalette:
          ThrowTOPOLReaderException(ResourceLimitError, MemoryAllocationFailed, image);
 
        (void)SeekBlob(image, Header.TileOffsets, SEEK_SET);
-       if(ReadBlobDwordLSB(image, TilesAcross*TilesDown*4, (magick_uint32_t *)Offsets) < 0)
+       if(ReadBlobDwordLSB(image, (size_t) TilesAcross*TilesDown*4, (magick_uint32_t *)Offsets) < 0)
        {
          MagickFreeResourceLimitedMemory(Offsets);
          ThrowTOPOLReaderException(CorruptImageError,InsufficientImageDataInFile, image);
@@ -760,7 +760,7 @@ NoPalette:
              if(SkipBlk>0)
                SeekBlob(image, SkipBlk, SEEK_CUR);
              /*printf("Inserting x=%d; y=%d\n", TilX*Header.TileWidth, i+TilY);*/
-             if(InsertRow(depth, BImgBuff, i+TilY, image, TilX*Header.TileWidth,
+             if(InsertRow(depth, BImgBuff, (long)(i+TilY), image, TilX*Header.TileWidth,
                     (image->columns<Header.TileWidth)?image->columns:Header.TileWidth, &import_options))
              {
                MagickFreeResourceLimitedMemory(Offsets);
@@ -849,13 +849,13 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
     if(image->colors <= 2)
     {
       Header.FileType = 0;
-      DataSize = (Header.Cols+7) / 8;
+      DataSize = ((size_t) Header.Cols+7) / 8;
       qt = GrayQuantum;
       bpp =1;
     } else if(image->colors <= 16)
     {
       Header.FileType = 4;
-      DataSize = (Header.Cols+1) / 2;
+      DataSize = ((size_t) Header.Cols+1) / 2;
       qt = IndexQuantum;
       bpp = 4;
     }
@@ -870,7 +870,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   else		// RGB
   {
     Header.FileType = 5;
-    DataSize = 3*Header.Cols;
+    DataSize = (size_t) 3*Header.Cols;
     qt = RGBQuantum;
     bpp = 8;
   }
@@ -936,7 +936,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
     }
   }
 
-  CloseBlob(image); /* valgrind reports write of unitialized data */
+  status &= CloseBlob(image); /* valgrind reports write of uninitialized data */
   MagickFreeResourceLimitedMemory(pixels);
 
   if (y != (long)image->rows)
@@ -964,15 +964,15 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
               j = 256;
             else
               j = 15;
-            WriteBlobByte(Palette,j);
+            WriteBlobByte(Palette,(magick_uint8_t) j);
             for(i=0; i<j; i++)
             {
               WriteBlobByte(Palette, i&0xFF);
               if(i<image->colors)
               {
-                WriteBlobByte(Palette,i);
-                WriteBlobByte(Palette,i);
-                WriteBlobByte(Palette,i);
+                WriteBlobByte(Palette, (magick_uint8_t)i);
+                WriteBlobByte(Palette, (magick_uint8_t)i);
+                WriteBlobByte(Palette, (magick_uint8_t)i);
               }
               else
               {
@@ -981,7 +981,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
                 WriteBlobByte(Palette,ScaleQuantumToChar(image->colormap[i].blue));
               }
             }
-            CloseBlob(Palette);
+            status &= CloseBlob(Palette);
           }
           DestroyImage(Palette);
         }

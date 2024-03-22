@@ -42,7 +42,7 @@ WriteMakefile
    # Preprocessor defines
    'DEFINE'	=> ' -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES=1  -DHAVE_CONFIG_H',     # e.g., '-DHAVE_SOMETHING' 
 
-   # Header search specfication and preprocessor flags
+   # Header search specification and preprocessor flags
    'INC'	=> '-I../ -I/home/bfriesen/src/graphics/GraphicsMagick-head -I/usr/local/include/freetype2 -I/usr/openwin/include -I/usr/openwin/include/X11 -I/usr/include/libxml2',
 
    # C compiler

@@ -18,7 +18,7 @@ extern "C" {
 
 #if defined(PRE_R6_ICCCM)
 /*
-  Compatability defines for pre X11R6 ICCCM.
+  Compatibility defines for pre X11R6 ICCCM.
 */
 #define XK_KP_Home              0xFF95
 #define XK_KP_Left              0xFF96
@@ -38,7 +38,7 @@ extern MagickExport Status
 
 #if defined(PRE_R5_ICCCM)
 /*
-  Compatability defines for pre X11R5 ICCCM.
+  Compatibility defines for pre X11R5 ICCCM.
 */
 extern MagickExport XrmDatabase
   XrmGetDatabase();
@@ -46,7 +46,7 @@ extern MagickExport XrmDatabase
 
 #if defined(PRE_R4_ICCCM)
 /*
-  Compatability defines for pre X11R4 ICCCM.
+  Compatibility defines for pre X11R4 ICCCM.
 */
 
 #define WithdrawnState  0

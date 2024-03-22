@@ -632,7 +632,7 @@ static RETSIGTYPE MagickSignalHandler(int signo);
   Due to a weakness in the POSIX APIs, the only way to see the handler
   which was registered before is by registering a new handler.
 
-  If an API user registers its own signal hander, then it is responsible
+  If an API user registers its own signal handler, then it is responsible
   for invoking DestroyMagick when a signal is received.
 */
 static void
@@ -952,7 +952,7 @@ IsValidFilesystemPath(const char *path)
     {
 #if defined(POSIX)
       /* For POSIX we check the first character to see of it is a file
-          system path seperator. If not then we ignore the passed data
+          system path separator. If not then we ignore the passed data
       */
       if ((*path == *DirectorySeparator))
         return IsAccessibleNoLogging(path);

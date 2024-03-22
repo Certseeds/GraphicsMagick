@@ -363,6 +363,6 @@ static unsigned int WriteUYVYImage(const ImageInfo *image_info,Image *image)
     Restore colorspace
   */
   (void) TransformColorspace(image,original_colorspace);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

@@ -85,7 +85,7 @@ with
 
 Note that this differs from the ImageMagick version of PerlMagick which
 uses the namespace Image::Magick. Any PerlMagick code written for the
-ImageMagick version of PerlMagick requires a global substition of
+ImageMagick version of PerlMagick requires a global substitution of
 Image::Magick to Graphics::Magick in order to work with the
 GraphicsMagick version.
 

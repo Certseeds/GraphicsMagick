@@ -74,7 +74,7 @@
 #    item.  It *should* break them anyway if the next line is a
 #    continuation of the list item, but I haven't dealt with this yet.
 #  * Added action on lines that are all capital letters.  You can change
-#    how these lines get tagged, as well as the mininum number of
+#    how these lines get tagged, as well as the minimum number of
 #    consecutive capital letters required to fire off this action.
 #
 # Revision 1.3  94/05/17  15:58:58  15:58:58  seth (Seth Golub)
@@ -414,7 +414,7 @@ sub deal_with_options
         }
 
         print STDERR "Unrecognized option: $ARGV[0]\n";
-        print STDERR " or bad paramater: $ARGV[1]\n" if($ARGV[1]);
+        print STDERR " or bad parameter: $ARGV[1]\n" if($ARGV[1]);
 
         &usage;
         exit(1);

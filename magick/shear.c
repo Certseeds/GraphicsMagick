@@ -1604,7 +1604,7 @@ YShearImage(Image *image,const double degrees,
           continue;
         }
       /*
-        Fractional displacment.
+        Fractional displacement.
       */
       step++;
       pixel=image->background_color;

@@ -22,7 +22,7 @@ GraphicsMagick Mercurial
 .. _Mercurial : https://www.mercurial-scm.org/
 .. _TortoiseHg : https://tortoisehg.bitbucket.io/
 .. _`GraphicsMagick repository at SourceForge` : http://hg.code.sf.net/p/graphicsmagick/code/
-.. _`GraphicsMagick repository at OSDN` : https://hg.osdn.net/view/graphicsmagick/GM
+.. _`GraphicsMagick repository at Heptapod` : https://foss.heptapod.net/graphicsmagick/graphicsmagick
 
 .. contents::
 
@@ -48,7 +48,7 @@ Web Access
 =============
 
 The `GraphicsMagick repository at SourceForge`_ and `GraphicsMagick
-repository at OSDN`_ web interfaces are available which may be used to
+repository at Heptapod`_ web interfaces are available which may be used to
 interactively view the latest versions of files (or the changes to
 files) using your web browser.  These two servers will be updated at
 about the same time so they should normally contain the same content.
@@ -63,9 +63,9 @@ directory, issue the command to one of the two public servers::
 
 or::
 
-  hg clone https://hg.osdn.net/view/graphicsmagick/GM
+  hg clone https://foss.heptapod.net/graphicsmagick/graphicsmagick GM
 
-The repository is large (e.g. 239MB of Hg content, resulting in 299MB
+The repository is large (e.g. 296M of Hg content, resulting in 450M
 after files are extracted), so some time may be required to transfer
 all the changesets.  Patience is a virtue!
 
@@ -144,7 +144,7 @@ Since Mercurial_ is a distributed revision control system, you may
 clone the GraphicsMagick repository and work for days or weeks (making
 your own local commits) before you decide to push some or all of your
 changes to the GraphicsMagick development repository.  GraphicsMagick
-developers first commit changes to their own local respository, then
+developers first commit changes to their own local repository, then
 they push their changes to the GraphicsMagick development repository
 at hg.graphicsmagick.org, later on (after testing and possible fixes)
 I will push the changes to the stable repository at SourceForge.
@@ -176,7 +176,7 @@ The repository hierarchy is as follows:
 
   The stable repository is available via http at
   "http://hg.code.sf.net/p/graphicsmagick/code" or
-  "https://hg.osdn.net/view/graphicsmagick/GM".  Any changes in the
+  "https://foss.heptapod.net/graphicsmagick/graphicsmagick".  Any changes in the
   unstable development repository are pushed to the stable
   repositories (by the developer responsible for this role) once any
   necessary adjustments have been made, documentation files have been
@@ -186,13 +186,13 @@ The repository hierarchy is as follows:
 To build your local development repository (as quickly as possible),
 you may use these steps:
 
-1. Clone the stable respository at SourceForge or OSDN::
+1. Clone the stable repository at SourceForge or Heptapod::
 
      hg clone http://hg.code.sf.net/p/graphicsmagick/code GM
 
      or
 
-     hg clone https://hg.osdn.net/view/graphicsmagick/GM GM
+     hg clone https://foss.heptapod.net/graphicsmagick/graphicsmagick GM
 
 2. Adjust your local repository path default to use the unstable repository.
 

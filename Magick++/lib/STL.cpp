@@ -296,7 +296,7 @@ void Magick::drawImage::operator()( Magick::Image &image_ ) const
   image_.draw( _drawableList );
 }
 
-// Edge image (hilight edges in image)
+// Edge image (highlight edges in image)
 Magick::edgeImage::edgeImage( const double radius_ )
   : _radius( radius_ )
 {
@@ -306,7 +306,7 @@ void Magick::edgeImage::operator()( Magick::Image &image_ ) const
   image_.edge( _radius );
 }
 
-// Emboss image (hilight edges with 3D effect)
+// Emboss image (highlight edges with 3D effect)
 Magick::embossImage::embossImage( void )
   : _radius( 1 ),
     _sigma( 0.5 )
@@ -953,7 +953,7 @@ void Magick::solarizeImage::operator()( Magick::Image &image_ ) const
   image_.solarize( _factor );
 }
 
-// Spread pixels randomly within image by specified ammount
+// Spread pixels randomly within image by specified amount
 Magick::spreadImage::spreadImage( const unsigned int amount_ )
   : _amount( amount_ )
 {

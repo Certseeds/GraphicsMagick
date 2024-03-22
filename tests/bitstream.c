@@ -73,7 +73,7 @@ int main ( int argc, char *argv[])
       reps = atoi(argv[2]);
       bits = atoi(argv[3]);
 
-      bytes=(unsigned char *)malloc(reps*2);
+      bytes=(unsigned char *)malloc((size_t) reps*2);
       if (!bytes)
         {
           (void) printf("Failed to allocate %lu bytes\n", (unsigned long) reps*2);
@@ -120,7 +120,7 @@ int main ( int argc, char *argv[])
           (void) printf("Failed to allocate %lu bytes\n", (unsigned long) reps*2);
           exit(1);
         }
-      (void) memset(bytes,0,reps*2);
+      (void) memset(bytes,0,(size_t) reps*2);
 
       for (rep=reps; rep > 0; rep--)
         {

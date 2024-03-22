@@ -1,10 +1,11 @@
 /*
+ * Copyright (C) 2003 - 2023 GraphicsMagick Group
  *
  * Test DispatchImage/ConstituteImage operations via
  * write/read/write/read sequence to detect any data corruption
  * problems.
  *
- * Written by Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
+ * Written by Bob Friesenhahn <bfriesen@GraphicsMagick.org>
  *
  * The image returned by both reads must be identical in order for the
  * test to pass.
@@ -209,8 +210,10 @@ int main ( int argc, char **argv )
     }
 
   /*  If a CMYK map is specified, make sure that input image is CMYK */
-  if (strchr(map,'c') || strchr(map,'C') || strchr(map,'m') || strchr(map,'M') ||
-      strchr(map,'y') || strchr(map,'y') || strchr(map,'k') || strchr(map,'k'))
+  if ((strchr(map,'c') != NULL) || (strchr(map,'C') != NULL) ||
+      (strchr(map,'m') != NULL) || (strchr(map,'M') != NULL) ||
+      (strchr(map,'y') != NULL) || (strchr(map,'Y') != NULL) ||
+      (strchr(map,'k') != NULL) || (strchr(map,'K') != NULL))
     (void) TransformColorspace(original,CMYKColorspace);
 
   /*

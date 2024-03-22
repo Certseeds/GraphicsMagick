@@ -1951,10 +1951,10 @@ static unsigned int WritePALMImage(const ImageInfo *image_info,Image *image)
         (void) WriteBlobMSBShort(image, count - 16);
     }
 
-  CloseBlob(image);
+  status &= CloseBlob(image);
   DestroyImage(palm_image);
   MagickFreeResourceLimitedMemory(one_row);
   MagickFreeResourceLimitedMemory(lastrow);
-  return(True);
+  return(status);
 }
 #endif /* if ENABLE_PALM_WRITER */

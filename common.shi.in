@@ -6,6 +6,13 @@ MAGICK_FEATURES='@MAGICK_FEATURES@'
 top_srcdir='@abs_top_srcdir@'
 top_builddir='@abs_top_builddir@'
 
+# Populate a set of shell variables with a variable per feature
+# This is used to implement a poor-man's hash map.
+for feature in ${MAGICK_FEATURES}
+do
+    eval MAGICK_FEATURE_${feature}=yes
+done
+
 set -a
 TOP_SRCDIR_NATIVE='@top_srcdir_native@'
 GM="${MEMCHECK} @abs_top_builddir@/utilities/gm"
@@ -19,6 +26,13 @@ MAGICK_CODER_STABILITY='BROKEN'
 MAGICK_FONT='@abs_top_srcdir@/PerlMagick/demo/Generic.ttf'
 
 PATH="@abs_top_builddir@/utilities:${PATH}"
+
+MIFF_COMPRESS=none
+if [ "${MAGICK_FEATURE_BZLIB}" = "yes" ] ; then
+    MIFF_COMPRESS=bzip
+elif [ "${MAGICK_FEATURE_ZLIB}" = "yes" ] ; then
+    MIFF_COMPRESS=zip
+fi
 
 # Number of bits in a pixel Quantum (8/16/32)
 QuantumDepth=@QuantumDepth@
@@ -39,13 +53,81 @@ fi
 if test -z "$MAGICK_LIMIT_DISK" ; then
     export MAGICK_LIMIT_DISK=0
 fi
+if test -z "$MAGICK_LIMIT_WRITE" ; then
+    # File write/read limits are based on checking output sizes of the
+    # largest files.  This means that tests may fail if these files
+    # become larger.  The two largest files are:
+    #
+    # utilities/tests/HaldClutIdentity_out.miff
+    # utilities/tests/montage_out.miff
+    printf "Evaluating MAGICK_LIMIT_WRITE, MIFF_COMPRESS=${MIFF_COMPRESS}\n"
+    case "${MIFF_COMPRESS}" in
+        none)
+            case ${QuantumDepth} in
+                8)
+                    MAGICK_LIMIT_WRITE=8.6MB
+                    ;;
+                16)
+                    MAGICK_LIMIT_WRITE=18MB
+                    ;;
+                32)
+                    MAGICK_LIMIT_WRITE=35MB
+                    ;;
+            esac
+        ;;
+        rle)
+            case ${QuantumDepth} in
+                8)
+                    MAGICK_LIMIT_WRITE=12MB
+                    ;;
+                16)
+                    MAGICK_LIMIT_WRITE=20MB
+                    ;;
+                32)
+                    MAGICK_LIMIT_WRITE=38MB
+                    ;;
+            esac
+            ;;
+        zip)
+            case ${QuantumDepth} in
+                8)
+                    MAGICK_LIMIT_WRITE=6.0MB
+                    ;;
+                16)
+                    MAGICK_LIMIT_WRITE=7.3MB
+                    ;;
+                32)
+                    MAGICK_LIMIT_WRITE=6.3MB
+                    ;;
+            esac
+            ;;
+        bzip)
+            case ${QuantumDepth} in
+                8)
+                    MAGICK_LIMIT_WRITE=3.2MB
+                    ;;
+                16)
+                    MAGICK_LIMIT_WRITE=4.6MB
+                    ;;
+                32)
+                    MAGICK_LIMIT_WRITE=5.6MB
+                    ;;
+            esac
+            ;;
+    esac
+    export MAGICK_LIMIT_WRITE
+    if test -z "$MAGICK_LIMIT_READ" ; then
+        export MAGICK_LIMIT_READ=$MAGICK_LIMIT_WRITE
+    fi
+fi
 #if test -z "$MAGICK_LIMIT_READ" ; then
-#    export MAGICK_LIMIT_READ=800000
+#    export MAGICK_LIMIT_READ=36MB
 #fi
+
 # Enable debug traces for exceptions
 if test -z "MAGICK_DEBUG" ; then
     export MAGICK_DEBUG=exception
 fi
-printf "Resource Limits: MAGICK_LIMIT_MEMORY=%s MAGICK_LIMIT_WIDTH=%s MAGICK_LIMIT_HEIGHT=%s MAGICK_LIMIT_DISK=%s\n\n" "$MAGICK_LIMIT_MEMORY" "$MAGICK_LIMIT_WIDTH" "$MAGICK_LIMIT_HEIGHT" "$MAGICK_LIMIT_DISK"
+printf "Resource Limits: MAGICK_LIMIT_MEMORY=%s MAGICK_LIMIT_WIDTH=%s MAGICK_LIMIT_HEIGHT=%s MAGICK_LIMIT_DISK=%s MAGICK_LIMIT_READ=%s MAGICK_LIMIT_WRITE=%s\n\n" "$MAGICK_LIMIT_MEMORY" "$MAGICK_LIMIT_WIDTH" "$MAGICK_LIMIT_HEIGHT" "$MAGICK_LIMIT_DISK" "$MAGICK_LIMIT_READ" "$MAGICK_LIMIT_WRITE"
 
 set +a

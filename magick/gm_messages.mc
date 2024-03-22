@@ -299,6 +299,18 @@ JPEG embedding failed
 .
 
 MessageId       = +1
+SymbolicName    = CoderErrorJXLDecoderAPIFailure
+Language        = English
+JXL decoder API failure
+.
+
+MessageId       = +1
+SymbolicName    = CoderErrorJXLEncoderAPIFailure
+Language        = English
+JXL encoder API failure
+.
+
+MessageId       = +1
 SymbolicName    = CoderErrorLocationTypeIsNotSupported
 Language        = English
 Location type is not supported
@@ -2906,6 +2918,12 @@ MessageId       = +1
 SymbolicName    = LimitErrorUnableToTransformColorspace
 Language        = English
 unable to transform colorspace
+.
+
+MessageId       = +1
+SymbolicName    = LimitErrorWriteLimitExceeded
+Language        = English
+Write limit exceeded (see -limit Write)
 .
 
 MessageId       = +1

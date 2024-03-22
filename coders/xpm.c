@@ -1041,8 +1041,8 @@ static unsigned int WritePICONImage(const ImageInfo *image_info,Image *image)
   }
   DestroyImage(picon);
   (void) WriteBlobString(image,"};\n");
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }
 
 /*
@@ -1274,6 +1274,6 @@ static unsigned int WriteXPMImage(const ImageInfo *image_info,Image *image)
         break;
   }
   (void) WriteBlobString(image,"};\n");
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2020 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -39,9 +39,11 @@
 #include "magick/blob.h"
 #include "magick/colormap.h"
 #include "magick/constitute.h"
+#include "magick/log.h"
 #include "magick/magick.h"
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
+#include "magick/resource.h"
 #include "magick/utility.h"
 
 /*
@@ -133,10 +135,48 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
     Initialize JBIG toolkit.
   */
   jbg_dec_init(&jbig_info);
-  jbg_dec_maxsize(&jbig_info,(unsigned long) image->columns,
-                  (unsigned long) image->rows);
-  image->columns= jbg_dec_getwidth(&jbig_info);
-  image->rows= jbg_dec_getheight(&jbig_info);
+
+  /*
+    Attempt to set maximum image dimensions based on resource limits.
+
+    This does work in normal cases, but in other cases the first call
+    to jbg_dec_in() takes a very long time, and it returns large image
+    dimensions anyway.
+  */
+  {
+    magick_int64_t
+      width_limit,
+      height_limit,
+      pixels_limit;
+
+    width_limit = GetMagickResourceLimit(WidthResource);
+    height_limit = GetMagickResourceLimit(HeightResource);
+    pixels_limit = GetMagickResourceLimit(PixelsResource);
+
+    if (MagickResourceInfinity != width_limit)
+      if ((image->columns == 0) || (image->columns > (unsigned long) width_limit))
+        image->columns = (unsigned long) width_limit;
+
+    if (MagickResourceInfinity != height_limit)
+      if ((image->rows == 0) || (image->rows > (unsigned long) height_limit))
+        image->rows = (unsigned long) height_limit;
+
+    if ((MagickResourceInfinity != pixels_limit) &&
+        ((magick_int64_t) (image->columns*image->rows)) > pixels_limit)
+      {
+        magick_int64_t max_dimension = sqrt((double) pixels_limit);
+        image->columns = (unsigned long) max_dimension;
+        image->rows = (unsigned long) max_dimension;
+      }
+
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "JBIG: Setting maximum dimensions %lux%lu",
+                            image->columns, image->rows);
+    jbg_dec_maxsize(&jbig_info,(unsigned long) image->columns,
+                    (unsigned long) image->rows);
+  }
+
   image->depth=1;
   /*
     Read JBIG file.
@@ -145,6 +185,10 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
   if (buffer == (unsigned char *) NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
   status=JBG_EAGAIN;
+  /* FIXME: Should handle JBG_EOK_INTR for multi-resolution support */
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "JBIG: Entering jbg_dec_in() decode loop...");
   do
     {
       length=(long) ReadBlob(image,MaxBufferSize,(char *) buffer);
@@ -152,13 +196,23 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
         break;
       p=buffer;
       count=0;
-      while ((length > 0) && ((status == JBG_EAGAIN) || (status == JBG_EOK)))
+      while ((length > 0) && (status == JBG_EAGAIN))
         {
           status=jbg_dec_in(&jbig_info,p,length,&count);
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "JBIG: jbg_dec_in() returns 0x%02x (\"%s\")",
+                                  status, jbg_strerror(status));
           p+=count;
           length-=count;
         }
-    } while ((status == JBG_EAGAIN) || (status == JBG_EOK));
+    } while (status == JBG_EAGAIN);
+  if (JBG_EOK != status)
+    {
+      jbg_dec_free(&jbig_info);
+      MagickFreeMemory(buffer);
+      ThrowReaderException(CorruptImageError,CorruptImage,image);
+    }
   /*
     Create colormap.
   */
@@ -170,7 +224,7 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
       if (!AllocateImageColormap(image,2))
         {
           MagickFreeMemory(buffer);
-          ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+
         }
       image->colormap[0].red=0;
       image->colormap[0].green=0;
@@ -184,6 +238,11 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
   image->is_grayscale=MagickTrue;
   image->is_monochrome=MagickTrue;
   image->colorspace=GRAYColorspace;
+  if (image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                          "JBIG: %lux%lu, resolution %gx%g",
+                          image->columns, image->rows,
+                          image->x_resolution,image->y_resolution);
   if (image_info->ping)
     {
       jbg_dec_free(&jbig_info);
@@ -269,7 +328,7 @@ ModuleExport void RegisterJBIGImage(void)
     description[]="Joint Bi-level Image experts Group interchange format";
 
   static const char
-    version[]="JBIG-Kit " JBG_VERSION;
+    version[]="JBIG-Kit " JBG_VERSION " (" JBG_LICENCE " license)";
 
   MagickInfo
     *entry;
@@ -283,7 +342,7 @@ ModuleExport void RegisterJBIGImage(void)
   entry->description=description;
     entry->version=version;
   entry->module="JBIG";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("JBG");
@@ -294,7 +353,7 @@ ModuleExport void RegisterJBIGImage(void)
   entry->description=description;
   entry->version=version;
   entry->module="JBIG";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("JBIG");
@@ -305,7 +364,7 @@ ModuleExport void RegisterJBIGImage(void)
   entry->description=description;
   entry->version=version;
   entry->module="JBIG";
-  entry->coder_class=PrimaryCoderClass;
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 
@@ -512,7 +571,7 @@ static unsigned int WriteJBIGImage(const ImageInfo *image_info,Image *image)
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }
 #endif

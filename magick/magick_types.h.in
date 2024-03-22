@@ -116,7 +116,7 @@ extern "C" {
 
 #else
 
-  /* The following typedefs are subtituted when using Unixish configure */
+  /* The following typedefs are substituted when using Unixish configure */
   typedef @INT8_T@   magick_int8_t;     /* int8_t */
   typedef @UINT8_T@  magick_uint8_t;    /* uint8_t */
 

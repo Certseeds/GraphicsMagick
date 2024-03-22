@@ -17,7 +17,7 @@ using namespace std;
 #include "Magick++/Exception.h"
 
 //
-// Color operator fuctions
+// Color operator functions
 //
 int Magick::operator == ( const Magick::Color& left_,
                           const Magick::Color& right_ )

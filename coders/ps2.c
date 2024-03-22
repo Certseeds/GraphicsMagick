@@ -1233,6 +1233,6 @@ static unsigned int WritePS2Image(const ImageInfo *image_info,Image *image)
       (void) WriteBlobString(image,buffer);
     }
   (void) WriteBlobString(image,"%%EOF\n");
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

@@ -216,7 +216,7 @@ int _Gm_convert_fp32_to_fp16 (const float *fp32, fp_16bits *fp16, const int mode
         new_expt = expt - 127 + 15;
 
       /* Even if the new exponent is too small to represent,
-       * the mantissa could have signficant digits that can
+       * the mantissa could have significant digits that can
        * be represented in the new value as a subnormal.
        */
       if (new_expt <= 0) /* Underflow */
@@ -293,7 +293,7 @@ int _Gm_convert_fp32_to_fp16 (const float *fp32, fp_16bits *fp16, const int mode
             }
           else /* Normal value within range of target type */
             {
-              /* Check bits to the right of unit in last signficant place
+              /* Check bits to the right of unit in last significant place
                * for destination, eg first digit that cannot be stored.
                * Rounding of least significant retained bit falls to value
                * which will produce a zero in the LSB if the bounding values
@@ -718,7 +718,7 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
         new_expt = expt - 127 + 63;
 
       /* Even if the new exponent is too small to represent,
-       * the mantissa could have signficant digits that can
+       * the mantissa could have significant digits that can
        * be represented in the new value as a subnormal.
        */
       if (new_expt <= 0) /* Underflow */
@@ -791,7 +791,7 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
             { /* Remove the bits to the left of the binary point
                * by shifting the fractional bits into the leftmost position
                */
-              /* Check bits to the right of Unit in last signficant place.
+              /* Check bits to the right of Unit in last significant place.
                * Rounding of least significant retained bit falls to value
                * which will produce a zero in the LSB if the bounding values
                * are equidistant from the unrounded value.

@@ -45,7 +45,7 @@ yellow, magenta, black.  Otherwise the colorspace is ignored.
 > Also, the colorspace transformations are a bit non-standard.  I assume that
 > this is to fit exactly to the range of Quantum.  If so, would you recommend
 
-I got most of these from authorative sources such as the Color FAQ.  There
+I got most of these from authoritative sources such as the Color FAQ.  There
 is some transforms on the equations to make them fit in [0-255].
 
 > that Magick++ use the exact transformations that ImageMagick does since

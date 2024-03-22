@@ -15,7 +15,7 @@ Many applications will be unable to read many of the generated TIFF
 files.
 
 The script is not integrated into the GraphicsMagick test framework so
-some editing may be desireable, such as to use a special
+some editing may be desirable, such as to use a special
 GraphicsMagick build or to use your favorite input image.
 
 Some patience is required while generating an image containing 65536 colors!

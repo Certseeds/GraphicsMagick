@@ -433,7 +433,7 @@ ModuleExport void RegisterPS3Image(void)
 %
 %    o pixels: the serialized indexes.
 %
-%    o length: the length of the pixels mamory area.
+%    o length: the length of the pixels memory area.
 %
 */
 static unsigned int SerializePseudoClassImage(const ImageInfo *image_info,
@@ -514,7 +514,7 @@ static unsigned int SerializePseudoClassImage(const ImageInfo *image_info,
 %
 %    o pixels: the serialized image channels.
 %
-%    o length: the length of the pixels mamory area.
+%    o length: the length of the pixels memory area.
 %
 */
 static unsigned int SerializeMultiChannelImage(const ImageInfo *image_info,
@@ -610,7 +610,7 @@ static unsigned int SerializeMultiChannelImage(const ImageInfo *image_info,
 %
 %    o pixels: the serialized image channels.
 %
-%    o length: the length of the pixels mamory area.
+%    o length: the length of the pixels memory area.
 %
 */
 static unsigned int SerializeSingleChannelImage(const ImageInfo *image_info,
@@ -1609,7 +1609,7 @@ static MagickPassFail WritePS3Image(const ImageInfo *image_info,Image *image)
     else
       (void) WriteBlobString(image,"false\n");
 
-    /* Compression seems to take precedence over anyting */
+    /* Compression seems to take precedence over anything */
     if (compression == FaxCompression)
       (void) SetImageType(image, BilevelType);
 
@@ -1932,8 +1932,8 @@ static MagickPassFail WritePS3Image(const ImageInfo *image_info,Image *image)
       (void) WriteBlobString(image,buffer);
     }
   (void) WriteBlobString(image,"%%EOF\n");
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }
 
 #if defined(HasZLIB)

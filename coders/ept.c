@@ -696,7 +696,7 @@ static unsigned int WriteEPTImage(const ImageInfo *image_info,Image *image)
                                 "Failed to open \"%s\" for read",ps_filename);
         }
 
-      CloseBlob(image);
+      status &= CloseBlob(image);
     }
   else
     {
@@ -709,5 +709,5 @@ static unsigned int WriteEPTImage(const ImageInfo *image_info,Image *image)
   (void) LiberateTemporaryFile(tiff_filename);
   if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
-  return(MagickPass);
+  return(status);
 }

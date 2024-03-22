@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2022 GraphicsMagick Group
+  Copyright (C) 2003 - 2023 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -17,6 +17,7 @@
 #include "magick/bit_stream.h"
 #include "magick/colormap.h"
 #include "magick/constitute.h"
+#include "magick/enum_strings.h"
 #include "magick/floats.h"
 #include "magick/magick.h"
 #include "magick/pixel_cache.h"
@@ -630,6 +631,15 @@ ExportGrayQuantumType(unsigned char * restrict destination,
   register unsigned int
     unsigned_value;
 
+#if 0
+  printf("ExportGrayQuantumType(): storage_class=%s, indexes=%p, colors=%u, number_pixels=%lu,"
+         " quantum_size=%u, sample_type=%s, endian=%s, unsigned_scale=%u, grayscale_miniswhite=%c,"
+         "sample_bits=%u double_minvalue=%g, double_scale=%g\n",
+         ClassTypeToString(image->storage_class), indexes, image->colors,
+         number_pixels, quantum_size, QuantumSampleTypeToString(sample_type), EndianTypeToString(endian),
+         unsigned_scale, grayscale_miniswhite ? 't' : 'f', sample_bits, double_minvalue, double_scale);
+#endif
+
   if (sample_type == UnsignedQuantumSampleType)
     {
       switch (quantum_size)
@@ -637,6 +647,7 @@ ExportGrayQuantumType(unsigned char * restrict destination,
         case 1:
           {
             if ((image->storage_class == PseudoClass) &&
+                (image->colors == 2) &&
                 (indexes != (IndexPacket *) NULL))
               {
                 /*

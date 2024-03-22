@@ -1,4 +1,4 @@
-.TH gm 1 "2023/09/18" "GraphicsMagick"
+.TH gm 1 "2024/02/11" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -57,7 +57,7 @@ displays an animation (e.g. a GIF file) on any workstation display
 running an \fIX\fP server.
 
 \fBbatch\fP
-executes an arbitary number of the utility commands
+executes an arbitrary number of the utility commands
 (e.g. \fBconvert\fP) in the form of a simple linear batch script in
 order to improve execution efficiency, and/or to allow use as a
 subordinate co-process under the control of an arbitrary script or
@@ -407,7 +407,7 @@ writes files \fIimage00.miff, image01.miff,\fP etc. Only a single
 specification is allowed within an output filename. If more than one
 specification is present, it will be ignored. It is best to embed the
 scene number in the base part of the file name, not in the extension,
-because the extension will not be a recognizeable image type.
+because the extension will not be a recognizable image type.
 
 When running a commandline utility, you can
 prepend an at sign @ to a filename to read a list of image
@@ -513,7 +513,7 @@ encryption.  Encrypting images being written is not supported.
 .B "-auto-orient"
 \fRorient (rotate) image so it is upright
 
-Adjusts the image orienation so that it is suitable for viewing.  Uses
+Adjusts the image orientation so that it is suitable for viewing.  Uses
 the orientation tag obtained from the image file or as supplied by the
 \fB-orient\fP option.
 .TP
@@ -1386,6 +1386,41 @@ behaves.
 .in 20
 Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
+
+.in 15
+.in 15
+.B "jpeg:data-precision=<value>"
+.in 20
+ \fR
+.in 20
+Selects the JPEG sample storage size.  Normal JPEG uses
+8. Turbo-jpeg and some variants of IJG JPEG also support 12 and 16
+bits.
+
+.in 15
+.in 15
+.B "jpeg:lossless-precision=<value>"
+.in 20
+ \fR
+.in 20
+Selects a degree of precision to use while performing DPCM-based
+compression.  The available range 0 to precision-1.  For example, if
+the output depth is 16, then the available range is 0 to 15.  When the
+precision is non-zero, then the pixels are right-shifted to
+effectively support fewer bits (fewer colors), but offering an
+improved compression ratio.  Use a value of 0 to achieve lossless
+compression.
+
+.in 15
+.in 15
+.B "jpeg:lossless-predictor=<value>"
+.in 20
+ \fR
+.in 20
+Selects the predictor to use for lossless compression.  The
+supported values are in the range of 1 to 7 and select a pre-defined
+predictor algorithm to use, which considers surrounding pixels. The
+best predictor for a particular image depends on the image.
 
 .in 15
 .in 15
@@ -3032,7 +3067,7 @@ interface works similar to Photoshop's "Image->Adjustments->Levels..."
 "Input Levels" interface.
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 
 By default, resource limits are estimated based on the available
 resources and capabilities of the system. The resource limits are
@@ -3043,8 +3078,9 @@ maximum total number of file bytes which may be memory mapped;
 image storage; \fBPixels\fP, maximum absolute image size (per image);
 \fBWidth\fP, maximum image pixels width; \fBHeight\fP, maximum image
 pixels height; \fBRead\fP, maximum number of uncompressed bytes to
-read; and \fBThreads\fP, the maximum number of worker threads to use
-per OpenMP thread team.
+read; \fBWrite\fP maximum number of uncompressed bytes to write; and
+\fBThreads\fP, the maximum number of worker threads to use per OpenMP
+thread team.
 
 The \fBDisk\fP and \fBMap\fP resource limits are used to decide if
 (for a given image) the decoded image ("pixel cache") should be stored
@@ -3059,14 +3095,22 @@ establishes an overall limit since using the disk is the means of last
 resort. When the disk limit has been reached, no more images may be
 read.
 
-The amount of uncompressed data read when reading one image may be
-limited by the \fBRead\fP limit.  Reading the image fails when the
+The amount of uncompressed data read when reading one image file may
+be limited by the \fBRead\fP limit.  Reading the image fails when the
 limit is hit.  This option is useful if the data is read from a stream
 (pipe) or from a compressed file such as a gzipped file.  Some files
-are very compressable and so a small compressed file can decompress to
+are very compressible and so a small compressed file can decompress to
 a huge amount of data.  This option also defends against files which
 produce seemingly endless loops while decoding by seeking backwards in
 the file.
+
+The amount of uncompressed data written when writing one image file
+may be limited by the \fBWrite\fP limit.  Writing the image fails
+(similar to disk full) when the limit is hit.  If the output is to an
+ordinary file (rather than pipe) then any truncated output file is
+removed.  This option may be used to assure that unexpectedly large
+files are not written.  This option may also be used to simulate what
+will happen if the disk is full.
 
 The value argument is an absolute value, but may have standard binary
 suffix characters applied ('K', 'M', 'G', 'T', 'P', 'E') to apply a
@@ -3081,10 +3125,11 @@ environment variables \fBMAGICK_LIMIT_DISK\fP,
 \fBMAGICK_LIMIT_FILES\fP, \fBMAGICK_LIMIT_MAP\fP,
 \fBMAGICK_LIMIT_MEMORY\fP, \fBMAGICK_LIMIT_PIXELS\fP,
 \fBMAGICK_LIMIT_WIDTH\fP, \fBMAGICK_LIMIT_HEIGHT\fP.
-\fBMAGICK_LIMIT_READ\fP, and \fBOMP_NUM_THREADS\fP may be used to
-set the limits for disk space, open files, memory mapped size, heap
-memory, per-image pixels, image width, image height, and threads
-respectively.
+\fBMAGICK_LIMIT_READ\fP, \fBMAGICK_LIMIT_WRITE\fP, and
+\fBOMP_NUM_THREADS\fP may be used to set the limits for disk space,
+open files, memory mapped size, heap memory, per-image pixels, image
+width, image height, bytes read from a file, bytes written to a file,
+and OpenMP threads respectively.
 
 Use the option -list resource list the current limits.
 .TP
@@ -3389,7 +3434,7 @@ This is a contrast enhancement technique based on the image histogram.
 
 When computing the contrast enhancement values, the histogram edges
 are truncated so that the majority of the image pixels are considered
-in the constrast enhancement, and outliers (e.g. random noise or
+in the contrast enhancement, and outliers (e.g. random noise or
 minute details) are ignored.  The default is that 0.1 percent of the
 histogram entries are ignored.  The percentage of the histogram to
 ignore may be specified by using the \fB-set\fP option with the
@@ -3762,7 +3807,7 @@ An attractive "half-tone" looking image can be obtained by first
 rotating the image 45 degrees, performing a 5x5 ordered-dither
 operation, then rotating it back to the original orientation and
 cropping to the original image dimensions.  If the original image
-is gamma-encoded, it is adviseable to convert it to linear intensity
+is gamma-encoded, it is advisable to convert it to linear intensity
 first, e.g., with the "-gamma 0.45455" option.
 .TP
 .B "-output-directory \fI<directory>"\fP
@@ -5129,7 +5174,7 @@ may reclaim such memory when needed.
 \fRMaximum amount of memory to allocate from the heap.
 .TP
 .B "MAGICK_LIMIT_PIXELS"
-\fRMaximum number of total pixels (image rows times image colums) to
+\fRMaximum number of total pixels (image rows times image columns) to
 allow for any image which is requested to be created or read.  This is
 useful to place a limit on how large an image may be.  If the input
 image file has image dimensions larger than the pixel limit, then the
@@ -5370,7 +5415,7 @@ Options, above.
 \fRthe type of interlacing scheme
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -5708,7 +5753,7 @@ of header identifying the window. The default is the image file name.
 .SH GM BATCH
 .SH DESCRIPTION
 
-\fBbatch\fP executes an arbitary number of the utility commands
+\fBbatch\fP executes an arbitrary number of the utility commands
 (e.g. \fBconvert\fP) in the form of a simple linear batch script in
 order to improve execution efficiency, and/or to allow use as a
 subordinate co-process under the control of an arbitrary script or
@@ -5979,7 +6024,7 @@ Options, above.
 \fRthe type of interlacing scheme
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -6160,7 +6205,7 @@ Options, above.
 \fRassign a label to an image
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -7179,7 +7224,7 @@ Options, above.
 \fRadjust the level of image contrast
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-list \fI<type>"\fP
 \fRthe type of list
@@ -7694,7 +7739,7 @@ Options, above.
 \fRassign a label to an image
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -9704,7 +9749,7 @@ Options, above.
 \fRthe type of interlacing scheme
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -9851,7 +9896,7 @@ Options, above.
 \fRassign a label to an image
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log
@@ -10159,7 +10204,7 @@ Options, above.
 \fRadjust the level of image contrast
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-linewidth"
 \fRthe line width for subsequent draw operations
@@ -10626,7 +10671,7 @@ Options, above.
 \fRassign a label to an image
 .TP
 .B "-limit \fI<type> <value>"\fP
-\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit
+\fRDisk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit
 .TP
 .B "-log \fI<string>"\fP
 \fRSpecify format for debug log

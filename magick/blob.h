@@ -189,14 +189,14 @@ extern "C" {
 
   /*
     Test to see if an error has been encountered while doing I/O to the file
-    or BLOB.  Non-zero is returned if an error occured.
+    or BLOB.  Non-zero is returned if an error occurred.
   */
   extern MagickExport int GetBlobStatus(const Image *image) MAGICK_FUNC_PURE;
 
   /*
     Return the first errno present when an error has been encountered while
     doing I/O to the file or BLOB.  This is only useful if GetBlobStatus() has
-    already reported that an error occured.
+    already reported that an error occurred.
   */
   extern MagickExport int GetBlobFirstErrno(const Image *image) MAGICK_FUNC_PURE;
 

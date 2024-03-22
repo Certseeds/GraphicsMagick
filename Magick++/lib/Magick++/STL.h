@@ -365,7 +365,7 @@ namespace Magick
     DrawableList _drawableList;
   };
 
-  // Edge image (hilight edges in image)
+  // Edge image (highlight edges in image)
   class MagickDLLDecl edgeImage MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE
   {
   public:
@@ -377,7 +377,7 @@ namespace Magick
     double _radius;
   };
 
-  // Emboss image (hilight edges with 3D effect)
+  // Emboss image (highlight edges with 3D effect)
   class MagickDLLDecl embossImage MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE
   {
   public:
@@ -889,7 +889,7 @@ namespace Magick
     unsigned int _order;
   };
 
-  // Resize image to a certain geomtry
+  // Resize image to a certain geometry
   class MagickDLLDecl resizeImage MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE
   {
   public:
@@ -1039,7 +1039,7 @@ namespace Magick
     double _factor;
   };
 
-  // Spread pixels randomly within image by specified ammount
+  // Spread pixels randomly within image by specified amount
   class MagickDLLDecl spreadImage MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE
   {
   public:

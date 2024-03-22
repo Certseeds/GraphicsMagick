@@ -797,7 +797,7 @@ GetImageDistortion(const Image *reference_image,
 %      of red, green, and blue values in your image.
 %
 %  A small normalized mean square error, accessed as
-%  image->normalized_mean_error, suggests the images are very similiar in
+%  image->normalized_mean_error, suggests the images are very similar in
 %  spatial layout and color.
 %
 %  The format of the IsImagesEqual method is:

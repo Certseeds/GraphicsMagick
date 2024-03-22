@@ -526,7 +526,7 @@ MagickExport HistogramColorPacket *GetColorHistogram(const Image *image,
 %
 %    o matte: A value other than zero returns the opacity in the tuple.
 %
-%    o hex: A value other than zero returns the tuple in a hexidecimal format.
+%    o hex: A value other than zero returns the tuple in a hexadecimal format.
 %
 %    o tuple: Return the color tuple as this string.
 %

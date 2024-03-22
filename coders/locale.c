@@ -1166,6 +1166,6 @@ static unsigned int WriteLOCALEImage(const ImageInfo *image_info,Image *image)
   for (i=0; i <= count; i++)
     MagickFreeMemory(locale[i]);
   MagickFreeMemory(locale);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

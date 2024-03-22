@@ -361,6 +361,6 @@ static unsigned int WriteMVGImage(const ImageInfo *image_info,Image *image)
   if (status == False)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   (void) WriteBlob(image,strlen(attribute->value),attribute->value);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

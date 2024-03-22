@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2022 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -57,6 +57,7 @@ UTILITIES_CLEANFILES = \
 	utilities/tests/*_out.miff \
 	utilities/tests/*_out.pnm \
 	utilities/tests/*_out.txt \
+	utilities/tests/composite_tmp.msl \
 	utilities/tests/demo*.miff \
 	utilities/tests/gm.core \
 	utilities/tests/core

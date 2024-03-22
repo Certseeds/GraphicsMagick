@@ -952,7 +952,7 @@ static void XDrawTriangleSouth(Display *display,const MagickXWindowInfo *window_
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method XDrawWidgetText first clears the widget and draws a text string
-%  justifed left (or center) in the x-direction and centered within the
+%  justified left (or center) in the x-direction and centered within the
 %  y-direction.
 %
 %  The format of the XDrawWidgetText function is:
@@ -5762,7 +5762,7 @@ void MagickXFontBrowserWidget(Display *display,MagickXWindows *windows,
                 (strchr(glob_pattern,'?') == (char *) NULL))
               {
                 /*
-                  Might be a scaleable font-- exit.
+                  Might be a scalable font-- exit.
                 */
                 (void) strlcpy(reply,glob_pattern,MaxTextExtent);
                 (void) strlcpy(glob_pattern,back_pattern,MaxTextExtent);
@@ -8142,7 +8142,7 @@ void MagickXNoticeWidget(Display *display,MagickXWindows *windows,
   assert(display != (Display *) NULL);
   assert(windows != (MagickXWindows *) NULL);
   assert(reason != (char *) NULL);
-  MagickXDelay(display,SuspendTime << 3);  /* avoid surpise with delay */
+  MagickXDelay(display,SuspendTime << 3);  /* avoid surprise with delay */
   MagickXSetCursorState(display,windows,True);
   MagickXCheckRefreshWindows(display,windows);
   font_info=windows->widget.font_info;

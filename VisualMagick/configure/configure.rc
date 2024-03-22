@@ -103,7 +103,7 @@ BEGIN
     CONTROL         "Dynamic Multi-threaded DLL runtimes",IDC_PROJECT_TYPE,
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP,15,33,133,10
     CONTROL         "Static Single-threaded runtimes",IDC_PROJECT_TYPE1,
-                    "Button",BS_AUTORADIOBUTTON,15,64,113,10
+                    "Button",BS_AUTORADIOBUTTON | WS_DISABLED,15,64,113,10
     CONTROL         "Static Multi-threaded runtimes",IDC_PROJECT_TYPE2,
                     "Button",BS_AUTORADIOBUTTON,15,79,109,10
     CONTROL         "Use X11 stubs to prevent use of X Window",IDC_USE_X11_STUBS,

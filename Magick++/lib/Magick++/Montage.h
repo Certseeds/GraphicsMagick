@@ -134,7 +134,7 @@ namespace Magick
     bool              _shadow;            // Enable drop-shadows on thumbnails
     Color             _stroke;            // Outline color
     std::string       _texture;           // Background texture image
-    Geometry          _tile;              // Thumbnail rows and colmns
+    Geometry          _tile;              // Thumbnail rows and columns
     std::string       _title;             // Montage title
     Color             _transparentColor;  // Transparent color
   };

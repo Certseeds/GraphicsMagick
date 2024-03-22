@@ -1,5 +1,5 @@
 #!/usr/local/bin/perl
-# Copyright (C) 2003 GraphicsMagick Group
+# Copyright (C) 2003-2023 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1991-1999 E. I. du Pont de Nemours and Company
 #
@@ -13,7 +13,7 @@
 # Contributed by Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
 #
 
-BEGIN { $| = 1; $test=1; print "1..6\n"; }
+BEGIN { $| = 1; $test=1; print "1..7\n"; }
 END {print "not ok $test\n" unless $loaded;}
 use Graphics::Magick;
 $loaded=1;
@@ -24,14 +24,14 @@ chdir 't/png' || die 'Cd failed';
 
 #
 # 1) Test Black-and-white, bit_depth=1 PNG
-# 
+#
 print( "1-bit grayscale PNG ...\n" );
 testRead( 'input_bw.png', q//,
   '552ee0b3b9159ceedc4ce30125e9db38d2045d53b941844a72ac5f5f38335454' );
 
 #
 # 2) Test Monochrome PNG
-# 
+#
 ++$test;
 print( "8-bit grayscale PNG ...\n" );
 testRead( 'input_mono.png', q//,
@@ -39,7 +39,7 @@ testRead( 'input_mono.png', q//,
 
 #
 # 3) Test 16-bit Portable Network Graphics
-# 
+#
 ++$test;
 print( "16-bit grayscale PNG ...\n" );
 testRead( 'input_16.png', q//,
@@ -47,7 +47,7 @@ testRead( 'input_16.png', q//,
   'c87cc12715f3e0619d6fe871bd8132f88facffb3d38dd8869cb262ec6b9c4cef' );
 #
 # 4) Test 256 color pseudocolor PNG
-# 
+#
 ++$test;
 print( "8-bit indexed-color PNG ...\n" );
 testRead( 'input_256.png', q//,
@@ -55,7 +55,7 @@ testRead( 'input_256.png', q//,
 
 #
 # 5) Test TrueColor PNG
-# 
+#
 ++$test;
 print( "24-bit Truecolor PNG ...\n" );
 testRead( 'input_truecolor.png', q//,
@@ -63,9 +63,19 @@ testRead( 'input_truecolor.png', q//,
 
 #
 # 6) Test Multiple-image Network Graphics
-# 
+#
 ++$test;
 print( "MNG with 24-bit Truecolor PNGs...\n" );
 testRead( 'input.mng', q//,
   'eb089161ebc5ab3964cdec1b72628c4d1c29ebd78f333a3d4a0d47c614fb3897' );
 
+#
+# 7) Test PNG in BMP format
+
+# FIXME: Somehow we get an extra preceding blank frame from the
+# PNG-compressed BMP reader/sample although there is no other evidence
+# of multiple frames from the BMP reader!
+++$test;
+print( "PNG in BMP format ...\n" );
+testRead( 'input_PNG.bmp', q//,
+  '88956c2242aab1c8f23d4074ed4f313316413cf79ccf1fea8f650f30bd8e2e42' );

@@ -186,7 +186,7 @@ encryption.  Encrypting images being written is not supported.</pp>
 <abs>orient (rotate) image so it is upright</abs>
 
 <pp>
-Adjusts the image orienation so that it is suitable for viewing.  Uses
+Adjusts the image orientation so that it is suitable for viewing.  Uses
 the orientation tag obtained from the image file or as supplied by the
 <s>-orient</s> option.</pp>
 </utils>
@@ -1048,7 +1048,7 @@ consisting of one or more of the following domains:
 <tt>Resource</tt>,
 <tt>TemporaryFile</tt>,
 <tt>Transform</tt>,
-<tt>User</tt>.
+<tt>User</tt>,
 <tt>Warning</tt>, or
 <tt>X11</tt>,
 For example, to log cache and blob events, use</pp>
@@ -1239,6 +1239,33 @@ behaves.
 
 <dd>Enables or disables fancy upsampling when reading a JPEG file
 (default enabled).
+</dd>
+
+<dt>jpeg:data-precision=<value></dt>
+
+<dd>Selects the JPEG sample storage size.  Normal JPEG uses
+8. Turbo-jpeg and some variants of IJG JPEG also support 12 and 16
+bits.
+</dd>
+
+<dt>jpeg:lossless-precision=<value></dt>
+
+<dd>Selects a degree of precision to use while performing DPCM-based
+compression.  The available range 0 to precision-1.  For example, if
+the output depth is 16, then the available range is 0 to 15.  When the
+precision is non-zero, then the pixels are right-shifted to
+effectively support fewer bits (fewer colors), but offering an
+improved compression ratio.  Use a value of 0 to achieve lossless
+compression.
+
+</dd>
+
+<dt>jpeg:lossless-predictor=<value></dt>
+
+<dd>Selects the predictor to use for lossless compression.  The
+supported values are in the range of 1 to 7 and select a pre-defined
+predictor algorithm to use, which considers surrounding pixels. The
+best predictor for a particular image depends on the image.
 </dd>
 
 <dt>jpeg:max-scan-number=<value></dt>
@@ -3240,9 +3267,10 @@ interface works similar to Photoshop's "Image->Adjustments->Levels..."
 <utils apps=animate,compare,composite,convert,display,identify,import,mogrify,montage>
 <dopt>-limit <type> <value></opt>
 
-<abs>Disk, File, Map, Memory, Pixels, Width, Height, Read, or Threads resource limit</abs>
+<abs>Disk, File, Map, Memory, Pixels, Width, Height, Read, Threads, or Write resource limit</abs>
 
 <pp>
+
 By default, resource limits are estimated based on the available
 resources and capabilities of the system. The resource limits are
 <s>Disk</s>, maximum total disk space consumed; <s>File</s>, maximum
@@ -3252,8 +3280,9 @@ maximum total number of file bytes which may be memory mapped;
 image storage; <s>Pixels</s>, maximum absolute image size (per image);
 <s>Width</s>, maximum image pixels width; <s>Height</s>, maximum image
 pixels height; <s>Read</s>, maximum number of uncompressed bytes to
-read; and <s>Threads</s>, the maximum number of worker threads to use
-per OpenMP thread team.</pp>
+read; <s>Write</s> maximum number of uncompressed bytes to write; and
+<s>Threads</s>, the maximum number of worker threads to use per OpenMP
+thread team.</pp>
 
 <pp>
 The <s>Disk</s> and <s>Map</s> resource limits are used to decide if
@@ -3271,14 +3300,23 @@ resort. When the disk limit has been reached, no more images may be
 read.</pp>
 
 <pp>
-The amount of uncompressed data read when reading one image may be
-limited by the <s>Read</s> limit.  Reading the image fails when the
+The amount of uncompressed data read when reading one image file may
+be limited by the <s>Read</s> limit.  Reading the image fails when the
 limit is hit.  This option is useful if the data is read from a stream
 (pipe) or from a compressed file such as a gzipped file.  Some files
-are very compressable and so a small compressed file can decompress to
+are very compressible and so a small compressed file can decompress to
 a huge amount of data.  This option also defends against files which
 produce seemingly endless loops while decoding by seeking backwards in
 the file.</pp>
+
+<pp>
+The amount of uncompressed data written when writing one image file
+may be limited by the <s>Write</s> limit.  Writing the image fails
+(similar to disk full) when the limit is hit.  If the output is to an
+ordinary file (rather than pipe) then any truncated output file is
+removed.  This option may be used to assure that unexpectedly large
+files are not written.  This option may also be used to simulate what
+will happen if the disk is full.</pp>
 
 <pp>
 The value argument is an absolute value, but may have standard binary
@@ -3288,17 +3326,18 @@ characters are ignored. For example, <tt>'-limit Pixels 10MP'</tt> limits
 the maximum image size to 10 megapixels and <tt>'-limit memory 32MB
 -limit map 64MB'</tt> limits memory and memory mapped files to 32
 megabytes and 64 megabytes respectively.</pp>
-
 <pp>
+
 Resource limits may also be set using environment variables. The
 environment variables <s>MAGICK_LIMIT_DISK</s>,
 <s>MAGICK_LIMIT_FILES</s>, <s>MAGICK_LIMIT_MAP</s>,
 <s>MAGICK_LIMIT_MEMORY</s>, <s>MAGICK_LIMIT_PIXELS</s>,
 <s>MAGICK_LIMIT_WIDTH</s>, <s>MAGICK_LIMIT_HEIGHT</s>.
-<s>MAGICK_LIMIT_READ</s>, and <s>OMP_NUM_THREADS</s> may be used to
-set the limits for disk space, open files, memory mapped size, heap
-memory, per-image pixels, image width, image height, and threads
-respectively.</pp>
+<s>MAGICK_LIMIT_READ</s>, <s>MAGICK_LIMIT_WRITE</s>, and
+<s>OMP_NUM_THREADS</s> may be used to set the limits for disk space,
+open files, memory mapped size, heap memory, per-image pixels, image
+width, image height, bytes read from a file, bytes written to a file,
+and OpenMP threads respectively.</pp>
 
 <pp>
 Use the option <tt>-list resource</tt> list the current limits.</pp>
@@ -3896,7 +3935,7 @@ This is a contrast enhancement technique based on the image histogram.</pp>
 <pp>
 When computing the contrast enhancement values, the histogram edges
 are truncated so that the majority of the image pixels are considered
-in the constrast enhancement, and outliers (e.g. random noise or
+in the contrast enhancement, and outliers (e.g. random noise or
 minute details) are ignored.  The default is that 0.1 percent of the
 histogram entries are ignored.  The percentage of the histogram to
 ignore may be specified by using the <s>-set</s> option with the
@@ -4184,7 +4223,7 @@ An attractive "half-tone" looking image can be obtained by first
 rotating the image 45 degrees, performing a 5x5 ordered-dither
 operation, then rotating it back to the original orientation and
 cropping to the original image dimensions.  If the original image
-is gamma-encoded, it is adviseable to convert it to linear intensity
+is gamma-encoded, it is advisable to convert it to linear intensity
 first, e.g., with the "-gamma 0.45455" option.</pp>
 
 </utils>

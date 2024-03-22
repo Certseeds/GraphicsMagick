@@ -200,7 +200,7 @@ static TXT_TYPE IsTXT(const unsigned char *magick,const size_t length)
       buffer[MaxTextExtent];
 
     (void) memset((void *)buffer,0,MaxTextExtent);
-    (void) memcpy((void *)buffer,(const void *)magick,Min(MaxTextExtent,length));
+    (void) memcpy((void *)buffer,(const void *)magick,Min(MaxTextExtent-1,length));
 
     if (!strncmp(buffer,"# ImageMagick pixel enumeration:",32))
       return IMAGEMAGICK_TXT;
@@ -1312,6 +1312,6 @@ static unsigned int WriteTXTImage(const ImageInfo *image_info,Image *image)
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
-  return (MagickTrue);
+  status &= CloseBlob(image);
+  return (status);
 }

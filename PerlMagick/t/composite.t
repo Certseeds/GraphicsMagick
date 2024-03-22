@@ -9,7 +9,7 @@
 # Test composition operators
 #
 # Whenever a new test is added/removed, be sure to update the
-# 1..n ouput.
+# 1..n output.
 #
 BEGIN { $| = 1; $test=1; print "1..20\n"; }
 END {print "not ok $test\n" unless $loaded;}
@@ -26,7 +26,7 @@ chdir 't' || die 'Cd failed';
 # The result of composite image + image, with overflow wrapping around
 # (mod 256).
 #
-# Maxium error is ignored since operation depends on floating-point
+# Maximum error is ignored since operation depends on floating-point
 # sensitive threshold.
 #
 testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
@@ -227,7 +227,7 @@ testCompositeCompare('gradient:black-white',q/size=>"100x80"/,
 # around (mod 256).  The add and subtract operators can be used to
 # perform reversible transformations.
 #
-# Maxium error is ignored since operation depends on floating-point
+# Maximum error is ignored since operation depends on floating-point
 # sensitive threshold.
 #
 ++$test;

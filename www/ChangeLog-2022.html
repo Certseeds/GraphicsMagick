@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="en" name="language">
-	<title></title>
+	<title>GraphicsMagick ChangeLog - 2022</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
 
@@ -36,7 +36,8 @@
 </ul>
 </div>
 
-<div class="document">
+<div class="document" id="graphicsmagick-changelog-2022">
+<h1 class="title">GraphicsMagick ChangeLog - 2022</h1>
 <p>2022-12-30  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -114,8 +115,8 @@ does not like initializing a static constant with
 <p>2022-12-25 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>webp/src/webp/types.h Need to include inttypes.h</p></li>
-<li><p>jp2/src/libjasper/include/jasper/jas_types.h
+<li><p>webp/src/webp/types.h: Need to include inttypes.h</p></li>
+<li><p>jp2/src/libjasper/include/jasper/jas_types.h:
 Fix missing _PFX_PTR in newer MSVC.</p></li>
 </ul>
 </blockquote>
@@ -131,7 +132,7 @@ is IsEventLogged().</p></li>
 <p>2022-12-25 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>jp2/* Update lib jasper to 1.900.16.</p></li>
+<li><p>jp2/*: Update lib jasper to 1.900.16.</p></li>
 </ul>
 </blockquote>
 <p>2022-12-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -145,7 +146,7 @@ any pre-multiplied alpha for us so we don't need to do it</p></li>
 <p>2022-12-24 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>jp2/* Update lib jasper to 1.900.5.</p></li>
+<li><p>jp2/*: Update lib jasper to 1.900.5.</p></li>
 </ul>
 </blockquote>
 <p>2022-12-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -156,18 +157,18 @@ profiles.  Lots of code cleanup.</p></li>
 <li><p>PerlMagick/t/jxl: Created some JXL sanity-test files.</p></li>
 </ul>
 </blockquote>
-<dl class="simple">
-<dt>2022-12-22 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
-<dd><ul class="simple">
-<li><p>VisualMagick/tests/runtest.bat Make binary directory configurable
-on one place. Report error when rwblob.exe does not exist.</p></li>
-</ul>
-</dd>
-</dl>
 <p>2022-12-22 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>jp2/* Update lib jasper from 1.900.1 to 1.900.2.</p></li>
+<li><p>VisualMagick/tests/runtest.bat: Make binary directory
+configurable on one place. Report error when rwblob.exe does not
+exist.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-22 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>jp2/*: Update lib jasper from 1.900.1 to 1.900.2.</p></li>
 </ul>
 </blockquote>
 <p>2022-12-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -200,19 +201,18 @@ images. Need a Q32 build in order to write 32-bit 'float' images.</p></li>
 now seems to annoy oss-fuzz build.</p></li>
 </ul>
 </blockquote>
-<dl class="simple">
-<dt>2022-12-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
-<dd><ul class="simple">
-<li><p>VisualMagick/magick/magick_types.h.in
-Reverting from 16859. The change in 16860 completelly breaks
-compillation.</p></li>
-</ul>
-</dd>
-</dl>
 <p>2022-12-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>tiff/port/libport_config.h Added missing file
+<li><p>VisualMagick/magick/magick_types.h.in:
+Reverting from 16859. The change in 16860 completelly breaks
+compillation.</p></li>
+</ul>
+</blockquote>
+<p>2022-12-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>tiff/port/libport_config.h: Added missing file
 Documentation of libtiff upgraded.
 Upgraded libtiff to 4.5.0.</p></li>
 </ul>
@@ -309,12 +309,11 @@ to solve error with unidentified compiler.  SourceForge issue #160
 </blockquote>
 <p>2022-12-01 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>coders/ps2.c
-coders/ps3.c
-coders/tiff.c
-webp/src/webp/types.h
-tiff/libtiff/* Upgraded libtiff to libtiff-4.4.0
-But code is still compilable with MSVC2008!</p>
+<ul class="simple">
+<li><p>coders/ps2.c, coders/ps3.c, coders/tiff.c, webp/src/webp/types.h
+tiff/libtiff/: Upgraded libtiff to libtiff-4.4.0 But code is still
+compilable with MSVC2008!</p></li>
+</ul>
 </blockquote>
 <p>2022-11-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -407,7 +406,7 @@ profile.</p></li>
 <p>2022-11-20 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/wpg.c Reveal more internal info to optional log.</p></li>
+<li><p>coders/wpg.c: Reveal more internal info to optional log.</p></li>
 </ul>
 </blockquote>
 <p>2022-11-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -442,10 +441,14 @@ signature test method for some tests.</p></li>
 </blockquote>
 <p>2022-11-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
-<p>PerlMagick/t/input_JPG_old.tif Added JPG embedded into TIFF using
+<blockquote>
+<p>PerlMagick/t/input_JPG_old.tif: Added JPG embedded into TIFF using
 old Adobe's embedding style.</p>
 <p>2022-11-17 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
-<p>tiff/libtiff/tif_ojpeg.c Backported from 4.4.0 to 4.1.0</p>
+</blockquote>
+<ul class="simple">
+<li><p>tiff/libtiff/tif_ojpeg.c: Backported from 4.4.0 to 4.1.0</p></li>
+</ul>
 </blockquote>
 <p>2022-11-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
@@ -485,7 +488,7 @@ unsigned and add verifications for ping_bit_depth.</p></li>
 <p>2022-11-09 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/fits.c Store multiple scenes into one file.</p></li>
+<li><p>coders/fits.c: Store multiple scenes into one file.</p></li>
 </ul>
 </blockquote>
 <p>2022-11-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -523,7 +526,7 @@ and 381860 &quot;Null pointer dereferences&quot;.</p></li>
 <p>2022-11-05 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/wpg.c Shrink amount of colors when palette is bigger than
+<li><p>coders/wpg.c: Shrink amount of colors when palette is bigger than
 raster could store.</p></li>
 </ul>
 </blockquote>
@@ -539,23 +542,23 @@ changes.</p></li>
 <p>2022-11-04 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Remove junk n from log after printing footer contents.</p></li>
+<li><p>coders/tga.c: Remove junk n from log after printing footer contents.</p></li>
 </ul>
 </blockquote>
 <p>2022-11-03  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>PerlMagick/t/input_3chars.xpm New testcase
+<li><p>PerlMagick/t/input_3chars.xpm: New testcase
 with 3 bytes encoding per one pixel.</p></li>
-<li><p>PerlMagick/t/reference/read/input_3chars_xpm.miff</p></li>
-<li><p>PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
+<li><p>PerlMagick/t/reference/read/input_3chars_xpm.miff,
+PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
 suite.</p></li>
 </ul>
 </blockquote>
 <p>2022-11-03 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/xpm.c Allow to read pallete that contains more colors
+<li><p>coders/xpm.c: Allow to read pallete that contains more colors
 than MaxColormapSize.</p></li>
 </ul>
 </blockquote>
@@ -580,11 +583,11 @@ qsort+bsearch to improve performance of color-lookups.</p></li>
 <p>2022-11-01  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/wpg.c Bilevel image must be allways monochrome.
+<li><p>coders/wpg.c: Bilevel image must be allways monochrome.
 Discard palette if exists.</p></li>
-<li><p>PerlMagick/t/input1_1.wpg</p></li>
-<li><p>PerlMagick/t/reference/read/input1_1.wpg.miff New testcase
-with bilevel monochrome image.</p></li>
+<li><p>PerlMagick/t/input1_1.wpg,
+PerlMagick/t/reference/read/input1_1.wpg.miff New testcase with
+bilevel monochrome image.</p></li>
 <li><p>PerlMagick/t/read.t: Added input1_1.wpg to PerlMagick test suite.</p></li>
 </ul>
 </blockquote>
@@ -635,8 +638,8 @@ memory reallocation for better performance.</p></li>
 <p>2022-10-29  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>PerlMagick/t/input_bilevel.xpm</p></li>
-<li><p>PerlMagick/t/reference/read/input_xpm_bilevel.miff New testcase
+<li><p>PerlMagick/t/input_bilevel.xpm,
+PerlMagick/t/reference/read/input_xpm_bilevel.miff: New testcase
 with bilevel monochrome image.</p></li>
 <li><p>PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
 suite.</p></li>
@@ -645,9 +648,9 @@ suite.</p></li>
 <p>2022-10-28  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>PerlMagick/t/input_pal16.xpm</p></li>
-<li><p>PerlMagick/t/reference/read/input_xpm_pal16.miff New testcase
-with 16 bit palette.</p></li>
+<li><p>PerlMagick/t/input_pal16.xpm,
+PerlMagick/t/reference/read/input_xpm_pal16.miff New testcase with
+16 bit palette.</p></li>
 <li><p>PerlMagick/t/read.t: Added input_xpm_pal16.miff to PerlMagick test
 suite.</p></li>
 </ul>
@@ -661,27 +664,27 @@ suite.</p></li>
 <p>2022-10-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Remove &quot;optimisation&quot; that has negligible or negative
+<li><p>coders/tga.c: Remove &quot;optimisation&quot; that has negligible or negative
 effect to overall performance.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-19  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Cleanup GCC compile warnings.</p></li>
+<li><p>coders/tga.c: Cleanup GCC compile warnings.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-17  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Do not consider whole image to be invalid when a second
+<li><p>coders/tga.c: Do not consider whole image to be invalid when a second
 chunk header contains invalid data.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-16  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Renamed image attribute &quot;comment&quot; from extended area to
+<li><p>coders/tga.c: Renamed image attribute &quot;comment&quot; from extended area to
 &quot;TGA:file.comment&quot; to prevent mix of these 2 comments.
 (Now TGA can produce both &quot;comment&quot; and &quot;TGA:file.comment&quot;).</p></li>
 </ul>
@@ -689,7 +692,7 @@ chunk header contains invalid data.</p></li>
 <p>2022-10-14  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>PerlMagick/t/read.t Add new tests for TGA files.</p></li>
+<li><p>PerlMagick/t/read.t: Add new tests for TGA files.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-13  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -702,26 +705,26 @@ attribute.</p></li>
 <p>2022-10-13  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Block alpha channel depending on value &quot;AttributesType&quot;.</p></li>
+<li><p>coders/tga.c: Block alpha channel depending on value &quot;AttributesType&quot;.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-12  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c New attributes &quot;comment&quot;, &quot;creator&quot;, &quot;software&quot;, &quot;TGA:file.JobName&quot;</p></li>
-<li><p>coders/gpx.c Renamed attribute &quot;DPX:file.creator&quot; to &quot;creator&quot;</p></li>
+<li><p>coders/tga.c: New attributes &quot;comment&quot;, &quot;creator&quot;, &quot;software&quot;, &quot;TGA:file.JobName&quot;</p></li>
+<li><p>coders/gpx.c: Renamed attribute &quot;DPX:file.creator&quot; to &quot;creator&quot;</p></li>
 </ul>
 </blockquote>
 <p>2022-10-10  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c TGA developper area is read.</p></li>
+<li><p>coders/tga.c: TGA developper area is read.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-09  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Check return code of seek blob operation.</p></li>
+<li><p>coders/tga.c: Check return code of seek blob operation.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -742,9 +745,9 @@ spaces and hard tabs which are now appearing in the ChangeLog file.</p></li>
 <p>2022-10-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Fixed oss-fuzz-52084.</p></li>
-<li><p>PerlMagick/t/input.tga renamed to PerlMagicktinput_8_CC.tga</p></li>
-<li><p>PerlMagick/t/reference/read/input_tga_8_BW.miff New testcase.</p></li>
+<li><p>coders/tga.c: Fixed oss-fuzz-52084.</p></li>
+<li><p>PerlMagick/t/input.tga: renamed to PerlMagicktinput_8_CC.tga</p></li>
+<li><p>PerlMagick/t/reference/read/input_tga_8_BW.miff: New testcase.</p></li>
 <li><p>PerlMagick/t/read.t: Added input_tga_8_BW.miff to PerlMagick test
 suite.</p></li>
 </ul>
@@ -752,7 +755,7 @@ suite.</p></li>
 <p>2022-10-03  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c TGA footer is read, currently used for logs only.</p></li>
+<li><p>coders/tga.c: TGA footer is read, currently used for logs only.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -766,10 +769,8 @@ directory.  Also fix requested character set encoding.</p></li>
 <p>2022-10-02 Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>PerlMagick/t/input_8_BW_rle.tga</p></li>
-<li><p>PerlMagick/t/input_8_CC_rle.tga</p></li>
-<li><p>PerlMagick/t/input_8_BW.tga
-Added 8 bit TGA samples.</p></li>
+<li><p>PerlMagick/t/{input_8_BW_rle.tga, input_8_CC_rle.tga,
+input_8_BW.tga}: Added 8 bit TGA samples.</p></li>
 </ul>
 </blockquote>
 <p>2022-10-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -791,19 +792,19 @@ warning about unused indexes variable.</p></li>
 <p>2022-10-01  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Monochromatic bilevel TGA could be written.</p></li>
+<li><p>coders/tga.c: Monochromatic bilevel TGA could be written.</p></li>
 </ul>
 </blockquote>
 <p>2022-09-29  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>coders/tga.c Monochromatic bilevel TGA could be read.</p></li>
+<li><p>coders/tga.c: Monochromatic bilevel TGA could be read.</p></li>
 </ul>
 </blockquote>
 <p>2022-09-28  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>PerlMagick/t/input_mono.tga Added monochromatic TGA sample generated
+<li><p>PerlMagick/t/input_mono.tga: Added monochromatic TGA sample generated
 by Graphics Workshop.</p></li>
 </ul>
 </blockquote>
@@ -860,13 +861,13 @@ autopkgtest: undefined symbol: _ZN6Magick5Image12colorMapSizeEv&quot;.</p></li>
 <p>2022-09-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>jpeg/* Upgraded jpeg library to Version 9e 16-Jan-2022.</p></li>
+<li><p>jpeg/*: Upgraded jpeg library to Version 9e 16-Jan-2022.</p></li>
 </ul>
 </blockquote>
 <p>2022-09-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/jpeg/LIBRARY.txt Exclude files cjpegalt.c and
+<li><p>VisualMagick/jpeg/LIBRARY.txt: Exclude files cjpegalt.c and
 djpegalt.c; cjpeg.c and djpeg.c are already excluded.</p></li>
 </ul>
 </blockquote>
@@ -921,8 +922,8 @@ fixed.</p></li>
 <p>2022-08-10  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>VisualMagick/configure/stdafx.h Added define WIN32_LEAN_AND_MEAN</p></li>
-<li><p>VisualMagick/configure/configure.exe New rebuild.</p></li>
+<li><p>VisualMagick/configure/stdafx.h: Added define WIN32_LEAN_AND_MEAN</p></li>
+<li><p>VisualMagick/configure/configure.exe: New rebuild.</p></li>
 </ul>
 </blockquote>
 <p>2022-08-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1351,7 +1352,7 @@ input file.</p></li>
 
 <hr class="docutils">
 <div class="document">
-    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2023<!--SPONSOR_LOGO--></p>
+    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
 </div>

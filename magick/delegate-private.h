@@ -21,7 +21,7 @@ extern "C" {
 typedef struct _DelegateInfo
 {
   char
-    *path,    /* Path to delegate configuation file */
+    *path,    /* Path to delegate configuration file */
     *decode,  /* Decode from format */
     *encode;  /* Transcode to format */
 

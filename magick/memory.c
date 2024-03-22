@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2021 GraphicsMagick Group
+% Copyright (C) 2003-2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -113,7 +113,7 @@ MagickExport void MagickAllocFunctions(MagickFreeFunc free_func,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  MagickArraySize() returnes the size of an array given two size_t arguments.
+%  MagickArraySize() returns the size of an array given two size_t arguments.
 %  Zero is returned if the computed result overflows the size_t type.
 %
 %  The format of the MagickArraySize method is:
@@ -474,7 +474,8 @@ MagickExport void *MagickCloneMemory(void *destination,const void *source,
 %  the existing memory is freed, and a NULL value is returned.
 %
 %  Note that the behavior of this function is similar to BSD reallocf(3),
-%  see https://www.freebsd.org/cgi/man.cgi?query=reallocf
+%  see https://www.freebsd.org/cgi/man.cgi?query=reallocf.  If 'memory'
+%  contained pointers to allocated memory, then there is a leak!
 %
 %  The format of the MagickRealloc method is:
 %
@@ -500,6 +501,54 @@ MagickExport void *MagickRealloc(void *memory,const size_t size)
     new_memory = (ReallocFunc)(memory,size);
   if ((new_memory == 0) && (memory != 0) && (size != 0))
     MagickFree(memory);
+
+  return new_memory;
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%   M a g i c k R e a l l o c S t d                                           %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  MagickReallocStd() changes the size of the memory and returns a pointer to
+%  the (possibly moved) block.  The contents will be unchanged up to the
+%  lesser of the new and old sizes.  If size is zero, then the memory is
+%  freed and a NULL value is returned.  If the memory allocation fails, then
+%  a NULL value is returned.
+%
+%  Note that the behavior of this function is similar to ANSI C realloc(3).
+%  If 'memory' contained pointers to allocated memory and allocation failed,
+%  then there is a leak!  Avoiding the leak requires caching the original
+%  pointer value so that allocations can be cleaned up.
+%
+%  The format of the MagickReallocStd method is:
+%
+%      void *MagickReallocStd(void *memory,const size_t size)
+%
+%  A description of each parameter follows:
+%
+%    o memory: A pointer to a memory allocation.
+%
+%    o size: The new size of the allocated memory.
+%
+*/
+MagickExport void *MagickReallocStd(void *memory,const size_t size)
+{
+  void
+    *new_memory = (void *) NULL;
+
+  MEMORY_LIMIT_CHECK(GetCurrentFunction(),size);
+
+  if ((void *) NULL == memory)
+    new_memory = (MallocFunc)(size);
+  else
+    new_memory = (ReallocFunc)(memory,size);
 
   return new_memory;
 }

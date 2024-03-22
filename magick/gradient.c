@@ -60,7 +60,7 @@
 %  image.
 %
 %  Note, the interface of this method will change in the future to support
-%  more than one transistion.
+%  more than one transition.
 %
 %  The format of the GradientImage method is:
 %

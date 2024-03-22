@@ -43,7 +43,7 @@ and/or creates an annotated difference image.</p>
 the Magick Scripting Language (MSL).</p>
 
 <p>
-<s>Batch</s> executes an arbitary number of the utility commands
+<s>Batch</s> executes an arbitrary number of the utility commands
 (e.g. <s>convert</s>) in the form of a simple linear batch script in
 order to improve execution efficiency, and/or to allow use as a
 subordinate co-process to an arbitrary script or program.</p>

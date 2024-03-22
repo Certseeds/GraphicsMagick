@@ -5889,7 +5889,7 @@ static MagickPassFail funcDCM_RescaleType(Image *image,DicomStream *dcm,Exceptio
       return MagickFail;
     }
 
-  if (strncmp((char *) dcm->data,"OD",2) == 0)
+  if (strncmp((char *) dcm->data,"OF",2) == 0)
     dcm->rescale_type=DCM_RT_OPTICAL_DENSITY;
   else if (strncmp((char *) dcm->data,"HU",2) == 0)
     dcm->rescale_type=DCM_RT_HOUNSFIELD;

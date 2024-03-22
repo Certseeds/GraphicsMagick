@@ -39,3 +39,5 @@ EXCLUDE = strtol.c
 EXCLUDE = strtoll.c
 EXCLUDE = strtoul.c
 EXCLUDE = strtoull.c
+EXCLUDE = snprintf.c
+EXCLUDE = tif_win32_versioninfo.rc

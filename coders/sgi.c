@@ -1308,6 +1308,6 @@ static unsigned int WriteSGIImage(const ImageInfo *image_info,Image *image)
         }
       MagickFreeResourceLimitedMemory(iris_pixels);
     } while (0);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

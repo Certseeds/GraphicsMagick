@@ -690,7 +690,7 @@ MagickExport void DefineClientPathAndName(const char *path)
       char
         component[MaxTextExtent];
 
-      /* This is the path only - inluding the parent folder */
+      /* This is the path only - including the parent folder */
       GetPathComponent(path,HeadPath,component);
       (void) SetClientPath(component);
       /* This is the file name AND the extension - of present */
@@ -1014,14 +1014,20 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
                     {
                       if ((number_files % prealloc_entries) == 0)
                         {
-                          MagickReallocMemory(char **,vector,
-                                              MagickArraySize((size_t) *argc+count+prealloc_entries,
-                                              sizeof(char *)));
-                          if (vector == (char **) NULL)
+                          char **new_vector;
+                          new_vector=
+                            (char **) MagickReallocStd(vector,
+                                                       MagickArraySize((size_t) *argc+count+prealloc_entries,
+                                                                       sizeof(char *)));
+                          if (new_vector == (char **) NULL)
                             {
+                              for (j=0 ; j < count; j++)
+                                MagickFreeMemory(vector[j]);
+                              MagickFreeMemory(vector);
                               fclose(file);
                               return(MagickFail);
                             }
+                          vector = new_vector;
                         }
 
                       if (first)
@@ -1111,10 +1117,21 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
         There's at least one matching filename.
         Transfer file list to argument vector.
       */
-      MagickReallocMemory(char **,vector,
-                          MagickArraySize((size_t) *argc+count+number_files+prealloc_entries,sizeof(char *)));
-      if (vector == (char **) NULL)
-        return(MagickFail);
+      {
+         char **new_vector;
+         new_vector =
+           (char **) MagickReallocStd(vector,
+                                      MagickArraySize((size_t) *argc+count+number_files+prealloc_entries,
+                                                      sizeof(char *)));
+         if (new_vector == (char **) NULL)
+           {
+             for (j=0 ; j < count; j++)
+               MagickFreeMemory(vector[j]);
+             MagickFreeMemory(vector);
+             return(MagickFail);
+           }
+         vector=new_vector;
+      }
 
       first=MagickTrue;
       for (j=0; j < number_files; j++)
@@ -2986,7 +3003,7 @@ MagickExport MagickBool IsAccessible(const char *path)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  IsAccessibleNoLogging() returns MagickTrue if the file as defined by path
-%  exists and is accessable by the user. This version is used internally to
+%  exists and is accessible by the user. This version is used internally to
 %  avoid using the error logging of the normal version.
 %
 %  The format of the IsAccessibleNoLogging method is:
@@ -4138,7 +4155,7 @@ MagickExport size_t MagickFormatString(char *string,
 %
 %    o returns: Size of the consumed token, not including a terminating
 %             null character.  If this is larger or equal to the buffer
-%             size then truncation has occured.
+%             size then truncation has occurred.
 %
 */
 MagickExport size_t MagickGetToken(const char *start,char **end,char *token,
@@ -4346,7 +4363,7 @@ MagickExport unsigned int MagickRandNewSeed(void)
 %  suffix (e.g. "100K" is 100 kilo) to a 64-bit integer type.  Even though
 %  this function returns a signed type, it is intended to be used to obtain
 %  positive size values so a negative return value indicates an error.
-%  Specfically, -1 is returned if there is known to be an conversion error.
+%  Specifically, -1 is returned if there is known to be an conversion error.
 %
 %  Binary Prefixes: http://en.wikipedia.org/wiki/Binary_prefix
 %
@@ -4841,7 +4858,7 @@ MagickExport MagickPassFail MagickCreateDirectoryPath(const char *dir,
 %
 %  MagickSceneFileName() uses a filename template and scene number
 %  in order to produce a unique filename for the scene.  If force is
-%  MagickFalse, then a substition is only performed if the template
+%  MagickFalse, then a substitution is only performed if the template
 %  contains a valid substitution specification.  If force is MagickTrue,
 %  then the additional scene template is applied so that the generated
 %  filename is assured to be distinguished by the scene number.
@@ -5011,7 +5028,7 @@ MagickExport size_t MagickStrlCat(char *dst, const char *src, const size_t size)
 %  terminated string src to dst, NULL-terminating the result. If size is
 %  zero, then the result is not NULL terminated.  The total length of the
 %  string which would have been created given sufficient buffer size (may
-%  be longer than size) is returned. This function is simlar to strlcpy()
+%  be longer than size) is returned. This function is similar to strlcpy()
 %  which is available under FreeBSD, Apple's OS-X, and Solaris 8 except
 %  that it is assured to work with overlapping objects.  FreeBSD does not
 %  document if strlcpy() handles overlapping objects, but Solaris strlcpy()
@@ -5095,7 +5112,7 @@ MagickExport size_t MagickStrlCpy(char *dst, const char *src, const size_t size)
 %  zero, then the result is not NULL terminated.  The number of bytes copied
 %  (not including the terminating NULL) is returned.  This function is a
 %  useful alternative to using MagickStrlCpy() when the actual size copied
-%  is more useful than knowledge that truncation occured.
+%  is more useful than knowledge that truncation occurred.
 %
 %  The format of the MagickStrlCat method is:
 %
@@ -5332,7 +5349,7 @@ MagickExport const char *SetClientPath(const char *path)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  SetGeometry sets a grometry to its default values.
+%  SetGeometry sets a geometry to its default values.
 %
 %  The format of the SetGeometry method is:
 %
@@ -6765,7 +6782,7 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
           break;
         key[i]='\0';
 
-        /* Try to get the attibute from image */
+        /* Try to get the attribute from image */
         attribute=GetImageAttribute(image,key);
 
         /* Try to get the attribute from image_info */
@@ -6794,6 +6811,7 @@ MagickExport char *TranslateTextEx(const ImageInfo *image_info,
       }
       case '#':
       {
+        /* If 'ping' mode was used, then there may be no pixel cache! */
         if (GetPixelCachePresent(image))
           {
             (void) SignatureImage(image);

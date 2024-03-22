@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -47,7 +47,7 @@
 /*
   Define  declarations.
 */
-#define ResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0) >> 1))
+/* #define MagickResourceInfinity ((magick_int64_t) (~((magick_uint64_t) 0) >> 1)) */
 #define ResourceInfoMaxIndex ((unsigned int) (sizeof(resource_info)/sizeof(resource_info[0])-1))
 
 /*
@@ -66,16 +66,17 @@ typedef enum
 typedef struct _ResourceInfo
 {
   const char
-    *name,
-    *units,
-    *env;
+    name[8],
+    units[2],
+    env[20];
 
   magick_int64_t
     value;
 
   magick_int64_t
     minimum,
-    maximum;
+    maximum,
+    highwater;
 
   LimitType
     limit_type;
@@ -93,19 +94,19 @@ typedef struct _ResourceInfo
   Array must be in same order as ResourceType enum
 */
 #define PIXEL_LIMIT (INT_MAX/(sizeof(PixelPacket)))
-static ResourceInfo
-  resource_info[] =
+static ResourceInfo resource_info[] =
   {
-    { "",       "",  "",                    0, 0,     ResourceInfinity, AbsoluteLimit, 0  },
-    { "disk",   "B", "MAGICK_LIMIT_DISK",   0, 0,     ResourceInfinity, SummationLimit, 0 },
-    { "files",  "",  "MAGICK_LIMIT_FILES",  0, 32,    256,              SummationLimit, 0 },
-    { "map",    "B", "MAGICK_LIMIT_MAP",    0, 0,     ResourceInfinity, SummationLimit, 0 },
-    { "memory", "B", "MAGICK_LIMIT_MEMORY", 0, 0,     ResourceInfinity, SummationLimit, 0 },
-    { "pixels", "P", "MAGICK_LIMIT_PIXELS", 0, 1,     ResourceInfinity, AbsoluteLimit, 0  },
-    { "threads", "", "OMP_NUM_THREADS",     1, 1,     ResourceInfinity, AbsoluteLimit, 0  },
-    { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,     PIXEL_LIMIT,      AbsoluteLimit, 0  },
-    { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,     PIXEL_LIMIT,      AbsoluteLimit, 0  },
-    { "read",   "B", "MAGICK_LIMIT_READ",   0, 4096,  ResourceInfinity, AbsoluteLimit, 0  }
+   { "",       "",  "",                    0, 0,    MagickResourceInfinity, 0, AbsoluteLimit, 0  },
+   { "disk",   "B", "MAGICK_LIMIT_DISK",   0, 0,    MagickResourceInfinity, 0, SummationLimit, 0 },
+   { "files",  "",  "MAGICK_LIMIT_FILES",  0, 32,   256,                    0, SummationLimit, 0 },
+   { "map",    "B", "MAGICK_LIMIT_MAP",    0, 0,    MagickResourceInfinity, 0, SummationLimit, 0 },
+   { "memory", "B", "MAGICK_LIMIT_MEMORY", 0, 0,    MagickResourceInfinity, 0, SummationLimit, 0 },
+   { "pixels", "P", "MAGICK_LIMIT_PIXELS", 0, 1,    MagickResourceInfinity, 0, AbsoluteLimit, 0  },
+   { "threads", "", "OMP_NUM_THREADS",     1, 1,    MagickResourceInfinity, 0, AbsoluteLimit, 0  },
+   { "width",  "P", "MAGICK_LIMIT_WIDTH",  0, 1,    PIXEL_LIMIT,            0, AbsoluteLimit, 0  },
+   { "height", "P", "MAGICK_LIMIT_HEIGHT", 0, 1,    PIXEL_LIMIT,            0, AbsoluteLimit, 0  },
+   { "read",   "B", "MAGICK_LIMIT_READ",   0, 4096, MagickResourceInfinity, 0, AbsoluteLimit, 0  },
+   { "write",  "B", "MAGICK_LIMIT_WRITE",  0, 4096, MagickResourceInfinity, 0, AbsoluteLimit, 0  }
   };
 
 /*
@@ -176,9 +177,18 @@ AcquireMagickResource(const ResourceType type,
               Limit depends only on the currently requested size.
             */
             value=info->value;
-            if ((info->maximum != ResourceInfinity) &&
+            if ((info->maximum != MagickResourceInfinity) &&
                 (size > (magick_uint64_t) info->maximum))
-              status=MagickFail;
+              {
+                status=MagickFail;
+              }
+            else
+              {
+                LockSemaphoreInfo(info->semaphore);
+                if (size > (magick_uint64_t) info->highwater)
+                  info->highwater = size;
+                UnlockSemaphoreInfo(info->semaphore);
+              }
             break;
           }
         case SummationLimit:
@@ -189,7 +199,7 @@ AcquireMagickResource(const ResourceType type,
             */
             LockSemaphoreInfo(info->semaphore);
             value=info->value+size;
-            if ((info->maximum != ResourceInfinity) &&
+            if ((info->maximum != MagickResourceInfinity) &&
                 (value > (magick_uint64_t) info->maximum))
               {
                 value=info->value;
@@ -198,6 +208,8 @@ AcquireMagickResource(const ResourceType type,
             else
               {
                 info->value=value;
+                if (value > (magick_uint64_t) info->highwater)
+                  info->highwater = value;
               }
             UnlockSemaphoreInfo(info->semaphore);
             break;
@@ -210,7 +222,7 @@ AcquireMagickResource(const ResourceType type,
             f_size[MaxTextExtent],
             f_value[MaxTextExtent];
 
-          if (info->maximum == ResourceInfinity)
+          if (info->maximum == MagickResourceInfinity)
             {
               strlcpy(f_limit,"Unlimited",sizeof(f_limit));
             }
@@ -270,22 +282,62 @@ MagickExport void DestroyMagickResources(void)
   size_t
     index;
 
+  if (IsEventLogged(ResourceEvent))
+    {
+#if 0
+      const ResourceInfo *disc_info = GetResourceInfo(DiskResource);
+      const ResourceInfo *file_info = GetResourceInfo(FileResource);
+      const ResourceInfo *map_info = GetResourceInfo(MapResource);
+      const ResourceInfo *memory_info = GetResourceInfo(MemoryResource);
+
+      (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                            "Resource Consumption Summary\n"
+                            "    %c%s Limit: %"MAGICK_INT64_F"d, Maximum Used: %"MAGICK_INT64_F"d\n"
+                            "    %c%s Limit: %"MAGICK_INT64_F"d, Maximum Used: %"MAGICK_INT64_F"d\n"
+                            "    %c%s Limit: %"MAGICK_INT64_F"d, Maximum Used: %"MAGICK_INT64_F"d\n"
+                            "    %c%s Limit: %"MAGICK_INT64_F"d, Maximum Used: %"MAGICK_INT64_F"d",
+                            toupper((int) disc_info->name[0]),disc_info->name+1, disc_info->maximum, (magick_int64_t) disc_info->highwater,
+                            toupper((int) file_info->name[0]),file_info->name+1, file_info->maximum, (magick_int64_t) file_info->highwater,
+                            toupper((int) map_info->name[0]),file_info->name+1, map_info->maximum, (magick_int64_t) map_info->highwater,
+                            toupper((int) memory_info->name[0]),memory_info->name+1, map_info->maximum, (magick_int64_t) memory_info->highwater
+                            );
+#endif
+#if 1
+      const ResourceInfo *info;
+      for (index = 1; index < ArraySize(resource_info); index++)
+        {
+          info=&resource_info[index];
+          if (info->limit_type != SummationLimit && info->highwater == 0)
+            continue;
+          LockSemaphoreInfo(info->semaphore);
+          (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                                "Resource - %c%s Limit: %"MAGICK_INT64_F"d,"
+                                " Maximum Used: %"MAGICK_INT64_F"d",
+                                toupper((int) info->name[0]),info->name+1,
+                                info->maximum, (magick_int64_t) info->highwater);
+          UnlockSemaphoreInfo(info->semaphore);
+        }
+#endif
+    }
+
 #if defined(DEBUG_MAGICK_RESOURCES) && DEBUG_MAGICK_RESOURCES
   {
-      const ResourceInfo *info;
+    const ResourceInfo *info;
 
-      for (index = 1; index < ArraySize(resource_info); index++)
+    for (index = 1; index < ArraySize(resource_info); index++)
       {
-          info=&resource_info[index];
-          if (info->limit_type != SummationLimit)
-              continue;
-
-          if (info->value != 0)
+        info=&resource_info[index];
+        if (info->limit_type != SummationLimit)
+          continue;
+        LockSemaphoreInfo(info->semaphore);
+        if (info->value != 0)
           {
-              fprintf(stderr,"Resource[%s] %s! %"MAGICK_INT64_F"d remaining\n",
-                      info->name, info->value < 0 ? "underflow" : "leak", (magick_int64_t) info->value);
-              assert(info->value == 0);
+            fprintf(stderr,"Resource[%s] %s! %"MAGICK_INT64_F"d remaining\n",
+                    info->name, info->value < 0 ? "underflow" : "leak",
+                    (magick_int64_t) info->value);
+            assert(info->value == 0);
           }
+        UnlockSemaphoreInfo(info->semaphore);
       }
   }
 #endif /* if defined(DEBUG_MAGICK_RESOURCES) && DEBUG_MAGICK_RESOURCES */
@@ -413,7 +465,8 @@ MagickExport void InitializeMagickResources(void)
     max_threads=1,
     max_width=-1,
     max_height=-1,
-    max_read=-1;
+    max_read=-1,
+    max_write=-1;
 
   size_t
     index;
@@ -615,6 +668,9 @@ MagickExport void InitializeMagickResources(void)
     if ((envp=getenv("MAGICK_LIMIT_READ")))
       max_read=MagickSizeStrToInt64(envp,1024);
 
+    if ((envp=getenv("MAGICK_LIMIT_WRITE")))
+      max_write=MagickSizeStrToInt64(envp,1024);
+
 #if defined(HAVE_OPENMP)
     max_threads=omp_get_num_procs();
     (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
@@ -713,13 +769,18 @@ MagickExport void InitializeMagickResources(void)
   if (max_pixels >= 0)
     (void) SetMagickResourceLimit(PixelsResource,max_pixels);
   if (max_threads >= 0)
-    (void) SetMagickResourceLimit(ThreadsResource,max_threads);
+    {
+      (void) SetMagickResourceLimit(ThreadsResource,max_threads);
+      _UpdateMagickResourceHighwater(ThreadsResource,max_threads);
+    }
   if (max_width >= 0)
     (void) SetMagickResourceLimit(WidthResource,max_width);
   if (max_height >= 0)
     (void) SetMagickResourceLimit(HeightResource,max_height);
   if (max_read >= 0)
     (void) SetMagickResourceLimit(ReadResource,max_read);
+  if (max_write >= 0)
+    (void) SetMagickResourceLimit(WriteResource,max_write);
 }
 
 /*
@@ -792,7 +853,7 @@ MagickExport void LiberateMagickResource(const ResourceType type,
             f_size[MaxTextExtent],
             f_value[MaxTextExtent];
 
-          if (info->maximum == ResourceInfinity)
+          if (info->maximum == MagickResourceInfinity)
             {
               strlcpy(f_limit,"Unlimited",sizeof(f_limit));
             }
@@ -874,7 +935,7 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
         limit[MaxTextExtent];
 
       LockSemaphoreInfo(resource_info[index].semaphore);
-      if (resource_info[index].maximum == ResourceInfinity)
+      if (resource_info[index].maximum == MagickResourceInfinity)
         {
           strlcpy(limit,"Unlimited",sizeof(limit));
         }
@@ -928,6 +989,8 @@ MagickExport MagickPassFail ListMagickResourceInfo(FILE *file,
 %    ThreadsResource -- Threads
 %    WidthResource   -- Pixels
 %    HeightResource  -- Pixels
+%    ReadResource    -- Bytes
+%    WriteResource   -- Bytes
 %
 %  The format of the SetMagickResourceLimit() method is:
 %
@@ -964,6 +1027,9 @@ MagickExport MagickPassFail SetMagickResourceLimit(const ResourceType type,
 
           FormatSize((magick_int64_t) limit, f_limit);
           info->maximum = limit;
+          /* Cap highwater to new maximum */
+          if (info->maximum < info->highwater)
+            info->highwater = info->maximum;
 #if defined(HAVE_OPENMP)
           if (ThreadsResource == type)
             omp_set_num_threads((int) limit);
@@ -976,8 +1042,81 @@ MagickExport MagickPassFail SetMagickResourceLimit(const ResourceType type,
       else
         {
           (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
-                                "Ignored bogus request to set %s resource limit to %ld%s",
-                                info->name,(long) limit,info->units);
+                                "Ignored bogus request to set %s resource limit"
+                                " to %"MAGICK_INT64_F"d%s",
+                                info->name,limit,info->units);
+        }
+      UnlockSemaphoreInfo(info->semaphore);
+    }
+
+  return(status);
+}
+
+/*
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             %
+%                                                                             %
+%                                                                             %
++   _UpdateMagickResourceHighwater                                            %
+%                                                                             %
+%                                                                             %
+%                                                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  _UpdateMagickResourceHighwater() updates the highwater for the specified
+%  resource.  The highwater value is only updated if it is greater than the
+%  minimum value for the resource, less than the current maximum for the
+%  resource, and greater than the current highwater value for the resource.
+%  The intention is that highwater values are only updated for resources
+%  successfully used rather than for resources requested.
+%
+%  The format of the _UpdateMagickResourceHighwater() method is:
+%
+%      MagickPassFail _UpdateMagickResourceHighwater(const ResourceType type,
+%        const unsigned long limit)
+%
+%  A description of each parameter follows:
+%
+%    o type: The type of resource.
+%
+%    o limit: The new proposed highwater for the resource.
+%
+%
+*/
+extern MagickPassFail _UpdateMagickResourceHighwater(const ResourceType type,
+                                                     const magick_int64_t highwater)
+{
+  ResourceInfo
+    *info;
+
+  MagickPassFail
+    status;
+
+  status=MagickFail;
+
+  if ((info=GetResourceInfo(type)))
+    {
+      LockSemaphoreInfo(info->semaphore);
+      if ((highwater > info->minimum) && (highwater <= info->maximum)
+          && (highwater > info->highwater))
+        {
+          char
+            f_highwater[MaxTextExtent];
+
+
+          FormatSize((magick_int64_t) highwater, f_highwater);
+          info->highwater = highwater;
+          (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                                "Updated %s resource highwater to %s%s",
+                                info->name,f_highwater,info->units);
+          status=MagickPass;
+        }
+      else
+        {
+          (void) LogMagickEvent(ResourceEvent,GetMagickModule(),
+                                "Ignored request to set %s highwater to"
+                                " %"MAGICK_INT64_F"d%s",
+                                info->name,highwater,info->units);
         }
       UnlockSemaphoreInfo(info->semaphore);
     }

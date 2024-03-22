@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2023 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -221,6 +221,8 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
   logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
 
   image=AllocateImage(image_info);
+  image->rows=0;
+  image->columns=0;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
@@ -946,7 +948,7 @@ static MagickPassFail WriteFITSImage(const ImageInfo *image_info,Image *image)
         }
     }
 
-	/* Calculate of padding */
+        /* Calculate of padding */
     y = FITS_BLOCK_SIZE - (image->columns * image->rows * packet_size) % FITS_BLOCK_SIZE;
     if(y > 0)
       {
@@ -965,10 +967,10 @@ static MagickPassFail WriteFITSImage(const ImageInfo *image_info,Image *image)
     image = SyncNextImageInList(image);
   } while(1);
 
-	/* Rewind image list. */
+        /* Rewind image list. */
   while (image->previous != (Image *)NULL)
       image=image->previous;
 
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

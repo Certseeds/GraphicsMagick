@@ -8,9 +8,9 @@
 rwfile=./rwfile
 
 # Storage types we will test
-check_types='bilevel gray pallette truecolor'
+check_types='bilevel gray palette truecolor'
 
-# Comression types we will test
+# Compression types we will test
 compress_types='none fax jpeg lzw rle zip'
 
 # Number of tests we plan to run

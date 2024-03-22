@@ -28,7 +28,7 @@ GraphicsMagick Image Processing System
 .. _programming : programming.html
 
 ===========================  =========================================================
-Current Release              1.3.42 (Released September 23, 2023) `download release`__
+Current Release              1.3.43 (Released March 23, 2024) `download release`__
 Development Snapshots        (Updated frequently) `download development snapshots`__
 Mercurial Repository         (Updated frequently) `visit Mercurial repository`__
 ===========================  =========================================================
@@ -50,7 +50,7 @@ version of this page.
 .. _OSSCC : http://www.osscc.net/en/index.html
 .. _OpenMP : http://www.openmp.org/
 .. _`read about OpenMP in GraphicsMagick` : OpenMP.html
-.. _`ChangeLog` : Changelog.html
+.. _`ChangeLog` : ChangeLog.html
 .. _`Flickr` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/
 .. _`Etsy` : http://codeascraft.etsy.com/2010/07/09/batch-processing-millions-of-images/
 .. _`John Allspaw's presentation` : http://www.kitchensoap.com/2009/04/03/slides-from-web20-expo-2009-and-somethin-else-interestin/

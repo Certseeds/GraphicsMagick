@@ -228,7 +228,7 @@ the image filename and timecode at the top of the image, and a logo
 
 As may be seen, the argument to -draw can become extremely long, so to
 make things easy, the drawing commands may be placed in a simple text
-file and passed by reference to the draw comand:
+file and passed by reference to the draw command:
 
 First lets check what we edited into our drawing command file::
 
@@ -286,7 +286,7 @@ Besides convert, which converts from one file to another, there is
 mogrify_ which transforms the file in place. A temporary file is used
 (if necessary) to ensure that the existing image file is not damaged
 if something goes wrong (e.g., not enough disk space). Note that
-unlike some applications supporting DPX/Cineon, when a file is modifed
+unlike some applications supporting DPX/Cineon, when a file is modified
 *in-place* , it is completely re-written.  While GraphicsMagick makes
 every attempt to preserve header information, some previously existing
 features of the file (such as the offset to the pixel data) may
@@ -507,7 +507,7 @@ DPX files:
 
 -define dpx:pixel-endian={lsb|msb}
     DPX pixels should use the endian order that the DPX header
-    specifies.  Sometimes there is a mis-match and the pixels use a
+    specifies.  Sometimes there is a mismatch and the pixels use a
     different endian order than the file header specifies. For
     example, the file header may specify little endian, but the pixels
     are in big-endian order. To work around that use -define

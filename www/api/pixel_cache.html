@@ -108,9 +108,9 @@ the specified view.</p>
 </div>
 <div class="section" id="id2">
 <h2>Description</h2>
-<p>AccessImmutableIndexes() returns the colormap indexes associated with
-the last call to AcquireImagePixels(). NULL is returned if colormap
-indexes are not available.</p>
+<p>AccessImmutableIndexes() returns the read-only colormap indexes
+associated with the last call to AcquireImagePixels(). NULL is
+returned if colormap indexes are not available.</p>
 <p>The format of the AccessImmutableIndexes() method is:</p>
 <pre class="literal-block">const IndexPacket *AccessImmutableIndexes( const <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 <p>A description of each parameter follows:</p>
@@ -133,10 +133,10 @@ AcquireImagePixels().</p>
 </div>
 <div class="section" id="id4">
 <h2>Description</h2>
-<p>AccessMutableIndexes() returns the colormap indexes associated with
-the last call to SetImagePixels() or GetImagePixels(). NULL is returned
-if colormap indexes are not available.</p>
-<p>The format of the AccessMutagleIndexes() method is:</p>
+<p>AccessMutableIndexes() returns the writeable colormap indexes associated
+with the last call to SetImagePixels() or GetImagePixels(). NULL is
+returned if colormap indexes are not available.</p>
+<p>The format of the AccessMutableIndexes() method is:</p>
 <pre class="literal-block">IndexPacket *AccessMutableIndexes( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 <p>A description of each parameter follows:</p>
 <dl class="simple">
@@ -256,9 +256,9 @@ or more full rows, since then there is opportunity to access the pixels
 in-place (without a copy) if the image is in RAM, or in a memory-mapped
 file. The returned pointer should <em>never</em> be deallocated by the user.</p>
 <p>Pixels accessed via the returned pointer represent a simple array of type
-PixelPacket. If the image storage class is PsudeoClass, call GetIndexes()
-after invoking GetImagePixels() to obtain the colormap indexes (of type
-IndexPacket) corresponding to the region.</p>
+PixelPacket. If the image storage class is PsudeoClass, call
+AccessImmutableIndexes() after invoking GetImagePixels() to obtain the
+colormap indexes (of type IndexPacket) corresponding to the region.</p>
 <p>If you plan to modify the pixels, use GetImagePixels() instead.</p>
 <p>The format of the AcquireImagePixels() method is:</p>
 <pre class="literal-block">const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *AcquireImagePixels( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const long x, const long y,
@@ -555,11 +555,12 @@ then there is opportunity to access the pixels in-place (without a copy)
 if the image is in RAM, or in a memory-mapped file. The returned pointer
 should <em>never</em> be deallocated by the user.</p>
 <p>Pixels accessed via the returned pointer represent a simple array of type
-PixelPacket. If the image storage class is PsudeoClass, call GetIndexes()
-after invoking GetImagePixels() to obtain the colormap indexes (of type
-IndexPacket) corresponding to the region.  Once the PixelPacket (and/or
-IndexPacket) array has been updated, the changes must be saved back to
-the underlying image using SyncImagePixels() or they may be lost.</p>
+PixelPacket. If the image storage class is PsudeoClass, call
+AccessMutableIndexes() after invoking GetImagePixels() to obtain the
+colormap indexes (of type IndexPacket) corresponding to the region.  Once
+the PixelPacket (and/or IndexPacket) array has been updated, the changes
+must be saved back to the underlying image using SyncImagePixels() or they
+may be lost.</p>
 <p>The format of the GetImagePixels() method is:</p>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *GetImagePixels( <a class="reference external" href="../api/types.html#image">Image</a> *image, const long x, const long y,
                              const unsigned long columns, const unsigned long rows );</pre>
@@ -642,9 +643,12 @@ of the image cache.</p>
 </div>
 <div class="section" id="id38">
 <h2>Description</h2>
-<p>GetIndexes() returns the colormap indexes associated with the last call to
-SetImagePixels() or GetImagePixels(). NULL is returned if colormap indexes
-are not available.</p>
+<p>GetIndexes() returns the writeable colormap indexes associated with the
+last call to SetImagePixels() or GetImagePixels(). NULL is returned if
+colormap indexes are not available.</p>
+<p>This function is deprecated since November 7, 2008.  Please use
+AccessMutableIndexes() or AccessImmutableIndexes() instead of this
+function.</p>
 <p>The format of the GetIndexes() method is:</p>
 <pre class="literal-block">IndexPacket *GetIndexes( const <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
 <p>A description of each parameter follows:</p>
@@ -813,7 +817,7 @@ pixels.</p>
 <div class="section" id="id52">
 <h2>Description</h2>
 <p>SetImagePixels() initializes a pixel region for write-only access.
-If the region is successfully intialized a pointer to a PixelPacket
+If the region is successfully initialized a pointer to a PixelPacket
 array representing the region is returned, otherwise NULL is returned.
 The returned pointer may point to a temporary working buffer for the
 pixels or it may point to the final location of the pixels in memory.</p>
@@ -831,11 +835,12 @@ pixels in-place (without a copy) if the image is in RAM, or in a
 memory-mapped file. The returned pointer should <em>never</em> be deallocated
 by the user.</p>
 <p>Pixels accessed via the returned pointer represent a simple array of type
-PixelPacket. If the image storage class is PsudeoClass, call GetIndexes()
-after invoking GetImagePixels() to obtain the colormap indexes (of type
-IndexPacket) corresponding to the region.  Once the PixelPacket (and/or
-IndexPacket) array has been updated, the changes must be saved back to
-the underlying image using SyncCacheNexus() or they may be lost.</p>
+PixelPacket. If the image storage class is PsudeoClass, call
+AccessMutableIndexes() after invoking GetImagePixels() to obtain
+the colormap indexes (of type IndexPacket) corresponding to the region.
+Once the PixelPacket (and/or IndexPacket) array has been updated, the
+changes must be saved back to the underlying image using SyncCacheNexus()
+or they may be lost.</p>
 <p>The format of the SetImagePixels() method is:</p>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *SetImagePixels( <a class="reference external" href="../api/types.html#image">Image</a> *image, const long x, const long y,
                              const unsigned long columns, const unsigned long rows );</pre>
@@ -1000,7 +1005,7 @@ transferred to the in-memory or disk cache otherwise MagickFail.</p>
 
 <hr class="docutils">
 <div class="document">
-    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2023<!--SPONSOR_LOGO--></p>
+    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
 </div>

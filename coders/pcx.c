@@ -1069,7 +1069,7 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
       write_dcx=MagickTrue;
       (void) WriteBlobLSBLong(image,0x3ADE68B1L);
       page_table=MagickAllocateResourceLimitedClearedArray(ExtendedSignedIntegralType *,
-                                                           max_scenes+1,
+                                                           (size_t) max_scenes+1,
                                                            sizeof(ExtendedSignedIntegralType));
       if (page_table == (ExtendedSignedIntegralType *) NULL)
         ThrowPCXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -1375,6 +1375,6 @@ static unsigned int WritePCXImage(const ImageInfo *image_info,Image *image)
     }
   if (status == False)
     ThrowPCXWriterException(FileOpenError,UnableToWriteFile,image);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

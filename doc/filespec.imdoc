@@ -62,7 +62,7 @@ writes files <i>image00.miff, image01.miff,</i> etc. Only a single
 specification is allowed within an output filename. If more than one
 specification is present, it will be ignored. It is best to embed the
 scene number in the base part of the file name, not in the extension,
-because the extension will not be a recognizeable image type.</p>
+because the extension will not be a recognizable image type.</p>
 <p>
 When running a commandline utility, you can
 prepend an at sign <tt>@</tt> to a filename to read a list of image

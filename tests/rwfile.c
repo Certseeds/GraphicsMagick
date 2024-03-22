@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 - 2018 GraphicsMagick Group
+ * Copyright (C) 2003 - 2023 GraphicsMagick Group
  * Copyright (C) 2003 ImageMagick Studio
  * Copyright 1991-1999 E. I. du Pont de Nemours and Company
  *
@@ -12,7 +12,7 @@
  * verify that the image is correct, only that encode/decode process
  * is repeatable.
  *
- * Written by Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
+ * Written by Bob Friesenhahn <bfriesen@GraphicsMagick.org>
  *
  * The image returned by both reads must be identical (or deemed close
  * enough) in order for the test to pass.
@@ -25,6 +25,28 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+
+static void DescribeFrames(const ImageInfo *image_info, Image *list, const MagickBool ping)
+{
+  /* [0] AVS 70x46+072 Grayscale 8-bit adea7b1989cc5d19794a25ae3d7d0bc86f83b014f7231a869ee7b97177d54ab5 */
+  static const char descr_fmt[] = "[%s] %m %wx%h%X%y %r %q-bit %#";
+  static const char descr_fmt_ping[] = "[%s] %m %wx%h%X%y %r %q-bit";
+  Image *list_entry = list;
+
+  while (list_entry != (Image *) NULL)
+    {
+      char
+        *text;
+
+      text=TranslateText(image_info,list_entry,ping ? descr_fmt_ping : descr_fmt);
+      if (text != (char *) NULL)
+        {
+          fprintf(stdout,"%s\n", text);
+          MagickFree(text);
+        }
+      list_entry=GetNextImageInList(list_entry);
+    }
+}
 
 int main ( int argc, char **argv )
 {
@@ -400,7 +422,7 @@ int main ( int argc, char **argv )
     else
       {
         /* Print a short description of the image to stdout */
-        DescribeImage( ping_image, stdout, MagickFalse );
+        /* DescribeFrames(imageInfo, ping_image, MagickTrue); */
         DestroyImageList( ping_image );
       }
     if (ping_error)
@@ -527,6 +549,10 @@ int main ( int argc, char **argv )
       exit_status = 1;
       goto program_exit;
     }
+
+  /* Print a short description of the image to stdout */
+  DescribeFrames(imageInfo, final, MagickFalse);
+  (void) fflush(stdout);
 
   if (check)
     {

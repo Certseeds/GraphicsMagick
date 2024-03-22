@@ -56,7 +56,7 @@ namespace Magick
     CoderInfo& operator= (const CoderInfo &coder_ );
 
     //
-    // Implemementation methods
+    // Implementation methods
     //
     CoderInfo ( const MagickLib::MagickInfo *magickInfo_ );
 

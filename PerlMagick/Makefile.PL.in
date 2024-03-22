@@ -53,7 +53,7 @@ WriteMakefile
    # Preprocessor defines
    'DEFINE'     => $magick_DEFS,     # e.g., '-DHAVE_SOMETHING'
 
-   # Header search specfication and preprocessor flags
+   # Header search specification and preprocessor flags
    'INC'        => $magick_CPPFLAGS,
 
    # C compiler

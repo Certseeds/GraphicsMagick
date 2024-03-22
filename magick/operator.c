@@ -121,7 +121,7 @@ MagickExport MagickPassFail QuantumOperatorImage(Image *image,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  QuantumOperatorImageMultivalue() is a semi-private implementation
-%  fuction which accepts a comma delimited string of per-channel values
+%  function which accepts a comma delimited string of per-channel values
 %  and applies a specified operator to the channels of the image.  The
 %  main reason for this function to exist is to support
 %  ChannelThresholdPixels(), BlackThresholdImage(), WhiteThresholdImage(),
@@ -292,7 +292,7 @@ QuantumOperatorImageMultivalue(Image *image,
 %
 %    o x: Ordinate of left row of region.
 %
-%    o y: Orginate of top column of region.
+%    o y: Ordinate of top column of region.
 %
 %    o columns: Width of region.
 %

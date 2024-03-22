@@ -529,11 +529,11 @@ MSLPushImage(MSLInfo *msl_info,Image *image)
   msl_info->n++;
   n=msl_info->n;
   MagickReallocMemory(ImageInfo **,msl_info->image_info,
-                      (n+1)*sizeof(ImageInfo *));
+                      ((size_t)n+1)*sizeof(ImageInfo *));
   MagickReallocMemory(DrawInfo **,msl_info->draw_info,
-                      (n+1)*sizeof(DrawInfo *));
-  MagickReallocMemory(Image **,msl_info->attributes,(n+1)*sizeof(Image *));
-  MagickReallocMemory(Image **,msl_info->image,(n+1)*sizeof(Image *));
+                      ((size_t)n+1)*sizeof(DrawInfo *));
+  MagickReallocMemory(Image **,msl_info->attributes,((size_t)n+1)*sizeof(Image *));
+  MagickReallocMemory(Image **,msl_info->image,((size_t)n+1)*sizeof(Image *));
   if ((msl_info->image_info == (ImageInfo **) NULL) ||
       (msl_info->draw_info == (DrawInfo **) NULL) ||
       (msl_info->attributes == (Image **) NULL) ||
@@ -1183,7 +1183,7 @@ MSLStartElement(void *context,const xmlChar *name,
                   {
                   case ForgetGravity:
                     {
-                      /* do nothing, since we alreay have explicit x,y */
+                      /* do nothing, since we already have explicit x,y */
                       break;
                     }
                   case NorthWestGravity:
@@ -1961,7 +1961,7 @@ MSLStartElement(void *context,const xmlChar *name,
             new_group_info =
               MagickReallocateResourceLimitedClearedArray(MSLGroupInfo *,
                                                           msl_info->group_info,
-                                                          msl_info->nGroups+1,
+                                                          (size_t)msl_info->nGroups+1,
                                                           sizeof(MSLGroupInfo));
             if (new_group_info != (MSLGroupInfo *) NULL)
               {
@@ -4591,7 +4591,7 @@ ProcessMSLScript(const ImageInfo *image_info,Image **image,
     xmlSubstituteEntitiesDefault(1) enables external ENTITY support
     (e.g. SVGResolveEntity() which allows XML to be downloaded from an
     external source.  This may be a security hazard if the input is
-    not trustworty or if connecting to the correct source is not
+    not trustworthy or if connecting to the correct source is not
     assured. If the XML is parsed on the backside of a firewall then
     it may be able to access unintended resources.
 
@@ -4913,7 +4913,7 @@ static unsigned int WriteMSLImage(const ImageInfo *image_info,Image *image)
   if (status == MagickFail)
     (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                           "ProcessMSLScript() returned MagickFail!");
-  CloseBlob(image);
+  status &= CloseBlob(image);
   return status;
 }
 #endif /* defined(HasXML) */

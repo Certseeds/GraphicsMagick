@@ -9,6 +9,8 @@ GraphicsMagick Types
 .. contents::
   :local:
 
+.. _quantize: quantize.html
+
 
 AffineMatrix
 ============
@@ -96,7 +98,7 @@ DirectClass representation of an image is based on an array of
 PixelPacket structures in RAM and/or in a disk file where color values
 are stored "directly".  A PseudoClass representation of an image is
 based on an array of IndexPacket values (also in RAM and/or in a disk
-file ) which are the index values to the Image colormap (a small array
+file) which are the index values to the Image colormap (a small array
 of PixelPacket values) where the color values corresponding to the
 pixel at the index are stored.
 
@@ -165,13 +167,13 @@ ColorspaceType
 The ColorspaceType enumeration is used to specify the colorspace that
 quantization (color reduction and mapping) is done under or to specify
 the colorspace when encoding an output image. Colorspaces are ways of
-describing colors to fit the requirements of a particular application
-(e.g. Television, offset printing, color monitors). Color reduction, by
-default, takes place in the RGBColorspace. Empirical evidence suggests
+describing colors to fit the requirements of a particular application,
+such as television, offset printing, and color monitors. Color reduction,
+by default, takes place in the RGBColorspace. Empirical evidence suggests
 that distances in color spaces such as YUVColorspace or YIQColorspace
-correspond to perceptual color differences more closely han do distances
-in RGB space. These color spaces may give better results when color
-reducing an image. Refer to quantize for more details.
+correspond to perceptual color differences more closely than do distances
+in RGB space. These color spaces may give better results when reducing the
+color of an image. Refer to `quantize`_ for more details.
 
 When encoding an output image, the colorspaces RGBColorspace,
 CMYKColorspace, and GRAYColorspace may be specified. The CMYKColorspace
@@ -232,12 +234,12 @@ pixel. Specify CompositeOperator to select a different algorithm.
 
 The image compositor requires a matte, or alpha channel in the image for
 some operations. This extra channel usually defines a mask which
-represents a sort of a cookie-cutter for the image. This is the case when
+represents a sort of cookie-cutter for the image. This is the case when
 matte is 255 (full coverage) for pixels inside the shape, zero outside,
 and between zero and 255 on the boundary. For certain operations, if
 image does not have a matte channel, it is initialized with 0 for any
 pixel matching in color to pixel location (0,0), otherwise 255 (to work
-properly borderWidth must be 0).
+properly, borderWidth must be 0).
 
 .. table:: CompositeOperator
 
@@ -267,6 +269,8 @@ properly borderWidth must be 0).
                            transformations.
    DifferenceCompositeOp   The result of abs(composite image - image). This is useful for comparing
                            two very similar images.
+   MultiplyCompositeOp     The result of composite image × image. This is useful for the creation of
+                           drop-shadows.
    BumpmapCompositeOp      The result image shaded by composite image.
    CopyCompositeOp         The resulting image is image replaced with composite image. Here the matte
                            information is ignored.
@@ -290,23 +294,34 @@ properly borderWidth must be 0).
    SaturateCompositeOp     Copy Saturation channel (from HSL colorspace).
    ColorizeCompositeOp     Copy Hue and Saturation channels (from HSL colorspace).
    LuminizeCompositeOp     Copy Brightness channel (from HSL colorspace).
-   ScreenCompositeOp       [Not yet implemented]
-   OverlayCompositeOp      [Not yet implemented]
+   ScreenCompositeOp
+   OverlayCompositeOp
    CopyCyanCompositeOp     Copy the Cyan channel.
    CopyMagentaCompositeOp  Copy the Magenta channel.
    CopyYellowCompositeOp   Copy the Yellow channel.
    CopyBlackCompositeOp    Copy the Black channel.
    DivideCompositeOp
+   HardLightCompositeOp
+   ExclusionCompositeOp
+   ColorDodgeCompositeOp
+   ColorBurnCompositeOp
+   SoftLightCompositeOp
+   LinearBurnCompositeOp
+   LinearDodgeCompositeOp
+   LinearLightCompositeOp
+   VividLightCompositeOp
+   PinLightCompositeOp
+   HardMixCompositeOp
    ======================  ==========================================================================
 
 CompressionType
 ===============
 
-CompressionType is used to express the desired compression type when
-encoding an image. Be aware that most image types only support a sub-set
-of the available compression types. If the compression type specified is
-incompatable with the image, GraphicsMagick selects a compression type
-compatable with the image type, which might be no compression at all.
+CompressionType is used to specify the desired compression type when
+encoding an image. Be aware that most image types only support a subset
+of the available compression types. If the specified compression type is
+incompatible with the image, GraphicsMagick will select a compression type
+compatible with the image type, which might be no compression at all.
 
 
 .. table:: CompressionType
@@ -407,8 +422,6 @@ structure using GetDrawInfo().
    |affine          |AffineInfo    |Coordinate transformation (rotation, scaling, and translation).     |
    +----------------+--------------+--------------------------------------------------------------------+
    |border_color    |PixelPacket   |Border color                                                        |
-   +----------------+--------------+--------------------------------------------------------------------+
-   |box             |PixelPacket   |Text solid background color.                                        |
    +----------------+--------------+--------------------------------------------------------------------+
    |decorate        |DecorationType|Text decoration type.                                               |
    +----------------+--------------+--------------------------------------------------------------------+
@@ -557,11 +570,11 @@ primitives for a way to control the propagation of drawing options.
 EndianType
 ==========
 
-Some formats (e.g. TIFF and DPX) allow storing data in multiple
-"endian" orders and EndianType allows controlling that.  With MSB
+Some formats, such as TIFF and DPX, allow storing data in multiple
+"endian" orders and EndianType allows controlling that. With MSB
 endian and accessing memory bytes with increasing offset, the most
-significant bytes are encountered first, while with LSB endian, the
-least significant bytes are encountered first.
+significant byte is encountered first, while with LSB endian, the
+least significant byte is encountered first.
 
 ::
 
@@ -694,12 +707,11 @@ FilterTypes
 FilterTypes is used to adjust the filter algorithm used when resizing
 images. Different filters experience varying degrees of success with
 various images and can take significantly different amounts of processing
-time. GraphicsMagick uses the LanczosFilter by default since this filter
-has been shown to provide the best results for most images in a
-reasonable amount of time. Other filter types (e.g. TriangleFilter) may
-execute much faster but may show artifacts when the image is re-sized or
-around diagonal lines. The only way to be sure is to test the filter with
-sample images.
+time. GraphicsMagick defaults to using the LanczosFilter, which has been
+proven to provide the best results for most images in a reasonable amount
+of time. Other filter types, such as the TriangleFilter, may execute much faster
+but may show artifacts when the image is resized or around diagonal lines.
+The only way to be sure is to test the filter with sample images.
 
 .. table:: FilterTypes
 
@@ -761,8 +773,8 @@ FrameInfo
 GravityType
 ===========
 
-GravityType specifies positioning of an object (e.g. text, image) within
-a bounding region (e.g. an image). Gravity provides a convenient way to
+GravityType specifies positioning of an object, such as text or an image,
+within a bounding region. Gravity provides a convenient way to
 locate objects irrespective of the size of the bounding region, in other
 words, you don't need to provide absolute coordinates in order to
 position an object. A common default for gravity is NorthWestGravity.
@@ -909,7 +921,7 @@ by a starting coordinate, and a number of rows and columns. When
 considering the varying abilities of multiple platforms, the most
 reliably efficient pixel view is comprized of part, or all, of one image
 row.
-
+   
 There are two means of accessing pixel views. When using the default
 view, the pixels are made visible and accessable by using the
 GetImagePixels() method which provides access to a specified region of
@@ -972,14 +984,14 @@ The members of the Image structure are shown in the following table:
    |                                |                  | CMYK, the pixels are cyan, yellow, magenta, black. |
    |                                |                  | Otherwise the colorspace is ignored.               |
    +--------------------------------+------------------+----------------------------------------------------+
-   | columns                        | unsigned int     | Image width                                        |
+   | columns                        | unsigned long    | Image width                                        |
    +--------------------------------+------------------+----------------------------------------------------+
    | compression                    | CompressionType  | Image compresion type. The default is the          |
    |                                |                  | compression type of the specified image file.      |
    +--------------------------------+------------------+----------------------------------------------------+
    |                                |                  | Time in 1/100ths of a second (0 to 65535) which    |
    |                                |                  | must expire before displaying the next image in an |
-   | delay                          | unsigned int     | animated sequence. This option is useful for       |
+   | delay                          | unsigned long    | animated sequence. This option is useful for       |
    |                                |                  | regulating the animation of a sequence of GIF      |
    |                                |                  | images within Netscape.                            |
    +--------------------------------+------------------+----------------------------------------------------+
@@ -991,9 +1003,11 @@ The members of the Image structure are shown in the following table:
    |                                |                  | MIFF file which contains a directory.              |
    +--------------------------------+------------------+----------------------------------------------------+
    |                                |                  | GIF disposal method. This option is used to        |
-   | dispose                        | unsigned int     | control how successive frames are rendered (how    |
+   | dispose                        | DisposeType      | control how successive frames are rendered (how    |
    |                                |                  | the preceding frame is disposed of) when creating  |
    |                                |                  | a GIF animation.                                   |
+   +--------------------------------+------------------+----------------------------------------------------+
+   | endian                         | EndianType       | The byte order to use when writing images.         |
    +--------------------------------+------------------+----------------------------------------------------+
    | exception                      | ExceptionInfo    | Record of any error which occurred when updating   |
    |                                |                  | image.                                             |
@@ -1010,7 +1024,7 @@ The members of the Image structure are shown in the following table:
    +--------------------------------+------------------+----------------------------------------------------+
    |                                |                  | Colors within this distance are considered equal.  |
    |                                |                  | A number of algorithms search for a target color.  |
-   | fuzz                           | int              | By default the color must be exact. Use this       |
+   | fuzz                           | double           | By default the color must be exact. Use this       |
    |                                |                  | option to match colors that are close to the       |
    |                                |                  | target color in RGB space.                         |
    +--------------------------------+------------------+----------------------------------------------------+
@@ -1021,6 +1035,8 @@ The members of the Image structure are shown in the following table:
    |                                |                  | color difference.                                  |
    +--------------------------------+------------------+----------------------------------------------------+
    | geometry                       | char *           | Preferred size of the image when encoding.         |
+   +--------------------------------+------------------+----------------------------------------------------+
+   | gravity                        | GravityType      | Positioning of the image within a bounding region. |
    +--------------------------------+------------------+----------------------------------------------------+
    |                                |                  | The type of interlacing scheme (default            |
    |                                |                  | NoInterlace). This option is used to specify the   |
@@ -1035,20 +1051,20 @@ The members of the Image structure are shown in the following table:
    |                                |                  | to create an interlaced GIF or progressive JPEG    |
    |                                |                  | image.                                             |
    +--------------------------------+------------------+----------------------------------------------------+
-   | iterations                     | unsigned int     | Number of iterations to loop an animation (e.g.    |
+   | iterations                     | unsigned long    | Number of iterations to loop an animation (e.g.    |
    |                                |                  | Netscape loop extension) for.                      |
    +--------------------------------+------------------+----------------------------------------------------+
    | magick                         | char             | Image encoding format (e.g. "GIF").                |
    |                                | [MaxTextExtent]  |                                                    |
    +--------------------------------+------------------+----------------------------------------------------+
-   | magick_columns                 | unsigned int     | Base image width (before transformations)          |
+   | magick_columns                 | unsigned long    | Base image width (before transformations)          |
    +--------------------------------+------------------+----------------------------------------------------+
    | magick_filename                | char             | Base image filename (before transformations)       |
    |                                | [MaxTextExtent]  |                                                    |
    +--------------------------------+------------------+----------------------------------------------------+
-   | magick_rows                    | unsigned int     | Base image height (before transformations)         |
+   | magick_rows                    | unsigned long    | Base image height (before transformations)         |
    +--------------------------------+------------------+----------------------------------------------------+
-   | matte                          | unsigned int     | If non-zero, then the index member of pixels       |
+   | matte                          | MagickBool       | If true, then the index member of pixels           |
    |                                |                  | represents the alpha channel.                      |
    +--------------------------------+------------------+----------------------------------------------------+
    | matte_color                    | PixelPacket      | Image matte (transparent) color                    |
@@ -1058,7 +1074,7 @@ The members of the Image structure are shown in the following table:
    +--------------------------------+------------------+----------------------------------------------------+
    | next                           | struct _Image *  | Next image frame in sequence                       |
    +--------------------------------+------------------+----------------------------------------------------+
-   | offset                         | int              | Number of initial bytes to skip over when reading  |
+   | offset                         | long             | Number of initial bytes to skip over when reading  |
    |                                |                  | raw image.                                         |
    +--------------------------------+------------------+----------------------------------------------------+
    | orientation                    | OrientationType  | Orientation of the image. Specifies scanline       |
@@ -1070,9 +1086,11 @@ The members of the Image structure are shown in the following table:
    +--------------------------------+------------------+----------------------------------------------------+
    | rendering_intent               | RenderingIntent  | The type of rendering intent.                      |
    +--------------------------------+------------------+----------------------------------------------------+
-   | rows                           | unsigned int     | Image height                                       |
+   | rows                           | unsigned long    | Image height                                       |
    +--------------------------------+------------------+----------------------------------------------------+
-   | scene                          | unsigned int     | Image frame scene number.                          |
+   | scene                          | unsigned long    | Image frame scene number.                          |
+   +--------------------------------+------------------+----------------------------------------------------+
+   | start_loop                     | long             | Animation frame number to start looping at.        |
    +--------------------------------+------------------+----------------------------------------------------+
    |                                |                  | Image storage class. If DirectClass then the image |
    | storage_class                  | ClassType        | packets contain valid RGB or CMYK colors. If       |
@@ -1106,8 +1124,8 @@ The ImageInfo structure is used to supply option information to the
 functions AllocateImage(), AnimateImages(), BlobToImage(),
 CloneAnnotateInfo(), DisplayImages(), GetAnnotateInfo(), ImageToBlob(),
 PingImage(), ReadImage(), ReadImages(), and, WriteImage(). These
-functions update information in ImageInfo to reflect attributes of the
-current image.
+functions update information in ImageInfo to reflect the attributes of
+the current image.
 
 Use CloneImageInfo() to duplicate an existing ImageInfo structure or
 allocate a new one. Use DestroyImageInfo() to deallocate memory
@@ -1123,9 +1141,9 @@ The members of the ImageInfo structure are shown in the following table:
    +----------------+---------------+-------------------------------------------------------------------+
    |     Member     |     Type      |                            Description                            |
    +----------------+---------------+-------------------------------------------------------------------+
-   |adjoin          |unsigned int   |Join images into a single multi-image file.                        |
+   |adjoin          |MagickBool     |Join images into a single multi-image file.                        |
    +----------------+---------------+-------------------------------------------------------------------+
-   |antialias       |unsigned int   |Control antialiasing of rendered Postscript and Postscript or      |
+   |antialias       |MagickBool     |Control antialiasing of rendered Postscript and Postscript or      |
    |                |               |TrueType fonts. Enabled by default.                                |
    +----------------+---------------+-------------------------------------------------------------------+
    |background_color|PixelPacket    |Image background color.                                            |
@@ -1140,25 +1158,16 @@ The members of the ImageInfo structure are shown in the following table:
    |compression     |CompressionType|Image compresion type. The default is the compression type of the  |
    |                |               |specified image file.                                              |
    +----------------+---------------+-------------------------------------------------------------------+
-   |                |               |Time in 1/100ths of a second (0 to 65535) which must expire before |
-   |delay           |char *         |displaying the next image in an animated sequence. This option is  |
-   |                |               |useful for regulating the animation of a sequence of GIF images    |
-   |                |               |within Netscape.                                                   |
-   +----------------+---------------+-------------------------------------------------------------------+
    |                |               |Vertical and horizontal resolution in pixels of the image. This    |
    |density         |char *         |option specifies an image density when decoding a Postscript or    |
    |                |               |Portable Document page. Often used with page.                      |
    +----------------+---------------+-------------------------------------------------------------------+
-   |depth           |unsigned int   |Image depth (8 or 16). QuantumLeap must be defined before a depth  |
+   |depth           |unsigned long  |Image depth (8 or 16). QuantumLeap must be defined before a depth  |
    |                |               |of 16 is valid.                                                    |
-   +----------------+---------------+-------------------------------------------------------------------+
-   |                |               |GIF disposal method. This option is used to control how successive |
-   |dispose         |char *         |frames are rendered (how the preceding frame is disposed of) when  |
-   |                |               |creating a GIF animation.                                          |
    +----------------+---------------+-------------------------------------------------------------------+
    |                |               |Apply Floyd/Steinberg error diffusion to the image. The basic      |
    |                |               |strategy of dithering is to trade intensity resolution for spatial |
-   |dither          |unsigned int   |resolution by averaging the intensities of several neighboring     |
+   |dither          |MagickBool     |resolution by averaging the intensities of several neighboring     |
    |                |               |pixels. Images which suffer from severe contouring when reducing   |
    |                |               |colors can be improved with this option. The colors or monochrome  |
    |                |               |option must be set for this option to take effect.                 |
@@ -1171,15 +1180,13 @@ The members of the ImageInfo structure are shown in the following table:
    |filename        |char           |Image file name to read or write.                                  |
    |                |[MaxTextExtent]|                                                                   |
    +----------------+---------------+-------------------------------------------------------------------+
-   |fill            |PixelPacket    |Drawing object fill color.                                         |
-   +----------------+---------------+-------------------------------------------------------------------+
    |                |               |Text rendering font. If the font is a fully qualified X server font|
    |font            |char *         |name, the font is obtained from an X server. To use a TrueType     |
    |                |               |font, precede the TrueType filename with an @. Otherwise, specify a|
    |                |               |Postscript font name (e.g. "helvetica").                           |
    +----------------+---------------+-------------------------------------------------------------------+
    |                |               |Colors within this distance are considered equal. A number of      |
-   |fuzz            |int            |algorithms search for a target color. By default the color must be |
+   |fuzz            |double         |algorithms search for a target color. By default the color must be |
    |                |               |exact. Use this option to match colors that are close to the target|
    |                |               |color in RGB space.                                                |
    +----------------+---------------+-------------------------------------------------------------------+
@@ -1192,44 +1199,32 @@ The members of the ImageInfo structure are shown in the following table:
    |                |               |image.G, and image.B). Use LineInterlace or PlaneInterlace to      |
    |                |               |create an interlaced GIF or progressive JPEG image.                |
    +----------------+---------------+-------------------------------------------------------------------+
-   |iterations      |char *         |Number of iterations to loop an animation (e.g. Netscape loop      |
-   |                |               |extension) for.                                                    |
-   +----------------+---------------+-------------------------------------------------------------------+
-   |linewidth       |unsigned int   |Line width for drawing lines, circles, ellipses, etc.              |
-   +----------------+---------------+-------------------------------------------------------------------+
    |magick          |char           |Image encoding format (e.g. "GIF").                                |
    |                |[MaxTextExtent]|                                                                   |
    +----------------+---------------+-------------------------------------------------------------------+
    |matte_color     |PixelPacket    |Image matte (transparent) color.                                   |
    +----------------+---------------+-------------------------------------------------------------------+
-   |monochrome      |unsigned int   |Transform the image to black and white.                            |
+   |monochrome      |MagickBool     |Transform the image to black and white.                            |
    +----------------+---------------+-------------------------------------------------------------------+
    |page            |char *         |Equivalent size of Postscript page.                                |
    +----------------+---------------+-------------------------------------------------------------------+
-   |                |               |Set to True to read enough of the image to determine the image     |
-   |ping            |unsigned int   |columns, rows, and filesize. The columns, rows, and size attributes|
-   |                |               |are valid after invoking ReadImage() while ping is set. The image  |
-   |                |               |data is not valid after calling ReadImage() if ping is set.        |
+   |pen             |PixelPacket    |Drawing object stroke or fill color.                               |
    +----------------+---------------+-------------------------------------------------------------------+
    |pointsize       |double         |Text rendering font point size.                                    |
    +----------------+---------------+-------------------------------------------------------------------+
-   |preview_type    |PreviewType    |Image manipulation preview option. Used by 'display'.              |
-   +----------------+---------------+-------------------------------------------------------------------+
-   |quality         |unsigned int   |JPEG/MIFF/PNG compression level (default 75).                      |
+   |quality         |unsigned long  |JPEG/MIFF/PNG compression level (default 75).                      |
    +----------------+---------------+-------------------------------------------------------------------+
    |server_name     |char *         |X11 display to display to obtain fonts from, or to capture image   |
    |                |               |from.                                                              |
    +----------------+---------------+-------------------------------------------------------------------+
    |                |               |Width and height of a raw image (an image which does not support   |
    |size            |char *         |width and height information). Size may also be used to affect the |
-   |                |               |image size read from a multi-resolution format (e.g. Photo CD,     |
+   |                |               |image size read from a multi-resolution format, such as Photo CD,  |
    |                |               |JBIG, or JPEG.                                                     |
    +----------------+---------------+-------------------------------------------------------------------+
-   |stroke          |PixelPacket    |Drawing object outline color.                                      |
+   |subimage        |unsigned long  |Subimage of an image sequence.                                     |
    +----------------+---------------+-------------------------------------------------------------------+
-   |subimage        |unsigned int   |Subimage of an image sequence.                                     |
-   +----------------+---------------+-------------------------------------------------------------------+
-   |subrange        |unsigned int   |Number of images relative to the base image.                       |
+   |subrange        |unsigned long  |Number of images relative to the base image.                       |
    +----------------+---------------+-------------------------------------------------------------------+
    |texture         |char *         |Image filename to use as background texture.                       |
    +----------------+---------------+-------------------------------------------------------------------+
@@ -1258,6 +1253,8 @@ ImageType indicates the type classification of the image.
    +------------------------------+------------------------------------------------------------------+
    |GrayscaleType                 |Grayscale image                                                   |
    +------------------------------+------------------------------------------------------------------+
+   |GrayscaleMatteType            |Grayscale image with opacity                                      |
+   +------------------------------+------------------------------------------------------------------+
    |PaletteType                   |Indexed color (palette) image                                     |
    +------------------------------+------------------------------------------------------------------+
    |PaletteMatteType              |Indexed color (palette) image with opacity                        |
@@ -1268,15 +1265,21 @@ ImageType indicates the type classification of the image.
    +------------------------------+------------------------------------------------------------------+
    |ColorSeparationType           |Cyan/Yellow/Magenta/Black (CYMK) image                            |
    +------------------------------+------------------------------------------------------------------+
+   |ColorSeparationMatteType      |Cyan/Yellow/Magenta/Black (CYMK) image with opacity               |
+   +------------------------------+------------------------------------------------------------------+
 
 IndexPacket
 ===========
 
 IndexPacket is the type used for a colormap index. An array of type
 IndexPacket is used to represent an image in PseudoClass type. Currently
-supported IndexPacket underlying types are 'unsigned char' and 'unsigned
-short'. The type is selected at build time according to the QuantumDepth
-setting.
+supported IndexPacket underlying types are 'unsigned char', 'unsigned short',
+and 'unsigned int'. The type is selected at build time according to the
+QuantumDepth setting.
+
+::
+
+  typedef Quantum IndexPacket;
 
 InterlaceType
 =============
@@ -1353,7 +1356,7 @@ of an image format directly from within their program.
 Sample Module:
 
 The following shows sample code for a module called "GIF" (gif.c). Note
-that the names of the Register and Unregister call-back routines are
+that the names of the Register and Unregister callback routines are
 calculated at run-time, and therefore must follow the rigid naming scheme
 RegisterFORMATImage and UnregisterFORMATImage, respectively, where FORMAT
 is the upper-cased name of the module file::
@@ -1400,7 +1403,7 @@ is the upper-cased name of the module file::
 Sample Application Code
 
 Image format support provided within the user's application does not need
-to implement the RegisterFORMATImage and UnregisterFORMATImage call-back
+to implement the RegisterFORMATImage and UnregisterFORMATImage callback
 routines. Instead, the application takes responsibility for the
 registration itself. An example follows::
 
@@ -1442,17 +1445,19 @@ The members of the MagickInfo structure are shown in the following table:
    +------------+--------------------+------------------------------------------------------------------+
    |   Member   |       Type         |                           Description                            |
    +------------+--------------------+------------------------------------------------------------------+
-   |adjoin      |unsigned int        |Set to non-zero (True) if this file format supports multi-frame   |
+   |adjoin      |MagickBool          |Set to non-zero (True) if this file format supports multi-frame   |
    |            |                    |images.                                                           |
    +------------+--------------------+------------------------------------------------------------------+
    |            |                    |Set to non-zero (True) if the encoder and decoder for this format |
-   |blob_support|unsigned int        |supports operating on arbitrary BLOBs (rather than only disk      |
+   |blob_support|MagickBool          |supports operating on arbitrary BLOBs (rather than only disk      |
    |            |                    |files).                                                           |
    +------------+--------------------+------------------------------------------------------------------+
    |            |                    |User specified data. A way to pass any sort of data structure to  |
-   |data        |void *              |the endoder/decoder. To set this, GetMagickInfo() must be called  |
+   |client_data |void *              |the endoder/decoder. To set this, GetMagickInfo() must be called  |
    |            |                    |to first obtain a pointer to the registered structure since it can|
    |            |                    |not be set via a RegisterMagickInfo() parameter.                  |
+   +------------+--------------------+------------------------------------------------------------------+
+   |coder_class |CoderClass          |Image format coder stability level.                               |
    +------------+--------------------+------------------------------------------------------------------+
    |            |Image \*(\*decoder) |                                                                  |
    |decoder     |(const ImageInfo    |Function to decode image data and return GraphicsMagick Image.    |
@@ -1473,10 +1478,16 @@ The members of the MagickInfo structure are shown in the following table:
    +------------+--------------------+------------------------------------------------------------------+
    |next        |MagickInfo          |Next MagickInfo struct in linked-list. NULL if none.              |
    +------------+--------------------+------------------------------------------------------------------+
+   |note        |const char *        |Usage note for users.                                             |
+   +------------+--------------------+------------------------------------------------------------------+
    |previous    |MagickInfo          |Previous MagickInfo struct in linked-list. NULL if none.          |
    +------------+--------------------+------------------------------------------------------------------+
-   |raw         |unsigned int        |Image format does not contain size (must be specified in          |
+   |stealth     |MagickBook          |Image format should not appear appear in format listings.         |
+   +------------+--------------------+------------------------------------------------------------------+
+   |raw         |MagickBool          |Image format does not contain size (must be specified in          |
    |            |                    |ImageInfo).                                                       |
+   +------------+--------------------+------------------------------------------------------------------+
+   |version     |const char *        |Version of the support library used for the format.               |
    +------------+--------------------+------------------------------------------------------------------+
 
 MonitorHandler
@@ -1489,6 +1500,11 @@ callback. Its definition is as follows::
     (*MonitorHandler)(const char *text, const magick_int64_t quantum,
       const magick_uint64_t span, ExceptionInfo *exception);
 
+A MonitorHandler should normally return True (a non-zero value) if the
+operation can continue.  If it returns False, then the operation will be
+aborted.  This mechanism enables a user to terminate a process that is
+taking too long to complete.
+
 The operation of the monitor handler is described in the following table:
 
 .. table:: MonitorHandler Parameters
@@ -1496,17 +1512,10 @@ The operation of the monitor handler is described in the following table:
    +------------------------+------------------------+-----------------------------------------------+
    |       Parameter        |          Type          |                  Description                  |
    +------------------------+------------------------+-----------------------------------------------+
-   | return status          | unsigned int           | The progress monitor should normally return   |
-   |                        |                        | True (a non-zero value) if the operation is   |
-   |                        |                        | to continue. If the progress monitor returns  |
-   |                        |                        | false, then the operation is will be aborted. |
-   |                        |                        | This mechanism allows a user to terminate a   |
-   |                        |                        | process which is taking too long to complete. |
-   +------------------------+------------------------+-----------------------------------------------+
    | text                   | const char *           | A description of the current operation being  |
    |                        |                        | performed.                                    |
    +------------------------+------------------------+-----------------------------------------------+
-   | quantum                | const magick_int64_t   | A value within the range of 0 to span which   |
+   | quantum                | const magick_int64_t   | A value within the range of 0 to *span* which |
    |                        |                        | indicates the degree of progress.             |
    +------------------------+------------------------+-----------------------------------------------+
    | span                   | const magick_uint64_t  | The total range that quantum will span.       |
@@ -1582,6 +1591,10 @@ to the image.
    |LaplacianNoise                                |Laplacian noise                                   |
    +----------------------------------------------+--------------------------------------------------+
    |PoissonNoise                                  |Poisson noise                                     |
+   +----------------------------------------------+--------------------------------------------------+
+   |RandomNoise                                   |Random noise (uniform distribution)               |
+   +----------------------------------------------+--------------------------------------------------+
+   |UndefinedNoise                                |Undefined noise                                   |
    +----------------------------------------------+--------------------------------------------------+
 
 OrientationType
@@ -1703,8 +1716,6 @@ The members of the PointInfo structure are shown in the following table:
    +-----------------------------+------------------------+------------------------------------------+
    |y                            |double                  |Y ordinate                                |
    +-----------------------------+------------------------+------------------------------------------+
-   |z                            |double                  |Z ordinate                                |
-   +-----------------------------+------------------------+------------------------------------------+
 
 ProfileInfo
 ===========
@@ -1719,7 +1730,9 @@ The members of the ProfileInfo structure are shown in the following table:
    +-----------------------+--------------------------------------+----------------------------------+
    |        Member         |                 Type                 |           Description            |
    +-----------------------+--------------------------------------+----------------------------------+
-   |length                 |unsigned int                          |Profile length                    |
+   |length                 |size_t                                |Profile length                    |
+   +-----------------------+--------------------------------------+----------------------------------+
+   |name                   |char *                                |Profile name                      |
    +-----------------------+--------------------------------------+----------------------------------+
    |info                   |unsigned char *                       |Profile data                      |
    +-----------------------+--------------------------------------+----------------------------------+
@@ -1776,7 +1789,7 @@ color palette may be specified.
    |             |              |quantizing the image.                                                 |
    +-------------+--------------+----------------------------------------------------------------------+
    |             |              |Specify the maximum number of colors in the output image. Must be     |
-   |number_colors|unsigned int  |equal to, or less than MaxRGB, which is determined by the value of    |
+   |number_colors|unsigned long |equal to, or less than MaxRGB, which is determined by the value of    |
    |             |              |QuantumLeap when GraphicsMagick was compiled.                         |
    +-------------+--------------+----------------------------------------------------------------------+
    |signature    |unsigned long |???                                                                   |
@@ -1791,9 +1804,9 @@ color palette may be specified.
 Quantum
 ========
 
-Quantum is the base type ('unsigned char', 'unsigned short', 'unsigned
-int') used to store a pixel component (e.g. 'R' is one pixel component of
-an RGB pixel).
+Quantum is the base type used to store a pixel component, such as the
+'R' in an RGB pixel.  It can be defined as either an 'unsigned char',
+'unsigned short', or an 'unsigned int'.
 
 
 QuantumType
@@ -1804,7 +1817,7 @@ entire pixels, or components of pixels ("Quantums") while they are being
 read, or written to, a pixel cache. The validity of these format
 specifications depends on whether the Image pixels are in RGB format,
 RGBA format, or CMYK format. The pixel Quantum size is determined by the
-Image depth (eight or sixteen bits).
+image depth, which can be eight, sixteen, or thirty-two bits.
 
 .. table:: RGB(A) Image Quantums
 
@@ -1872,13 +1885,13 @@ table:
    +-------------------+------------------------+----------------------------------------------------+
    |      Member       |          Type          |                    Description                     |
    +-------------------+------------------------+----------------------------------------------------+
-   |width              |unsigned int            |Rectangle width                                     |
+   |width              |unsigned long           |Rectangle width                                     |
    +-------------------+------------------------+----------------------------------------------------+
-   |height             |unsigned int            |Rectangle height                                    |
+   |height             |unsigned long           |Rectangle height                                    |
    +-------------------+------------------------+----------------------------------------------------+
-   |x                  |int                     |Rectangle horizontal offset                         |
+   |x                  |long                    |Rectangle horizontal offset                         |
    +-------------------+------------------------+----------------------------------------------------+
-   |y                  |int                     |Rectangle vertical offset                           |
+   |y                  |long                    |Rectangle vertical offset                           |
    +-------------------+------------------------+----------------------------------------------------+
 
 RegistryType
@@ -1953,17 +1966,17 @@ ResourceType
 Resource limits constrain the system resources that a GraphicsMagick
 process may consume, or that individual decode/encode and/or image
 processing operations may consume.  If a resource is expended and
-another resource may be substituted (e.g. RAM memory vs an on-disk
+another resource may be substituted (such as RAM memory vs an on-disk
 temporary file), then the alternative resource is used until it is
 also expended.  When a resource limit is exceeded and there is no more
-alternative resource available then a hard error is reported for the
+alternative resource available, then a hard error is reported for the
 operation being performed.
 
 Global limits may be applied for the Pixel Cache total disk space
 (Gigabytes), the Pixel Cache number of simultaneous open files
 (Files), the Pixel Cache total file memory-mapping (Megabytes), the
 maximum heap memory allocations (Megabytes), the maximum number of
-pixels in single image (Pixels), the maximum number of worker threads,
+pixels in a single image (Pixels), the maximum number of worker threads,
 the maximum pixel width of an image (Pixels), the maximum pixel height
 of an image (Pixels), and the maximum amount of uncompressed file data
 which may be read while decoding.
@@ -2123,7 +2136,7 @@ ViewInfo
 
 ViewInfo represents a handle to a pixel view, which represents a uniquely
 selectable rectangular region of pixels. The only limit on the number of
-views is the amount of available memory. Each Image contains a collection
+views is the amount of available memory. Each image contains a collection
 of default views (one view per thread) so that the image may be usefully
 accessed without needing to explicitly allocate pixel views.
 
@@ -2226,7 +2239,9 @@ MagickXResourceInfo
 
     unsigned int
       magnify,
-      pause;  char
+      pause;
+
+    char
       *pen_colors[MaxNumberPens];
 
     char

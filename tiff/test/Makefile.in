@@ -144,7 +144,7 @@ CONFIG_HEADER = $(top_builddir)/config/config.h \
 	$(top_builddir)/port/libport_config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@HAVE_JPEG_TRUE@am__EXEEXT_1 = raw_decode$(EXEEXT)
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@am__EXEEXT_1 = raw_decode$(EXEEXT)
 @BUILD_STATIC_TRUE@am__EXEEXT_2 = rational_precision2double$(EXEEXT)
 am_ascii_tag_OBJECTS = ascii_tag.$(OBJEXT)
 ascii_tag_OBJECTS = $(am_ascii_tag_OBJECTS)
@@ -491,60 +491,78 @@ am__set_TESTS_bases = \
   bases=`echo $$bases`
 RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
-@HAVE_JPEG_TRUE@am__EXEEXT_3 = tiff2rgba-quad-tile.jpg.sh \
-@HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_zackthecat_subsamp22_single_strip.sh \
-@HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_chewey_subsamp21_multi_strip.sh \
-@HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_single_strip_no_rowsperstrip.sh
-am__EXEEXT_4 = ppm2tiff_pbm.sh ppm2tiff_pgm.sh ppm2tiff_ppm.sh \
-	fax2tiff.sh tiffcp-g3.sh tiffcp-g3-1d.sh tiffcp-g3-1d-fill.sh \
-	tiffcp-g3-2d.sh tiffcp-g3-2d-fill.sh tiffcp-g4.sh \
-	tiffcp-logluv.sh tiffcp-thumbnail.sh tiffcp-lzw-compat.sh \
-	tiffcp-lzw-scanline-decode.sh tiffdump.sh tiffinfo.sh \
-	tiffcp-split.sh tiffcp-split-join.sh tiff2ps-PS1.sh \
-	tiff2ps-PS2.sh tiff2ps-PS3.sh tiff2ps-EPS1.sh tiff2pdf.sh \
-	tiffcrop-doubleflip-logluv-3c-16b.sh \
-	tiffcrop-doubleflip-minisblack-1c-16b.sh \
-	tiffcrop-doubleflip-minisblack-1c-8b.sh \
-	tiffcrop-doubleflip-minisblack-2c-8b-alpha.sh \
-	tiffcrop-doubleflip-miniswhite-1c-1b.sh \
-	tiffcrop-doubleflip-palette-1c-1b.sh \
-	tiffcrop-doubleflip-palette-1c-4b.sh \
-	tiffcrop-doubleflip-palette-1c-8b.sh \
-	tiffcrop-doubleflip-rgb-3c-16b.sh \
-	tiffcrop-doubleflip-rgb-3c-8b.sh \
-	tiffcrop-extract-logluv-3c-16b.sh \
-	tiffcrop-extract-minisblack-1c-16b.sh \
-	tiffcrop-extract-minisblack-1c-8b.sh \
-	tiffcrop-extract-minisblack-2c-8b-alpha.sh \
-	tiffcrop-extract-miniswhite-1c-1b.sh \
-	tiffcrop-extract-palette-1c-1b.sh \
-	tiffcrop-extract-palette-1c-4b.sh \
-	tiffcrop-extract-palette-1c-8b.sh \
-	tiffcrop-extract-rgb-3c-16b.sh tiffcrop-extract-rgb-3c-8b.sh \
-	tiffcrop-extractz14-logluv-3c-16b.sh \
-	tiffcrop-extractz14-minisblack-1c-16b.sh \
-	tiffcrop-extractz14-minisblack-1c-8b.sh \
-	tiffcrop-extractz14-minisblack-2c-8b-alpha.sh \
-	tiffcrop-extractz14-miniswhite-1c-1b.sh \
-	tiffcrop-extractz14-palette-1c-1b.sh \
-	tiffcrop-extractz14-palette-1c-4b.sh \
-	tiffcrop-extractz14-palette-1c-8b.sh \
-	tiffcrop-extractz14-rgb-3c-16b.sh \
-	tiffcrop-extractz14-rgb-3c-8b.sh tiffcrop-R90-logluv-3c-16b.sh \
-	tiffcrop-R90-minisblack-1c-16b.sh \
-	tiffcrop-R90-minisblack-1c-8b.sh \
-	tiffcrop-R90-minisblack-2c-8b-alpha.sh \
-	tiffcrop-R90-miniswhite-1c-1b.sh tiffcrop-R90-palette-1c-1b.sh \
-	tiffcrop-R90-palette-1c-4b.sh tiffcrop-R90-palette-1c-8b.sh \
-	tiffcrop-R90-rgb-3c-16b.sh tiffcrop-R90-rgb-3c-8b.sh \
-	tiff2bw-palette-1c-8b.sh tiff2bw-quad-lzw-compat.sh \
-	tiff2bw-rgb-3c-8b.sh tiff2rgba-logluv-3c-16b.sh \
-	tiff2rgba-minisblack-1c-16b.sh tiff2rgba-minisblack-1c-8b.sh \
-	tiff2rgba-minisblack-2c-8b-alpha.sh \
-	tiff2rgba-miniswhite-1c-1b.sh tiff2rgba-palette-1c-1b.sh \
-	tiff2rgba-palette-1c-4b.sh tiff2rgba-palette-1c-8b.sh \
-	tiff2rgba-rgb-3c-16b.sh tiff2rgba-rgb-3c-8b.sh testfax4.sh \
-	testdeflatelaststripextradata.sh $(am__EXEEXT_3)
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@am__EXEEXT_3 =  \
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@	tiff2rgba-quad-tile.jpg.sh \
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@	tiff2rgba-ojpeg_zackthecat_subsamp22_single_strip.sh \
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@	tiff2rgba-ojpeg_chewey_subsamp21_multi_strip.sh \
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@	tiff2rgba-ojpeg_single_strip_no_rowsperstrip.sh
+@TIFF_TOOLS_TRUE@am__EXEEXT_4 = ppm2tiff_pbm.sh ppm2tiff_pgm.sh \
+@TIFF_TOOLS_TRUE@	ppm2tiff_ppm.sh fax2tiff.sh tiffcp-g3.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g3-1d.sh tiffcp-g3-1d-fill.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g3-2d.sh tiffcp-g3-2d-fill.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g4.sh tiffcp-logluv.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-thumbnail.sh tiffcp-lzw-compat.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-lzw-scanline-decode.sh tiffdump.sh \
+@TIFF_TOOLS_TRUE@	tiffinfo.sh tiffcp-split.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-split-join.sh tiff2ps-PS1.sh \
+@TIFF_TOOLS_TRUE@	tiff2ps-PS2.sh tiff2ps-PS3.sh tiff2ps-EPS1.sh \
+@TIFF_TOOLS_TRUE@	tiff2pdf.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2bw-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2bw-quad-lzw-compat.sh \
+@TIFF_TOOLS_TRUE@	tiff2bw-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-rgb-3c-8b.sh testfax4.sh \
+@TIFF_TOOLS_TRUE@	testfax3_bug_513.sh \
+@TIFF_TOOLS_TRUE@	testdeflatelaststripextradata.sh \
+@TIFF_TOOLS_TRUE@	$(am__EXEEXT_3)
 TEST_SUITE_LOG = test-suite.log
 TEST_EXTENSIONS = @EXEEXT@ .test
 LOG_DRIVER = $(SHELL) $(top_srcdir)/config/test-driver
@@ -747,97 +765,99 @@ EXTRA_DIST = \
 # Extra files which should be cleaned by 'make clean'
 CLEANFILES = test_packbits.tif o-*
 @HAVE_JPEG_FALSE@JPEG_DEPENDENT_CHECK_PROG = 
-@HAVE_JPEG_TRUE@JPEG_DEPENDENT_CHECK_PROG = raw_decode
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@JPEG_DEPENDENT_CHECK_PROG = raw_decode
 @HAVE_JPEG_FALSE@JPEG_DEPENDENT_TESTSCRIPTS = 
-@HAVE_JPEG_TRUE@JPEG_DEPENDENT_TESTSCRIPTS = \
-@HAVE_JPEG_TRUE@	tiff2rgba-quad-tile.jpg.sh \
-@HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_zackthecat_subsamp22_single_strip.sh \
-@HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_chewey_subsamp21_multi_strip.sh \
-@HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_single_strip_no_rowsperstrip.sh
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@JPEG_DEPENDENT_TESTSCRIPTS = \
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@	tiff2rgba-quad-tile.jpg.sh \
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@	tiff2rgba-ojpeg_zackthecat_subsamp22_single_strip.sh \
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@	tiff2rgba-ojpeg_chewey_subsamp21_multi_strip.sh \
+@HAVE_JPEG_TRUE@@TIFF_TOOLS_TRUE@	tiff2rgba-ojpeg_single_strip_no_rowsperstrip.sh
 
 @BUILD_STATIC_TRUE@STATIC_CHECK_PROGS = rational_precision2double
+@TIFF_TOOLS_FALSE@TESTSCRIPTS = 
 
 # Test scripts to execute
-TESTSCRIPTS = \
-	ppm2tiff_pbm.sh \
-	ppm2tiff_pgm.sh \
-	ppm2tiff_ppm.sh \
-	fax2tiff.sh \
-	tiffcp-g3.sh \
-	tiffcp-g3-1d.sh \
-	tiffcp-g3-1d-fill.sh \
-	tiffcp-g3-2d.sh \
-	tiffcp-g3-2d-fill.sh \
-	tiffcp-g4.sh \
-	tiffcp-logluv.sh \
-	tiffcp-thumbnail.sh \
-	tiffcp-lzw-compat.sh \
-	tiffcp-lzw-scanline-decode.sh \
-	tiffdump.sh \
-	tiffinfo.sh \
-	tiffcp-split.sh \
-	tiffcp-split-join.sh \
-	tiff2ps-PS1.sh \
-	tiff2ps-PS2.sh \
-	tiff2ps-PS3.sh \
-	tiff2ps-EPS1.sh \
-	tiff2pdf.sh \
-	tiffcrop-doubleflip-logluv-3c-16b.sh \
-	tiffcrop-doubleflip-minisblack-1c-16b.sh \
-	tiffcrop-doubleflip-minisblack-1c-8b.sh \
-	tiffcrop-doubleflip-minisblack-2c-8b-alpha.sh \
-	tiffcrop-doubleflip-miniswhite-1c-1b.sh \
-	tiffcrop-doubleflip-palette-1c-1b.sh \
-	tiffcrop-doubleflip-palette-1c-4b.sh \
-	tiffcrop-doubleflip-palette-1c-8b.sh \
-	tiffcrop-doubleflip-rgb-3c-16b.sh \
-	tiffcrop-doubleflip-rgb-3c-8b.sh \
-	tiffcrop-extract-logluv-3c-16b.sh \
-	tiffcrop-extract-minisblack-1c-16b.sh \
-	tiffcrop-extract-minisblack-1c-8b.sh \
-	tiffcrop-extract-minisblack-2c-8b-alpha.sh \
-	tiffcrop-extract-miniswhite-1c-1b.sh \
-	tiffcrop-extract-palette-1c-1b.sh \
-	tiffcrop-extract-palette-1c-4b.sh \
-	tiffcrop-extract-palette-1c-8b.sh \
-	tiffcrop-extract-rgb-3c-16b.sh \
-	tiffcrop-extract-rgb-3c-8b.sh \
-	tiffcrop-extractz14-logluv-3c-16b.sh \
-	tiffcrop-extractz14-minisblack-1c-16b.sh \
-	tiffcrop-extractz14-minisblack-1c-8b.sh \
-	tiffcrop-extractz14-minisblack-2c-8b-alpha.sh \
-	tiffcrop-extractz14-miniswhite-1c-1b.sh \
-	tiffcrop-extractz14-palette-1c-1b.sh \
-	tiffcrop-extractz14-palette-1c-4b.sh \
-	tiffcrop-extractz14-palette-1c-8b.sh \
-	tiffcrop-extractz14-rgb-3c-16b.sh \
-	tiffcrop-extractz14-rgb-3c-8b.sh \
-	tiffcrop-R90-logluv-3c-16b.sh \
-	tiffcrop-R90-minisblack-1c-16b.sh \
-	tiffcrop-R90-minisblack-1c-8b.sh \
-	tiffcrop-R90-minisblack-2c-8b-alpha.sh \
-	tiffcrop-R90-miniswhite-1c-1b.sh \
-	tiffcrop-R90-palette-1c-1b.sh \
-	tiffcrop-R90-palette-1c-4b.sh \
-	tiffcrop-R90-palette-1c-8b.sh \
-	tiffcrop-R90-rgb-3c-16b.sh \
-	tiffcrop-R90-rgb-3c-8b.sh \
-	tiff2bw-palette-1c-8b.sh \
-	tiff2bw-quad-lzw-compat.sh \
-	tiff2bw-rgb-3c-8b.sh \
-	tiff2rgba-logluv-3c-16b.sh \
-	tiff2rgba-minisblack-1c-16b.sh \
-	tiff2rgba-minisblack-1c-8b.sh \
-	tiff2rgba-minisblack-2c-8b-alpha.sh \
-	tiff2rgba-miniswhite-1c-1b.sh \
-	tiff2rgba-palette-1c-1b.sh \
-	tiff2rgba-palette-1c-4b.sh \
-	tiff2rgba-palette-1c-8b.sh \
-	tiff2rgba-rgb-3c-16b.sh \
-	tiff2rgba-rgb-3c-8b.sh \
-	testfax4.sh \
-	testdeflatelaststripextradata.sh \
-	$(JPEG_DEPENDENT_TESTSCRIPTS)
+@TIFF_TOOLS_TRUE@TESTSCRIPTS = \
+@TIFF_TOOLS_TRUE@	ppm2tiff_pbm.sh \
+@TIFF_TOOLS_TRUE@	ppm2tiff_pgm.sh \
+@TIFF_TOOLS_TRUE@	ppm2tiff_ppm.sh \
+@TIFF_TOOLS_TRUE@	fax2tiff.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g3.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g3-1d.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g3-1d-fill.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g3-2d.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g3-2d-fill.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-g4.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-logluv.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-thumbnail.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-lzw-compat.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-lzw-scanline-decode.sh \
+@TIFF_TOOLS_TRUE@	tiffdump.sh \
+@TIFF_TOOLS_TRUE@	tiffinfo.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-split.sh \
+@TIFF_TOOLS_TRUE@	tiffcp-split-join.sh \
+@TIFF_TOOLS_TRUE@	tiff2ps-PS1.sh \
+@TIFF_TOOLS_TRUE@	tiff2ps-PS2.sh \
+@TIFF_TOOLS_TRUE@	tiff2ps-PS3.sh \
+@TIFF_TOOLS_TRUE@	tiff2ps-EPS1.sh \
+@TIFF_TOOLS_TRUE@	tiff2pdf.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-doubleflip-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extract-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-extractz14-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiffcrop-R90-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2bw-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2bw-quad-lzw-compat.sh \
+@TIFF_TOOLS_TRUE@	tiff2bw-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-logluv-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-minisblack-1c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-minisblack-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-minisblack-2c-8b-alpha.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-miniswhite-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-palette-1c-1b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-palette-1c-4b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-palette-1c-8b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-rgb-3c-16b.sh \
+@TIFF_TOOLS_TRUE@	tiff2rgba-rgb-3c-8b.sh \
+@TIFF_TOOLS_TRUE@	testfax4.sh \
+@TIFF_TOOLS_TRUE@	testfax3_bug_513.sh \
+@TIFF_TOOLS_TRUE@	testdeflatelaststripextradata.sh \
+@TIFF_TOOLS_TRUE@	$(JPEG_DEPENDENT_TESTSCRIPTS)
 
 
 # This list should contain the references files
@@ -848,6 +868,7 @@ REFFILES = \
 	refs/o-tiff2ps-PS2.ps \
 	refs/o-tiff2ps-PS3.ps \
 	refs/o-testfax4.tiff \
+	refs/o-testfax3_bug_513.tiff \
 	refs/o-deflate-last-strip-extra-data.tiff
 
 
@@ -873,7 +894,8 @@ TIFFIMAGES = \
 	images/ojpeg_single_strip_no_rowsperstrip.tiff \
 	images/testfax4.tiff \
 	images/deflate-last-strip-extra-data.tiff \
-	images/custom_dir_EXIF_GPS.tiff
+	images/custom_dir_EXIF_GPS.tiff \
+	images/testfax3_bug_513.tiff
 
 PNMIMAGES = \
 	images/minisblack-1c-8b.pgm \
@@ -894,6 +916,7 @@ IMAGES_EXTRA_DIST = \
 	images/test_ifd_loop_to_self.tif \
 	images/test_ifd_loop_to_first.tif \
 	images/test_two_ifds.tif \
+	images/test_ifd_loop_subifd.tif \
 	$(PNMIMAGES) \
 	$(TIFFIMAGES)
 
@@ -1965,6 +1988,13 @@ tiff2rgba-rgb-3c-8b.sh.log: tiff2rgba-rgb-3c-8b.sh
 testfax4.sh.log: testfax4.sh
 	@p='testfax4.sh'; \
 	b='testfax4.sh'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+testfax3_bug_513.sh.log: testfax3_bug_513.sh
+	@p='testfax3_bug_513.sh'; \
+	b='testfax3_bug_513.sh'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

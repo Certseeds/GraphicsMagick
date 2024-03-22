@@ -27,10 +27,10 @@ LIBMAGICK=magick/libGraphicsMagick.la
 
 if WITH_MODULES
 magick_libGraphicsMagick_la_SOURCES = $(MAGICK_BASE_SRCS) $(MAGICK_PLATFORM_SRCS)
-magick_libGraphicsMagick_la_LIBADD = $(MAGICK_DEP_LIBS)
+magick_libGraphicsMagick_la_LIBADD = $(MAGICK_DEP_LIBS) $(MAGICK_EXTRA_DEP_LIBS)
 else
 magick_libGraphicsMagick_la_SOURCES = $(MAGICK_BASE_SRCS) $(MAGICK_PLATFORM_SRCS) $(MAGICK_CODER_SRCS) $(MAGICK_FILTER_SRCS)
-magick_libGraphicsMagick_la_LIBADD = $(MAGICK_DEP_LIBS)
+magick_libGraphicsMagick_la_LIBADD = $(MAGICK_DEP_LIBS) $(MAGICK_EXTRA_DEP_LIBS)
 endif # WITH_MODULES
 magick_libGraphicsMagick_la_CPPFLAGS = $(AM_CPPFLAGS) $(LIBRARY_EXTRA_CPPFLAGS)
 magick_libGraphicsMagick_la_LDFLAGS = \
@@ -319,6 +319,7 @@ MAGICK_NOINST_HDRS = \
 	magick/random-private.h \
 	magick/registry-private.h \
 	magick/render-private.h \
+	magick/resource-private.h \
 	magick/semaphore.h \
 	magick/spinlock.h \
 	magick/static.h \

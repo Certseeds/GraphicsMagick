@@ -616,6 +616,6 @@ static unsigned int WriteXBMImage(const ImageInfo *image_info,Image *image)
   }
   (void) strlcpy(buffer,"};\n",sizeof(buffer));
   (void) WriteBlob(image,strlen(buffer),buffer);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

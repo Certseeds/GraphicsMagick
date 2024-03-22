@@ -127,7 +127,7 @@ static Image *ReadXTRNImage(const ImageInfo *image_info, ExceptionInfo *exceptio
     {
       image=ReadImage(clone_info,exception);
       /* this should not be needed since the upstream code should catch any
-         excetpions thrown by ReadImage
+         exceptions thrown by ReadImage
       */
       if (exception->severity != UndefinedException)
         MagickWarning2(exception->severity,exception->reason,exception->description);

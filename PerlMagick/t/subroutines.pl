@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2016 GraphicsMagick Group
+# Copyright (C) 2003-2023 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1999 E. I. du Pont de Nemours and Company
 #
@@ -238,7 +238,7 @@ sub testRead {
 
     print( "  testing reading from file \"", $infile, "\" ...\n");
     $image=Graphics::Magick->new;
-    $image->Set(size=>'512x512');
+    #$image->Set(size=>'512x512');
 
     if ( "$read_options" ne "" ) {
         eval "\$status=\$image->Set($read_options);";
@@ -290,7 +290,7 @@ sub testRead {
         close( FILE );
         if( defined( $blob ) ) {
           $image=Graphics::Magick->new(magick=>$magick);
-          $image->Set(size=>'512x512');
+          #$image->Set(size=>'512x512');
 
           if ( defined( $read_options ) && "$read_options" ne "" ) {
               eval "\$status=\$image->Set($read_options);";

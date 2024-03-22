@@ -1072,6 +1072,6 @@ static unsigned int WritePDBImage(const ImageInfo *image_info,Image *image)
   MagickFreeResourceLimitedMemory(p);
   if ((comment != (ImageAttribute *) NULL) && (comment->value != (char *) NULL))
     (void) WriteBlobString(image,comment->value);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

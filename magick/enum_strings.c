@@ -628,7 +628,9 @@ MagickExport CompressionType StringToCompressionType(const char *option)
     compression_type=Group4Compression;
   else if (LocaleCompare("JPEG",option) == 0)
     compression_type=JPEGCompression;
-  else if (LocaleCompare("Lossless",option) == 0)
+  else if (LocaleCompare("LosslessJPEG",option) == 0)
+    compression_type=LosslessJPEGCompression;
+  else if (LocaleCompare("Lossless",option) == 0) /* Bad choice! */
     compression_type=LosslessJPEGCompression;
   else if (LocaleCompare("LZW",option) == 0)
     compression_type=LZWCompression;
@@ -1662,6 +1664,8 @@ MagickExport ResourceType StringToResourceType(const char *option)
     resource_type=HeightResource;
   else if (LocaleCompare("Read",option) == 0)
     resource_type=ReadResource;
+  else if (LocaleCompare("Write",option) == 0)
+    resource_type=WriteResource;
   return resource_type;
 }
 

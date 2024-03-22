@@ -70,9 +70,9 @@ at <a class="reference external" href="http://sourceforge.net/projects/graphicsm
 <p>GraphicsMagick is a continual work in progress. The very latest code
 is available via the Mercurial distributed source control management
 tool (<a class="reference external" href="https://www.mercurial-scm.org/">https://www.mercurial-scm.org/</a>). GraphicsMagick may be retrieved
-from OSDN or SourceForge via the following commands:</p>
+from foss.heptapod.net or SourceForge via the following commands:</p>
 <blockquote>
-<p>hg clone <a class="reference external" href="https://hg.osdn.net/view/graphicsmagick/GM">https://hg.osdn.net/view/graphicsmagick/GM</a> GM</p>
+<p>hg clone <a class="reference external" href="https://foss.heptapod.net/graphicsmagick/graphicsmagick">https://foss.heptapod.net/graphicsmagick/graphicsmagick</a> GM</p>
 <p>hg clone <a class="reference external" href="http://hg.code.sf.net/p/graphicsmagick/code/">http://hg.code.sf.net/p/graphicsmagick/code/</a> GM</p>
 </blockquote>
 <p>Mercurial provides a complete stand-alone repository which contains
@@ -289,11 +289,12 @@ JPEG and ZLIB libraries.  Libtiff 3.8.2 or later is recommended.</p>
 <p><a class="reference external" href="http://sourceforge.net/projects/ctrio/">http://sourceforge.net/projects/ctrio/</a></p>
 </blockquote>
 <p>to substitute for the vsnprintf function when the operating system
-does not provide one. Older operating systems (e.g. Solaris 2.5)
-may not provide a vsnprintf function. If vsnprintf (or the TRIO
+does not provide one. Older operating systems (e.g. Solaris 2.5) may
+not provide a vsnprintf function. If vsnprintf (or the TRIO
 replacement) is not used, then vsprintf is used instead, which
 decreases the security of GraphicsMagick due to possible buffer
-overrun exploits.</p>
+overrun exploits.  It is highly unlikely that TRIO is useful on any
+modern system.</p>
 </li>
 <li><p>GraphicsMagick may optionally use the 'tcmalloc' library provided as
 part of Google gperftools available from</p>
@@ -431,7 +432,7 @@ XL files.</p></li>
 
 <hr class="docutils">
 <div class="document">
-    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2023<!--SPONSOR_LOGO--></p>
+    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
 </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="en" name="language">
-	<title></title>
+	<title>Magick++ ChangeLog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link media="screen" href="../docutils-articles.css" type="text/css" rel="stylesheet">
 
@@ -36,7 +36,8 @@
 </ul>
 </div>
 
-<div class="document">
+<div class="document" id="magick-changelog">
+<h1 class="title">Magick++ ChangeLog</h1>
 <p>2017-03-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -157,7 +158,7 @@ constructor, and assignment operator.</p></li>
 <p>2010-01-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>demo/shapes.cpp (main): Floodfill shape more agressively and
+<li><p>demo/shapes.cpp (main): Floodfill shape more aggressively and
 scale fuzz factor so that it provides the same results across
 quantum depths.</p></li>
 </ul>
@@ -694,7 +695,7 @@ coalesceImages() interface.</p></li>
 <li><p>lib/Magick++/STL.h (coalesceImages): Replaced implementation
 with one from Felix Heimbrecht. The template signature has changed
 to return a new image sequence. This template API silently ceased
-to funtion due to an ImageMagick CoalesceImages API change.</p></li>
+to function due to an ImageMagick CoalesceImages API change.</p></li>
 </ul>
 </blockquote>
 <p>2003-03-30  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -908,7 +909,7 @@ ImageMagick.</p></li>
 <li><p>lib/Drawable.cpp (DrawableDashArray): Change dasharray type to
 'double' rather than 'unsigned int' in order to match
 ImageMagick. Previous 'unsigned int' methods remain for
-compatability reasons.</p></li>
+compatibility reasons.</p></li>
 </ul>
 </blockquote>
 <p>2002-04-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1127,7 +1128,7 @@ definition.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>lib/Drawable.cpp (DrawableCompositeImage): Read image
-immediately if provided by filename, register with peristent
+immediately if provided by filename, register with persistent
 registry, and pass as perisistant image type.
 (DrawableCompositeImage): Support specifying Image in memory.
 Passed as perisistant image type.</p></li>
@@ -1330,7 +1331,7 @@ limited to a maximum depth of MaxRGB entries.</p></li>
 <ul class="simple">
 <li><p>lib/Image.cpp (clipMask): New method to add a clip mask to the
 image.  Adds clipping to any image operation wherever the clip
-mask image is tranparent.</p></li>
+mask image is transparent.</p></li>
 </ul>
 </blockquote>
 <p>2001-08-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1619,7 +1620,7 @@ relative coordinates
 coordinates
 (PathLinetoHorizontalRel): New class. Horizontal lineto, relative
 coordinates
-(PathLinetoVerticalAbs): New class. Veritical lineto, absolute
+(PathLinetoVerticalAbs): New class. Vertical lineto, absolute
 coordinates.
 (PathLinetoVerticalRel): New class. Vertical lineto, relative
 coordinates.
@@ -1721,7 +1722,7 @@ colorize with using specified pen color.</p></li>
 <p>2000-09-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>lib/Magick++/Drawable.h: Reverted Coordinate implemenation back
+<li><p>lib/Magick++/Drawable.h: Reverted Coordinate implementation back
 from and STL pair based implementation to a simple class.  Maybe
 this will improve portability.  It is more understandable anyway.</p></li>
 </ul>
@@ -1825,7 +1826,7 @@ drawing objects.
 objects.
 (penColor): Setting penColor now sets fillColor and
 strokeColor. Getting penColor retrieves the value of
-strokeColor. This supports backwards compatability.</p></li>
+strokeColor. This supports backwards compatibility.</p></li>
 </ul>
 </blockquote>
 <p>2000-03-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -1847,12 +1848,12 @@ double.</p></li>
 <li><p>lib/Magick++/STL.h
 (blurImage,charcoalImage,edgeImage,embossImage,
 reduceNoiseImage,sharpenImage): Modified to support order of the
-pixel neighborhood. Backward compatable function objects
+pixel neighborhood. Backward compatible function objects
 constructors are provided for embossImage, and reduceNoiseImage.</p></li>
 <li><p>lib/Image.cpp (blur,charcoal,edge,emboss,reduceNoise,sharpen):
 Now accept unsigned int argument which represents the order of the
-pixel neighborhood (e.g. 3).  This is not a backwards compatable
-change, however, backward compatable methods are provided for
+pixel neighborhood (e.g. 3).  This is not a backwards compatible
+change, however, backward compatible methods are provided for
 emboss, and reduceNoise.</p></li>
 </ul>
 </blockquote>
@@ -2066,7 +2067,7 @@ longer supports this.</p></li>
 <ul class="simple">
 <li><p>lib/Image.cpp:
 (rotate): No longer accepts sharpen argument.  User must sharpen
-seperately if desired.  This change is due to a similar change in
+separately if desired.  This change is due to a similar change in
 ImageMagick 5.0.
 (condense): Removed method.
 (uncondense): Removed method.
@@ -2189,7 +2190,7 @@ July 21, 1999.
 <li><p>lib/MagickInclude.h : Use new &lt;magick/api.h&gt; interface to
 ImageMagick to avoid namespace-induced problems.</p></li>
 <li><p>configure.in : CPPFLAGS and LDFLAGS specified via the
-environment take precidence over flags from Magick-config.</p></li>
+environment take precedence over flags from Magick-config.</p></li>
 </ul>
 </blockquote>
 <p>1999-05-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -2214,9 +2215,9 @@ from the derived class to the base class.</p></li>
 <blockquote>
 <ul class="simple">
 <li><p>lib/MagickColor.cpp (operator =): Adapted to new ImageMagick
-4.2.6 as of 5/23/99 which removes X11 compatability functions.</p></li>
+4.2.6 as of 5/23/99 which removes X11 compatibility functions.</p></li>
 <li><p>lib/MagickGeometry.cpp (operator =): Adapted to new ImageMagick
-4.2.6 as of 5/23/99 which removes X11 compatability functions.</p></li>
+4.2.6 as of 5/23/99 which removes X11 compatibility functions.</p></li>
 </ul>
 </blockquote>
 <p>1999-05-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -2338,7 +2339,7 @@ blurry.  Magick++ does not yet support the blur member.</p></li>
 
 <hr class="docutils">
 <div class="document">
-    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2023<!--SPONSOR_LOGO--></p>
+    <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
 </div>

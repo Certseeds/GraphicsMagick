@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2022 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this

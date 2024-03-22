@@ -32,7 +32,7 @@ MODULECOMMONCPPFLAGS = $(AM_CPPFLAGS)
 # FIXME: Could use info from /etc/os-release, or output from
 # lsb_release.
 # New URL is https://scan.coverity.com/projects/graphicsmagick?tab=overview
-COVERITY_EMAIL=bfriesen@simple.dallas.tx.us
+COVERITY_EMAIL=bobjfriesenhahn@gmail.com
 COVERITY_TARBALL=GraphicsMagick.xz
 COVERITY_VERSION=snapshot-@PACKAGE_CHANGE_DATE@
 COVERITY_DESCRIPTION='Ubuntu Q@QuantumDepth@'
@@ -417,7 +417,7 @@ snapshot: distcheck
 	done
 	SRCDIR=$(SRCDIR) $(GRAPHICSMAGICK_SNAPSHOT_COPY) $(SNAPSHOT_DIST_ARCHIVES) \
 	  `for f in $(SNAPSHOT_DIST_ARCHIVES) ; do printf "%s.asc " $$f $$f ; done` \
-	$(top_srcdir)/ChangeLog $(top_srcdir)/www/Changelog.html
+	$(top_srcdir)/ChangeLog $(top_srcdir)/www/ChangeLog.html
 
 else
 
@@ -437,7 +437,7 @@ snapshot: distcheck
 	  mv $${file}.asc $(SNAPSHOT_DIRECTORY)/ ; \
 	done
 	cp $(top_srcdir)/ChangeLog $(SNAPSHOT_DIRECTORY)/ChangeLog.txt
-	cp $(top_srcdir)/www/Changelog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
+	cp $(top_srcdir)/www/ChangeLog.html $(SNAPSHOT_DIRECTORY)/ChangeLog.html
 
 endif # HasGRAPHICSMAGICK_SNAPSHOT_COPY
 
@@ -446,8 +446,8 @@ coverity:
 	$(MAKE) clean
 	$(RM) -rf $(COVERITY_COV_INT)
 	cov-build --dir $(COVERITY_COV_INT) $(MAKE)
-	tar caf $(COVERITY_TARBALL) cov-int
-	curl --limit-rate 34K \
+	tar caf $(COVERITY_TARBALL) $(COVERITY_COV_INT)
+	curl \
 	--form token=`cat $$HOME/.coverity_key_gm` \
 	--form email=$(COVERITY_EMAIL) \
 	--form file=@$(COVERITY_TARBALL) \

@@ -33,9 +33,9 @@ at http://sourceforge.net/projects/graphicsmagick/files/.
 GraphicsMagick is a continual work in progress. The very latest code
 is available via the Mercurial distributed source control management
 tool (https://www.mercurial-scm.org/). GraphicsMagick may be retrieved
-from OSDN or SourceForge via the following commands:
+from foss.heptapod.net or SourceForge via the following commands:
 
-  hg clone https://hg.osdn.net/view/graphicsmagick/GM GM
+  hg clone https://foss.heptapod.net/graphicsmagick/graphicsmagick GM
 
   hg clone http://hg.code.sf.net/p/graphicsmagick/code/ GM
 
@@ -258,11 +258,12 @@ building under Microsoft Windows:
      http://sourceforge.net/projects/ctrio/
 
   to substitute for the vsnprintf function when the operating system
-  does not provide one. Older operating systems (e.g. Solaris 2.5)
-  may not provide a vsnprintf function. If vsnprintf (or the TRIO
+  does not provide one. Older operating systems (e.g. Solaris 2.5) may
+  not provide a vsnprintf function. If vsnprintf (or the TRIO
   replacement) is not used, then vsprintf is used instead, which
   decreases the security of GraphicsMagick due to possible buffer
-  overrun exploits.
+  overrun exploits.  It is highly unlikely that TRIO is useful on any
+  modern system.
 
 * GraphicsMagick may optionally use the 'tcmalloc' library provided as
   part of Google gperftools available from

@@ -1671,9 +1671,9 @@ static unsigned int WritePDFImage(const ImageInfo *image_info,Image *image)
   (void) WriteBlobString(image,buffer);
   (void) WriteBlobString(image,"%%EOF\n");
   MagickFreeResourceLimitedMemory(xref);
-  CloseBlob(image);
+  status &= CloseBlob(image);
   MagickFreeMemory(fax_blob);
-  return(MagickPass);
+  return(status);
 }
 
 #if defined(HasZLIB)

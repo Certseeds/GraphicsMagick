@@ -308,7 +308,7 @@ the following table if the keyword indicates that they exist.
 Next comes the binary image data itself. How the image data is formatted
 depends upon the class of the image as specified (or not specified) by
 the value of the class keyword in the header. All numeric values in the
-binary section are written with the most significant bytes occuring first
+binary section are written with the most significant bytes occurring first
 (big-endian ordering).
 
 DirectClass images (class=DirectClass) are continuous-tone, images stored

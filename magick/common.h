@@ -118,7 +118,7 @@ extern "C" {
    __SANITIZE_ADDRESS__ is defined by GCC and Clang if -fsanitize=address is
    supplied.
 
-   After incuding valgrind/memcheck.h or valgrind/valgrind.h, the macro
+   After including valgrind/memcheck.h or valgrind/valgrind.h, the macro
    RUNNING_ON_VALGRIND can be used to test if the program is run under valgrind.
    See http://valgrind.org/docs/manual/manual-core-adv.html.
 

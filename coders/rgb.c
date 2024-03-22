@@ -629,7 +629,7 @@ static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
     *pixels = (unsigned char *) NULL;
 
   unsigned int
-    status;
+    status = MagickPass;
 
   unsigned int
     depth,
@@ -820,7 +820,9 @@ static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
         }
         if (image_info->interlace == PartitionInterlace)
           {
-            CloseBlob(image);
+            status &= CloseBlob(image);
+            if (status == False)
+              ThrowWriterException(BlobError,UnableToWriteBlob,image);
             AppendImageFormat("G",image->filename);
             status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
             if (status == False)
@@ -841,7 +843,9 @@ static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
         }
         if (image_info->interlace == PartitionInterlace)
           {
-            CloseBlob(image);
+            status &= CloseBlob(image);
+            if (status == False)
+              ThrowWriterException(BlobError,UnableToWriteBlob,image);
             AppendImageFormat("B",image->filename);
             status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
             if (status == False)
@@ -868,7 +872,9 @@ static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
               break;
             if (image_info->interlace == PartitionInterlace)
               {
-                CloseBlob(image);
+                status &= CloseBlob(image);
+                if (status == False)
+                  ThrowWriterException(BlobError,UnableToWriteBlob,image);
                 AppendImageFormat("A",image->filename);
                 status=OpenBlob(image_info,image,WriteBinaryBlobMode,
                   &image->exception);
@@ -906,6 +912,6 @@ static unsigned int WriteRGBImage(const ImageInfo *image_info,Image *image)
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

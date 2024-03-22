@@ -338,6 +338,6 @@ static unsigned int WriteUILImage(const ImageInfo *image_info,Image *image)
                                   image->columns,image->rows))
         break;
   }
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

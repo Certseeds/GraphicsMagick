@@ -969,7 +969,7 @@ InitializeModuleSearchPath(MagickModuleType module_type,
             buffer[MaxTextExtent];
 
           const char
-            *seperator;
+            *separator;
 
           size_t
             length;
@@ -977,9 +977,9 @@ InitializeModuleSearchPath(MagickModuleType module_type,
           MagickBool
             skip=MagickFalse;
 
-          seperator = strchr(start,DirectoryListSeparator);
-          if (seperator)
-            length=seperator-start;
+          separator = strchr(start,DirectoryListSeparator);
+          if (separator)
+            length=separator-start;
           else
             length=end-start;
           if (length > MaxTextExtent-1)

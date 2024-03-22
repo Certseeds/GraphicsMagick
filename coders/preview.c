@@ -140,7 +140,7 @@ ModuleExport void UnregisterPREVIEWImage(void)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method WritePreviewImage creates several tiles each with a varying
-%  stength of an image enhancement function (e.g. gamma).  The image is written
+%  strength of an image enhancement function (e.g. gamma).  The image is written
 %  in the MIFF format.
 %
 %  The format of the WritePreviewImage method is:

@@ -61,6 +61,7 @@
 #include <jxl/decode.h>
 #include <jxl/encode.h>
 #include <jxl/thread_parallel_runner.h>
+#include <jxl/version.h>
 
 #define MaxBufferExtent 65536
 
@@ -441,23 +442,52 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
   MyJxlMemoryManagerInit(&mm,image,exception);
   jxl_decoder=JxlDecoderCreate(&mm.super);
   if (jxl_decoder == (JxlDecoder *) NULL)
-    ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "JxlDecoderCreate() failed");
+      ThrowReaderException(CoderError,JXLDecoderAPIFailure,image);
+    }
 
   /* Deliver image as-is. We provide autoOrient function if user requires it */
   if (JxlDecoderSetKeepOrientation(jxl_decoder, JXL_TRUE) != JXL_DEC_SUCCESS)
-    ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "JxlDecoderSetKeepOrientation() failed");
+      ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
+    }
 
   /* Apply any pre-multiplied alpha for us so we don't need to do it. */
-  (void) JxlDecoderSetUnpremultiplyAlpha(jxl_decoder, JXL_TRUE);
+  if (JxlDecoderSetUnpremultiplyAlpha(jxl_decoder, JXL_TRUE) != JXL_DEC_SUCCESS)
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "JxlDecoderSetUnpremultiplyAlpha() failed");
+      ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
+    }
 
   if(!image_info->ping)
     {
-      jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL,(size_t) GetMagickResourceLimit(ThreadsResource));
+      size_t num_worker_threads = (size_t) GetMagickResourceLimit(ThreadsResource);
+      jxl_thread_runner=JxlThreadParallelRunnerCreate(NULL, num_worker_threads);
       if (jxl_thread_runner == (void *) NULL)
-        ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "JxlThreadParallelRunnerCreate() failed (%"MAGICK_SIZE_T_F"u threads)",
+                                  num_worker_threads);
+          ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
+        }
       if (JxlDecoderSetParallelRunner(jxl_decoder, JxlThreadParallelRunner, jxl_thread_runner)
           != JXL_DEC_SUCCESS)
-        ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "JxlDecoderSetParallelRunner() failed (%"MAGICK_SIZE_T_F"u) threads",
+                                  num_worker_threads);
+          ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
+        }
     }
 
   if (JxlDecoderSubscribeEvents(jxl_decoder,
@@ -469,7 +499,12 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                                       JXL_DEC_COLOR_ENCODING |
                                                       JXL_DEC_BOX))
                                 ) != JXL_DEC_SUCCESS)
-    ThrowJXLReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "JxlDecoderSubscribeEvents() failed");
+      ThrowJXLReaderException(CoderError,JXLDecoderAPIFailure,image);
+    }
 
   in_buf=MagickAllocateResourceLimitedArray(unsigned char *,in_len,sizeof(*in_buf));
   if (in_buf == (unsigned char *) NULL)
@@ -513,7 +548,12 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
             status=JxlDecoderGetBasicInfo(jxl_decoder,&basic_info);
             if (status != JXL_DEC_SUCCESS)
-              break;
+              {
+                if (image->logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "JxlDecoderGetBasicInfo() failed");
+                break;
+              }
 
             if (image->logging)
               {
@@ -554,7 +594,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                             "    alpha_premultiplied=%s\n"
                                             "    spot_color=%f,%f,%f,%f\n"
                                             "    cfa_channel=%u"
-                                          ,
+                                            ,
                                             (unsigned long) index,
                                             JxlExtraChannelTypeAsString(ecip->type),
                                             ecip->bits_per_sample,
@@ -565,6 +605,10 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                             ecip->spot_color[0],ecip->spot_color[1],
                                             ecip->spot_color[2],ecip->spot_color[3],
                                             ecip->cfa_channel);
+                    else
+                      if (image->logging)
+                        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                              "JxlDecoderGetExtraChannelInfo() failed");
                   }
               }
 
@@ -598,15 +642,15 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                 grayscale=MagickTrue;
                 pixel_format.num_channels=1;
                 pixel_format.data_type=(basic_info.bits_per_sample <= 8 ? JXL_TYPE_UINT8 :
-                                  (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 :
-                                   JXL_TYPE_FLOAT));
+                                        (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 :
+                                         JXL_TYPE_FLOAT));
               }
             else if (basic_info.num_color_channels == 3)
               {
                 pixel_format.num_channels=image->matte ? 4 : 3;
                 pixel_format.data_type=(basic_info.bits_per_sample <= 8 ? JXL_TYPE_UINT8 :
-                                  (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 :
-                                   JXL_TYPE_FLOAT));
+                                        (basic_info.bits_per_sample <= 16 ? JXL_TYPE_UINT16 :
+                                         JXL_TYPE_FLOAT));
               }
             else
               {
@@ -622,7 +666,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
              * The JXL API does return the pixels in their original colorspace
              * which has a large number of possibilities with profiles etc.
              *
-             * We need to try to convert this to the internel SRGB Colorspace
+             * We need to try to convert this to the internal SRGB Colorspace
              * as best as possibly. Better to read a image somewhat bogus then
              * to error out.
              *
@@ -651,7 +695,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               {
                 /*
                   Transfer function if have_gamma is 0
-                 */
+                */
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "Color Transfer Function: %s",
                                       JxlTransferFunctionAsString(color_encoding.transfer_function));
@@ -691,7 +735,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
                 /*
                   Color space of the image data.
-                 */
+                */
                 switch (color_encoding.color_space) {
                 case JXL_COLOR_SPACE_RGB:
                   if (color_encoding.white_point == JXL_WHITE_POINT_D65 &&
@@ -748,6 +792,11 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                   unsigned char
                     *profile;
 
+                  if (image->logging)
+                    (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                          "ICC profile size %"MAGICK_SIZE_T_F"u",
+                                          profile_size);
+
                   if ((profile=MagickAllocateResourceLimitedMemory(unsigned char *,profile_size))
                       != NULL)
                     {
@@ -760,6 +809,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                                          profile_size)
                           == JXL_DEC_SUCCESS)
                         {
+                          if (image->logging)
+                            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                                  "JxlDecoderGetColorAsICCProfile() success");
                           (void) SetImageProfile(image,"ICM",profile,profile_size);
                         }
                       MagickFreeResourceLimitedMemory(profile);
@@ -775,7 +827,12 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
             status=JxlDecoderImageOutBufferSize(jxl_decoder,&pixel_format,&out_len);
             if (status != JXL_DEC_SUCCESS)
-              break;
+              {
+                if (image->logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "JxlDecoderImageOutBufferSize() failure");
+                break;
+              }
 
             out_buf=MagickAllocateResourceLimitedArray(unsigned char *,out_len,sizeof(*out_buf));
             if (out_buf == (unsigned char *) NULL)
@@ -826,7 +883,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                 else
                   quantum_type = GrayQuantum;
               }
-            #if 0
+#if 0
             else if (cmyk)
               {
                 if (image->matte)
@@ -834,7 +891,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                 else
                   quantum_type = CMYKQuantum;
               }
-            #endif
+#endif
             else
               {
                 if (image->matte)
@@ -895,76 +952,76 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               status=JXL_DEC_ERROR;
             break;
           }
-          case JXL_DEC_BOX:
-            {
-              do
-                {
-                  JxlBoxType
-                    type; /* A 4 character string which is not null terminated! */
+        case JXL_DEC_BOX:
+          {
+            do
+              {
+                JxlBoxType
+                  type; /* A 4 character string which is not null terminated! */
 
-                  magick_uint64_t
-                    profile_size = 0;
+                magick_uint64_t
+                  profile_size = 0;
 
-                  unsigned char
-                    *profile;
+                unsigned char
+                  *profile;
 
-                  /* Release buffer to get box data */
-                  (void) JxlDecoderReleaseBoxBuffer(jxl_decoder);
+                /* Release buffer to get box data */
+                (void) JxlDecoderReleaseBoxBuffer(jxl_decoder);
 
-                  /* Get the 4-character box typename */
-                  if (JxlDecoderGetBoxType(jxl_decoder,type,JXL_FALSE) != JXL_DEC_SUCCESS)
-                    break;
+                /* Get the 4-character box typename */
+                if (JxlDecoderGetBoxType(jxl_decoder,type,JXL_FALSE) != JXL_DEC_SUCCESS)
+                  break;
 
-                  /* Get the size of the box as it appears in the container file, not decompressed. */
-                  if (JxlDecoderGetBoxSizeRaw(jxl_decoder, &profile_size) != JXL_DEC_SUCCESS)
-                    break;
+                /* Get the size of the box as it appears in the container file, not decompressed. */
+                if (JxlDecoderGetBoxSizeRaw(jxl_decoder, &profile_size) != JXL_DEC_SUCCESS)
+                  break;
 
-                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                                        "JXL Box of type \"%c%c%c%c\" and %lu bytes",
-                                        type[0],type[1],type[2],type[3], (unsigned long) profile_size);
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "JXL Box of type \"%c%c%c%c\" and %lu bytes",
+                                      type[0],type[1],type[2],type[3], (unsigned long) profile_size);
 
-                  /* Ignore tiny profiles */
-                  if (profile_size < 12)
-                    break;
+                /* Ignore tiny profiles */
+                if (profile_size < 12)
+                  break;
 
-                  /* Discard raw box size and type bytes */
-                  profile_size -= 8;
+                /* Discard raw box size and type bytes */
+                profile_size -= 8;
 
-                  if (LocaleNCompare(type,"Exif",sizeof(type)) == 0)
-                    {
-                      /*
-                        Allocate EXIF profile box buffer (plus a bit more)
-                      */
-                      if ((profile=MagickAllocateResourceLimitedClearedMemory(unsigned char *,
-                                                                              profile_size+exif_pad))
-                          != NULL)
-                        {
-                          if (JxlDecoderSetBoxBuffer(jxl_decoder,profile+exif_pad,profile_size)
-                              == JXL_DEC_SUCCESS)
-                            {
-                              exif_profile=profile;
-                              exif_size=profile_size;
-                            }
-                        }
-                    }
-                  if (LocaleNCompare(type,"xml ",sizeof(type)) == 0)
-                    {
-                      /*
-                        Allocate XMP profile box buffer
-                      */
-                      if ((profile=MagickAllocateResourceLimitedMemory(unsigned char *,profile_size))
-                          != NULL)
-                        {
-                          if (JxlDecoderSetBoxBuffer(jxl_decoder,profile,profile_size) == JXL_DEC_SUCCESS)
-                            {
-                              xmp_profile=profile;
-                              xmp_size=profile_size;
-                            }
-                        }
-                    }
-                } while(0);
-              break;
-            }
+                if (LocaleNCompare(type,"Exif",sizeof(type)) == 0)
+                  {
+                    /*
+                      Allocate EXIF profile box buffer (plus a bit more)
+                    */
+                    if ((profile=MagickAllocateResourceLimitedClearedMemory(unsigned char *,
+                                                                            profile_size+exif_pad))
+                        != NULL)
+                      {
+                        if (JxlDecoderSetBoxBuffer(jxl_decoder,profile+exif_pad,profile_size)
+                            == JXL_DEC_SUCCESS)
+                          {
+                            exif_profile=profile;
+                            exif_size=profile_size;
+                          }
+                      }
+                  }
+                if (LocaleNCompare(type,"xml ",sizeof(type)) == 0)
+                  {
+                    /*
+                      Allocate XMP profile box buffer
+                    */
+                    if ((profile=MagickAllocateResourceLimitedMemory(unsigned char *,profile_size))
+                        != NULL)
+                      {
+                        if (JxlDecoderSetBoxBuffer(jxl_decoder,profile,profile_size) == JXL_DEC_SUCCESS)
+                          {
+                            xmp_profile=profile;
+                            xmp_size=profile_size;
+                          }
+                      }
+                  }
+              } while(0);
+            break;
+          }
         default:
           /* unexpected status is error.
            * - JXL_DEC_SUCCESS should never happen here so it's also an error
@@ -997,9 +1054,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
 
       /* Big-endian offset decoding */
       exif_profile_offset = p[exif_pad+0] << 24 |
-                            p[exif_pad+1] << 16 |
-                            p[exif_pad+2] << 8 |
-                            p[exif_pad+3];
+        p[exif_pad+1] << 16 |
+        p[exif_pad+2] << 8 |
+        p[exif_pad+3];
 
 #if 0
       fprintf(stderr,
@@ -1007,9 +1064,10 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               p[0], p[1],p[2], p[3], p[4], p[5], p[6], p[7],  p[8],  p[9],  p[10],  p[11]);
 #endif
 
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "EXIF Box: Size %lu, Offset %u",
-                            (unsigned long) exif_size, exif_profile_offset);
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "EXIF Box: Size %lu, Offset %u",
+                              (unsigned long) exif_size, exif_profile_offset);
 
       /*
         If the TIFF header offset is not zero, then need to
@@ -1187,17 +1245,36 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   MyJxlMemoryManagerInit(&memory_manager,image,&image->exception);
   jxl_encoder=JxlEncoderCreate(&memory_manager.super);
   if (jxl_encoder == (JxlEncoder *) NULL)
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "JxlEncoderCreate() failure");
+      ThrowWriterException(CoderError,JXLEncoderAPIFailure,image);
+    }
 
   /* Use the same number of threads as used for OpenMP */
-  jxl_thread_runner=
-    JxlThreadParallelRunnerCreate(NULL,
-                                  (size_t) GetMagickResourceLimit(ThreadsResource));
-  if (jxl_thread_runner == (void *) NULL)
-    ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-  if (JxlEncoderSetParallelRunner(jxl_encoder, JxlThreadParallelRunner, jxl_thread_runner)
-      != JXL_ENC_SUCCESS)
-    ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+  {
+    size_t num_worker_threads = (size_t) GetMagickResourceLimit(ThreadsResource);
+    jxl_thread_runner=
+      JxlThreadParallelRunnerCreate(NULL,num_worker_threads);
+    if (jxl_thread_runner == (void *) NULL)
+      {
+        if (image->logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "JxlThreadParallelRunnerCreate() failed (%"MAGICK_SIZE_T_F"u) threads",
+                                num_worker_threads);
+        ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
+      }
+    if (JxlEncoderSetParallelRunner(jxl_encoder, JxlThreadParallelRunner, jxl_thread_runner)
+        != JXL_ENC_SUCCESS)
+      {
+        if (image->logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "JxlDecoderSetParallelRunner() failed (%"MAGICK_SIZE_T_F"u) threads",
+                                num_worker_threads);
+        ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
+      }
+  }
 
   /* Use one color channel for grayscale image */
   if (characteristics.grayscale)
@@ -1301,14 +1378,14 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
     {
       /* TODO better error codes */
       if (jxl_status == JXL_ENC_ERROR)
-        ThrowJXLWriterException(CoderError,NoDataReturned,image);
+        ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
 #if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0,9,0)
       /* JXL_ENC_NOT_SUPPORTED was removed for 0.9.0, although API docs still mention it. */
       else if (jxl_status == JXL_ENC_NOT_SUPPORTED)
         ThrowJXLWriterException(CoderError,UnsupportedBitsPerSample,image);
 #endif /* if JPEGXL_NUMERIC_VERSION < JPEGXL_COMPUTE_NUMERIC_VERSION(0,9,0) */
       else
-        ThrowJXLWriterException(CoderFatalError,Default,image);
+        ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
     }
 
   /* Set expected input colorspace */
@@ -1316,13 +1393,23 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
   basic_info.uses_original_profile = JXL_TRUE;
   JxlColorEncodingSetToSRGB(&color_encoding, pixel_format.num_channels < 3);
   if (JxlEncoderSetColorEncoding(jxl_encoder, &color_encoding) != JXL_ENC_SUCCESS)
-    ThrowJXLWriterException(CoderFatalError,Default,image);
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "JxlEncoderSetColorEncoding() failed");
+      ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
+    }
 
   frame_settings = JxlEncoderFrameSettingsCreate(jxl_encoder, NULL);
   if (image_info->quality == 100)
     {
       if (JxlEncoderSetFrameLossless(frame_settings,JXL_TRUE) != JXL_ENC_SUCCESS)
-        ThrowJXLWriterException(CoderFatalError,Default,image);
+        {
+          if (image->logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "JxlEncoderSetFrameLossless() failed");
+          ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
+        }
     }
   else
     {
@@ -1330,14 +1417,26 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
       if (image_info->quality >= 30)
         {
           if (JxlEncoderSetFrameDistance(frame_settings,
-                                         0.1 + (100 - image_info->quality) * 0.09) != JXL_ENC_SUCCESS)
-            ThrowJXLWriterException(CoderFatalError,Default,image);
+                                         0.1 + (100 - image_info->quality) * 0.09)
+              != JXL_ENC_SUCCESS)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "JxlEncoderSetFrameDistance() failed");
+              ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
+            }
         }
       else
         {
           if (JxlEncoderSetFrameDistance(frame_settings,
-                                         6.4 + pow(2.5, (30 - image_info->quality) / 5.0f) / 6.25f) != JXL_ENC_SUCCESS)
-            ThrowJXLWriterException(CoderFatalError,Default,image);
+                                         6.4 + pow(2.5, (30 - image_info->quality) / 5.0f) / 6.25f)
+              != JXL_ENC_SUCCESS)
+            {
+              if (image->logging)
+                (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                      "JxlEncoderSetFrameDistance() failed");
+              ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
+            }
         }
     }
   /*
@@ -1365,7 +1464,8 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
         if ((value=AccessDefinition(image_info,"jxl",key)))
           {
             int int_value =  MagickAtoI(value);
-            if (JxlEncoderFrameSettingsSetOption(frame_settings, int_frame_settings[index].fs_id, int_value) != JXL_ENC_SUCCESS)
+            if (JxlEncoderFrameSettingsSetOption(frame_settings, int_frame_settings[index].fs_id, int_value)
+                != JXL_ENC_SUCCESS)
               (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                     "JXL does not support \"%s\" frame setting!", key);
             else
@@ -1377,57 +1477,57 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 
   /* FIXME: Add metadata boxes */
   do
-  {
-    const unsigned char
-      *exif,
-      *xmp;
+    {
+      const unsigned char
+        *exif,
+        *xmp;
 
-    size_t
-      exif_length,
-      xmp_length;
+      size_t
+        exif_length,
+        xmp_length;
 
-    exif=GetImageProfile(image,"EXIF",&exif_length);
-    xmp=GetImageProfile(image,"XMP",&xmp_length);
+      exif=GetImageProfile(image,"EXIF",&exif_length);
+      xmp=GetImageProfile(image,"XMP",&xmp_length);
 
-    if (!((exif != (const unsigned char *) NULL) ||
-          (xmp != (const unsigned char *) NULL)))
-      break;
+      if (!((exif != (const unsigned char *) NULL) ||
+            (xmp != (const unsigned char *) NULL)))
+        break;
 
-    (void) JxlEncoderUseBoxes(jxl_encoder);
+      (void) JxlEncoderUseBoxes(jxl_encoder);
 
-    #define ExifNamespace  "Exif\0\0"
-    if ((exif != (const unsigned char *) NULL) && (exif_length > 6) &&
-        (exif[0] == 'E' && exif[1] == 'x' && exif[2] == 'i' &&
-         exif[3] == 'f' && exif[4] == '\0' && exif[5] == '\0'))
-      {
-        /*
-          The contents of this box must be prepended by a 4-byte tiff
-          header offset, which may be 4 zero bytes in case the tiff
-          header follows immediately.  We will make the header follow
-          immediately.
+#define ExifNamespace  "Exif\0\0"
+      if ((exif != (const unsigned char *) NULL) && (exif_length > 6) &&
+          (exif[0] == 'E' && exif[1] == 'x' && exif[2] == 'i' &&
+           exif[3] == 'f' && exif[4] == '\0' && exif[5] == '\0'))
+        {
+          /*
+            The contents of this box must be prepended by a 4-byte tiff
+            header offset, which may be 4 zero bytes in case the tiff
+            header follows immediately.  We will make the header follow
+            immediately.
 
-          The EXIF profile blob is prefixed with "Exif\0\0" but the
-          EXIF box needs to start with "\0\0\0\0" to indicate that the
-          TIFF header follows immediately.
-        */
-        unsigned char *exif_b = MagickAllocateResourceLimitedMemory(unsigned char *,
-                                                                    exif_length-2U);
-        if (exif_b != (unsigned char *) NULL)
-          {
-            (void) memset(exif_b,0,4U);
-            (void) memcpy(exif_b+4U,exif+6U,exif_length-6U);
+            The EXIF profile blob is prefixed with "Exif\0\0" but the
+            EXIF box needs to start with "\0\0\0\0" to indicate that the
+            TIFF header follows immediately.
+          */
+          unsigned char *exif_b = MagickAllocateResourceLimitedMemory(unsigned char *,
+                                                                      exif_length-2U);
+          if (exif_b != (unsigned char *) NULL)
+            {
+              (void) memset(exif_b,0,4U);
+              (void) memcpy(exif_b+4U,exif+6U,exif_length-6U);
 
-            (void) JxlEncoderAddBox(jxl_encoder,"Exif",exif_b,exif_length-2U,0);
-            MagickFreeResourceLimitedMemory(exif_b);
-          }
-      }
+              (void) JxlEncoderAddBox(jxl_encoder,"Exif",exif_b,exif_length-2U,0);
+              MagickFreeResourceLimitedMemory(exif_b);
+            }
+        }
 
-    if (xmp != (const unsigned char *) NULL)
-      (void) JxlEncoderAddBox(jxl_encoder,"xml ",xmp,xmp_length,0);
+      if (xmp != (const unsigned char *) NULL)
+        (void) JxlEncoderAddBox(jxl_encoder,"xml ",xmp,xmp_length,0);
 
-    (void) JxlEncoderCloseBoxes(jxl_encoder);
+      (void) JxlEncoderCloseBoxes(jxl_encoder);
 
-  } while(0);
+    } while(0);
 
   /* get & fill pixel buffer */
   size_row=MagickArraySize(MagickArraySize(image->columns,pixel_format.num_channels),
@@ -1514,15 +1614,23 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
 
         p += export_info.bytes_exported;
       }
+    /*
+      This error is totally bogus but ExportImagePixelArea() should
+      have already set a more useful error.
+    */
     if (status == MagickFail)
-      ThrowJXLWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      ThrowJXLWriterException(CoderError,ImageTypeNotSupported,image);
   }
 
   /* real encode */
   if (JxlEncoderAddImageFrame(frame_settings,&pixel_format,in_buf,
                               image->rows * size_row) != JXL_ENC_SUCCESS)
-    /* TODO Better Error-code? */
-    ThrowJXLWriterException(CoderError,NoDataReturned,image);
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "JxlEncoderAddImageFrame() failed");
+      ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
+    }
 
   /* Close any input to the encoder. No further input of any kind may
      be given to the encoder, but further JxlEncoderProcessOutput
@@ -1554,13 +1662,17 @@ static unsigned int WriteJXLImage(const ImageInfo *image_info,Image *image)
         ThrowJXLWriterException(BlobError,UnableToWriteBlob,image);
     }
   if (jxl_status != JXL_ENC_SUCCESS)
-    /* TODO Better Error-code? */
-    ThrowJXLWriterException(CoderError,NoDataReturned,image);
+    {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "JxlEncoderProcessOutput() failure");
+      ThrowJXLWriterException(CoderError,JXLEncoderAPIFailure,image);
+    }
 
-  CloseBlob(image);
+  status &= CloseBlob(image);
 
   JXLWriteCleanup();
-  return MagickPass;
+  return(status);
 }
 
 #endif /* HasJXL */
@@ -1604,10 +1716,17 @@ ModuleExport void RegisterJXLImage(void)
     jxl_minor,
     jxl_revision;
 
-  int encoder_version=(JxlDecoderVersion());
-  jxl_major=(encoder_version >> 16) & 0xff;
-  jxl_minor=(encoder_version >> 8) & 0xff;
-  jxl_revision=encoder_version & 0xff;
+  /*
+   * JxlDecoderVersion()
+   *
+   * return the decoder library version as an integer:
+   * MAJOR_VERSION * 1000000 + MINOR_VERSION * 1000 + PATCH_VERSION.
+   * For example, version 1.2.3 would return 1002003.
+   */
+  unsigned int lib_version=JxlDecoderVersion();
+  jxl_major=(lib_version / 1000000);
+  jxl_minor=(lib_version / 1000) % 1000;
+  jxl_revision=lib_version % 1000;
   *version='\0';
   (void) snprintf(version,sizeof(version),
                   "jxl v%u.%u.%u", jxl_major,

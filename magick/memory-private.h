@@ -151,7 +151,6 @@ typedef enum _MagickAllocateResourceLimitedMemoryAttribute
 */
 MagickExport size_t _MagickResourceLimitedMemoryGetSizeAttribute(const void *p,
                                                                  const MagickAllocateResourceLimitedMemoryAttribute attr);
-
 /*
  * Local Variables:
  * mode: c

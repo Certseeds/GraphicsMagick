@@ -460,6 +460,6 @@ static unsigned int WriteVICARImage(const ImageInfo *image_info,Image *image)
           break;
   }
   MagickFreeResourceLimitedMemory(scanline);
-  CloseBlob(image);
-  return(True);
+  status &= CloseBlob(image);
+  return(status);
 }

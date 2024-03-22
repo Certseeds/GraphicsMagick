@@ -15,7 +15,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     std::string coder = FUZZ_CODER;
     image.magick(coder);
     image.fileName(coder + ":");
-    // Add an arbitary limit on JPEG scan lines
+    // Add an arbitrary limit on JPEG scan lines
     image.defineValue("JPEG", "max-scan-number", "50");
     const Magick::Blob blob(data, size);
     try {

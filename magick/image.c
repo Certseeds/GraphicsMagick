@@ -1083,7 +1083,7 @@ MagickExport MagickPassFail CompositePathImage(Image *image,const char *pathname
 %    o rows: The number of rows in the cloned image.
 %
 %    o orphan:  With a value other than 0, the cloned image is an orphan.  An
-%      orphan is a stand-alone image that is not assocated with an image list.
+%      orphan is a stand-alone image that is not associated with an image list.
 %      In effect, the next and previous members of the cloned image is set to
 %      NULL.
 %
@@ -1681,7 +1681,7 @@ MagickExport unsigned int DisplayImages(const ImageInfo *image_info,
 %
 %      Image *GetImageClipMask(const Image *image, ExceptionInfo *exception)
 %
-%  A descripton of each parameter follows:
+%  A description of each parameter follows:
 %
 %    o image: The image.
 %
@@ -1731,7 +1731,7 @@ MagickExport Image *GetImageClipMask(const Image *image, ExceptionInfo *exceptio
 %
 %      Image *GetImageCompositeMask(const Image *image, ExceptionInfo *exception)
 %
-%  A descripton of each parameter follows:
+%  A description of each parameter follows:
 %
 %    o image: The image.
 %
@@ -3036,7 +3036,7 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
   assert(image_info->signature == MagickSignature);
 
   /*
-    Ensure backward compatiblity with previous flags which used
+    Ensure backward compatibility with previous flags which used
     True/False logic.
   */
   lflags=flags;
@@ -3100,7 +3100,7 @@ SetImageInfo(ImageInfo *image_info,const unsigned int flags,
           format[p-image_info->filename]='\0';
 
           /*
-            Backward compatability and interoperability namimg
+            Backward compatibility and interoperability namimg
           */
           if (LocaleCompare(format,"GRADATION") == 0)
             (void) strlcpy(format,"GRADIENT",sizeof(format));

@@ -1,7 +1,7 @@
 This directory contains the GraphicsMagick message subsystem which
 provides text message strings corresponding to pre-processor symbols
 which are used at the point where the message is emitted.  This is
-indended to help support internationalizing GraphicsMagick.
+intended to help support internationalizing GraphicsMagick.
 
 The definitions are in an XML format.  An already working copy of
 GraphicsMagick (producing compatible output) is necessary in order to

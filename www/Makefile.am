@@ -1,4 +1,4 @@
-# Copyright (C) 2008 - 2022 GraphicsMagick Group
+# Copyright (C) 2008 - 2024 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -58,7 +58,8 @@ RST2HTML_TARGETS = \
 	$(WWWDIR)/ChangeLog-2020.html \
 	$(WWWDIR)/ChangeLog-2021.html \
 	$(WWWDIR)/ChangeLog-2022.html \
-	$(WWWDIR)/Changelog.html \
+	$(WWWDIR)/ChangeLog-2023.html \
+	$(WWWDIR)/ChangeLog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
 	$(WWWDIR)/FAQ.html \
@@ -178,7 +179,8 @@ WWW_HTML_FILES = \
 	$(WWWDIR)/ChangeLog-2020.html \
 	$(WWWDIR)/ChangeLog-2021.html \
 	$(WWWDIR)/ChangeLog-2022.html \
-	$(WWWDIR)/Changelog.html \
+	$(WWWDIR)/ChangeLog-2023.html \
+	$(WWWDIR)/ChangeLog.html \
 	$(WWWDIR)/Changes.html \
 	$(WWWDIR)/Copyright.html \
 	$(WWWDIR)/FAQ.html \
@@ -277,101 +279,105 @@ $(top_srcdir)/%.html: $(top_srcdir)/%.rst
 #
 CHANGELOG2RST=$(top_srcdir)/scripts/changelog2rst.sh
 
-$(top_srcdir)/www/Changelog.rst: $(top_srcdir)/ChangeLog
+$(top_srcdir)/www/ChangeLog.rst: $(top_srcdir)/ChangeLog
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog' < $^ > $@
+
+$(top_srcdir)/www/ChangeLog-2023.rst: $(top_srcdir)/ChangeLog.2023
+	@printf "Updating $@ ...\n"
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2023' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2022.rst: $(top_srcdir)/ChangeLog.2022
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2022' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2021.rst: $(top_srcdir)/ChangeLog.2021
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2021' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2020.rst: $(top_srcdir)/ChangeLog.2020
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2020' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2019.rst: $(top_srcdir)/ChangeLog.2019
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2019' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2018.rst: $(top_srcdir)/ChangeLog.2018
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2018' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2017.rst: $(top_srcdir)/ChangeLog.2017
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2017' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2016.rst: $(top_srcdir)/ChangeLog.2016
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2016' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2015.rst: $(top_srcdir)/ChangeLog.2015
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2015' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2014.rst: $(top_srcdir)/ChangeLog.2014
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2014' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2013.rst: $(top_srcdir)/ChangeLog.2013
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2013' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2012.rst: $(top_srcdir)/ChangeLog.2012
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2012' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2011.rst: $(top_srcdir)/ChangeLog.2011
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2011' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2010.rst: $(top_srcdir)/ChangeLog.2010
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2010' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2009.rst: $(top_srcdir)/ChangeLog.2009
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2009' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2008.rst: $(top_srcdir)/ChangeLog.2008
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2008' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2007.rst: $(top_srcdir)/ChangeLog.2007
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2007' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2006.rst: $(top_srcdir)/ChangeLog.2006
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2006' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2005.rst: $(top_srcdir)/ChangeLog.2005
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2005' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2004.rst: $(top_srcdir)/ChangeLog.2004
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2004' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2003.rst: $(top_srcdir)/ChangeLog.2003
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2003' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2002.rst: $(top_srcdir)/ChangeLog.2002
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2002' < $^ > $@
 
 $(top_srcdir)/www/ChangeLog-2001.rst: $(top_srcdir)/ChangeLog.2001
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'GraphicsMagick ChangeLog - 2001' < $^ > $@
 
 $(top_srcdir)/www/Magick++/ChangeLog.rst: $(top_srcdir)/Magick++/ChangeLog
 	@printf "Updating $@ ...\n"
-	$(CHANGELOG2RST) < $^ > $@
+	$(CHANGELOG2RST) 'Magick++ ChangeLog' < $^ > $@
 
 # Build color.html
 $(WWWDIR)/color.html : $(NAMED_COLORS)

@@ -63,7 +63,7 @@
 %    order should influence the image pixels.  The 1994 version of the
 %    specification suggests very strongly that *all* formats are
 %    accessed as an array of 32-bit words (therefore implying 32-bit
-%    swapping) but the 2003 specification has ammended this (ambiguously)
+%    swapping) but the 2003 specification has amended this (ambiguously)
 %    to imply the mixed use of 16 and 32 bit words.  As we all know,
 %    performing endian swapping on two 16-bit values does not have the
 %    same effect as performing endian swapping on one 32-bit value (the
@@ -699,7 +699,7 @@ STATIC size_t DPXRowOctets(const unsigned long rows,
           (packing_method == PackingMethodWordsFillMSB))
         {
           /* C.3 Three 10-bit samples per 32-bit word */
-          octets=(((((magick_int64_t) (rows*samples_per_row+2)/3)*sizeof(U32)*8)+31)/32)*sizeof(U32);
+          octets=((((((magick_int64_t) rows*samples_per_row+2)/3)* (magick_int64_t)sizeof(U32)*8)+31)/32)*sizeof(U32);
         }
       else
         {
@@ -2380,13 +2380,13 @@ STATIC Image *ReadDPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
                         "Maximum number of bits per sample in any element: %u",
                         max_bits_per_sample);
   map_Y=MagickAllocateResourceLimitedArray(Quantum *,
-                            MaxValueGivenBits(max_bits_per_sample)+1,
+                            (size_t)MaxValueGivenBits(max_bits_per_sample)+1,
                             sizeof(Quantum));
   if (map_Y == (Quantum *) NULL)
     ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
   map_CbCr=MagickAllocateResourceLimitedArray(Quantum *,
-                               MaxValueGivenBits(max_bits_per_sample)+1,
+                               (size_t)MaxValueGivenBits(max_bits_per_sample)+1,
                                sizeof(Quantum));
   if (map_CbCr == (Quantum *) NULL)
     ThrowDPXReaderException(ResourceLimitError,MemoryAllocationFailed,image);
@@ -4338,7 +4338,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
                               max_samples_per_pixel*sizeof(sample_t));
   if (samples == (sample_t *) NULL)
     ThrowDPXWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-  (void) memset((void *) samples,0,max_samples_per_pixel*image->columns*
+  (void) memset((void *) samples,0,(size_t) max_samples_per_pixel*image->columns*
                 sizeof(sample_t));
   /*
     Allocate row scanline.
@@ -4781,7 +4781,7 @@ STATIC unsigned int WriteDPXImage(const ImageInfo *image_info,Image *image)
   MagickFreeResourceLimitedMemory(map_Y);
   MagickFreeResourceLimitedMemory(samples);
   MagickFreeResourceLimitedMemory(scanline);
-  CloseBlob(image);
+  status &= CloseBlob(image);
   if (chroma_image != (Image *) NULL)
     {
       DestroyImage(chroma_image);

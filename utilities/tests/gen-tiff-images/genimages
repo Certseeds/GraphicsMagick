@@ -16,7 +16,7 @@
 # Many applications will be unable to read many of the generated TIFF files.
 
 # This script is not integrated into the GraphicsMagick test framework so
-# some editing may be desireable, such as to use a special GraphicsMagick
+# some editing may be desirable, such as to use a special GraphicsMagick
 # build or your favorite input image.
 
 # The output file "summary.txt" summarizes the files which were generated.

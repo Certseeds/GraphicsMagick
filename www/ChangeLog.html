@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="en" name="language">
+	<title>GraphicsMagick ChangeLog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="banner">
+<img src="images/gm-107x76.png" alt="GraphicMagick logo" width="107" height="76" />
+<span class="title">GraphicsMagick</span>
+<form action="http://www.google.com/search">
+  <input type="hidden" name="domains" value="www.graphicsmagick.org" />
+  <input type="hidden" name="sitesearch" value="www.graphicsmagick.org" />
+<span class="nowrap"><input type="text" name="q" size="25" maxlength="255" />&nbsp;<input type="submit" name="sa" value="Search" /></span>
+</form>
+</div>
+
+
+<div class="navmenu">
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="project.html">Project</a></li>
+  <li><a href="download.html">Download</a></li>
+  <li><a href="README.html">Install</a></li>
+  <li><a href="Hg.html">Source</a></li>
+  <li><a href="NEWS.html">News</a> </li>
+  <li><a href="utilities.html">Utilities</a></li>
+  <li><a href="programming.html">Programming</a></li>
+  <li><a href="reference.html">Reference</a></li>
+</ul>
+</div>
+
+<div class="document" id="graphicsmagick-changelog">
+<h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-03-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>version.sh (PACKAGE_VERSION): Update for the 1.3.43 release.</p></li>
+<li><p>NEWS.txt: Update the news.</p></li>
+<li><p>www/index.rst: GraphicsMagick is released on March 23, 2024.</p></li>
+<li><p>www/Changes.rst: 1.3.43 is released in 2024.</p></li>
+<li><p>version.sh: Update library versioning in preparation for
+release.</p></li>
+</ul>
+</blockquote>
+<p>2024-03-17  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/tests/runtest.bat: Enable additional logging
+with setting &quot;set MAGICK_DEBUG=exception&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2024-03-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/tests/runtest.bat: Remove tests for format
+identifiers which are not even images, or require special add-on
+software, or could otherwise not work.</p></li>
+<li><p>tests/constitute.c: Handle capital 'Y' and 'K' while checking if
+a CMYK map is specified.</p></li>
+<li><p>VisualMagick/tests/run_constitute.bat: Re-generate test script
+based on what current tests/constitute.tap does.</p></li>
+<li><p>VisualMagick/bin/log-eventlog.mgk: Logger configuration suitable
+for non-console apps (was log.mgk).</p></li>
+<li><p>VisualMagick/bin/log.mgk: Change default configuration to be
+suitable for 'console' apps with working 'stderr', such as used by
+the test suite.</p></li>
+</ul>
+</blockquote>
+<p>2024-03-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Update the news.</p></li>
+<li><p>www/api/types.rst: Fix spelling errors and out-of-date
+information in types.rst.  Resolves SourceForge patch #80 &quot;Update
+types.rst documentation&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2024-03-15  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>wand/magick_wand.c (MagickPingImage, MagickReadImage)
+(MagickReadImageBlob, MagickReadImageFile): AppendImageToList()
+now leaves the image pointer pointing to the end of the list.  The
+Wand implementation expects that wand-&gt;images points to the
+begining of the list.  Update wand-&gt;images to point to the
+beginning of the list.  Resolves SourceForge issue #735
+&quot;[MagickWand] Potential regression when creating GIFs&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2024-03-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>utilities/Makefile.am: Give up on the attempt to selectively
+force C++ linkage by introducing a C++ file for components which
+should have C++ linkage.  A libtool bug, and an Automake weakness
+prevented this from working as expected.
+(UTILITIES_CLEANFILES): Clean-up utilities/tests/composite_tmp.msl.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/hrz.c (RegisterHRZImage): Remove defective comment.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-26  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/hrz.c: Seekable blob should not be needed.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-25  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Do not copy TIFFTAG_ORIENTATION from EXIF.
+It is already handled by image-&gt;orientation variable.</p></li>
+<li><p>coders/tga.c: Emit warning to logs when orientation is
+not supported.
+FIED: Need to research what case was expected to be
+tested here. This test case can never be true and so it
+is commented out for the moment.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c (WriteTGAImage): Eliminate compiler warnings.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-24  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c: Propagate orientation in TGA writer.
+The linescan order must be reverted.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-23  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/configure/configure.rc: Disable static single threaded
+runtime choice. This runtime is not suported in Visual Studio 2008
+and all newer versions.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-22  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/psd.c: If module gets built, but EnableBrokenCoders is
+not true, then include empty registration functions.</p></li>
+<li><p>Makefile.am: Rename coders/acppfile.cpp to magick/acppfile.cpp
+and include some in-progress changes which are necessary for the
+build to still work.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-22  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/tests/runtest.bat: G,K and Y tests started to fail
+before several months without knowing why. Do not stop. Too bad.
+Added test for HRZ format.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>tests/{rwblob.tap, rwfile.tap}: Add HRZ to sanity checks.</p></li>
+<li><p>coders/hrz.c (RegisterHRZImage): Set 'seekable_stream' and
+'adjoin' correctly.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-21  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/hrz.c: Provide writer.</p></li>
+<li><p>coders/tga.c: 32 bit TGA colormap is expected to have a valid
+alpha channel.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c: TGA reader seems to ignore image orientation,
+fixed now.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-18  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>jpeg/*: Update JPEG builtin library to 9f.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-12  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jpeg.c (FreeMagickClientData): Assure that jpeg_pixels is
+non-NULL before dereferencing it. Resolves oss-fuzz issue 66666:
+&quot;graphicsmagick:coder_DCM_fuzzer: Null-dereference READ in
+ReadJPEGImage&quot;.  This is an issue introduced by yesterday's
+submission.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/enum_strings.c (StringToCompressionType): Recognize
+&quot;LosslessJPEG&quot; as indicating LosslessJPEGCompression.</p></li>
+<li><p>coders/jpeg.c (WriteJPEGImage): Added support for writing lossy
+or lossless 12 bits, and lossless 16-bits using libjpeg-turbo-3.0.
+Added the -define options 'jpeg:data-precision',
+'jpeg:lossless-precision', and 'jpeg:lossless-predictor', to
+provide control over the parameters used.  Please note that most
+applications do not support lossless JPEG compression (and only
+support a sample size of 8) so take care not to use these features
+if it not known that all involved software can support them!</p></li>
+</ul>
+</blockquote>
+<p>2024-02-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jpeg.c (WriteJPEGImage): Do some preparation to implement
+support for libjpeg-turbo 3.X APIs while writing deep JPEG.</p></li>
+<li><p>coders/tiff.c (AddIFDExifFields): Fix a compilation warning.</p></li>
+<li><p>coders/jpeg.c (ReadJPEGImage): Support libjpeg-turbo 3.X APIs to
+read deep JPEG.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c (AddIFDExifFields): Add casts to prevent signed vs
+unsigned char pointer warnings.</p></li>
+<li><p>m4/ltversion.m4: Update to libtool 2.4.7.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-06  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Fix endianity problem related to string packed in a DWORD.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-05  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Ability to handle EXIF strings without zero termination.</p></li>
+</ul>
+</blockquote>
+<p>2024-02-04  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Performance improvement for lo endian architecture.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-29  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Allow succesfull compilation for older libtiff.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-28  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>NEWS.txt: Update the news as of January 28, 2024.</p></li>
+<li><p>scripts/changelog2rst.sh: Assure that generated ChangeLogs have a title.</p></li>
+<li><p>ChangeLog*: Tidy the ChangeLog syntax.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-28  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Fractional arrays needs either double[] or float[]
+depending on TIFFFieldSetGetSize(fip).</p></li>
+</ul>
+</blockquote>
+<p>2024-01-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c (AddIFDExifFields): Avoid signed/unsigned comparison warnings.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-27  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: EXIF GPS IFD tags are copied now.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-26  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>tiff/libtiff/tif_dir.c: Apply Su Laus leak fix from:
+<a class="reference external" href="https://gitlab.com/libtiff/libtiff/-/commit/376916d25f39bab69a3ed16963fd3f186870942c">https://gitlab.com/libtiff/libtiff/-/commit/376916d25f39bab69a3ed16963fd3f186870942c</a></p></li>
+</ul>
+</blockquote>
+<p>2024-01-26  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Refactor types to magick_uint16_t and
+magick_uint32_t.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-25  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c (WriteTIFFImage): TIFFFreeDirectory() statements
+necessary to avoid memory leak in libtiff versions lacking merge
+request 563 &quot;Avoiding memory leaks when using
+TIFFCreateDirectory()&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c: Directly include jxl/version.h rather than
+depending on it being implicitly included by other jxl headers.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-24  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Copy uint32_t and uint8_t EXIF arrays into a tiff.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>www/Hg.rst: Change from defunct OSDN to Heptpod.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-23  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Copy uint16_t EXIF arrays into a tiff.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Do not copy TIFFTAG_XRESOLUTION &amp; TIFFTAG_YRESOLUTION
+that are already handled by gm functionality.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>utilities/tests/common.sh, common.shi.in: Apply tight read and
+write file size limits during testing.</p></li>
+<li><p>utilities/tests/hald-clut.tap (levels): Make messaging about
+levels more distinct during Hald CLUT testing.</p></li>
+<li><p>fuzzing/utils.cc: Set a write resource limit during oss-fuzz
+testing.</p></li>
+<li><p>magick/blob.c (ReadBlobByte): EOF detection requires reading
+past the end of the file, so allow for that.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>Copyright.txt, scripts/html_fragments.py, ChangeLog.2023: Rotate
+ChangeLog and update copyright statements for 2024.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-20  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Place string terminator for more code safety.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-19  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Temporary fix that supresses leak in tiff writer.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/symbols.h, wand/wand_symbols.h: Update Gm-prefixed
+symbols.</p></li>
+<li><p>coders/bmp.c: Eliminate 'TForeignFormatDesc' and 'StoreDescPNG'
+which were accidentally writeable globals.</p></li>
+<li><p>Fix spelling errors in code and documentation.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-13  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Prevent sign expansion and bogus contents in upper 2
+bytes for TIFF_SHORT.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-12  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Fixed TIFF_RATIONAL extraction from EXIF.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-11  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Fix for multiple frames. Do not import
+TIFFTAG_COMPRESSION, TIFFTAG_IMAGELENGTH, TIFFTAG_IMAGEWIDTH ...
+from EXIF.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c (EXPERIMENTAL_EXIF_TAGS): Change
+EXPERIMENTAL_EXIF_TAGS to a simple boolean (rather than an ifdef)
+and default it to 0.  This needs to be in place until the TIFF
+writer no longer crashes.</p></li>
+<li><p>fuzzing/oss-fuzz-build.sh: Skip missing libheif optional
+dependencies in oss-fuzz build.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-07  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Fix TIFF_RATIONAL - Two LONGs: the first represents
+the numerator of a fraction, the second the denominator.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-06  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Extract EXIFIFD part from EXIF profile.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-03  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/wpg.c: Make two functions &quot;EnsureNextImage()&quot; and
+&quot;LoadPaletteRec()&quot; static.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-02  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/tiff/LIBRARY.txt: Exclude more tiff/port files.</p></li>
+</ul>
+</blockquote>
+<p>2024-01-01  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>tiff/libtiff/tiffconf.h: Fix path to webp/types.h.</p></li>
+</ul>
+</blockquote>
+</div>
+
+
+<hr class="docutils">
+<div class="document">
+    <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
+</div>
+
+</div>
+</body>
+</html>

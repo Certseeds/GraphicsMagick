@@ -30,6 +30,7 @@
 #include "magick/monitor.h"
 #include "magick/pixel_cache.h"
 #include "magick/profile.h"
+#include "magick/resource.h"
 #include "magick/utility.h"
 #include "magick/resource.h"
 
@@ -39,6 +40,9 @@
 #define HEIF_ENABLE_PROGRESS_MONITOR 0
 
 #include <libheif/heif.h>
+#ifdef HAVE_HEIF_INIT
+static MagickBool heif_initialized = MagickFalse;
+#endif /* ifdef HAVE_HEIF_INIT */
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,7 +387,7 @@ static Image *ReadColorProfile(struct heif_image_handle *heif_image_handle,
 
   Libheif issue 546 (https://github.com/strukturag/libheif/pull/546)
   suggests changing the return type of on_progress and start_progress
-  to "bool" so that one can implement cancelation support.
+  to "bool" so that one can implement cancellation support.
  */
 typedef struct ProgressUserData_
 {
@@ -492,6 +496,15 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
 
+#ifdef HAVE_HEIF_INIT
+  if (!heif_initialized)
+    {
+      /* heif_init() accepts a 'struct heif_init_params *' argument */
+      heif_init((struct heif_init_params *) NULL);
+      heif_initialized = MagickTrue;
+    }
+#endif /* HAVE_HEIF_INIT */
+
   /*
     Open image file.
   */
@@ -528,6 +541,20 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
   /* Init HEIF-Decoder handles */
   heif=heif_context_alloc();
 
+#if defined(HAVE_HEIF_CONTEXT_SET_MAXIMUM_IMAGE_SIZE_LIMIT)
+  {
+    /* Add an image size limit */
+    magick_int64_t width_limit = GetMagickResourceLimit(WidthResource);
+    if (MagickResourceInfinity != width_limit)
+      {
+        if (width_limit > INT_MAX)
+          width_limit =  INT_MAX;
+        heif_context_set_maximum_image_size_limit(heif, (int) width_limit);
+      }
+  }
+#endif /* if defined(HAVE_HEIF_CONTEXT_SET_MAXIMUM_IMAGE_SIZE_LIMIT) */
+
+  /* FIXME: DEPRECATED: use heif_context_read_from_memory_without_copy() instead. */
   heif_status=heif_context_read_from_memory(heif, in_buf, in_len, NULL);
   if (heif_status.code == heif_error_Unsupported_filetype
       || heif_status.code == heif_error_Unsupported_feature)
@@ -836,5 +863,9 @@ ModuleExport void UnregisterHEIFImage(void)
   (void) UnregisterMagickInfo("AVIF");
   (void) UnregisterMagickInfo("HEIF");
   (void) UnregisterMagickInfo("HEIC");
+#ifdef HAVE_HEIF_DEINIT
+  if (heif_initialized)
+    heif_deinit();
+#endif /* HAVE_HEIF_DEINIT */
 #endif /* HasHEIF */
 }

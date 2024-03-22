@@ -7,7 +7,7 @@
 # package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
 ===========================================================================
 
-Introduction 
+Introduction
 
     PerlMagick, is an objected-oriented Perl interface to GraphicsMagick.
     Use the module to read, manipulate, or write an image or image
@@ -26,16 +26,16 @@ Introduction
     for instructions about installing GraphicsMagick.
 
 
-Installation 
+Installation
 
     PerlMagick is configured by default by GraphicsMagick in order to
     create a starting Makefile.PL.  Additional edits to Makefile.PL
-    may be required.  GraphicsMagick does not provide a seperate
+    may be required.  GraphicsMagick does not provide a separate
     distribution of PerlMagick.  Please follow the applicable steps
     described here in order to complete the installation of
     PerlMagick.
 
-    Get the GraphicsMagick distribution and type the following: 
+    Get the GraphicsMagick distribution and type the following:
 
         gunzip -c GraphicsMagick-1.2.tar.gz | tar -xvf -
         cd GraphicsMagick
@@ -59,7 +59,7 @@ Installation
 
     To create and install the dymamically-loaded version of
     PerlMagick (the preferred way), execute
-        
+
         perl Makefile.PL
         make
         su root (if necessary)
@@ -76,13 +76,13 @@ Installation
         perl Makefile.PL
         make perl
         make -f Makefile.aperl inst_perl
-	
+
     or to create and install a new PERL interpreter with a
     different name than 'perl' (e.g. 'PerlMagick') and with
     PerlMagick statically linked
 
         perl Makefile.PL MAP_TARGET=PerlMagick
-	make PerlMagick
+        make PerlMagick
         make -f Makefile.aperl inst_perl
 
     See the ExtUtils::MakeMaker(3) manual page for more information on
@@ -102,7 +102,7 @@ Installation
 Testing PerlMagick
 
     Before PerlMagick is installed, you may want to execute
-    
+
         make test
 
     to verify that PERL can load the PerlMagick extension ok.  Chances
@@ -112,15 +112,20 @@ Testing PerlMagick
     is advised not to install PerlMagick until the problem is
     resolved.
 
+    The 'prove' utility may be used to execute a test from the
+    PerlMagick build directory like
+
+        prove --blib blib -I `pwd` -bv ./t/read.t
+
     To see a number of PerlMagick demonstration scripts, type
-    
+
         cd demo
         make
 
 
-Example Perl Magick Script 
+Example Perl Magick Script
 
-    Here is an example script to get you started: 
+    Here is an example script to get you started:
 
         #!/usr/bin/perl
         use Graphics::Magick;
