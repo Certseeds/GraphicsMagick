@@ -341,27 +341,27 @@ testRead('topol:topol_7.ras', q//,
 print("Truevision Targa image file (true color) ...\n");
 ++$test;
 testRead('input_24.tga', q//,
-         'ee9a91e1f87a45484a65350b1079fdc3dd0c6d72b9443068c7751cd621189122');
+         '7198f94e4d838a121ee3921efd1c5c4e312c89bf850d2944601960e346e58cf3');
 
 print("Truevision Targa image file (true color - RLE compressed) ...\n");
 ++$test;
 testRead('input_24rle.tga', q//,
-         'ee9a91e1f87a45484a65350b1079fdc3dd0c6d72b9443068c7751cd621189122');
+         '7198f94e4d838a121ee3921efd1c5c4e312c89bf850d2944601960e346e58cf3');
 
 print("Truevision Targa image file (true color 16) ...\n");
 ++$test;
 testRead('input_16.tga', q//,
-         'cfcd894d32c55b9335ceeb52f4048bc1901720a6c49bbb9d722763cdd0b46689');
+         '4493accb1c2dc4b291c8aaa954aa6c5d1067dd7779b626cb83a47462551d5e19');
 
 print("Truevision Targa image file (true color 16 - RLE compressed) ...\n");
 ++$test;
 testRead('input_16rle.tga', q//,
-         'cfcd894d32c55b9335ceeb52f4048bc1901720a6c49bbb9d722763cdd0b46689');
+         '4493accb1c2dc4b291c8aaa954aa6c5d1067dd7779b626cb83a47462551d5e19');
 
 print("Truevision Targa image file (palette color) ...\n");
 ++$test;
 testRead('input_8_CC.tga', q//,
-         '8b19185a62241bd7b79ecf3f619711f4ebbedd73eaeca0366f05778762b6614f');
+         '092fa2bb0e2c1826a7b0ac9ea42a788684230623fa56bf0c4c2c9e1d71de8bf1');
 
 print("Truevision Targa image file (gray) ...\n");
 ++$test;
