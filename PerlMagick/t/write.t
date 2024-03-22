@@ -200,7 +200,7 @@ print("Truevision Targa image file ...\n");
 testReadWrite( 'TGA:input_8_CC.tga',
   'TGA:output_8_CC.tga',
   q//,
-  '8b19185a62241bd7b79ecf3f619711f4ebbedd73eaeca0366f05778762b6614f');
+  '092fa2bb0e2c1826a7b0ac9ea42a788684230623fa56bf0c4c2c9e1d71de8bf1');
 
 print("Khoros Visualization image file ...\n");
 ++$test;
