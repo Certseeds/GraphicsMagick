@@ -31,7 +31,8 @@ UTILITIES_TESTS = \
 	utilities/tests/montage.tap \
 	utilities/tests/msl_composite.tap \
 	utilities/tests/preview.tap \
-	utilities/tests/resize.tap
+	utilities/tests/resize.tap \
+	utilities/tests/version.tap
 
 utilities/tests/montage.log : \
 	utilities/tests/effects.log

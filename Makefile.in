@@ -4840,7 +4840,8 @@ UTILITIES_TESTS = \
 	utilities/tests/montage.tap \
 	utilities/tests/msl_composite.tap \
 	utilities/tests/preview.tap \
-	utilities/tests/resize.tap
+	utilities/tests/resize.tap \
+	utilities/tests/version.tap
 
 UTILITIES_MANS = \
 	utilities/gm.1 \
