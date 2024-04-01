@@ -376,7 +376,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   image = AllocateImage(image_info);
   status = OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFalse)
@@ -1068,7 +1068,8 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   image_list_length=GetImageListLength(image);
-  LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
+  if(image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   if(image->logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                           "%" MAGICK_SIZE_T_F "u image frames in list",

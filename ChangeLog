@@ -1,3 +1,8 @@
+2024-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/tga.c: Fix Coverity issues 424688 and 424689, which are
+	due to inconsistent use of LogMagickEvent().
+
 2024-03-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* utilities/tests/version.tap: New test script to exercise version

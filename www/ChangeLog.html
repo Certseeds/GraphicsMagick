@@ -38,6 +38,24 @@
 
 <div class="document" id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-04-01  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tga.c: Fix Coverity issues 424688 and 424689, which are
+due to inconsistent use of LogMagickEvent().</p></li>
+</ul>
+</blockquote>
+<p>2024-03-31  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>utilities/tests/version.tap: New test script to exercise version
+output.</p></li>
+<li><p>utilities/tests/help.tap: Skip 'batch' help since its help
+output contains TAP syntax, which confuses the test.</p></li>
+<li><p>magick/command.c: Add support for a --version option, which
+produces GNU style summary version output.</p></li>
+</ul>
+</blockquote>
 <p>2024-03-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
