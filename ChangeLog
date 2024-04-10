@@ -1,3 +1,13 @@
+2024-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/module_aliases.h: Only include module alias when there
+	is a module to support it.
+
+	* magick/deprecate.c: Add a comment about magick monitor constant
+	string specification deprecations.
+
+	* magick/command.c: Reduce relocations.
+
 2024-04-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tga.c: Fix Coverity issues 424688 and 424689, which are

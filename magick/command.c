@@ -194,7 +194,7 @@ static MagickPassFail
 static const struct
 {
   const char            command[10];
-  const char * const    description;
+  const char            description[58];
   CommandVectorHandler  command_vector;
   UsageVectorHandler    usage_vector;
   int                   pass_metadata;

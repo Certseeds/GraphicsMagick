@@ -1,11 +1,16 @@
 /*
-  Copyright (C) 2003 - 2023 GraphicsMagick Group
+  Copyright (C) 2003 - 2024 GraphicsMagick Group
 
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
 
   GraphicsMagick Module Aliases
+
+  This module alias information is used to convert from a 'magick'
+  format specification to the module which supports it. Entries are
+  only necessary if the format specification is different than the
+  module name.
 
   This file should only be included into module.c and static.c.
 */
@@ -35,10 +40,16 @@ static const struct
     MODULEALIAS("APP1","META"),
     MODULEALIAS("APP1JPEG","META"),
     MODULEALIAS("ARW","DCRAW"),
+#if defined(HasHEIF)
     MODULEALIAS("AVIF","HEIF"),
+#endif /* if defined(HasHEIF) */
     MODULEALIAS("B","GRAY"),
+#if defined(HasJBIG)
     MODULEALIAS("BIE","JBIG"),
+#endif /* if defined(HasJBIG) */
+#if defined(HasTIFF)
     MODULEALIAS("BIGTIFF","TIFF"),
+#endif /* if defined(HasTIFF) */
     MODULEALIAS("BMP2","BMP"),
     MODULEALIAS("BMP3","BMP"),
     MODULEALIAS("BRF","BRAILLE"),
@@ -71,9 +82,13 @@ static const struct
     MODULEALIAS("GIF87","GIF"),
     MODULEALIAS("GRANITE","LOGO"),
     MODULEALIAS("GRAYA","GRAY"),
+#if defined(HasTIFF)
     MODULEALIAS("GROUP4RAW","TIFF"),
+#endif /* if defined(HasTIFF) */
     MODULEALIAS("H","LOGO"),
+#if defined(HasHEIF)
     MODULEALIAS("HEIC","HEIF"),
+#endif /* if defined(HasHEIF) */
     MODULEALIAS("HTM","HTML"),
     MODULEALIAS("HTTP","URL"),
     MODULEALIAS("ICB","TGA"),
@@ -90,11 +105,21 @@ static const struct
     MODULEALIAS("IPTCWTEXT","META"),
     MODULEALIAS("ISOBRL","BRAILLE"),
     MODULEALIAS("ISOBRL6","BRAILLE"),
+#if defined(HasJP2)
     MODULEALIAS("J2C","JP2"),
+#endif /* if defined(HasJP2) */
+#if defined(HasJBIG)
     MODULEALIAS("JBG","JBIG"),
+#endif /* if defined(HasJBIG) */
+#if defined(HasPNG)
     MODULEALIAS("JNG","PNG"),
+#endif /* if defined(HasPNG) */
+#if defined(HasJP2)
     MODULEALIAS("JPC","JP2"),
+#endif /* if defined(HasJP2) */
+#if defined(HasJPEG)
     MODULEALIAS("JPG","JPEG"),
+#endif /* if defined(HasJPEG) */
     MODULEALIAS("K","GRAY"),
     MODULEALIAS("K25","DCRAW"),
     MODULEALIAS("KDC","DCRAW"),
@@ -104,7 +129,9 @@ static const struct
     MODULEALIAS("M","GRAY"),
     MODULEALIAS("M2V","MPEG"),
     MODULEALIAS("MEF","DCRAW"),
+#if defined(HasPNG)
     MODULEALIAS("MNG","PNG"),
+#endif /* if defined(HasPNG) */
     MODULEALIAS("MPG","MPEG"),
     MODULEALIAS("MRW","DCRAW"),
     MODULEALIAS("NEF","DCRAW"),
@@ -122,17 +149,23 @@ static const struct
     MODULEALIAS("PFA","TTF"),
     MODULEALIAS("PFB","TTF"),
     MODULEALIAS("PGM","PNM"),
+#if defined(HasJP2)
     MODULEALIAS("PGX","JP2"),
+#endif /* if defined(HasJP2) */
     MODULEALIAS("PICON","XPM"),
     MODULEALIAS("PM","XPM"),
+#if defined(HasPNG)
     MODULEALIAS("PNG00","PNG"),
     MODULEALIAS("PNG24","PNG"),
     MODULEALIAS("PNG32","PNG"),
     MODULEALIAS("PNG48","PNG"),
     MODULEALIAS("PNG64","PNG"),
     MODULEALIAS("PNG8","PNG"),
+#endif /* if defined(HasPNG) */
     MODULEALIAS("PPM","PNM"),
+#if defined(HasTIFF)
     MODULEALIAS("PTIF","TIFF"),
+#endif /* if defined(HasTIFF) */
     MODULEALIAS("R","GRAY"),
     MODULEALIAS("RAF","DCRAW"),
     MODULEALIAS("RAS","SUN"),
@@ -143,7 +176,9 @@ static const struct
     MODULEALIAS("SRF","DCRAW"),
     MODULEALIAS("SVGZ","SVG"),
     MODULEALIAS("TEXT","TXT"),
+#if defined(HasTIFF)
     MODULEALIAS("TIF","TIFF"),
+#endif /* if defined(HasTIFF) */
     MODULEALIAS("UBRL","BRAILLE"),
     MODULEALIAS("UBRL6","BRAILLE"),
     MODULEALIAS("VDA","TGA"),
