@@ -1,3 +1,7 @@
+2024-04-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tga.c: Write correctly TGA with opacity values in palette.
+
 2024-04-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/module_aliases.h: Only include module alias when there

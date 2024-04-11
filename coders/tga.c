@@ -1123,8 +1123,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
       */
       if (((write_grayscale == MagickFalse) &&
            (image->storage_class == PseudoClass) &&
-           (image->colors > 256)) ||
-          (image->matte == MagickTrue))
+           (image->colors > 256)))
         {
           /* (void) SyncImage(image); */
           image->storage_class=DirectClass;
@@ -1191,7 +1190,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
           tga_info.colormap_type=1;
           tga_info.colormap_index=0;
           tga_info.colormap_length=(unsigned short) image->colors;
-          tga_info.colormap_size=24;
+          tga_info.colormap_size = (image->matte==MagickTrue) ? 32 : 24;
         }
 
       switch(image->orientation)
@@ -1239,7 +1238,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
             Dump colormap to file (blue, green, red byte order).
           */
           targa_colormap=MagickAllocateResourceLimitedArray(unsigned char *,
-                                                            tga_info.colormap_length,3);
+                                                            tga_info.colormap_length, tga_info.colormap_size/8);
           if (targa_colormap == (unsigned char *) NULL)
             ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
@@ -1249,8 +1248,10 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
               *q++=ScaleQuantumToChar(image->colormap[i].blue);
               *q++=ScaleQuantumToChar(image->colormap[i].green);
               *q++=ScaleQuantumToChar(image->colormap[i].red);
+              if(tga_info.colormap_size==32)
+                  *q++=ScaleQuantumToChar(image->colormap[i].opacity);
             }
-          (void) WriteBlob(image, (size_t)3*tga_info.colormap_length,
+          (void) WriteBlob(image, (size_t)(tga_info.colormap_size/8)*tga_info.colormap_length,
                            (char *) targa_colormap);
           MagickFreeResourceLimitedMemory(targa_colormap);
         }
