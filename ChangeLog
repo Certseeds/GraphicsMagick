@@ -1,3 +1,8 @@
+2024-04-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/png.c:
+	* magick/describe.c: Reveal opacity presence.
+
 2024-04-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tga.c: Write correctly TGA with opacity values in palette.

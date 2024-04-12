@@ -159,6 +159,8 @@ MagickExport MagickPassFail DescribeImage(Image *image,FILE *file,
                            image->error.normalized_mean_error,
                            image->error.normalized_maximum_error);
           }
+      if(image->matte==MagickTrue)
+          (void) fputs("+opacity ",file);
       (void) fprintf(file,"%u-bit ",image->depth);
       if (GetBlobSize(image) != 0)
         {

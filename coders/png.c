@@ -2366,6 +2366,10 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       mng_info->scenes_found > (long) (image_info->first_scene+
                                        image_info->number_scenes))))
     {
+      image->matte=((ping_colortype == PNG_COLOR_TYPE_RGB_ALPHA) ||
+                      (ping_colortype == PNG_COLOR_TYPE_GRAY_ALPHA) ||
+                      (png_get_valid(ping, ping_info, PNG_INFO_tRNS)));
+
       /* This happens later in non-ping decodes */
       if (png_get_valid(ping,ping_info,PNG_INFO_tRNS))
         image->storage_class=DirectClass;
