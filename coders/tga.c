@@ -1123,8 +1123,9 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
       */
       if (((write_grayscale == MagickFalse) &&
            (image->storage_class == PseudoClass) &&
-           (image->colors > 256)))
-        {
+           (image->colors > 256)) || (image->matte == MagickTrue))
+        {	/* TODO: We should decide whether opacity could be packed into palette or
+                the full alpha channel is needed. */
           /* (void) SyncImage(image); */
           image->storage_class=DirectClass;
         }
