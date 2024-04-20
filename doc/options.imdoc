@@ -1514,8 +1514,12 @@ quality setting of 75 is translated to a compress level of 9 such that
 'quality' has a useful range of 10-184 if used for this purpose.
 </dd>
 
+<dt>webp:exact={true|false}</dt>
+<dd>Preserve exact RGB values under transparent areas.  Default false.
+</dd>
+
 <dt>webp:lossless={true|false}</dt>
-<dd>Enable lossless encoding.
+<dd>Enable lossless encoding. Also enables 'exact' mode.
 </dd>
 
 <dt>webp:method={0-6}</dt>
@@ -6022,10 +6026,32 @@ for a description of these values.</pp>
 
 <!-- ------------ -version ------------------------------------------ -->
 
-<utils apps=animate,compare,composite,conjure,convert,display,identify,import,mogrify,montage>
+<utils apps=animate,batch,compare,composite,conjure,convert,display,gm,identify,import,mogrify,montage>
 <dopt>-version</opt>
 
-<abs>print GraphicsMagick version string</abs>
+<abs>print detailed GraphicsMagick version/build information</abs>
+
+<pp>
+Reports the release version, maximum sample-depth, web-site URL,
+copyright notice, feature support, and the options used while building
+the software.  This is the same output as produced by the 'version'
+sub-command.</pp>
+
+</utils>
+
+
+
+
+<!-- ------------ --version ------------------------------------------ -->
+
+<utils apps=animate,batch,compare,composite,conjure,convert,display,gm,identify,import,mogrify,montage>
+<dopt>-version</opt>
+
+<abs>print compact GNU-style GraphicsMagick version information</abs>
+
+<pp>
+Reports the release version, maximum sample-depth, web-site URL, and
+copyright notice.</pp>
 
 </utils>
 

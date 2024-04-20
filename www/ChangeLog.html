@@ -38,6 +38,26 @@
 
 <div class="document" id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-04-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>doc/options.imdoc: Update the documentation regarding WebP exact
+mode, and the new --version option.</p></li>
+<li><p>coders/webp.c (WriteWEBPImage): Add support for '-define
+webp:exact=true' to preserve exact RGB values under transparent
+areas while writing WebP format.  Enable this automatically when
+lossless is enabled.  If lossless is enabled, this option may be
+used to disable exact mode.  Addresses SourceForge issue #737
+&quot;WebP: Colors not preserved in fully-transparent areas&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2024-04-12  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/png.c:</p></li>
+<li><p>magick/describe.c: Reveal opacity presence.</p></li>
+</ul>
+</blockquote>
 <p>2024-04-11  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
 <blockquote>
 <ul class="simple">

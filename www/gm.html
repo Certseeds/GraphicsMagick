@@ -1396,7 +1396,7 @@ consisting of one or more of the following domains:
 <tt>Resource</tt>,
 <tt>TemporaryFile</tt>,
 <tt>Transform</tt>,
-<tt>User</tt>.
+<tt>User</tt>,
 <tt>Warning</tt>, or
 <tt>X11</tt>,
 For example, to log cache and blob events, use</font></td></tr></table>
@@ -1793,8 +1793,11 @@ specified, then the 'quality' value is used such that the default
 quality setting of 75 is translated to a compress level of 9 such that
 'quality' has a useful range of 10-184 if used for this purpose.
 </dd>
+<dt>webp:exact={true|false}</dt>
+<dd>Preserve exact RGB values under transparent areas.  Default false.
+</dd>
 <dt>webp:lossless={true|false}</dt>
-<dd>Enable lossless encoding.
+<dd>Enable lossless encoding. Also enables 'exact' mode.
 </dd>
 <dt>webp:method={0-6}</dt>
 <dd>Quality/speed trade-off.
@@ -5755,7 +5758,26 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a name="details-version"></a>-version
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+Reports the release version, maximum sample-depth, web-site URL,
+copyright notice, feature support, and the options used while building
+the software.  This is the same output as produced by the 'version'
+sub-command.</font></td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a name="details-version"></a>-version
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
+Reports the release version, maximum sample-depth, web-site URL, and
+copyright notice.</font></td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -7122,7 +7144,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -8087,7 +8120,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <p>
 For a more detailed description of each option, see
 Options, above.
@@ -8832,7 +8876,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -9024,7 +9079,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 </td></tr></table>
      <p>
 <i><a href="#top">Back to Contents</a></i> 
@@ -11010,7 +11076,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -12089,7 +12166,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -14820,7 +14908,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <p>
 For a more detailed description of each option, see
 Options, above.
@@ -15414,7 +15513,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <p>
 For a more detailed description of each option, see
 Options, above.
@@ -16986,7 +17096,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 
@@ -17989,7 +18110,18 @@ width=15><b><font face="Helvetica, Arial"
 ><font color="#00B04F"><font size="+1">
     <a href="GraphicsMagick.html#details-version">-version</a>
 </font></font></font></b></td></tr></table>
-<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print GraphicsMagick version string</td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print detailed GraphicsMagick version/build information</td></tr></table>
+<table BORDER=0 WIDTH="94%">
+<tr>
+<td width="3%"><br></td> 
+<td ALIGN=LEFT BGCOLOR="#FFFFFF">
+<img SRC="images/right_triangle_option.png"
+ALT=">" BORDER=0 height=14
+width=15><b><font face="Helvetica, Arial"
+><font color="#00B04F"><font size="+1">
+    <a href="GraphicsMagick.html#details-version">-version</a>
+</font></font></font></b></td></tr></table>
+<table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>print compact GNU-style GraphicsMagick version information</td></tr></table>
 <table BORDER=0 WIDTH="94%">
 <tr>
 <td width="3%"><br></td> 

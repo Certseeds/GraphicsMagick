@@ -1,3 +1,15 @@
+2024-04-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/options.imdoc: Update the documentation regarding WebP exact
+	mode, and the new --version option.
+
+	* coders/webp.c (WriteWEBPImage): Add support for '-define
+	webp:exact=true' to preserve exact RGB values under transparent
+	areas while writing WebP format.  Enable this automatically when
+	lossless is enabled.  If lossless is enabled, this option may be
+	used to disable exact mode.  Addresses SourceForge issue #737
+	"WebP: Colors not preserved in fully-transparent areas".
+
 2024-04-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/png.c:
