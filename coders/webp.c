@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013-2023 GraphicsMagick Group
+% Copyright (C) 2013-2024 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this

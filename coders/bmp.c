@@ -2298,10 +2298,6 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
                             scene,
                             ClassTypeToString(image->storage_class),
                             image->colors);
-      /*
-        Below emulates:
-        bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
-      */
       if(bmp_info.compression==BI_JPEG || bmp_info.compression==BI_PNG)
       {
         bytes_per_line = 0;
@@ -2310,6 +2306,10 @@ static unsigned int WriteBMPImage(const ImageInfo *image_info,Image *image)
       }
       else
       {
+        /*
+          Below emulates:
+          bytes_per_line=4*((image->columns*bmp_info.bits_per_pixel+31)/32);
+        */
         bytes_per_line=MagickArraySize(image->columns,bmp_info.bits_per_pixel);
         if ((bytes_per_line > 0) && (~((size_t) 0) - bytes_per_line) > 31)
           bytes_per_line = MagickArraySize(4,(bytes_per_line+31)/32);
