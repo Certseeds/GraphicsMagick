@@ -74,13 +74,6 @@ membership.</p>
 <p>The following are areas where significant contributions may be made to
 the GraphicsMagick project:</p>
 <ul class="simple">
-<li><p>Support building and distributing GraphicsMagick RPMs for Linux.</p></li>
-<li><p>Act as formal maintainer for the Gentoo Linux GraphicsMagick ebuild so
-that it is added back to Portage. This is not difficult since the
-ebuild has been actively maintained via the Gentoo bug tracking system.
-At the very least, registering a vote for the Gentoo bug may be helpful.
-See <a class="reference external" href="http://bugs.gentoo.org/show_bug.cgi?id=190372">http://bugs.gentoo.org/show_bug.cgi?id=190372</a>.</p></li>
-<li><p>Set up an FTP mirror site for GraphicsMagick.</p></li>
 <li><p>Create a language interface using SWIG &lt;<a class="reference external" href="http://www.swig.org/">http://www.swig.org/</a>&gt; to
 support scripting in Perl, Python, TCL/TK, Guile, MzScheme, Ruby,
 Java, PHP, and CHICKEN, based on a common implementation.</p></li>
@@ -88,8 +81,8 @@ Java, PHP, and CHICKEN, based on a common implementation.</p></li>
 XML-based syntax definition, and using an approach suitable to
 replace the existing error-prone command parsers in magick/command.c</p></li>
 <li><p>Create a vector encoder for EPS, Postscript, PDF, SVG
-&lt;<a class="reference external" href="http://www.w3.org/Graphics/SVG/">http://www.w3.org/Graphics/SVG/</a>&gt;, Macromedia Flash
-(SWF), WebCGM &lt;<a class="reference external" href="http://www.w3.org/Graphics/WebCGM/">http://www.w3.org/Graphics/WebCGM/</a>&gt;, or WMF.</p></li>
+&lt;<a class="reference external" href="http://www.w3.org/Graphics/SVG/">http://www.w3.org/Graphics/SVG/</a>&gt;, WebCGM
+&lt;<a class="reference external" href="http://www.w3.org/Graphics/WebCGM/">http://www.w3.org/Graphics/WebCGM/</a>&gt;, or WMF.</p></li>
 <li><p>Create an OpenEXR coder based on the OpenEXR
 &lt;<a class="reference external" href="http://www.openexr.com/">http://www.openexr.com/</a>&gt; library from Industrial Light &amp; Magic.</p></li>
 <li><p>Create a <em>pstoedit</em> module to import Postscript, EPS, and PDF
@@ -97,8 +90,6 @@ files as vector data using pstoedit &lt;<a class="reference external" href="http
 already includes a high-quality driver to render Postscript vectors via
 GraphicsMagick. This module could also export vector data in many
 formats using pstoedit's output drivers.</p></li>
-<li><p>Work on adding EXIF profile writing support which works for JPEG and
-TIFF formats.</p></li>
 <li><p>Add integrated Adobe XMP
 &lt;<a class="reference external" href="http://www.adobe.com/products/xmp/index.html">http://www.adobe.com/products/xmp/index.html</a>&gt; profile support for
 TIFF, JPEG, PNG, PDF, EPS, and Postscript.</p></li>
@@ -106,15 +97,14 @@ TIFF, JPEG, PNG, PDF, EPS, and Postscript.</p></li>
 Photographic Tone Reproduction
 &lt;<a class="reference external" href="http://www.cs.ucf.edu/~reinhard/Reinhard02/">http://www.cs.ucf.edu/~reinhard/Reinhard02/</a>&gt; algorithm to
 GraphicsMagick.</p></li>
-<li><p>Create a replacement (using a portable Widget set such as FLTK) for the
-IMDisplay Windows GUI program and possibly the X11 'display' program.</p></li>
+<li><p>Create portable GUI which can work under Microsoft Windows, OS-X,
+X11, and Wayland (via a portable widget toolkit), to replace the
+outdated X11 GUI implmentation.</p></li>
 <li><p>Create an interface between GraphicsMagick and OpenOffice.org.
 &lt;<a class="reference external" href="http://www.openoffice.org/">http://www.openoffice.org/</a>&gt; so that OpenOffice may load and save
 any format supported by GraphicsMagick. OpenOffice.org offers a
 separate SDK so there may be a number of other opportunities to
 explore.</p></li>
-<li><p>Complete the port of ralcgm to Windows so that it may be used as a
-delegate under Windows.</p></li>
 </ul>
 </div>
 </div>

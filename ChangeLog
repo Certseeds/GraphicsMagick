@@ -1,3 +1,12 @@
+2024-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/contribute.rst: Remove mention of needing a formal
+	maintainer for the Gentoo Linux GraphicsMagick ebuild, since there
+	has been an excellent maintainer for a long time already.
+
+	* configure.ac: Remove use of wrong == syntax. Much thanks to Sam
+	James for the patch.
+
 2024-04-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* doc/options.imdoc: Update the documentation regarding WebP exact

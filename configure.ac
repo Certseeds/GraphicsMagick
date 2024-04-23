@@ -1719,7 +1719,7 @@ AC_SUBST([LIB_MTMALLOC])
 # Find OpenMP library (no pkg-config support!)
 #
 LIB_OMP=''
-if test "${OPENMP_ENABLED}" == 'yes'
+if test "${OPENMP_ENABLED}" = 'yes'
 then
   if test "${GCC}" = "yes"
   then
