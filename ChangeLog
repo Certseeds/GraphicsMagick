@@ -1,3 +1,11 @@
+2024-05-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Magick++/lib/Magick++/STL.h: I changed my mind and have decided
+	to stop using the deprecated std::unary_function in C++'11.
+	Hopefully this does not cause any ABI or other usage issues.
+	Please make me aware of any side-effects resulting from this
+	change.
+
 2024-04-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/contribute.rst: Remove mention of needing a formal
