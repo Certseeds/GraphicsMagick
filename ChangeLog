@@ -1,3 +1,10 @@
+2024-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/txt.c (ReadTXTImage): Assure that row array allocation is
+	initialized since it may not be completely filled. Should address
+	oss-fuzz 68716: "graphicsmagick:coder_TXT_fuzzer:
+	Use-of-uninitialized-value in GetColorTuple".
+
 2024-05-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/lib/Magick++/STL.h: I changed my mind and have decided
