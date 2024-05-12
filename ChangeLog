@@ -1,10 +1,5 @@
 2024-05-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* configure.ac: Use --enable-force-cplusplus-linkage to force
-	libraries to be linked using the C++ compiler. Normally this
-	should happen by default if a known C++ library is used, but
-	sometimes it is useful to be able to force C++ linkage.
-
 	* coders/jbig.c (ReadJBIGImage): Coder log when creating colormap.
 
 	* fuzzing/oss-fuzz-build.sh: Disable assembler code when building

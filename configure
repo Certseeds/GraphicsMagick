@@ -867,8 +867,6 @@ LIBSTDCLDFLAGS
 HasGS_FALSE
 HasGS_TRUE
 PERL_MAKE_OPTIONS
-FORCE_CPLUSPLUS_LINKAGE_FALSE
-FORCE_CPLUSPLUS_LINKAGE_TRUE
 MAGICK_LT_RELEASE_OPTS
 QuantumDepth
 MAGICK_COMPAT_FALSE
@@ -1097,7 +1095,6 @@ enable_symbol_prefix
 enable_magick_compat
 with_quantum_depth
 enable_quantum_library_names
-enable_force_cplusplus_linkage
 with_frozenpaths
 with_magick_plus_plus
 with_perl
@@ -1832,8 +1829,6 @@ Optional Features:
                           shared libraries with different quantum depths to
                           co-exist in same directory (only one can be used for
                           development)
-  --enable-force-cplusplus-linkage
-                          force C++ linkage of libraries and programs
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -19667,25 +19662,6 @@ then
 fi
 
 
-# Force C++ linkage of libraries and programs. This should normally
-# happen by default (if needed), but sometimes it may be necessary to
-# force this in order allow static linkage to succeed.
-# Check whether --enable-force-cplusplus-linkage was given.
-if test "${enable_force_cplusplus_linkage+set}" = set; then :
-  enableval=$enable_force_cplusplus_linkage; with_force_cplusplus_linkage=$enableval
-else
-  with_force_cplusplus_linkage='no'
-fi
-
- if test "${with_force_cplusplus_linkage}" = 'yes'; then
-  FORCE_CPLUSPLUS_LINKAGE_TRUE=
-  FORCE_CPLUSPLUS_LINKAGE_FALSE='#'
-else
-  FORCE_CPLUSPLUS_LINKAGE_TRUE='#'
-  FORCE_CPLUSPLUS_LINKAGE_FALSE=
-fi
-
-
 # Disable/Enable support for full delegate paths in delegates.mgk
 
 # Check whether --with-frozenpaths was given.
@@ -32352,8 +32328,8 @@ else
   MAGICK_DEP_LIBS="$LIBS"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
-printf "MAGICK_DEP_LIBS=${MAGICK_DEP_LIBS}\n"
-printf "MAGICK_EXTRA_DEP_LIBS=${MAGICK_EXTRA_DEP_LIBS}\n"
+#printf "MAGICK_DEP_LIBS=${MAGICK_DEP_LIBS}\n"
+#printf "MAGICK_EXTRA_DEP_LIBS=${MAGICK_EXTRA_DEP_LIBS}\n"
 
 
 
@@ -32632,10 +32608,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MAGICK_COMPAT_TRUE}" && test -z "${MAGICK_COMPAT_FALSE}"; then
   as_fn_error $? "conditional \"MAGICK_COMPAT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${FORCE_CPLUSPLUS_LINKAGE_TRUE}" && test -z "${FORCE_CPLUSPLUS_LINKAGE_FALSE}"; then
-  as_fn_error $? "conditional \"FORCE_CPLUSPLUS_LINKAGE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasGS_TRUE}" && test -z "${HasGS_FALSE}"; then

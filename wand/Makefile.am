@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2024 GraphicsMagick Group
+# Copyright (C) 2004 - 2014 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -50,7 +50,6 @@ wand_libGraphicsMagickWand_la_LDFLAGS = -no-undefined -export-symbols-regex ".*"
 	$(MAGICK_LT_RELEASE_OPTS) \
 	-version-info $(MAGICK_WAND_LIBRARY_CURRENT):$(MAGICK_WAND_LIBRARY_REVISION):$(MAGICK_WAND_LIBRARY_AGE)
 wand_libGraphicsMagickWand_la_LIBADD = $(LIBMAGICK) $(LIB_MATH)
-wand_libGraphicsMagickWand_la_LIBTOOLFLAGS = $(MAGICK_CXX_LIBTOOLFLAGS)
 
 WAND_EXTRA_DIST = \
 	wand/GraphicsMagickWand-config.1 \
@@ -66,13 +65,11 @@ wand_drawtest_LDADD        = $(LIBWAND)
 wand_drawtest_CPPFLAGS     = $(WAND_CPPFLAGS)
 wand_drawtest_LDFLAGS      = $(LDFLAGS)
 wand_drawtest_SOURCES      = wand/drawtest.c
-wand_drawtest_LIBTOOLFLAGS = $(MAGICK_CXX_LIBTOOLFLAGS)
 
 wand_wandtest_LDADD        = $(LIBWAND)
 wand_wandtest_CPPFLAGS     = $(WAND_CPPFLAGS)
 wand_wandtest_LDFLAGS      = $(LDFLAGS)
 wand_wandtest_SOURCES      = wand/wandtest.c
-wand_wandtest_LIBTOOLFLAGS = $(MAGICK_CXX_LIBTOOLFLAGS)
 
 WAND_CHECK_PGRMS = \
 	wand/drawtest \
