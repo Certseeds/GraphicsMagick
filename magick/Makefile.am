@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2020 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -37,7 +37,8 @@ magick_libGraphicsMagick_la_LDFLAGS = \
 	-no-undefined -export-symbols-regex ".*" \
 	$(MAGICK_LT_RELEASE_OPTS) \
 	-version-info $(MAGICK_LIBRARY_CURRENT):$(MAGICK_LIBRARY_REVISION):$(MAGICK_LIBRARY_AGE)
-#magick_libGraphicsMagick_la_DEPENDENCIES = 
+#magick_libGraphicsMagick_la_DEPENDENCIES =
+magick_libGraphicsMagick_la_LIBTOOLFLAGS = $(MAGICK_CXX_LIBTOOLFLAGS)
 
 if HasX11
 MAGICK_X11_BASE_SRCS = \

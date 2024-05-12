@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2023 GraphicsMagick Group
+# Copyright (C) 2003-2024 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -599,6 +599,16 @@ then
     MAGICK_LT_RELEASE_OPTS="-release Q${QuantumDepth}"
 fi
 AC_SUBST([MAGICK_LT_RELEASE_OPTS])
+
+# Force C++ linkage of libraries and programs. This should normally
+# happen by default (if needed), but sometimes it may be necessary to
+# force this in order allow static linkage to succeed.
+AC_ARG_ENABLE([force-cplusplus-linkage],
+              AS_HELP_STRING([--enable-force-cplusplus-linkage],
+                             [force C++ linkage of libraries and programs]),
+              [with_force_cplusplus_linkage=$enableval],
+              [with_force_cplusplus_linkage='no'])
+AM_CONDITIONAL([FORCE_CPLUSPLUS_LINKAGE],[test "${with_force_cplusplus_linkage}" = 'yes'])
 
 # Disable/Enable support for full delegate paths in delegates.mgk
 AC_ARG_WITH([frozenpaths],
@@ -4231,8 +4241,8 @@ else
   MAGICK_DEP_LIBS="$LIBS"
 fi
 MAGICK_EXTRA_DEP_LIBS="$LIB_OMP" # Extra libraries typically added due to CFLAGS
-#printf "MAGICK_DEP_LIBS=${MAGICK_DEP_LIBS}\n"
-#printf "MAGICK_EXTRA_DEP_LIBS=${MAGICK_EXTRA_DEP_LIBS}\n"
+printf "MAGICK_DEP_LIBS=${MAGICK_DEP_LIBS}\n"
+printf "MAGICK_EXTRA_DEP_LIBS=${MAGICK_EXTRA_DEP_LIBS}\n"
 AC_SUBST([MAGICK_DEP_LIBS])
 AC_SUBST([MAGICK_EXTRA_DEP_LIBS])
 

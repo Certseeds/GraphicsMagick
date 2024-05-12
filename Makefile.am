@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2023 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -27,6 +27,20 @@ ACLOCAL_AMFLAGS = -I m4
 
 MODULECOMMONFLAGS = -no-undefined -export-symbols-regex ".*" -shared -module -avoid-version
 MODULECOMMONCPPFLAGS = $(AM_CPPFLAGS)
+
+# Force libtool linkage with the C++ compiler
+if FORCE_CPLUSPLUS_LINKAGE
+MAGICK_CXX_LIBTOOLFLAGS = --tag=CXX
+endif # if FORCE_CPLUSPLUS_LINKAGE
+if HasFPX
+MAGICK_CXX_LIBTOOLFLAGS = --tag=CXX
+endif
+if HasHEIF
+MAGICK_CXX_LIBTOOLFLAGS = --tag=CXX
+endif
+if HasJXL
+MAGICK_CXX_LIBTOOLFLAGS = --tag=CXX
+endif
 
 # Coverity parameters
 # FIXME: Could use info from /etc/os-release, or output from

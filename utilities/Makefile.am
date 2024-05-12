@@ -14,6 +14,7 @@ UTILITIES_PGMS = \
 utilities_gm_LDADD	= $(LIBMAGICK)
 utilities_gm_LDFLAGS	= $(LDFLAGS)
 utilities_gm_SOURCES	= utilities/gm.c
+utilities_gm_LIBTOOLFLAGS = $(MAGICK_CXX_LIBTOOLFLAGS)
 
 
 UTILITIES_XFAIL_TESTS =

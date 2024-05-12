@@ -254,6 +254,12 @@ Optional Features
     libraries with different quantum depths to co-exist in same
     directory (only one can be used for development)
 
+--enable-force-cplusplus-linkage
+
+    enable forcing C++ linkage for libraries and programs.  Normally
+    this should happen by default if a known C++ library is used, but
+    sometimes it is useful to be able to force C++ linkage.
+
 
 Optional Packages/Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~
