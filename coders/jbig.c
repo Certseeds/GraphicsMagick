@@ -221,6 +221,9 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
   if ((image_info->type != GrayscaleType) &&
       (image_info->type != TrueColorType))
     {
+      if (image->logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Allocating colormap...");
       if (!AllocateImageColormap(image,2))
         {
           MagickFreeMemory(buffer);
@@ -229,9 +232,11 @@ static Image *ReadJBIGImage(const ImageInfo *image_info,
       image->colormap[0].red=0;
       image->colormap[0].green=0;
       image->colormap[0].blue=0;
+      image->colormap[0].opacity=0;
       image->colormap[1].red=MaxRGB;
       image->colormap[1].green=MaxRGB;
       image->colormap[1].blue=MaxRGB;
+      image->colormap[1].opacity=0;
     }
   image->x_resolution=300;
   image->y_resolution=300;
