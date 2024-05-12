@@ -66,15 +66,19 @@ then
     pushd "$SRC/xz"
     ./autogen.sh --no-po4a --no-doxygen
     ./configure \
-        --disable-xz \
-        --disable-xzdec \
+        --disable-assembler \
+        --disable-doc \
+        --disable-ifunc \
+        --disable-lzip-decoder \
+        --disable-lzma-links \
         --disable-lzmadec \
         --disable-lzmainfo \
-        --disable-lzma-links \
-        --disable-ifunc \
+        --disable-microlzma \
+        --disable-nls \
         --disable-scripts \
-        --disable-doc \
         --disable-shared \
+        --disable-xz \
+        --disable-xzdec \
         --enable-static \
         --with-pic=yes \
         --prefix="$WORK"

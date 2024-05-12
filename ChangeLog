@@ -1,3 +1,10 @@
+2024-05-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jbig.c (ReadJBIGImage): Coder log when creating colormap.
+
+	* fuzzing/oss-fuzz-build.sh: Disable assembler code when building
+	xz in order to avoid false issues.
+
 2024-05-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/txt.c (ReadTXTImage): Assure that row array allocation is
