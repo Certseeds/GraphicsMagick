@@ -1,3 +1,9 @@
+2024-05-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/utility.c (ExpandFilenames): Address Coverity 425853:
+	"Resource leaks (RESOURCE_LEAK) Variable "filelist" going out of
+	scope leaks the storage it points to.".
+
 2024-05-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c: Fixed problem with overflowing IFD.
