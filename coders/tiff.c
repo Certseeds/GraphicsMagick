@@ -4467,7 +4467,11 @@ static int CheckAndStoreStr(TIFF *tiff, const magick_uint16_t Tag, const char *S
 magick_uint32_t i = StrSize;
 
   if(Tag==TIFFTAG_INKNAMES)		/* Variant of call is tag dependent, too bad. */
-        return TIFFSetField(tiff, Tag, StrSize, String);
+  {
+    if(StrSize>0xFFFF) return 0;
+    /* TIFFTAG_INKNAMES needs only uint16_t https://libtiff.gitlab.io/libtiff/functions/TIFFSetField.html#c.TIFFSetField */
+    return TIFFSetField(tiff, Tag, (magick_uint16_t)StrSize, String);
+  }
 
 	/* Look for zero terminator. */
   while(i>0)
