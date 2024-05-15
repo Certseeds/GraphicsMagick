@@ -4471,7 +4471,12 @@ magick_uint32_t i = StrSize;
   {
     i--;
     if(String[i]==0)
-      return TIFFSetField(tiff, Tag, String);
+    {
+      if(Tag==TIFFTAG_INKNAMES)		/* Variant of call is tag dependent, too bad. */
+        return TIFFSetField(tiff, Tag, StrSize, String);
+      else
+        return TIFFSetField(tiff, Tag, String);
+    }
   }
 
   if(StrSize>0)
@@ -4481,7 +4486,10 @@ magick_uint32_t i = StrSize;
     {
       memcpy(StringDup,String,StrSize);
       StringDup[StrSize] = 0;
-      i = TIFFSetField(tiff, Tag, String);
+      if(Tag==TIFFTAG_INKNAMES)
+        i = TIFFSetField(tiff, Tag, StrSize, String);
+      else
+        i = TIFFSetField(tiff, Tag, String);
       MagickFreeResourceLimitedMemory(StringDup);
       return i;
     }
