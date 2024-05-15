@@ -4466,16 +4466,16 @@ static int CheckAndStoreStr(TIFF *tiff, const magick_uint16_t Tag, const char *S
 {
 magick_uint32_t i = StrSize;
 
+  if(Tag==TIFFTAG_INKNAMES)		/* Variant of call is tag dependent, too bad. */
+        return TIFFSetField(tiff, Tag, StrSize, String);
+
 	/* Look for zero terminator. */
   while(i>0)
   {
     i--;
     if(String[i]==0)
     {
-      if(Tag==TIFFTAG_INKNAMES)		/* Variant of call is tag dependent, too bad. */
-        return TIFFSetField(tiff, Tag, StrSize, String);
-      else
-        return TIFFSetField(tiff, Tag, String);
+      return TIFFSetField(tiff, Tag, String);
     }
   }
 
@@ -4486,10 +4486,7 @@ magick_uint32_t i = StrSize;
     {
       memcpy(StringDup,String,StrSize);
       StringDup[StrSize] = 0;
-      if(Tag==TIFFTAG_INKNAMES)
-        i = TIFFSetField(tiff, Tag, StrSize, String);
-      else
-        i = TIFFSetField(tiff, Tag, String);
+      i = TIFFSetField(tiff, Tag, String);
       MagickFreeResourceLimitedMemory(StringDup);
       return i;
     }
