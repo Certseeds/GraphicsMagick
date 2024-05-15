@@ -2,6 +2,8 @@
 
 	* coders/tiff.c: Fixed problem with overflowing IFD.
 	https://sourceforge.net/p/graphicsmagick/bugs/738/
+	Fixed another parameter need for TIFFSetField/TIFFTAG_INKNAMES.
+        https://sourceforge.net/p/graphicsmagick/bugs/739/
 
 2024-05-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
