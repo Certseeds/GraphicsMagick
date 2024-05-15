@@ -4549,12 +4549,14 @@ int FieldCount = 0;
 
       if(Tag == TIFFTAG_EXIFIFD)
       {
+        if(Value >= profile_length) goto NextItem;
         if((Flags & FLAG_EXIF) != 0)
           FieldCount += AddIFDExifFields(tiff, profile_data, profile_data+Value, profile_length, logging, Flags|FLAG_BASE);
         goto NextItem;
       }
       if(Tag == TIFFTAG_GPSIFD)
       {
+        if(Value >= profile_length) goto NextItem;
         if((Flags & FLAG_GPS) != 0)
           FieldCount += AddIFDExifFields(tiff, profile_data, profile_data+Value, profile_length, logging, Flags|FLAG_BASE);
         goto NextItem;
@@ -4767,6 +4769,7 @@ NextItem:
 
     if(profile_length < (size_t)(IFD_data-profile_data)+4) break;
     Value = LD_UINT32(IFD_data);
+    if(Value>=profile_length) break;
     IFD_data = profile_data+Value;
   } while(Value>8);
 
