@@ -1,3 +1,8 @@
+2024-05-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tiff.c: Fixed problem with overflowing IFD.
+	https://sourceforge.net/p/graphicsmagick/bugs/738/
+
 2024-05-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jbig.c (ReadJBIGImage): Coder log when creating colormap.

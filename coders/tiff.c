@@ -4753,12 +4753,14 @@ Scalar:                  if(FDT==TIFF_SHORT)
       }
 
 NextItem:
+      if(profile_length <= 12)   
+          break;
       profile_length -=12;
       IFD_data += 12;
       EntryNum--;
     }
 
-    if(profile_length-(IFD_data-profile_data) < 4) break;
+    if(profile_length+4 < (IFD_data-profile_data)) break;
     Value = LD_UINT32(IFD_data);
     IFD_data = profile_data+Value;
   } while(Value>8);
