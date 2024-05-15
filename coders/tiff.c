@@ -4519,10 +4519,10 @@ int FieldCount = 0;
 
   do
   {
-    if(profile_length-2 < IFD_data-profile_data) return 0;
+    if(profile_length < (size_t)(IFD_data-profile_data)+2) return 0;
     EntryNum = LD_UINT16(IFD_data);
     profile_length-=2;
-    if(profile_length < (IFD_data-profile_data)+(EntryNum*12)) return 0;
+    if(profile_length < (size_t)(IFD_data-profile_data)+(EntryNum*12)) return 0;
     IFD_data+=2;
 
     while(EntryNum>0)
@@ -4765,7 +4765,7 @@ NextItem:
       EntryNum--;
     }
 
-    if(profile_length < (IFD_data-profile_data)+4) break;
+    if(profile_length < (size_t)(IFD_data-profile_data)+4) break;
     Value = LD_UINT32(IFD_data);
     IFD_data = profile_data+Value;
   } while(Value>8);
