@@ -1,3 +1,7 @@
+2024-05-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* coders/tiff.c: TIFFTAG_INKNAMES should have a first parameter of 
+	the type uint16_t.
+
 2024-05-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/utility.c (ExpandFilenames): Address Coverity 425853:
