@@ -4760,7 +4760,7 @@ NextItem:
       EntryNum--;
     }
 
-    if(profile_length+4 < (IFD_data-profile_data)) break;
+    if(profile_length < (IFD_data-profile_data)+4) break;
     Value = LD_UINT32(IFD_data);
     IFD_data = profile_data+Value;
   } while(Value>8);
