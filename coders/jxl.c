@@ -919,8 +919,8 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                                 &import_options,&import_area_info))
                     != MagickPass)
                   break;
-                // Promote linear image to sRGB (2.4 gamma).
-                // We could also set image->gamma and return the original image.
+                /* Promote linear image to sRGB (2.4 gamma).
+                   We could also set image->gamma and return the original image. */
 #if 1
                 if (isLinear)
                   {

@@ -1,5 +1,10 @@
+2024-05-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/{bmp.c,jxl.c,mat.c,tga.c,tiff.c,topol.c,wpg.c}: Remove
+	C++ comments from C code and change whitespace to use only spaces.
+
 2024-05-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
-	* coders/tiff.c: TIFFTAG_INKNAMES should have a first parameter of 
+	* coders/tiff.c: TIFFTAG_INKNAMES should have a first parameter of
 	the type uint16_t.
 	profile_lenght has been incorrectly decreased.
 

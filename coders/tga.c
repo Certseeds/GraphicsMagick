@@ -357,7 +357,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
     base,
     flag,
     offset,
-//    real,
+    /*    real, */
     skip;
 
   unsigned int
@@ -689,16 +689,18 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
       base=0;
       flag=0;
       skip=MagickFalse;
-//    real=0;
+      /*    real=0; */
       index=0;
       runlength=0;
       offset=0;
       pixel.opacity=OpaqueOpacity;
       for (y=0; y < (long) image->rows; y++)
         {
-//          real=offset;
-//          if (((tga_info.attributes & 0x20) >> 5) == 0)
-//            real=image->rows-real-1;
+          /*
+            real=offset;
+            if (((tga_info.attributes & 0x20) >> 5) == 0)
+            real=image->rows-real-1;
+          */
           q=SetImagePixels(image,0,(long)offset,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
@@ -731,7 +733,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                 switch (tga_info.bits_per_pixel)
                   {
                   case 1:
-                    if ((x&7) == 0)     // Read byte every 8th bit.
+                    if ((x&7) == 0)     /* Read byte every 8th bit. */
                       index = ReadBlobByte(image);
                     else
                       index <<= 1;
@@ -836,11 +838,11 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
               *q++=pixel;
             }
           switch((unsigned char) (tga_info.attributes & 0xc0) >> 6)
-            {				/* http://www.paulbourke.net/dataformats/tga/ */
-            case 3:			/* 11 = reserved. - process without interleaving. */
-            case 0: offset++; break;	/* 00 = non-interleaved. */
-            case 1: offset+=2;break;	/* 01 = two-way (even/odd) interleaving. */
-            case 2: offset+=4;break;	/* 10 = four way interleaving. */
+            {                           /* http://www.paulbourke.net/dataformats/tga/ */
+            case 3:                     /* 11 = reserved. - process without interleaving. */
+            case 0: offset++; break;    /* 00 = non-interleaved. */
+            case 1: offset+=2;break;    /* 01 = two-way (even/odd) interleaving. */
+            case 2: offset+=4;break;    /* 10 = four way interleaving. */
             }
           if (offset >= image->rows)
             {
@@ -1124,7 +1126,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
       if (((write_grayscale == MagickFalse) &&
            (image->storage_class == PseudoClass) &&
            (image->colors > 256)) || (image->matte == MagickTrue))
-        {	/* TODO: We should decide whether opacity could be packed into palette or
+        {       /* TODO: We should decide whether opacity could be packed into palette or
                 the full alpha channel is needed. */
           /* (void) SyncImage(image); */
           image->storage_class=DirectClass;
@@ -1197,10 +1199,10 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
       switch(image->orientation)
       {
         case UndefinedOrientation:
-        case BottomLeftOrientation:  break;				/* 01 Bottom left */
-        case BottomRightOrientation: tga_info.attributes|=0x10; break;	/* 01 Bottom right */
-        case TopLeftOrientation:     tga_info.attributes|=0x20; break;	/* 10 Top left */
-        case TopRightOrientation:    tga_info.attributes|=0x30; break;	/* 11 TopRight */
+        case BottomLeftOrientation:  break;                             /* 01 Bottom left */
+        case BottomRightOrientation: tga_info.attributes|=0x10; break;  /* 01 Bottom right */
+        case TopLeftOrientation:     tga_info.attributes|=0x20; break;  /* 10 Top left */
+        case TopRightOrientation:    tga_info.attributes|=0x30; break;  /* 11 TopRight */
         default: if(image->logging)
                      (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Warning: Orientation %d is not supported, use -auto-orient switch.\n", (int)image->orientation);

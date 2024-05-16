@@ -236,7 +236,7 @@ static void InsertComplexFloatRow(float *p, long y, Image *image, double MinVal,
       f = (*p / MaxVal) * (Quantum)(MaxRGB - q->red);
       if (MAGICK_ISNAN(f))
         f=0.0;
-      /*if(f<0) f=0;    //Only for Assert, should be commented out */
+      /*if(f<0) f=0;    // Only for Assert, should be commented out */
       if (f + q->red < MaxRGB)
         q->red += (int)f;
       else

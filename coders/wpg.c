@@ -782,10 +782,10 @@ unsigned Flags;
         }
  if(Flags & TRN)
         {
-        DenX=ReadBlobLSBShort(image); x=ReadBlobLSBLong(image);	 /*Tx*/
+        DenX=ReadBlobLSBShort(image); x=ReadBlobLSBLong(image);  /*Tx*/
         (*CTM)[0][2] = (double)x + (float)DenX/0x10000;
         DenX=ReadBlobLSBShort(image); x=ReadBlobLSBLong(image);  /*Ty*/
-        (*CTM)[1][2] = (double)x + (float)DenX/0x10000;        
+        (*CTM)[1][2] = (double)x + (float)DenX/0x10000;
         }
  if(Flags & TPR)
         {
@@ -1358,7 +1358,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
           FilePos += Rd_WP_DWORD(image,&Rec.RecordLength);
           if((magick_off_t)Rec.RecordLength > filesize)
           {
-            MagickFreeResourceLimitedMemory(pPalette);     
+            MagickFreeResourceLimitedMemory(pPalette);
             ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
           }
           if(EOFBlob(image)) break;
@@ -1409,7 +1409,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
               if (image->logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "Image dimensions %lux%lu, bpp=%u", image->columns, image->rows, bpp);
-				/* Whole palette is useless for bilevel image. */
+                                /* Whole palette is useless for bilevel image. */
               if(bpp==1)
               {
                 image->storage_class = PseudoClass;
@@ -1418,7 +1418,7 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
                 image->colormap[0].red = image->colormap[0].green = image->colormap[0].blue = 0;
                 image->colormap[1].red = image->colormap[1].green = image->colormap[1].blue = MaxRGB;
                 image->colormap[0].opacity = image->colormap[1].opacity = OpaqueOpacity;
-                goto UnpackRaster1bpp;	/* bypass cached palette for 1bpp. */
+                goto UnpackRaster1bpp;  /* bypass cached palette for 1bpp. */
               }
               goto UnpackRaster;
 
@@ -1510,7 +1510,7 @@ UnpackRaster:
               if(pPalette!=NULL && PaletteItems>0)
               {
                 if(bpp>=16 || PaletteItems<(1<<bpp))
-                  image->colors = PaletteItems;	/*WPG_Palette.NumOfEntries;*/
+                  image->colors = PaletteItems; /*WPG_Palette.NumOfEntries;*/
                 else
                   image->colors = 1 << bpp;
                 if (!AllocateImageColormap(image,image->colors))
@@ -1774,7 +1774,7 @@ UnpackRaster1bpp:
               if(pPalette!=NULL && PaletteItems>0)
               {
                 if(bpp>=16 || PaletteItems<(1<<bpp))
-                  image->colors = PaletteItems;	/*WPG_Palette.NumOfEntries;*/
+                  image->colors = PaletteItems; /*WPG_Palette.NumOfEntries;*/
                 else
                   image->colors = 1 << bpp;
                 if (!AllocateImageColormap(image,image->colors))
@@ -1919,7 +1919,7 @@ UnpackRaster1bpp:
     /*
       Rewind list, removing any empty images while rewinding.
     */
-    p=image;	//reverted GetFirstImageInList(image);
+    p=image;    /* reverted GetFirstImageInList(image); */
     image=NULL;
     while (p != (Image *) NULL)
       {
@@ -1950,12 +1950,12 @@ UnpackRaster1bpp:
 /* RLE helper structure. */
 typedef struct
 {
-	unsigned char count;
-	unsigned char pos;
-	unsigned char buf[254];
+        unsigned char count;
+        unsigned char pos;
+        unsigned char buf[254];
 } WPG_RLE_packer;
 
-//FILE *DebugRLE = NULL;
+/* FILE *DebugRLE = NULL; */
 
 static void WPG_RLE_Flush(WPG_RLE_packer *WPG_RLE, Image *image, unsigned char n)
 {
@@ -1963,7 +1963,7 @@ static void WPG_RLE_Flush(WPG_RLE_packer *WPG_RLE, Image *image, unsigned char n
   if(n>0x7F) n=0x7F;
   if(n>0)
   {
-    //if(DebugRLE) fprintf(DebugRLE," size=%X",n);
+    /* if(DebugRLE) fprintf(DebugRLE," size=%X",n); */
     WriteBlobByte(image,n);
     WriteBlob(image, n, WPG_RLE->buf);
     WPG_RLE->pos -= n;
@@ -1983,7 +1983,7 @@ static void WPG_RLE_AddCharacter(WPG_RLE_packer *WPG_RLE, unsigned char b, Image
   {
     fprintf(DebugRLE,"\n%u",b);
     if(WPG_RLE->pos>=0x7E)
-	fprintf(DebugRLE," *%u %X", WPG_RLE->pos, WPG_RLE->pos);
+        fprintf(DebugRLE," *%u %X", WPG_RLE->pos, WPG_RLE->pos);
   } */
 
   if(WPG_RLE->pos>1)
@@ -1992,11 +1992,11 @@ static void WPG_RLE_AddCharacter(WPG_RLE_packer *WPG_RLE, unsigned char b, Image
     {
       if(WPG_RLE->count>=1)
       {
-        WPG_RLE->count++;		// True number of repeated BYTEs.
+        WPG_RLE->count++; /* True number of repeated BYTEs. */
         WPG_RLE_Flush(WPG_RLE, image, WPG_RLE->pos-1-WPG_RLE->count);
         WriteBlobByte(image, WPG_RLE->count|0x80);
         WriteBlobByte(image, WPG_RLE->buf[0]);
-        //if(DebugRLE) fprintf(DebugRLE," count=%X, val=%X",WPG_RLE->count,WPG_RLE->buf[0]);
+        /* if(DebugRLE) fprintf(DebugRLE," count=%X, val=%X",WPG_RLE->count,WPG_RLE->buf[0]); */
         WPG_RLE->pos = 1;
         WPG_RLE->buf[0] = b;
       }
@@ -2006,7 +2006,7 @@ static void WPG_RLE_AddCharacter(WPG_RLE_packer *WPG_RLE, unsigned char b, Image
       WPG_RLE->count++;
   }
 
-  if(WPG_RLE->pos-WPG_RLE->count>0x7E)	// We have uncompressible block with size 0x7F.
+  if(WPG_RLE->pos-WPG_RLE->count>0x7E) /* We have uncompressible block with size 0x7F. */
   {
     WPG_RLE_Flush(WPG_RLE, image, 0x7F);
     return;
@@ -2023,8 +2023,8 @@ static void WPG_RLE_FinalFlush(WPG_RLE_packer *WPG_RLE, Image *image)
 {
   if(WPG_RLE->count>1)
   {
-    WPG_RLE_AddCharacter(WPG_RLE, WPG_RLE->buf[WPG_RLE->pos-1]^0xFF, image); // Add a fake BYTE.
-    WPG_RLE->pos = 0;			// Take a last fake BYTE away.
+    WPG_RLE_AddCharacter(WPG_RLE, WPG_RLE->buf[WPG_RLE->pos-1]^0xFF, image); /* Add a fake BYTE. */
+    WPG_RLE->pos = 0;                   /* Take a last fake BYTE away. */
   }
   else
   {
@@ -2132,25 +2132,25 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
   if(pixels == (unsigned char *) NULL)
     ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
 
-	/* Write WPG hader. */
-  WriteBlobLSBLong(image,0x435057FF);		//DWORD FileId
-  WriteBlobLSBLong(image,16);			//DWORD DataOffset;
-  WriteBlobByte(image,1);			//BYTE Product Type
-  WriteBlobByte(image,0x16);			//BYTE FileType;
-  WriteBlobByte(image,1);			//BYTE MajorVersion;
-  WriteBlobByte(image,0);			//BYTE MinorVersion;
-  WriteBlobLSBShort(image,0);			//WORD EncryptKey;
-  WriteBlobLSBShort(image,0);			//WORD Reserved;
+        /* Write WPG header. */
+  WriteBlobLSBLong(image,0x435057FF);           /* DWORD FileId */
+  WriteBlobLSBLong(image,16);                   /* DWORD DataOffset; */
+  WriteBlobByte(image,1);                       /* BYTE Product Type */
+  WriteBlobByte(image,0x16);                    /* BYTE FileType; */
+  WriteBlobByte(image,1);                       /* BYTE MajorVersion; */
+  WriteBlobByte(image,0);                       /* BYTE MinorVersion; */
+  WriteBlobLSBShort(image,0);                   /* WORD EncryptKey; */
+  WriteBlobLSBShort(image,0);                   /* WORD Reserved; */
 
-	/* Start WPG l1 */
+        /* Start WPG l1 */
   WriteBlobByte(image,0xF);
   WriteBlobByte(image,0x6);
-  WriteBlobByte(image,1);			//BYTE Version number
-  WriteBlobByte(image,0);			//BYTE Flags (bit 0 PostScript, maybe bitmap, bit 1 PostScript, no bitmap
-  WriteBlobLSBShort(image,image->columns);	//WORD Width of image (arbitrary units)
-  WriteBlobLSBShort(image,image->rows);		//WORD Height of image (arbitrary units)
+  WriteBlobByte(image,1);                       /* BYTE Version number */
+  WriteBlobByte(image,0);                       /* BYTE Flags (bit 0 PostScript, maybe bitmap, bit 1 PostScript, no bitmap */
+  WriteBlobLSBShort(image,image->columns);      /* WORD Width of image (arbitrary units) */
+  WriteBlobLSBShort(image,image->rows);         /* WORD Height of image (arbitrary units) */
 
-	/* Palette */
+        /* Palette */
   if(StoredPlanes>1)
   {
     magick_uint16_t i;
@@ -2163,8 +2163,8 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
       WriteBlobByte(image,0xFF);
       WriteBlobLSBShort(image,i);
     }
-    WriteBlobLSBShort(image,0);				// Start index
-    WriteBlobLSBShort(image,1<<StoredPlanes);		// Num entries
+    WriteBlobLSBShort(image,0);                         /* Start index */
+    WriteBlobLSBShort(image,1<<StoredPlanes);           /* Num entries */
 
     for(i=0; i<(1<<StoredPlanes); i++)
     {
@@ -2183,26 +2183,26 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
     }
   }
 
-	/* Bitmap 1 header */
+        /* Bitmap 1 header */
   WriteBlobByte(image,0xB);
   WriteBlobByte(image,0xFF);
   NumericOffs = TellBlob(image);
   WriteBlobLSBShort(image,0x8000);
   WriteBlobLSBShort(image,0);
 
-  WriteBlobLSBShort(image,image->columns);	//WORD Width
-  WriteBlobLSBShort(image,image->rows);		//WORD Height
-  WriteBlobLSBShort(image,StoredPlanes);	//WORD Depth;
-  WriteBlobLSBShort(image,75);			//WORD HorzRes;
-  WriteBlobLSBShort(image,75);			//WORD VertRes;
+  WriteBlobLSBShort(image,image->columns);      /* WORD Width */
+  WriteBlobLSBShort(image,image->rows);         /* WORD Height */
+  WriteBlobLSBShort(image,StoredPlanes);        /* WORD Depth; */
+  WriteBlobLSBShort(image,75);                  /* WORD HorzRes; */
+  WriteBlobLSBShort(image,75);                  /* WORD VertRes; */
 
   /*
     Store image data.
   */
   for(y=0; y<(long)image->rows; y++)
   {
-    //if(y==1310 && DebugRLE==NULL) DebugRLE=fopen("o:\\temp\\14\\debug.txt","wb");
-    //if(y>1310 && DebugRLE) {fclose(DebugRLE);DebugRLE=NULL;}
+    /* if(y==1310 && DebugRLE==NULL) DebugRLE=fopen("o:\\temp\\14\\debug.txt","wb"); */
+    /* if(y>1310 && DebugRLE) {fclose(DebugRLE);DebugRLE=NULL;} */
 
     if(AcquireImagePixels(image,0,y,image->columns,1,&image->exception) == (const PixelPacket *)NULL)
     {
@@ -2225,7 +2225,7 @@ static MagickPassFail WriteWPGImage(const ImageInfo *image_info, Image *image)
   WriteBlobLSBShort(image, NumericOffs&0xFFFF);
   SeekBlob(image,CurrOffs,SEEK_SET);
 
-	/* End of WPG data */
+        /* End of WPG data */
   WriteBlobByte(image,0x10);
   WriteBlobByte(image,0);
 

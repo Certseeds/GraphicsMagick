@@ -53,7 +53,7 @@ typedef struct
                                    4-4 bits+PAL, 5-24 bits, 6-16 bits, 7-32 bits */
   magick_uint32_t Zoom;
   magick_uint16_t Version;
-  magick_uint16_t Komprese;	/* 0 - uncompressed (from release 1) */
+  magick_uint16_t Komprese;     /* 0 - uncompressed (from release 1) */
   magick_uint16_t Stav;
   double xRasMin;
   double yRasMin;
@@ -541,7 +541,7 @@ TOPOL_KO:              ThrowTOPOLReaderException(CorruptImageError,ImproperImage
   image->rows = Header.Rows;
 
   j = GetBlobSize(image);
-  if(j<512)			// Header size=512bytes; negative number means failure.
+  if(j<512) /* Header size=512bytes; negative number means failure. */
   {
     fprintf(stderr,"TopoL: GetBlobSize() returned small or negative value %ld!",j);
     goto TOPOL_KO;
@@ -841,7 +841,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   DataSize = 0;
   memset(&Header,0,sizeof(Header));
   memset(&Header.Name,' ',sizeof(Header.Name));
-  //Header.Version = 0;
+  /* Header.Version = 0; */
   Header.Cols = image->columns;
   Header.Rows = image->rows;
   if(image->colors>=1 && image->colors<=256)
@@ -867,7 +867,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
       bpp = 8;
     }
   }
-  else		// RGB
+  else /* RGB */
   {
     Header.FileType = 5;
     DataSize = (size_t) 3*Header.Cols;
@@ -885,7 +885,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   if(status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
 
-	/* Write TopoL hader. */
+  /* Write TopoL hader. */
   WriteBlob(image, 20, Header.Name);
   WriteBlobLSBShort(image, Header.Rows);
   WriteBlobLSBShort(image, Header.Cols);
@@ -900,7 +900,7 @@ static MagickPassFail WriteTopoLImage(const ImageInfo *image_info, Image *image)
   WriteBlobLSBDouble(image, Header.xRasMax);
   WriteBlobLSBDouble(image, Header.yRasMax);
   WriteBlobLSBDouble(image, Header.Scale);
-	//from release 2
+  /* from release 2 */
   WriteBlobLSBShort(image, Header.TileWidth);
   WriteBlobLSBShort(image, Header.TileHeight);
   WriteBlobLSBLong(image, Header.TileOffsets);
@@ -1027,16 +1027,16 @@ static unsigned int IsTopoL(const unsigned char *magick, const size_t length)
 int i;
 magick_uint16_t FileType;     /* 0-binary, 1-8 bitu, 2-8 bits+PAL, 3-4 bits,
                                    4-4 bits+PAL, 5-24 bits, 6-16 bits, 7-32 bits */
-//magick_uint32_t Zoom;
+/* magick_uint32_t Zoom; */
 magick_uint16_t Version;
 magick_uint16_t Compression;	/* 0 - uncompressed (from release 1) */
-//magick_uint16_t Stav;
+/* magick_uint16_t Stav; */
 
   if (length < 34) return(False);
   for(i=0; i<20; i++)
       if(magick[i] != ' ') return(False);
-  if(magick[20]==0 && magick[21]==0) return(False);	// Zero rows
-  if(magick[22]==0 && magick[23]==0) return(False);	// Zero cols
+  if(magick[20]==0 && magick[21]==0) return(False); /* Zero rows */
+  if(magick[22]==0 && magick[23]==0) return(False); /* Zero cols */
 
   FileType = magick[24] + 256*magick[25];
   if(FileType > 7) return False;
@@ -1055,7 +1055,7 @@ magick_uint16_t Compression;	/* 0 - uncompressed (from release 1) */
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%   R e g i s t e r T O P O L I m a g e                                           %
+%   R e g i s t e r T O P O L I m a g e                                       %
 %                                                                             %
 %                                                                             %
 %                                                                             %
