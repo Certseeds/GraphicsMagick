@@ -4499,7 +4499,8 @@ magick_uint32_t i = StrSize;
 }
 
 
-static int AddIFDExifFields(TIFF *tiff, const unsigned char *profile_data, const unsigned char *IFD_data, size_t profile_length, MagickBool logging, magick_uint16_t Flags)
+static int AddIFDExifFields(TIFF *tiff, const unsigned char * const profile_data, const unsigned char *IFD_data, const size_t profile_length, 
+		MagickBool logging, magick_uint16_t Flags)
 {
 magick_uint32_t(*LD_UINT32)(const unsigned char *Mem);
 magick_uint16_t(*LD_UINT16)(const unsigned char *Mem);
@@ -4525,7 +4526,7 @@ int FieldCount = 0;
   {
     if(profile_length < (size_t)(IFD_data-profile_data)+2) return 0;
     EntryNum = LD_UINT16(IFD_data);
-    profile_length-=2;
+    //profile_length-=2;
     if(profile_length < (size_t)(IFD_data-profile_data)+(EntryNum*12)) return 0;
     IFD_data+=2;
 
@@ -4766,7 +4767,7 @@ Scalar:                  if(FDT==TIFF_SHORT)
 NextItem:
       if(profile_length <= 12)   
           break;
-      profile_length -=12;
+      //profile_length -=12;
       IFD_data += 12;
       EntryNum--;
     }
