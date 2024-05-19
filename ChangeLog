@@ -1,3 +1,9 @@
+2024-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Fix 'undefined' sanitizer linkage
+	error. Disable building libx265 until the problem that its package
+	config file has now gone missing is addressed.
+
 2024-05-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/{bmp.c,jxl.c,mat.c,tga.c,tiff.c,topol.c,wpg.c}: Remove

@@ -3,10 +3,28 @@
 # This is intended to be run from OSS-Fuzz's build environment. We intend to
 # eventually refactor it to be easy to run locally.
 
-# For local testing of fuzzing/oss-fuzz-build.sh do:
-# ~/src/GM% cp fuzzing/oss-fuzz-build.sh ../oss-fuzz-heptapod/projects/graphicsmagick/
+# For local testing of fuzzing/oss-fuzz-build.sh in 'compile' mode do:
+#
+# Check 'compile' prompt for docker container id
+# (e.g. '04a46e46f7af'). Can also check the output of 'docker ps -lq'.
+#
+# Then do:
+# ~/src/GM% docker cp fuzzing/oss-fuzz-build.sh 04a46e46f7af:/src/graphicsmagick/fuzzing/oss-fuzz-build.sh
+#
+#
+# Useful environment variables:
+#
+# SANITIZER={address/memory/undefined}
+# ARCHITECTURE={x86_64/i386}
+# FUZZING_ENGINE
+# LIB_FUZZING_ENGINE
+# FUZZER_LDFLAGS
+# FUZZING_LANGUAGE
+# WORK=/work
 
+enable_aom=true
 enable_bzip2=true
+enable_de265=true
 enable_freetype=true
 enable_heif=true
 enable_jasper=true
@@ -17,6 +35,7 @@ enable_lcms=true
 enable_png=true
 enable_tiff=true
 enable_webp=true
+enable_x265=false
 enable_xml=false
 enable_xz=true
 enable_zstd=true
@@ -318,92 +337,104 @@ then
     # Build libx265 (a C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static x265 --libs
     #    -L/work/lib -lx265 -lc++ -lm -lrt -lm -ldl -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl
-    libx265="$SRC/x265"
-    libx265_build="${libx265}/build/linux"
-    if [ -d "${libx265_build}" ]
-    then
-        pushd "${libx265_build}"
-        printf "=== Building ${SRC}/libx265...\n"
-        cmake -G "Unix Makefiles" \
-              -DCMAKE_C_COMPILER=$CC \
-              -DCMAKE_CXX_COMPILER=$CXX \
-              -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
-              -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-              -DCMAKE_INSTALL_PREFIX="$WORK" \
-              -DENABLE_SHARED:bool=off \
-                 ../../source
-        make clean
-        make -j$(nproc) x265-static
-        make install
-        popd
-    else
-        printf "=== Skipping missing ${libx265_build}! ===\n"
+    # include(Version) # determine X265_VERSION and X265_LATEST_TAG
+    if $enable_x265
+       then
+           libx265="$SRC/x265"
+           libx265_build="${libx265}/build/linux"
+           if [ -d "${libx265_build}" ]
+           then
+               pushd "${libx265_build}"
+               printf "=== Building ${SRC}/libx265...\n"
+               cmake -G "Unix Makefiles" \
+                     -DCMAKE_C_COMPILER=$CC \
+                     -DCMAKE_CXX_COMPILER=$CXX \
+                     -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+                     -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+                     -DCMAKE_INSTALL_PREFIX="$WORK" \
+                     -DENABLE_SHARED:STRING=off \
+                     -DENABLE_ASSEMBLY:BOOL=OFF \
+                     -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+                     ../../source
+               make clean
+               make -j$(nproc) x265-static
+               make install
+               popd
+           else
+               printf "=== Skipping missing ${libx265_build}! ===\n"
+           fi
     fi
 
     # Build libde265 (a C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libde265 --libs
     #     -L/work/lib -lde265 -lc++
     libde265="$SRC/libde265"
-    if [ -d "${libde265}" ]
+    if $enable_de265
     then
-        printf "=== Building ${libde265}...\n"
-        pushd "${libde265}"
-        ./autogen.sh
-        ./configure \
-            CFLAGS="$CFLAGS -fPIC" \
-            --prefix="$WORK" \
-            --disable-shared \
-            --enable-static \
-            --disable-dec265 \
-            --disable-sherlock265 \
-            --disable-hdrcopy \
-            --disable-enc265 \
-            --disable-acceleration_speed
-        make clean
-        make -j$(nproc)
-        # Fix broken libde265.pc
-        sed -i 's/@LIBS_PRIVATE@/-lc++/' libde265.pc
-        make install
-        popd
-    else
-        printf "=== Skipping missing ${libde265}! ===\n"
+       if [ -d "${libde265}" ]
+       then
+           printf "=== Building ${libde265}...\n"
+           pushd "${libde265}"
+           ./autogen.sh
+           ./configure \
+               CFLAGS="$CFLAGS -fPIC" \
+               --prefix="$WORK" \
+               --disable-shared \
+               --enable-static \
+               --disable-dec265 \
+               --disable-sherlock265 \
+               --disable-hdrcopy \
+               --disable-enc265 \
+               --disable-acceleration_speed
+           make clean
+           make -j$(nproc)
+           # Fix broken libde265.pc
+           sed -i 's/@LIBS_PRIVATE@/-lc++/' libde265.pc
+           make install
+           popd
+       else
+           printf "=== Skipping missing ${libde265}! ===\n"
+       fi
     fi
 
     # Build libaom (a mixed C/C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static aom --libs
     #    -L/work/lib -laom -lm -lpthread
-    aom_src="${SRC}/aom"
-    if [ -d "${aom_src}" ]
+    if $enable_aom
     then
-        printf "=== Building ${aom_src}...\n"
-        AOM_BUILD="${SRC}/aom_build"
-        rm -rf "${AOM_BUILD}"
-        mkdir -p "${AOM_BUILD}"
-        pushd "${AOM_BUILD}"
-        cmake -G "Unix Makefiles" \
-              -DCMAKE_C_COMPILER=$CC \
-              -DCMAKE_CXX_COMPILER=$CXX \
-              -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
-              -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-              -DCMAKE_INSTALL_PREFIX="$WORK" \
-              -DENABLE_SHARED:bool=off \
-              -DCONFIG_PIC=1 \
-              -DENABLE_EXAMPLES=0 \
-              -DENABLE_DOCS=0 \
-              -DENABLE_TESTS=0 \
-              -DCONFIG_SIZE_LIMIT=1 \
-              -DDECODE_HEIGHT_LIMIT=12288 \
-              -DDECODE_WIDTH_LIMIT=12288 \
-              -DDO_RANGE_CHECK_CLAMP=1 \
-              -DAOM_MAX_ALLOCABLE_MEMORY=536870912 \
-              -DAOM_TARGET_CPU=generic \
-              ${aom_src}
-        make clean
-        make -j$(nproc)
-        make install
-        popd
-    else
-        printf "=== Skipping missing ${aom_src}! ===\n"
+        aom_src="${SRC}/aom"
+        if [ -d "${aom_src}" ]
+        then
+            printf "=== Building ${aom_src}...\n"
+            AOM_BUILD="${SRC}/aom_build"
+            rm -rf "${AOM_BUILD}"
+            mkdir -p "${AOM_BUILD}"
+            pushd "${AOM_BUILD}"
+            cmake -G "Unix Makefiles" \
+                  -DCMAKE_C_COMPILER=$CC \
+                  -DCMAKE_CXX_COMPILER=$CXX \
+                  -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+                  -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+                  -DCMAKE_INSTALL_PREFIX="$WORK" \
+                  -DENABLE_SHARED:bool=off \
+                  -DCONFIG_PIC=1 \
+                  -DENABLE_EXAMPLES=0 \
+                  -DENABLE_DOCS=0 \
+                  -DENABLE_TESTS=0 \
+                  -DCONFIG_SIZE_LIMIT=1 \
+                  -DDECODE_HEIGHT_LIMIT=12288 \
+                  -DDECODE_WIDTH_LIMIT=12288 \
+                  -DDO_RANGE_CHECK_CLAMP=1 \
+                  -DAOM_MAX_ALLOCABLE_MEMORY=536870912 \
+                  -DAOM_TARGET_CPU=generic \
+                  ${aom_src}
+            make clean
+            make -j$(nproc)
+            make install
+            popd
+        else
+            printf "=== Skipping missing ${aom_src}! ===\n"
+        fi
     fi
 
     # Build libheif (a C++ library)
@@ -534,12 +565,23 @@ ls -l ${WORK}/lib
 # pkg-config names GraphicsMagick, GraphicsMagickWand, GraphicsMagick++
 # -stdlib=libc++'
 printf "=== Building GraphicsMagick...\n"
+case "$SANITIZER" in
+    address)
+        EXTRA_LIBS=-lc++
+    ;;
+    memory)
+        EXTRA_LIBS=-lc++
+    ;;
+    undefined)
+        EXTRA_LIBS='-lubsan -lc++'
+    ;;
+esac
 ./bootstrap
 PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
     CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include/libxml2 -I$WORK/include" \
     CFLAGS="$CFLAGS" \
     LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-    LIBS=-lc++ \
+    LIBS="$EXTRA_LIBS" \
     --prefix="$WORK" \
     --disable-compressed-files \
     --without-perl \
