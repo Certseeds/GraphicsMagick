@@ -4526,7 +4526,6 @@ int FieldCount = 0;
   {
     if(profile_length < (size_t)(IFD_data-profile_data)+2) return 0;
     EntryNum = LD_UINT16(IFD_data);
-    /* profile_length-=2; */
     if(profile_length < (size_t)(IFD_data-profile_data)+(EntryNum*12)) return 0;
     IFD_data+=2;
 
@@ -4767,7 +4766,6 @@ Scalar:                  if(FDT==TIFF_SHORT)
 NextItem:
       if(profile_length <= 12)
           break;
-      /* profile_length -=12; */
       IFD_data += 12;
       EntryNum--;
     }
