@@ -21,6 +21,8 @@
 # FUZZER_LDFLAGS
 # FUZZING_LANGUAGE
 # WORK=/work
+# OUT=/out
+# SRC=/src
 
 enable_aom=true
 enable_bzip2=true
@@ -35,7 +37,7 @@ enable_lcms=true
 enable_png=true
 enable_tiff=true
 enable_webp=true
-enable_x265=false
+enable_x265=true
 enable_xml=false
 enable_xz=true
 enable_zstd=true
@@ -564,13 +566,14 @@ ls -l ${WORK}/lib
 # freetype-config is in $WORK/bin so we temporarily add $WORK/bin to the path
 # pkg-config names GraphicsMagick, GraphicsMagickWand, GraphicsMagick++
 # -stdlib=libc++'
-printf "=== Building GraphicsMagick...\n"
-case "$SANITIZER" in
+printf "=== Building GraphicsMagick (SANITIZER=${SANITIZER})...\n"
+EXTRA_LIBS=''
+case "${SANITIZER}" in
     address)
-        EXTRA_LIBS=-lc++
+        EXTRA_LIBS='-lc++'
     ;;
     memory)
-        EXTRA_LIBS=-lc++
+        EXTRA_LIBS='-lc++'
     ;;
     undefined)
         EXTRA_LIBS='-lubsan -lc++'
@@ -579,10 +582,10 @@ esac
 ./bootstrap
 PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
     CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include/libxml2 -I$WORK/include" \
-    CFLAGS="$CFLAGS" \
+    CFLAGS="${CFLAGS}" \
     LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-    LIBS="$EXTRA_LIBS" \
-    --prefix="$WORK" \
+    LIBS="${EXTRA_LIBS}" \
+    --prefix="${WORK}" \
     --disable-compressed-files \
     --without-perl \
     --with-quantum-depth=16

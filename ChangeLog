@@ -1,3 +1,8 @@
+2024-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh (EXTRA_LIBS): Assure that the
+	EXTRA_LIBS shell variable is initialized.
+
 2024-05-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Fix 'undefined' sanitizer linkage
