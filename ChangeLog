@@ -1,3 +1,11 @@
+2024-05-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* PerlMagick/Magick.xs, PerlMagick/t/subroutines.pl, www/perl.rst:
+	Add AccessDefinition(), AddDefinition(), AddDefinitions(), and
+	RemoveDefinitions() methods to supporting adding, updating,
+	removing definitions.  SourceForge patch #81 "Adds PerlMagick
+	support for AddDefinition(), et al." authored by Alex Kent Hajnal.
+
 2024-05-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh (EXTRA_LIBS): Assure that the

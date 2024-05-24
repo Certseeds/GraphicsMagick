@@ -2150,7 +2150,7 @@ MagickExport Image *ReferenceImage(Image *image)
 %
 %  The format of the RemoveDefinitions method is:
 %
-%      void RemoveDefinitions(ImageInfo *image_info,const char *options)
+%      MagickPassFail RemoveDefinitions(ImageInfo *image_info,const char *options)
 %
 %  A description of each parameter follows:
 %
