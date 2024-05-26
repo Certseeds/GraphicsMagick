@@ -1198,9 +1198,9 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
 
       switch(image->orientation)
       {
-        case UndefinedOrientation:
         case BottomLeftOrientation:  break;                             /* 01 Bottom left */
         case BottomRightOrientation: tga_info.attributes|=0x10; break;  /* 01 Bottom right */
+        case UndefinedOrientation:
         case TopLeftOrientation:     tga_info.attributes|=0x20; break;  /* 10 Top left */
         case TopRightOrientation:    tga_info.attributes|=0x30; break;  /* 11 TopRight */
         default: if(image->logging)

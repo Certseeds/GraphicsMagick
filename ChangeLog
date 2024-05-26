@@ -1,3 +1,8 @@
+2024-05-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tga.c: Set affinity of UndefinedOrientation to
+	TopLeftOrientation as recommended from Alex Kent Hajnal.
+
 2024-05-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* PerlMagick/Magick.xs, PerlMagick/t/subroutines.pl, www/perl.rst:
