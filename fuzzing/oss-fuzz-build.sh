@@ -11,6 +11,10 @@
 # Then do:
 # ~/src/GM% docker cp fuzzing/oss-fuzz-build.sh 04a46e46f7af:/src/graphicsmagick/fuzzing/oss-fuzz-build.sh
 #
+# or maybe"
+#
+# ~/src/GM% docker cp fuzzing/oss-fuzz-build.sh $(docker ps -lq):/src/graphicsmagick/fuzzing/oss-fuzz-build.sh
+#
 #
 # Useful environment variables:
 #
@@ -73,7 +77,9 @@ set -x
 #    -L/work/lib -lz
 printf "=== Building zlib...\n"
 pushd "$SRC/zlib"
-./configure --static --prefix="$WORK"
+./configure \
+    --static \
+    --prefix="$WORK"
 make -j$(nproc) CFLAGS="$CFLAGS -fPIC"
 make install
 popd
@@ -118,14 +124,17 @@ then
     rm -rf "${ZSTD_BUILD}"
     mkdir -p "${ZSTD_BUILD}"
     pushd "${ZSTD_BUILD}"
-    cmake -DCMAKE_C_COMPILER=$CC \
-          -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_C_FLAGS="${CFLAGS} -fPIC" \
-          -DCMAKE_CXX_FLAGS="${CXXFLAGS} -fPIC" \
-          -DCMAKE_INSTALL_PREFIX=$WORK \
-          -DZSTD_BUILD_STATIC=ON \
-          -DZSTD_BUILD_SHARED=OFF \
-          "${SRC}/zstd/build/cmake"
+    cmake \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_CXX_COMPILER=$CXX \
+        -DCMAKE_CXX_FLAGS="${CXXFLAGS} -fPIC" \
+        -DCMAKE_C_COMPILER=$CC \
+        -DCMAKE_C_FLAGS="${CFLAGS} -fPIC" \
+        -DCMAKE_INSTALL_PREFIX=$WORK \
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+        -DZSTD_BUILD_SHARED=OFF \
+        -DZSTD_BUILD_STATIC=ON \
+        "${SRC}/zstd/build/cmake"
     make -j$(nproc)
     make install
     popd
@@ -155,13 +164,14 @@ if $enable_xml
 then
     printf "=== Building ${SRC}/libxml2...\n"
     pushd "$SRC/libxml2"
-    ./autogen.sh --disable-shared \
-                 --without-debug \
-                 --without-legacy \
-                 --without-python \
-                 --without-schematron \
-                 --without-schemas \
-                 --prefix="${WORK}"
+    ./autogen.sh \
+        --disable-shared \
+        --without-debug \
+        --without-legacy \
+        --without-python \
+        --without-schemas \
+        --without-schematron \
+        --prefix="${WORK}"
     make -j$(nproc)
     make install
     popd
@@ -175,9 +185,13 @@ then
     printf "=== Building ${SRC}/libjpeg-turbo...\n"
     pushd "$SRC/libjpeg-turbo"
     CFLAGS="$CFLAGS -fPIC" cmake . \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
           -DCMAKE_INSTALL_PREFIX="$WORK" \
-          -DENABLE_STATIC=on \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
           -DENABLE_SHARED=off \
+          -DENABLE_STATIC=on \
           -DWITH_JPEG8=1 \
           -DWITH_SIMD=0
     make -j$(nproc)
@@ -198,16 +212,16 @@ if $enable_webp
            CPPFLAGS="-I$WORK/include" \
            CFLAGS="$CFLAGS -fPIC" \
            LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-           --enable-libwebpmux \
-           --disable-shared \
-           --enable-static \
-           --disable-gl \
-           --disable-sdl \
-           --disable-png \
-           --disable-jpeg \
-           --disable-tiff \
            --disable-gif \
+           --disable-gl \
+           --disable-jpeg \
+           --disable-png \
+           --disable-sdl \
+           --disable-shared \
+           --disable-tiff \
            --disable-wic \
+           --enable-libwebpmux \
+           --enable-static \
            --prefix="$WORK"
        make -j$(nproc)
        make install
@@ -222,12 +236,13 @@ then
     mkdir -p "${BZIP2_BUILD}"
     pushd "${BZIP2_BUILD}"
     cmake -G "Unix Makefiles" \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_C_COMPILER=$CC \
+          -DCMAKE_BUILD_TYPE=Debug \
           -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
           -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+          -DCMAKE_C_COMPILER=$CC \
+          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
           -DCMAKE_INSTALL_PREFIX="$WORK" \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
           -DENABLE_LIB_ONLY=ON \
           -DENABLE_SHARED_LIB=OFF \
           -DENABLE_STATIC_LIB=ON \
@@ -245,14 +260,9 @@ if $enable_jbig
 then
     printf "=== Building ${SRC}/jbigkit...\n"
     pushd "$SRC/jbigkit"
-    if [ "$ARCHITECTURE" = "i386" ]; then
-        echo "#!/bin/bash" > gcc
-        echo "clang -m32 \$*" >> gcc
-        chmod +x gcc
-        PATH=$PWD:$PATH make lib
-    else
-        make lib
-    fi
+    sed -i 's/^CC =/# CC =/g' Makefile
+    sed -i 's/^CFLAGS =/# CFLAGS =/g' Makefile
+    make lib
 
     mv "$SRC"/jbigkit/libjbig/*.a "$WORK/lib/"
     cp -p "$SRC"/jbigkit/libjbig/*.h "$WORK/include/"
@@ -273,15 +283,15 @@ if $enable_tiff
            CPPFLAGS="-I$WORK/include" \
            CFLAGS="$CFLAGS -fPIC" \
            LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-           --prefix="$WORK" \
+           --disable-contrib \
+           --disable-ld-version-script \
            --disable-old-jpeg \
            --disable-shared \
+           --disable-silent-rules \
+           --disable-tests \
            --enable-static \
            --enable-tools \
-           --disable-tests \
-           --disable-contrib \
-           --disable-silent-rules \
-           --disable-ld-version-script
+           --prefix="$WORK"
        make -j$(nproc)
        make install
        popd
@@ -301,9 +311,9 @@ then
         CPPFLAGS="-I$WORK/include" \
         CFLAGS="$CFLAGS -fPIC" \
         LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-        --prefix="$WORK" \
         --disable-shared \
         --enable-static \
+        --prefix="$WORK" \
         --without-jpeg \
         --without-tiff \
         --without-zlib
@@ -324,10 +334,10 @@ then
         CPPFLAGS="-I$WORK/include" \
         CFLAGS="$CFLAGS -fPIC" \
         LDFLAGS="${LDFLAGS:-} -L$WORK/lib" \
-        --prefix="$WORK" \
-        --enable-freetype-config \
         --disable-shared \
-        --enable-static
+        --enable-freetype-config \
+        --enable-static \
+        --prefix="$WORK"
     make -j$(nproc)
     make install
     popd
@@ -349,14 +359,16 @@ then
                pushd "${libx265_build}"
                printf "=== Building ${SRC}/libx265...\n"
                cmake -G "Unix Makefiles" \
-                     -DCMAKE_C_COMPILER=$CC \
+                     -DCMAKE_BUILD_TYPE=Debug \
                      -DCMAKE_CXX_COMPILER=$CXX \
-                     -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
                      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+                     -DCMAKE_C_COMPILER=$CC \
+                     -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
                      -DCMAKE_INSTALL_PREFIX="$WORK" \
-                     -DENABLE_SHARED:STRING=off \
-                     -DENABLE_ASSEMBLY:BOOL=OFF \
                      -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+                     -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+                     -DENABLE_ASSEMBLY:BOOL=OFF \
+                     -DENABLE_SHARED:STRING=off \
                      ../../source
                make clean
                make -j$(nproc) x265-static
@@ -380,14 +392,14 @@ then
            ./autogen.sh
            ./configure \
                CFLAGS="$CFLAGS -fPIC" \
-               --prefix="$WORK" \
-               --disable-shared \
-               --enable-static \
+               --disable-acceleration_speed \
                --disable-dec265 \
-               --disable-sherlock265 \
-               --disable-hdrcopy \
                --disable-enc265 \
-               --disable-acceleration_speed
+               --disable-hdrcopy \
+               --disable-shared \
+               --disable-sherlock265 \
+               --enable-static \
+               --prefix="$WORK"
            make clean
            make -j$(nproc)
            # Fix broken libde265.pc
@@ -413,22 +425,24 @@ then
             mkdir -p "${AOM_BUILD}"
             pushd "${AOM_BUILD}"
             cmake -G "Unix Makefiles" \
-                  -DCMAKE_C_COMPILER=$CC \
+                  -DAOM_MAX_ALLOCABLE_MEMORY=536870912 \
+                  -DAOM_TARGET_CPU=generic \
+                  -DCMAKE_BUILD_TYPE=Debug \
                   -DCMAKE_CXX_COMPILER=$CXX \
-                  -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
                   -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+                  -DCMAKE_C_COMPILER=$CC \
+                  -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
                   -DCMAKE_INSTALL_PREFIX="$WORK" \
-                  -DENABLE_SHARED:bool=off \
+                  -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
                   -DCONFIG_PIC=1 \
-                  -DENABLE_EXAMPLES=0 \
-                  -DENABLE_DOCS=0 \
-                  -DENABLE_TESTS=0 \
                   -DCONFIG_SIZE_LIMIT=1 \
                   -DDECODE_HEIGHT_LIMIT=12288 \
                   -DDECODE_WIDTH_LIMIT=12288 \
                   -DDO_RANGE_CHECK_CLAMP=1 \
-                  -DAOM_MAX_ALLOCABLE_MEMORY=536870912 \
-                  -DAOM_TARGET_CPU=generic \
+                  -DENABLE_DOCS=0 \
+                  -DENABLE_EXAMPLES=0 \
+                  -DENABLE_SHARED:bool=off \
+                  -DENABLE_TESTS=0 \
                   ${aom_src}
             make clean
             make -j$(nproc)
@@ -461,18 +475,19 @@ then
     #      -DCONFIG_PIC=1 \
     #      "${SRC}/libheif"
     cmake \
-        -DCMAKE_C_COMPILER=$CC \
-        -DCMAKE_CXX_COMPILER=$CXX \
-        -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
-        -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-        -DCMAKE_INSTALL_PREFIX=$WORK \
         -DBUILD_SHARED_LIBS=off \
         -DBUILD_TESTING=off \
-        -DWITH_EXAMPLES=off \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_CXX_COMPILER=$CXX \
+        -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+        -DCMAKE_C_COMPILER=$CC \
+        -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+        -DCMAKE_INSTALL_PREFIX=$WORK \
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
         -DENABLE_PLUGIN_LOADING=off \
+        -DWITH_EXAMPLES=off \
         -DWITH_JPEG_DECODER=off \
         -DWITH_JPEG_ENCODER=off \
-        -DCMAKE_BUILD_TYPE=Release \
         "${SRC}/libheif"
     make -j$(nproc)
     make install
@@ -495,24 +510,25 @@ then
     mkdir -p "${LIBJXL_BUILD}"
     pushd "${LIBJXL_BUILD}"
     cmake \
-        -DCMAKE_INSTALL_PREFIX=$WORK \
-        -DBUILD_TESTING=off \
         -DBUILD_SHARED_LIBS=false \
-        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_TESTING=off \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_CXX_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CXXFLAGS} -fPIC" \
+        -DCMAKE_C_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CFLAGS} -fPIC" \
+        -DCMAKE_INSTALL_PREFIX=$WORK \
+        -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+        -DJPEGXL_BUNDLE_SKCMS=false \
         -DJPEGXL_ENABLE_BENCHMARK=false \
         -DJPEGXL_ENABLE_EXAMPLES=false \
         -DJPEGXL_ENABLE_FUZZERS=false \
         -DJPEGXL_ENABLE_JPEGLI=false \
+        -DJPEGXL_ENABLE_JPEGLI=false \
         -DJPEGXL_ENABLE_MANPAGES=OFF \
         -DJPEGXL_ENABLE_SJPEG=false \
+        -DJPEGXL_ENABLE_SKCMS=false \
         -DJPEGXL_ENABLE_TOOLS=true \
         -DJPEGXL_ENABLE_VIEWERS=false \
-        -DJPEGXL_ENABLE_JPEGLI=false \
-        -DJPEGXL_ENABLE_SKCMS=false \
-        -DJPEGXL_BUNDLE_SKCMS=false \
         -DJPEGXL_FORCE_SYSTEM_LCMS2=false \
-        -DCMAKE_C_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CFLAGS} -fPIC" \
-        -DCMAKE_CXX_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CXXFLAGS} -fPIC" \
         "${SRC}/libjxl"
     make -j$(nproc)
     # libjxl claims to require libjxl_cms, but does not build/install one!
@@ -539,21 +555,23 @@ then
     mkdir -p "${JASPER_BUILD}"
     pushd "${JASPER_BUILD}"
     cmake -G "Unix Makefiles" -H"$SRC/jasper" \
-      -DJAS_ENABLE_SHARED=false \
-      -DCMAKE_C_COMPILER=$CC \
+      -DCMAKE_BUILD_TYPE=Debug \
       -DCMAKE_CXX_COMPILER=$CXX \
-      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
       -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+      -DCMAKE_C_COMPILER=$CC \
+      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
       -DCMAKE_INSTALL_PREFIX=$WORK \
+      -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+      -DJAS_ENABLE_LIBHEIF=false \
+      -DJAS_ENABLE_LIBJPEG=false \
+      -DJAS_ENABLE_OPENGL=false \
+      -DJAS_ENABLE_OPENGL=false \
+      -DJAS_ENABLE_SHARED=false \
       -DJAS_INCLUDE_BMP_CODEC=false \
       -DJAS_INCLUDE_JPG_CODEC=false \
       -DJAS_INCLUDE_MIF_CODEC=false \
       -DJAS_INCLUDE_PNM_CODEC=false \
       -DJAS_INCLUDE_RAS_CODEC=false \
-      -DJAS_ENABLE_OPENGL=false \
-      -DJAS_ENABLE_LIBJPEG=false \
-      -DJAS_ENABLE_OPENGL=false \
-      -DJAS_ENABLE_LIBHEIF=false \
       "$SRC/jasper"
     make -j$(nproc)
     make install
