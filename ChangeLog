@@ -1,3 +1,10 @@
+2024-06-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jpeg.c (FormatJPEGSamplingFactors): Properly handle the
+	number of samples for each colorspace. Addresses oss-fuzz 68737:
+	"graphicsmagick:coder_DCM_fuzzer: Use-of-uninitialized-value in
+	ReadJPEGImage".
+
 2024-05-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tga.c: Set affinity of UndefinedOrientation to
