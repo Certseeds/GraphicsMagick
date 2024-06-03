@@ -14,6 +14,7 @@
 # or maybe"
 #
 # ~/src/GM% docker cp fuzzing/oss-fuzz-build.sh $(docker ps -lq):/src/graphicsmagick/fuzzing/oss-fuzz-build.sh
+# ~/src/GM% docker cp fuzzing/coder_fuzzer.cc $(docker ps -lq):/src/graphicsmagick/fuzzing/
 #
 #
 # Useful environment variables:
@@ -620,6 +621,8 @@ set +x
 MAGICK_LIBS="$(pkg-config --static --libs-only-L GraphicsMagick++) $(pkg-config --static --libs-only-other GraphicsMagick++) $(pkg-config pkg-config --static --libs-only-l GraphicsMagick++)"
 printf "MAGICK_LIBS=${MAGICK_LIBS}\n"
 
+# FUZZ_GRAPHICSMAGICK_CODER_READANY
+
 printf "=== Building fuzzers...\n"
 for f in fuzzing/*_fuzzer.cc; do
     fuzzer=$(basename "$f" _fuzzer.cc)
@@ -651,6 +654,7 @@ for item in $("$WORK/coder_list"); do
         coder_flags="$coder_flags -DFUZZ_GRAPHICSMAGICK_CODER_WRITE=1"
     fi
 
+    # Build fuzzers which force the input format
     target="${OUT}/coder_${coder}_fuzzer"
     printf "=== Building ${target}...\n"
     set -x
@@ -658,6 +662,19 @@ for item in $("$WORK/coder_list"); do
         fuzzing/coder_fuzzer.cc -o "${target}" \
         $coder_flags $LIB_FUZZING_ENGINE $MAGICK_LIBS
     set +x
+
+    # Additionally build fuzzers which auto-detect input for coders which write output
+    if [ "${coder}" == 'TIFF' ]; then
+        coder_flags="$coder_flags -DFUZZ_GRAPHICSMAGICK_CODER_WRITE=1 -DFUZZ_GRAPHICSMAGICK_CODER_READANY=1"
+        target="${OUT}/coder_${coder}_any_fuzzer"
+
+        printf "=== Building ${target}...\n"
+        set -x
+        $CXX $CXXFLAGS -std=c++11 -I"$WORK/include/GraphicsMagick" \
+             fuzzing/coder_fuzzer.cc -o "${target}" \
+             $coder_flags $LIB_FUZZING_ENGINE $MAGICK_LIBS
+        set +x
+    fi
 
     if [ -f "fuzzing/dictionaries/${coder}.dict" ]; then
         cp "fuzzing/dictionaries/${coder}.dict" "${OUT}/coder_${coder}_fuzzer.dict"

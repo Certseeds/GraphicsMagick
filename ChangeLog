@@ -1,3 +1,11 @@
+2024-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Add a coder_TIFF_any_fuzzer which
+	auto-detects the input format but writes to TIFF.
+
+	* fuzzing/coder_fuzzer.cc (LLVMFuzzerTestOneInput): Update to be
+	able to disable forced read format.
+
 2024-06-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Assure that oss-fuzz provided CFLAGS
