@@ -665,7 +665,7 @@ for item in $("$WORK/coder_list"); do
 
     # Additionally build fuzzers which auto-detect input for coders which write output
     if [ "${coder}" == 'TIFF' ]; then
-        coder_flags="$coder_flags -DFUZZ_GRAPHICSMAGICK_CODER_WRITE=1 -DFUZZ_GRAPHICSMAGICK_CODER_READANY=1"
+        coder_flags="$coder_flags -DFUZZ_GRAPHICSMAGICK_CODER_READANY=1"
         target="${OUT}/coder_${coder}_any_fuzzer"
 
         printf "=== Building ${target}...\n"
