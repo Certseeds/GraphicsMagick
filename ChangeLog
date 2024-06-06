@@ -1,3 +1,11 @@
+2024-06-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jxl.c (ReadJXLImage): Require that color channel depth
+	and alpha channel depth be the same since we don't support the
+	case where they are different.  Should address oss-fuzz issue
+	69469: "graphicsmagick:coder_JXL_fuzzer: Heap-buffer-overflow in
+	ImportViewPixelArea".
+
 2024-06-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Add a coder_TIFF_any_fuzzer which

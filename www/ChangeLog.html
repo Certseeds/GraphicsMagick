@@ -38,6 +38,16 @@
 
 <div class="document" id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-06-06  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/jxl.c (ReadJXLImage): Require that color channel depth
+and alpha channel depth be the same since we don't support the
+case where they are different.  Should address oss-fuzz issue
+69469: &quot;graphicsmagick:coder_JXL_fuzzer: Heap-buffer-overflow in
+ImportViewPixelArea&quot;.</p></li>
+</ul>
+</blockquote>
 <p>2024-06-02  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

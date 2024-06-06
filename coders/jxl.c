@@ -613,7 +613,21 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               }
 
             if (basic_info.have_animation == 1)
-              ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+              {
+                if (image->logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "JXL animations are not yet supported!");
+                ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+              }
+
+            if ((basic_info.alpha_bits != 0) &&
+                (basic_info.alpha_bits != basic_info.bits_per_sample))
+              {
+                if (image->logging)
+                  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                        "Color and alpha sample depths must be the same!");
+                ThrowJXLReaderException(CoderError, ImageTypeNotSupported, image);
+              }
 
             image->columns=basic_info.xsize;
             image->rows=basic_info.ysize;
