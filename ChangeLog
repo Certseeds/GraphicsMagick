@@ -1,3 +1,7 @@
+2024-06-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* PerlMagick/t/input.aai: Added a new image sample.
+	Verified with https://www.vertopal.com/
+
 2024-06-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jxl.c (ReadJXLImage): Require that color channel depth
