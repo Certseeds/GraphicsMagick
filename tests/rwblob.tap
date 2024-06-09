@@ -10,7 +10,13 @@ rwblob=./rwblob
 check_types='bilevel gray palette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 217
+test_plan_fn 221
+
+# AAI format
+for type in ${check_types}
+do
+  test_command_fn "AAI ${type}" ${MEMCHECK} ${rwblob} "${SRCDIR}/input_${type}.miff" AAI
+done
 
 # ART format
 for type in ${check_types}

@@ -81,6 +81,7 @@ MAGICK_CODER_CPPFLAGS = \
 	$(MODULE_EXTRA_CPPFLAGS)
 
 MAGICK_CODER_SRCS = \
+	coders/aai.c \
 	coders/art.c \
 	coders/avs.c \
 	coders/bmp.c \

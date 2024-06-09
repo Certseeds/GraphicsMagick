@@ -17,6 +17,7 @@ GraphicsMagick Supported Formats
 .. _mogrify : mogrify.html
 .. _montage : montage.html
 
+.. _AAI : https://fileinfo.com/extension/aai
 .. _AVI : http://www.jmcgowan.com/avi.html
 .. _AVIF : https://aomediacodec.github.io/av1-avif/
 .. _BMP : http://www.fileformat.info/format/bmp/egff.htm
@@ -89,6 +90,10 @@ image formats.
 
    +--------------+------+---------------------------+--------------------------------------------------+
    | Format       | Mode |        Description        |                      Notes                       |
+   +--------------+------+---------------------------+--------------------------------------------------+
+   | AAI_         | RW   | Dune HD AAI Image (aka    | Format used by Dune HD media players to display  |
+   |              |      | Auburn Animation Image)   | images with transparency, such as icons for      |
+   |              |      |                           | Internet radio stations or channels.             |
    +--------------+------+---------------------------+--------------------------------------------------+
    |              |      |                           | Format originally used on the Macintosh          |
    | ART          | RW   | PFS: 1st Publisher        | (MacPaint?) and later used for PFS: 1st          |

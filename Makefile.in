@@ -1213,32 +1213,32 @@ am__magick_libGraphicsMagick_la_SOURCES_DIST =  \
 	magick/PreRvIcccm.h magick/widget.c magick/widget.h \
 	magick/xwindow.c magick/xwindow.h magick/nt_feature.c \
 	magick/nt_feature.h magick/nt_base.c magick/nt_base.h \
-	coders/art.c coders/avs.c coders/bmp.c coders/braille.c \
-	coders/psd.c coders/cals.c coders/caption.c coders/cineon.c \
-	coders/cmyk.c coders/cut.c coders/dcm.c coders/dcraw.c \
-	coders/dib.c coders/dps.c coders/dpx.c coders/fax.c \
-	coders/fits.c coders/fpx.c coders/clipboard.c coders/emf.c \
-	coders/gif.c coders/gradient.c coders/gray.c coders/heif.c \
-	coders/histogram.c coders/hrz.c coders/html.c coders/icon.c \
-	coders/identity.c coders/info.c coders/jbig.c coders/jp2.c \
-	coders/jnx.c coders/jpeg.c coders/jxl.c coders/label.c \
-	coders/locale.c coders/logo.c coders/mac.c coders/map.c \
-	coders/mat.c coders/matte.c coders/meta.c coders/miff.c \
-	coders/mono.c coders/mpc.c coders/mpeg.c coders/mpr.c \
-	coders/msl.c coders/mtv.c coders/mvg.c coders/null.c \
-	coders/otb.c coders/palm.c coders/pcd.c coders/pcl.c \
-	coders/pcx.c coders/pdb.c coders/pdf.c coders/pict.c \
-	coders/pix.c coders/plasma.c coders/png.c coders/pnm.c \
-	coders/preview.c coders/ps.c coders/ps2.c coders/ps3.c \
-	coders/pwp.c coders/rgb.c coders/rla.c coders/rle.c \
-	coders/sct.c coders/sfw.c coders/sgi.c coders/stegano.c \
-	coders/sun.c coders/svg.c coders/tga.c coders/ept.c \
-	coders/tiff.c coders/tile.c coders/tim.c coders/topol.c \
-	coders/ttf.c coders/txt.c coders/uil.c coders/url.c \
-	coders/uyvy.c coders/vicar.c coders/vid.c coders/viff.c \
-	coders/wbmp.c coders/webp.c coders/wmf.c coders/wpg.c \
-	coders/x.c coders/xwd.c coders/xbm.c coders/xc.c coders/xcf.c \
-	coders/xpm.c coders/yuv.c filters/analyze.c
+	coders/aai.c coders/art.c coders/avs.c coders/bmp.c \
+	coders/braille.c coders/psd.c coders/cals.c coders/caption.c \
+	coders/cineon.c coders/cmyk.c coders/cut.c coders/dcm.c \
+	coders/dcraw.c coders/dib.c coders/dps.c coders/dpx.c \
+	coders/fax.c coders/fits.c coders/fpx.c coders/clipboard.c \
+	coders/emf.c coders/gif.c coders/gradient.c coders/gray.c \
+	coders/heif.c coders/histogram.c coders/hrz.c coders/html.c \
+	coders/icon.c coders/identity.c coders/info.c coders/jbig.c \
+	coders/jp2.c coders/jnx.c coders/jpeg.c coders/jxl.c \
+	coders/label.c coders/locale.c coders/logo.c coders/mac.c \
+	coders/map.c coders/mat.c coders/matte.c coders/meta.c \
+	coders/miff.c coders/mono.c coders/mpc.c coders/mpeg.c \
+	coders/mpr.c coders/msl.c coders/mtv.c coders/mvg.c \
+	coders/null.c coders/otb.c coders/palm.c coders/pcd.c \
+	coders/pcl.c coders/pcx.c coders/pdb.c coders/pdf.c \
+	coders/pict.c coders/pix.c coders/plasma.c coders/png.c \
+	coders/pnm.c coders/preview.c coders/ps.c coders/ps2.c \
+	coders/ps3.c coders/pwp.c coders/rgb.c coders/rla.c \
+	coders/rle.c coders/sct.c coders/sfw.c coders/sgi.c \
+	coders/stegano.c coders/sun.c coders/svg.c coders/tga.c \
+	coders/ept.c coders/tiff.c coders/tile.c coders/tim.c \
+	coders/topol.c coders/ttf.c coders/txt.c coders/uil.c \
+	coders/url.c coders/uyvy.c coders/vicar.c coders/vid.c \
+	coders/viff.c coders/wbmp.c coders/webp.c coders/wmf.c \
+	coders/wpg.c coders/x.c coders/xwd.c coders/xbm.c coders/xc.c \
+	coders/xcf.c coders/xpm.c coders/yuv.c filters/analyze.c
 @HasX11_TRUE@am__objects_1 = magick/libGraphicsMagick_la-animate.lo \
 @HasX11_TRUE@	magick/libGraphicsMagick_la-display.lo \
 @HasX11_TRUE@	magick/libGraphicsMagick_la-PreRvIcccm.lo \
@@ -1348,7 +1348,8 @@ am__objects_2 = magick/libGraphicsMagick_la-analyze.lo \
 @HasWEBP_TRUE@	coders/magick_libGraphicsMagick_la-webp.lo
 @HasX11_TRUE@am__objects_16 = coders/magick_libGraphicsMagick_la-x.lo \
 @HasX11_TRUE@	coders/magick_libGraphicsMagick_la-xwd.lo
-am__objects_17 = coders/magick_libGraphicsMagick_la-art.lo \
+am__objects_17 = coders/magick_libGraphicsMagick_la-aai.lo \
+	coders/magick_libGraphicsMagick_la-art.lo \
 	coders/magick_libGraphicsMagick_la-avs.lo \
 	coders/magick_libGraphicsMagick_la-bmp.lo \
 	coders/magick_libGraphicsMagick_la-braille.lo $(am__objects_4) \
@@ -1680,6 +1681,7 @@ am__depfiles_remade = Magick++/demo/$(DEPDIR)/analyze-analyze.Po \
 	coders/$(DEPDIR)/locale_la-locale.Plo \
 	coders/$(DEPDIR)/logo_la-logo.Plo \
 	coders/$(DEPDIR)/mac_la-mac.Plo \
+	coders/$(DEPDIR)/magick_libGraphicsMagick_la-aai.Plo \
 	coders/$(DEPDIR)/magick_libGraphicsMagick_la-art.Plo \
 	coders/$(DEPDIR)/magick_libGraphicsMagick_la-avs.Plo \
 	coders/$(DEPDIR)/magick_libGraphicsMagick_la-bmp.Plo \
@@ -2955,6 +2957,7 @@ MAGICK_CODER_CPPFLAGS = \
 	$(MODULE_EXTRA_CPPFLAGS)
 
 MAGICK_CODER_SRCS = \
+	coders/aai.c \
 	coders/art.c \
 	coders/avs.c \
 	coders/bmp.c \
@@ -6036,6 +6039,8 @@ magick/libGraphicsMagick_la-nt_feature.lo: magick/$(am__dirstamp) \
 	magick/$(DEPDIR)/$(am__dirstamp)
 magick/libGraphicsMagick_la-nt_base.lo: magick/$(am__dirstamp) \
 	magick/$(DEPDIR)/$(am__dirstamp)
+coders/magick_libGraphicsMagick_la-aai.lo: coders/$(am__dirstamp) \
+	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-art.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 coders/magick_libGraphicsMagick_la-avs.lo: coders/$(am__dirstamp) \
@@ -6614,6 +6619,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/locale_la-locale.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/logo_la-logo.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/mac_la-mac.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-aai.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-art.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-avs.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/magick_libGraphicsMagick_la-bmp.Plo@am__quote@ # am--include-marker
@@ -8195,6 +8201,13 @@ magick/libGraphicsMagick_la-nt_base.lo: magick/nt_base.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='magick/nt_base.c' object='magick/libGraphicsMagick_la-nt_base.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o magick/libGraphicsMagick_la-nt_base.lo `test -f 'magick/nt_base.c' || echo '$(srcdir)/'`magick/nt_base.c
+
+coders/magick_libGraphicsMagick_la-aai.lo: coders/aai.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/magick_libGraphicsMagick_la-aai.lo -MD -MP -MF coders/$(DEPDIR)/magick_libGraphicsMagick_la-aai.Tpo -c -o coders/magick_libGraphicsMagick_la-aai.lo `test -f 'coders/aai.c' || echo '$(srcdir)/'`coders/aai.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/magick_libGraphicsMagick_la-aai.Tpo coders/$(DEPDIR)/magick_libGraphicsMagick_la-aai.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/aai.c' object='coders/magick_libGraphicsMagick_la-aai.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/magick_libGraphicsMagick_la-aai.lo `test -f 'coders/aai.c' || echo '$(srcdir)/'`coders/aai.c
 
 coders/magick_libGraphicsMagick_la-art.lo: coders/art.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(magick_libGraphicsMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/magick_libGraphicsMagick_la-art.lo -MD -MP -MF coders/$(DEPDIR)/magick_libGraphicsMagick_la-art.Tpo -c -o coders/magick_libGraphicsMagick_la-art.lo `test -f 'coders/art.c' || echo '$(srcdir)/'`coders/art.c
@@ -10394,6 +10407,7 @@ distclean: distclean-am
 	-rm -f coders/$(DEPDIR)/locale_la-locale.Plo
 	-rm -f coders/$(DEPDIR)/logo_la-logo.Plo
 	-rm -f coders/$(DEPDIR)/mac_la-mac.Plo
+	-rm -f coders/$(DEPDIR)/magick_libGraphicsMagick_la-aai.Plo
 	-rm -f coders/$(DEPDIR)/magick_libGraphicsMagick_la-art.Plo
 	-rm -f coders/$(DEPDIR)/magick_libGraphicsMagick_la-avs.Plo
 	-rm -f coders/$(DEPDIR)/magick_libGraphicsMagick_la-bmp.Plo
@@ -10786,6 +10800,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f coders/$(DEPDIR)/locale_la-locale.Plo
 	-rm -f coders/$(DEPDIR)/logo_la-logo.Plo
 	-rm -f coders/$(DEPDIR)/mac_la-mac.Plo
+	-rm -f coders/$(DEPDIR)/magick_libGraphicsMagick_la-aai.Plo
 	-rm -f coders/$(DEPDIR)/magick_libGraphicsMagick_la-art.Plo
 	-rm -f coders/$(DEPDIR)/magick_libGraphicsMagick_la-avs.Plo
 	-rm -f coders/$(DEPDIR)/magick_libGraphicsMagick_la-bmp.Plo

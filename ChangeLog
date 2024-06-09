@@ -1,10 +1,24 @@
+2024-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/formats.rst: Add AAI to the list of formats.
+
+	* tests/rwblob.tap: Add sanity tests for AAI format.
+
+	* tests/rwfile.tap: Add sanity tests for AAI format.
+
+	* coders/Makefile.am (MAGICK_CODER_SRCS): Add coders/aai.c.
+
 2024-06-10  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* coders/aai.c: Documentation lies, the format is not RGBA,
 	but BGRA: https://dune-hd.com/support/misc/AAImageGen-README.txt
+
 	* magick/symbols.h: Add symbols for AAI module.
 
 2024-06-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* coders/aai.c: Add implementation of AAI reader.
+
 	* PerlMagick/t/input.aai: Added a new image sample.
 	Verified with https://www.vertopal.com/
 
