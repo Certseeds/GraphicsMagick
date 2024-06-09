@@ -17,6 +17,7 @@ extern "C" {
 
 #if !defined(BuildMagickModules)
 extern ModuleExport void
+  RegisterAAIImage(void),
   RegisterARTImage(void),
   RegisterAVIImage(void),
   RegisterAVSImage(void),
@@ -164,6 +165,7 @@ extern ModuleExport void
 #endif
   RegisterXWDImage(void),
   RegisterYUVImage(void),
+  UnregisterAAIImage(void),
   UnregisterARTImage(void),
   UnregisterAVIImage(void),
   UnregisterAVSImage(void),

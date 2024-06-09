@@ -60,6 +60,7 @@ static const struct
 } StaticModules[] =
 {
 #define STATICM(name,register_fn,unregister_fn) {name,register_fn,unregister_fn,sizeof(name)-1}
+  STATICM("AAI",RegisterAAIImage,UnregisterAAIImage),
   STATICM("ART",RegisterARTImage,UnregisterARTImage),
   STATICM("AVS",RegisterAVSImage,UnregisterAVSImage),
   STATICM("BMP",RegisterBMPImage,UnregisterBMPImage),

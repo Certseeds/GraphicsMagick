@@ -1,4 +1,5 @@
 2024-06-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* coders/aai.c: Add implementation of AAI reader.
 	* PerlMagick/t/input.aai: Added a new image sample.
 	Verified with https://www.vertopal.com/
 
