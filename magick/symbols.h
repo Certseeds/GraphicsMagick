@@ -1031,6 +1031,7 @@
 #define TransparentImage GmTransparentImage
 #define UnlockSemaphoreInfo GmUnlockSemaphoreInfo
 #define UnmapBlob GmUnmapBlob
+#define UnregisterAAIImage GmUnregisterAAIImage
 #define UnregisterARTImage GmUnregisterARTImage
 #define UnregisterAVSImage GmUnregisterAVSImage
 #define UnregisterBMPImage GmUnregisterBMPImage

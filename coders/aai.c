@@ -79,7 +79,7 @@ static Image *ReadAAIImage(const ImageInfo *image_info,ExceptionInfo *exception)
   Image *image;
   long y;
   register long x;
-  unsigned long height, width;
+  magick_uint32_t height, width;
   unsigned int status;
   unsigned char *pixels = (unsigned char *) NULL;
   register unsigned char *p;
@@ -143,11 +143,11 @@ static Image *ReadAAIImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
       for (x=0; x < (long) image->columns; x++)
       {
-        if(*p==254) *p=255;	/* Full transparency is 254 in AAI. */
-        q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
-        q->red=ScaleCharToQuantum(*p++);
-        q->green=ScaleCharToQuantum(*p++);
         q->blue=ScaleCharToQuantum(*p++);
+        q->green=ScaleCharToQuantum(*p++);
+        q->red=ScaleCharToQuantum(*p++);        
+        if(*p==254) *p=255;	/* Full transparency is 254 in AAI. */
+        q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));        
         image->matte|=(q->opacity != OpaqueOpacity);
         q++;
       }
@@ -304,13 +304,13 @@ static unsigned int WriteAAIImage(const ImageInfo *image_info,Image *image)
       q=pixels;
       for (x=0; x < (long) image->columns; x++)
       {
+        *q++=ScaleQuantumToChar(p->blue);        
+        *q++=ScaleQuantumToChar(p->green);
+        *q++=ScaleQuantumToChar(p->red);
         *q=ScaleQuantumToChar(
           MaxRGB-(image->matte ? p->opacity : OpaqueOpacity));
         if(*q==255) *q=254;		/* 255 is not alloved in AAI */
         q++;
-        *q++=ScaleQuantumToChar(p->red);
-        *q++=ScaleQuantumToChar(p->green);
-        *q++=ScaleQuantumToChar(p->blue);
         p++;
       }
       (void) WriteBlob(image,q-pixels,(char *) pixels);

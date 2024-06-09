@@ -1,3 +1,8 @@
+2024-06-10  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* coders/aai.c: Documentation lies, the format is not RGBA,
+	but BGRA: https://dune-hd.com/support/misc/AAImageGen-README.txt
+	* magick/symbols.h: Add symbols for AAI module.
+
 2024-06-09  Fojtik Jaroslav  <JaFojtik@yandex.com>
 	* coders/aai.c: Add implementation of AAI reader.
 	* PerlMagick/t/input.aai: Added a new image sample.

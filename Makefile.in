@@ -3158,6 +3158,12 @@ MAGICK_CODER_SRCS = \
 @WITH_MODULES_TRUE@	coders/yuv.la
 
 
+# AAI coder module
+coders_aai_la_SOURCES = coders/aai.c
+coders_aai_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)
+coders_aai_la_LDFLAGS = $(MODULECOMMONFLAGS)
+coders_aai_la_LIBADD = $(LIBMAGICK)
+
 # ART coder module
 coders_art_la_SOURCES = coders/art.c
 coders_art_la_CPPFLAGS = $(MAGICK_CODER_CPPFLAGS)

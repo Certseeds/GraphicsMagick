@@ -111,7 +111,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
   unsigned int
     status;
 
-  unsigned long
+  magick_uint32_t
     height,
     width;
 
