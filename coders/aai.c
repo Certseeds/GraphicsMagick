@@ -105,7 +105,7 @@ static Image *ReadAAIImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowAAIReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "AAI dimensions %ldx%ld",width,height);
+                        "AAI dimensions %ldx%ld",(long)width,(long)height);
 
   /*
     Impose a maximum width and height limit in order to avoid
