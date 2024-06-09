@@ -143,7 +143,7 @@ static Image *ReadAAIImage(const ImageInfo *image_info,ExceptionInfo *exception)
         }
       for (x=0; x < (long) image->columns; x++)
       {
-        if(*p==254) *p=255;	/* Full transparency is 254. */
+        if(*p==254) *p=255;	/* Full transparency is 254 in AAI. */
         q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
         q->red=ScaleCharToQuantum(*p++);
         q->green=ScaleCharToQuantum(*p++);
@@ -395,7 +395,7 @@ ModuleExport void RegisterAAIImage(void)
 %      UnRegisterAAIImage(void)
 %
 */
-ModuleExport void UnRegisterAAIImage(void)
+ModuleExport void UnregisterAAIImage(void)
 {
   (void) UnregisterMagickInfo("AAI");
 }
