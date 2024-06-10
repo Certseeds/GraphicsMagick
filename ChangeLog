@@ -1,3 +1,8 @@
+2024-06-10  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/aai.c coders/avs.c: Both with and height variables
+	should be unsigned.
+
 2024-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/formats.rst: Add AAI to the list of formats.

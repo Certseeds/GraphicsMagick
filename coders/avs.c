@@ -135,7 +135,7 @@ static Image *ReadAVSImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowAVSReaderException(CorruptImageError,UnexpectedEndOfFile,image);
 
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "AVS dimensions %ldx%ld",(long)width,(long)height);
+                        "AVS dimensions %ux%u",(unsigned)width,(unsigned)height);
 
   /*
     Impose a maximum width and height limit in order to avoid
