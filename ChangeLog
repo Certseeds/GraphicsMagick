@@ -1,4 +1,9 @@
-2024-06-10  Fojtik Jaroslav  <JaFojtik@yandex.com>
+2024-06-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* VisualMagick/tests/runtest.bat: Added test for AAI,
+	removed duplicite test for AVS.
+
+2024-06-11  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/tiff.c: Log occurancy of SRATIONAL.
 
