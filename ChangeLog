@@ -1,3 +1,7 @@
+2024-06-10  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/tiff.c: Log occurancy of SRATIONAL.
+
 2024-06-11  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/Makefile.am: Add support for building AAI module.

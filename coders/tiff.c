@@ -4690,8 +4690,10 @@ Scalar:                  if(FDT==TIFF_SHORT)
                              FieldCount++;
                          break;
 
-/*            case TIFF_SRATIONAL:
-                         break; */
+            case TIFF_SRATIONAL:
+                         if(logging && (Flags & FLAG_BASE)!=0)
+                             (void)LogMagickEvent(CoderEvent,GetMagickModule(),"TIFF_SRATIONAL type is not supported yet.");
+                         break;
             case TIFF_RATIONAL:
                          if(FDT!=TIFF_RATIONAL) break;
                          if(WriteCount!=1)
