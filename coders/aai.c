@@ -5,7 +5,6 @@
 % Copyright.txt. You should have received a copy of Copyright.txt with this
 % package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
 %
-/*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
 %                                                                             %
@@ -17,11 +16,9 @@
 %                            A   A  A   A  IIIII                              %
 %                                                                             %
 %                                                                             %
-%                        Read/Write AAI X Image Format                        %
+%                        Read/Write AAI Image Format                          %
 %                                                                             %
 %                              Software Design                                %
-%                                   Cristy                                    %
-%                                 July 1992                                   %
 %                              Jaroslav Fojtik                                %
 %                                   2024                                      %
 %                                                                             %
@@ -40,10 +37,10 @@
 #include "magick/utility.h"
 
 
-#define ThrowAAIReaderException(code_,reason_,image_)   \
-  {                                                     \
+#define ThrowAAIReaderException(code_,reason_,image_)                  \
+  {                                                                    \
     MagickFreeResourceLimitedMemory(pixels);                           \
-    ThrowReaderException(code_,reason_,image_);         \
+    ThrowReaderException(code_,reason_,image_);                        \
   }
 #define AAI_WIDTH_LIMIT 65536UL  /* Artificially limit width to 64K pixels */
 #define AAI_HEIGHT_LIMIT 65536UL /* Artificially limit height to 64K pixels */
@@ -115,91 +112,91 @@ static Image *ReadAAIImage(const ImageInfo *image_info,ExceptionInfo *exception)
     ThrowAAIReaderException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
 
   do
-  {	/* Convert AAI raster image to pixel packets. */
-    size_t  row_bytes;
+    {     /* Convert AAI raster image to pixel packets. */
+      size_t  row_bytes;
 
-    image->columns=width;
-    image->rows=height;
-    image->depth=8;
-    if (image_info->ping && (image_info->subrange != 0))
-      if (image->scene >= (image_info->subimage+image_info->subrange-1))
-        break;
-    if (CheckImagePixelLimits(image, exception) != MagickPass)
-      ThrowAAIReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
-    pixels=MagickAllocateResourceLimitedArray(unsigned char *,image->columns,4);
-    if (pixels == (unsigned char *) NULL)
-      ThrowAAIReaderException(ResourceLimitError,MemoryAllocationFailed,image);
-    row_bytes=(size_t) 4*image->columns;
-    for (y=0; y < (long) image->rows; y++)
-    {
-      if (ReadBlob(image,row_bytes,pixels) != row_bytes)
-        ThrowAAIReaderException(CorruptImageError,UnexpectedEndOfFile,image);
-      p=pixels;
-      q=SetImagePixels(image,0,y,image->columns,1);
-      if (q == (PixelPacket *) NULL)
-        {
-          status=MagickFail;
+      image->columns=width;
+      image->rows=height;
+      image->depth=8;
+      if (image_info->ping && (image_info->subrange != 0))
+        if (image->scene >= (image_info->subimage+image_info->subrange-1))
           break;
-        }
-      for (x=0; x < (long) image->columns; x++)
-      {
-        q->blue=ScaleCharToQuantum(*p++);
-        q->green=ScaleCharToQuantum(*p++);
-        q->red=ScaleCharToQuantum(*p++);        
-        if(*p==254) *p=255;	/* Full transparency is 254 in AAI. */
-        q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));        
-        image->matte|=(q->opacity != OpaqueOpacity);
-        q++;
-      }
-      if (!SyncImagePixels(image))
+      if (CheckImagePixelLimits(image, exception) != MagickPass)
+        ThrowAAIReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
+      pixels=MagickAllocateResourceLimitedArray(unsigned char *,image->columns,4);
+      if (pixels == (unsigned char *) NULL)
+        ThrowAAIReaderException(ResourceLimitError,MemoryAllocationFailed,image);
+      row_bytes=(size_t) 4*image->columns;
+      for (y=0; y < (long) image->rows; y++)
         {
-          status=MagickFail;
-          break;
-        }
-      if (image->previous == (Image *) NULL)
-        if (QuantumTick(y,image->rows))
-          if (!MagickMonitorFormatted(y,image->rows,exception,
-                                      LoadImageText,image->filename,
-                                      image->columns,image->rows))
+          if (ReadBlob(image,row_bytes,pixels) != row_bytes)
+            ThrowAAIReaderException(CorruptImageError,UnexpectedEndOfFile,image);
+          p=pixels;
+          q=SetImagePixels(image,0,y,image->columns,1);
+          if (q == (PixelPacket *) NULL)
             {
               status=MagickFail;
               break;
             }
-    }
-    MagickFreeResourceLimitedMemory(pixels);
+          for (x=0; x < (long) image->columns; x++)
+            {
+              q->blue=ScaleCharToQuantum(*p++);
+              q->green=ScaleCharToQuantum(*p++);
+              q->red=ScaleCharToQuantum(*p++);
+              if(*p==254) *p=255;     /* Full transparency is 254 in AAI. */
+              q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
+              image->matte|=(q->opacity != OpaqueOpacity);
+              q++;
+            }
+          if (!SyncImagePixels(image))
+            {
+              status=MagickFail;
+              break;
+            }
+          if (image->previous == (Image *) NULL)
+            if (QuantumTick(y,image->rows))
+              if (!MagickMonitorFormatted(y,image->rows,exception,
+                                          LoadImageText,image->filename,
+                                          image->columns,image->rows))
+                {
+                  status=MagickFail;
+                  break;
+                }
+        }
+      MagickFreeResourceLimitedMemory(pixels);
 
-    if (MagickFail == status)
-      break;
-
-    StopTimer(&image->timer);
-
-    /*
-      Proceed to next image.
-    */
-    if (image_info->subrange != 0)
-      if (image->scene >= (image_info->subimage+image_info->subrange-1))
+      if (MagickFail == status)
         break;
-    width = ReadBlobLSBLong(image);
-    height = ReadBlobLSBLong(image);
-    if (!(EOFBlob(image)) && (width <= AAI_WIDTH_LIMIT) &&
-        (height <= AAI_HEIGHT_LIMIT))
-      {
-        /*
-          Allocate next image structure.
-        */
-        AllocateNextImage(image_info,image);
-        if (image->next == (Image *) NULL)
-          {
-            DestroyImageList(image);
-            return((Image *) NULL);
-          }
-        image=SyncNextImageInList(image);
-        status=MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
-                                      exception,LoadImagesText,image->filename);
-        if (status == MagickFail)
+
+      StopTimer(&image->timer);
+
+      /*
+        Proceed to next image.
+      */
+      if (image_info->subrange != 0)
+        if (image->scene >= (image_info->subimage+image_info->subrange-1))
           break;
-      }
-  } while (!(EOFBlob(image)));
+      width = ReadBlobLSBLong(image);
+      height = ReadBlobLSBLong(image);
+      if (!(EOFBlob(image)) && (width <= AAI_WIDTH_LIMIT) &&
+          (height <= AAI_HEIGHT_LIMIT))
+        {
+          /*
+            Allocate next image structure.
+          */
+          AllocateNextImage(image_info,image);
+          if (image->next == (Image *) NULL)
+            {
+              DestroyImageList(image);
+              return((Image *) NULL);
+            }
+          image=SyncNextImageInList(image);
+          status=MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
+                                        exception,LoadImagesText,image->filename);
+          if (status == MagickFail)
+            break;
+        }
+    } while (!(EOFBlob(image)));
   while (image->previous != (Image *) NULL)
     image=image->previous;
   CloseBlob(image);
@@ -280,57 +277,57 @@ static unsigned int WriteAAIImage(const ImageInfo *image_info,Image *image)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
   scene=0;
   do
-  {
-    /*
-      Write AAI header.
-    */
-    (void) TransformColorspace(image,RGBColorspace);
-    (void) WriteBlobLSBLong(image,image->columns);
-    (void) WriteBlobLSBLong(image,image->rows);
-    /*
-      Allocate memory for pixels.
-    */
-    pixels=MagickAllocateResourceLimitedMemory(unsigned char *,image->columns*sizeof(PixelPacket));
-    if (pixels == (unsigned char *) NULL)
-      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-    /*
-      Convert MIFF to AAI raster pixels.
-    */
-    for(y=0; y < (long) image->rows; y++)
     {
-      p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
-      if (p == (PixelPacket *) NULL)
-        break;
-      q=pixels;
-      for (x=0; x < (long) image->columns; x++)
-      {
-        *q++=ScaleQuantumToChar(p->blue);        
-        *q++=ScaleQuantumToChar(p->green);
-        *q++=ScaleQuantumToChar(p->red);
-        *q=ScaleQuantumToChar(
-          MaxRGB-(image->matte ? p->opacity : OpaqueOpacity));
-        if(*q==255) *q=254;		/* 255 is not alloved in AAI */
-        q++;
-        p++;
-      }
-      (void) WriteBlob(image,q-pixels,(char *) pixels);
-      if (image->previous == (Image *) NULL)
-        if (QuantumTick(y,image->rows))
-          if (!MagickMonitorFormatted(y,image->rows,&image->exception,
-                                      SaveImageText,image->filename,
-                                      image->columns,image->rows))
+      /*
+        Write AAI header.
+      */
+      (void) TransformColorspace(image,RGBColorspace);
+      (void) WriteBlobLSBLong(image,image->columns);
+      (void) WriteBlobLSBLong(image,image->rows);
+      /*
+        Allocate memory for pixels.
+      */
+      pixels=MagickAllocateResourceLimitedMemory(unsigned char *,image->columns*sizeof(PixelPacket));
+      if (pixels == (unsigned char *) NULL)
+        ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+      /*
+        Convert MIFF to AAI raster pixels.
+      */
+      for (y=0; y < (long) image->rows; y++)
+        {
+          p=AcquireImagePixels(image,0,y,image->columns,1,&image->exception);
+          if (p == (PixelPacket *) NULL)
             break;
-    }
-    MagickFreeResourceLimitedMemory(pixels);
-    if (image->next == (Image *) NULL)
-      break;
-    image=SyncNextImageInList(image);
-    status=MagickMonitorFormatted(scene++,image_list_length,
-                                  &image->exception,SaveImagesText,
-                                  image->filename);
-    if (status == False)
-      break;
-  } while (image_info->adjoin);
+          q=pixels;
+          for (x=0; x < (long) image->columns; x++)
+            {
+              *q++=ScaleQuantumToChar(p->blue);
+              *q++=ScaleQuantumToChar(p->green);
+              *q++=ScaleQuantumToChar(p->red);
+              *q=ScaleQuantumToChar(
+                                    MaxRGB-(image->matte ? p->opacity : OpaqueOpacity));
+              if(*q==255) *q=254;             /* 255 is not alloved in AAI */
+              q++;
+              p++;
+            }
+          (void) WriteBlob(image,q-pixels,(char *) pixels);
+          if (image->previous == (Image *) NULL)
+            if (QuantumTick(y,image->rows))
+              if (!MagickMonitorFormatted(y,image->rows,&image->exception,
+                                          SaveImageText,image->filename,
+                                          image->columns,image->rows))
+                break;
+        }
+      MagickFreeResourceLimitedMemory(pixels);
+      if (image->next == (Image *) NULL)
+        break;
+      image=SyncNextImageInList(image);
+      status=MagickMonitorFormatted(scene++,image_list_length,
+                                    &image->exception,SaveImagesText,
+                                    image->filename);
+      if (status == False)
+        break;
+    } while (image_info->adjoin);
   if (image_info->adjoin)
     while (image->previous != (Image *) NULL)
       image=image->previous;

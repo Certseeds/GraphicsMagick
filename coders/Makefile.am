@@ -184,6 +184,7 @@ MAGICK_CODER_SRCS = \
 
 if WITH_MODULES
 coders_LTLIBRARIES = \
+	coders/aai.la \
 	coders/art.la \
 	coders/avs.la \
 	coders/bmp.la \
@@ -286,6 +287,12 @@ coders_LTLIBRARIES = \
 else
 coders_LTLIBRARIES =
 endif # WITH_MODULES
+
+# AAI coder module
+coders_aai_la_SOURCES      = coders/aai.c
+coders_aai_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
+coders_aai_la_LDFLAGS      = $(MODULECOMMONFLAGS)
+coders_aai_la_LIBADD       = $(LIBMAGICK)
 
 # ART coder module
 coders_art_la_SOURCES      = coders/art.c
