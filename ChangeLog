@@ -1,3 +1,8 @@
+2024-06-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* PerlMagick/t/input.ora: Added input sample of Open Raster.
+	https://en.wikipedia.org/wiki/OpenRaster
+
 2024-06-12  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/tests/runtest.bat: Added test for AAI,
