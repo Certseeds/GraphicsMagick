@@ -1,5 +1,6 @@
 2024-06-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
+	* coders/ora.c: Add a new ORA format reader.
 	* PerlMagick/t/input.ora: Added input sample of Open Raster.
 	https://en.wikipedia.org/wiki/OpenRaster
 
