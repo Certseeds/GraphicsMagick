@@ -201,6 +201,7 @@ $$QuantumDepth
 
 // Define to use the zlib ZIP compression library
 #define HasZLIB
+#define HasUNZIP
 
 /////////////
 //

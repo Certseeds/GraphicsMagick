@@ -40,9 +40,10 @@
 #include "magick/pixel_cache.h"
 #include "magick/tempfile.h"
 #include "magick/utility.h"
-#include "contrib/minizip/unzip.h"
 
 #if defined(HasPNG) && defined(HasUNZIP)
+
+#include "contrib/minizip/unzip.h"
 
 
 static const char MERGED_IMAGE_PATH[] = "mergedimage.png";
