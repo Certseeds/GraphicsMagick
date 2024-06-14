@@ -132,6 +132,7 @@ MAGICK_CODER_SRCS = \
 	coders/mtv.c \
 	coders/mvg.c \
 	coders/null.c \
+        coders/ora.c \
 	coders/otb.c \
 	coders/palm.c \
 	coders/pcd.c \

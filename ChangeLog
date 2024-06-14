@@ -1,3 +1,9 @@
+2024-06-14  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* coders/ora.c: Add dependency to HasUNZIP.
+	* VisualMagick/zlib/contrib/minizip/LIBRARY.txt:
+	* VisualMagick/zlib/contrib/LIBRARY.txt:
+	Add zlib/contrib/minizip/unzip.c to build.
+
 2024-06-13  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* coders/ora.c: Add a new ORA format reader.

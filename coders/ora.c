@@ -42,7 +42,7 @@
 #include "magick/utility.h"
 #include "contrib/minizip/unzip.h"
 
-#if defined(HasPNG) && defined(HasZLIB)
+#if defined(HasPNG) && defined(HasUNZIP)
 
 
 static const char MERGED_IMAGE_PATH[] = "mergedimage.png";
