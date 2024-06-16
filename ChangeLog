@@ -1,3 +1,7 @@
+2024-06-16  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* coders/aai.c: Misleading typo fix.
+
 2024-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: When testing for libxml2, also test

@@ -143,7 +143,7 @@ static Image *ReadAAIImage(const ImageInfo *image_info,ExceptionInfo *exception)
               q->blue=ScaleCharToQuantum(*p++);
               q->green=ScaleCharToQuantum(*p++);
               q->red=ScaleCharToQuantum(*p++);
-              if(*p==254) *p=255;     /* Full transparency is 254 in AAI. */
+              if(*p==254) *p=255;     /* Full opacity is 254 in AAI. */
               q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(*p++));
               image->matte|=(q->opacity != OpaqueOpacity);
               q++;
