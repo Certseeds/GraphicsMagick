@@ -38,6 +38,53 @@
 
 <div class="document" id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-06-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>configure.ac: When testing for libxml2, also test
+libxml/xmlversion.h and libxml/xmlmemory.h.</p></li>
+<li><p>coders/url.c: Depend on &lt;libxml/xmlversion.h&gt;. Use
+LIBXML_HTTP_ENABLED and LIBXML_FTP_ENABLED.</p></li>
+</ul>
+</blockquote>
+<dl class="simple">
+<dt>2024-06-15  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
+<dd><ul class="simple">
+<li><p>VisualMagick/magick/magick_config.h.in: Add HasUNZIP.</p></li>
+<li><p>coders/ora.c: Include &quot;contrib/minizip/unzip.h&quot; only
+when HasUNZIP is defined.</p></li>
+</ul>
+</dd>
+<dt>2024-06-14  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</dt>
+<dd><ul class="simple">
+<li><p>coders/ora.c: Add dependency to HasUNZIP.</p></li>
+<li><p>VisualMagick/zlib/contrib/minizip/LIBRARY.txt:</p></li>
+<li><p>VisualMagick/zlib/contrib/LIBRARY.txt:
+Add zlib/contrib/minizip/unzip.c to build.</p></li>
+</ul>
+</dd>
+</dl>
+<p>2024-06-13  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/ora.c: Add a new ORA format reader.</p></li>
+<li><p>PerlMagick/t/input.ora: Added input sample of Open Raster.
+<a class="reference external" href="https://en.wikipedia.org/wiki/OpenRaster">https://en.wikipedia.org/wiki/OpenRaster</a></p></li>
+</ul>
+</blockquote>
+<p>2024-06-12  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/tests/runtest.bat: Added test for AAI,
+removed duplicite test for AVS.</p></li>
+</ul>
+</blockquote>
+<p>2024-06-11  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>coders/tiff.c: Log occurancy of SRATIONAL.</p></li>
+</ul>
+</blockquote>
 <p>2024-06-11  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

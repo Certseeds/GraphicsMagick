@@ -1,3 +1,11 @@
+2024-06-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: When testing for libxml2, also test
+	libxml/xmlversion.h and libxml/xmlmemory.h.
+
+	* coders/url.c: Depend on <libxml/xmlversion.h>. Use
+	LIBXML_HTTP_ENABLED and LIBXML_FTP_ENABLED.
+
 2024-06-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
 	* VisualMagick/magick/magick_config.h.in: Add HasUNZIP.
 	* coders/ora.c: Include "contrib/minizip/unzip.h" only

@@ -25101,8 +25101,24 @@ fi
     #   --with-minimum --with-http --with-ftp --with-push --with-zlib --with-sax1
     # Note that SAX1 interfaces don't seem to be directly used but parsers fail to work
     # as expected without SAX1 support compiled in.
+    ac_fn_c_check_header_mongrel "$LINENO" "libxml/xmlversion.h" "ac_cv_header_libxml_xmlversion_h" "$ac_includes_default"
+if test "x$ac_cv_header_libxml_xmlversion_h" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+
     ac_fn_c_check_header_mongrel "$LINENO" "libxml/parser.h" "ac_cv_header_libxml_parser_h" "$ac_includes_default"
 if test "x$ac_cv_header_libxml_parser_h" = xyes; then :
+  passed=`expr $passed + 1`
+else
+  failed=`expr $failed + 1`
+fi
+
+
+    ac_fn_c_check_header_mongrel "$LINENO" "libxml/xmlmemory.h" "ac_cv_header_libxml_xmlmemory_h" "$ac_includes_default"
+if test "x$ac_cv_header_libxml_xmlmemory_h" = xyes; then :
   passed=`expr $passed + 1`
 else
   failed=`expr $failed + 1`
