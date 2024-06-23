@@ -3,7 +3,6 @@ DEFINE = _CRT_SECURE_NO_WARNINGS
 EXCLUDE = maketree.c
 EXCLUDE = minigzip.c
 EXCLUDE = example.c
-EXCLUDE = ioapi.c
 EXCLUDE = iowin32.c
 EXCLUDE = miniunz.c
 EXCLUDE = minizip.c
