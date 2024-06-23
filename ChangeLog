@@ -1,4 +1,7 @@
 2024-06-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* zlib/contrib/minizip/unzip.c 
+	zlib/contrib/minizip/unzip.h: Export unzip API
+	to DLL calls.
 	* coders/Makefile.am: Add dependency to zlib for
 	ORA DLL module.
 

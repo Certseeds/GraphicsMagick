@@ -41,9 +41,14 @@
 #include "magick/tempfile.h"
 #include "magick/utility.h"
 
-#if defined(HasPNG) && defined(HasUNZIP)
 
+#if defined(HasPNG) && defined(HasZLIB)
+
+#if defined(HasUNZIP)
 #include "contrib/minizip/unzip.h"
+#else
+#include <zip.h>
+#endif
 
 
 static const char MERGED_IMAGE_PATH[] = "mergedimage.png";
