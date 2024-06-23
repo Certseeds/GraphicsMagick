@@ -12,6 +12,9 @@
 
 	* configure.ac: Look for presence of libzip.
 
+	* VisualMagick/configure/configure.cpp: dependency
+	to zlib is configured in C source code - too bad!
+
 2024-06-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/zlib/LIBRARY.txt: Remove unwanted

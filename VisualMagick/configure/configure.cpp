@@ -1311,7 +1311,7 @@ void CConfigureApp::process_module( const char *root,
       extra = "..\\tiff\\libtiff";
       add_includes(includes_list, extra, levels-2);
     }
-  if (name.compare("mat") == 0)
+  if (name.compare("mat") == 0 || name.compare("ora") == 0 || name.compare("hdf") == 0)
     {
       extra = "..\\zlib";
       add_includes(includes_list, extra, levels-2);
@@ -1334,11 +1334,6 @@ void CConfigureApp::process_module( const char *root,
       extra = "..\\autotrace";
       add_includes(includes_list, extra, levels-2);
 #endif
-    }
-  if (name.compare("hdf") == 0)
-    {
-      extra = "..\\zlib";
-      add_includes(includes_list, extra, levels-2);
     }
   if (name.compare("webp") == 0 && visualStudio7)
     {
