@@ -1,4 +1,5 @@
 2024-06-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* zlib/contrib/minizip/unzip.c 
 	zlib/contrib/minizip/unzip.h: Export unzip API
 	to DLL calls.
@@ -24,11 +25,13 @@
 	LIBXML_HTTP_ENABLED and LIBXML_FTP_ENABLED.
 
 2024-06-15  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* VisualMagick/magick/magick_config.h.in: Add HasUNZIP.
 	* coders/ora.c: Include "contrib/minizip/unzip.h" only
 	when HasUNZIP is defined.
 
 2024-06-14  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
 	* coders/ora.c: Add dependency to HasUNZIP.
 	* VisualMagick/zlib/contrib/minizip/LIBRARY.txt:
 	* VisualMagick/zlib/contrib/LIBRARY.txt:
