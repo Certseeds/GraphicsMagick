@@ -815,8 +815,8 @@ fi
 AC_ARG_WITH([jpeg],
               AS_HELP_STRING([--without-libzip],
                              [disable libzip support]),
-              [with_jpeg=$withval],
-              [with_jpeg='yes'])
+              [with_libzip=$withval],
+              [with_libzip='yes'])
 if test "$with_libzip" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-libzip=$with_libzip "
 fi
