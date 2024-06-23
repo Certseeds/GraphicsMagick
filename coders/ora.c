@@ -42,7 +42,7 @@
 #include "magick/utility.h"
 
 
-#if defined(HasPNG) && defined(HasZLIB)
+#if defined(HasPNG) && defined(HasZLIB) && defined(HasUNZIP)
 
 #if defined(HasUNZIP)
 #include "contrib/minizip/unzip.h"
