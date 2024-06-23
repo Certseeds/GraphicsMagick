@@ -1,3 +1,7 @@
+2024-06-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
+	* coders/Makefile.am: Add dependency to zlib for
+	ORA DLL module.
+
 2024-06-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/zlib/LIBRARY.txt: Remove unvanted

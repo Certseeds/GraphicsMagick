@@ -607,6 +607,12 @@ coders_null_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_null_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_null_la_LIBADD      = $(LIBMAGICK)
 
+# ORA coder module
+coders_mat_la_SOURCES      = coders/ora.c
+coders_mat_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
+coders_mat_la_LDFLAGS      = $(MODULECOMMONFLAGS)
+coders_mat_la_LIBADD       = $(LIBMAGICK) $(LIB_ZLIB)
+
 # OTB coder module
 coders_otb_la_SOURCES      = coders/otb.c
 coders_otb_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
