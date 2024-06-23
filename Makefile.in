@@ -760,6 +760,14 @@ coders_null_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_CFLAGS) $(CFLAGS) $(coders_null_la_LDFLAGS) $(LDFLAGS) -o \
 	$@
 @WITH_MODULES_TRUE@am_coders_null_la_rpath = -rpath $(codersdir)
+coders_ora_la_DEPENDENCIES = $(LIBMAGICK) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+am_coders_ora_la_OBJECTS = coders/ora_la-ora.lo
+coders_ora_la_OBJECTS = $(am_coders_ora_la_OBJECTS)
+coders_ora_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(coders_ora_la_LDFLAGS) $(LDFLAGS) -o $@
+@WITH_MODULES_TRUE@am_coders_ora_la_rpath = -rpath $(codersdir)
 coders_otb_la_DEPENDENCIES = $(LIBMAGICK)
 am_coders_otb_la_OBJECTS = coders/otb_la-otb.lo
 coders_otb_la_OBJECTS = $(am_coders_otb_la_OBJECTS)
@@ -1809,6 +1817,7 @@ am__depfiles_remade = Magick++/demo/$(DEPDIR)/analyze-analyze.Po \
 	coders/$(DEPDIR)/mtv_la-mtv.Plo \
 	coders/$(DEPDIR)/mvg_la-mvg.Plo \
 	coders/$(DEPDIR)/null_la-null.Plo \
+	coders/$(DEPDIR)/ora_la-ora.Plo \
 	coders/$(DEPDIR)/otb_la-otb.Plo \
 	coders/$(DEPDIR)/palm_la-palm.Plo \
 	coders/$(DEPDIR)/pcd_la-pcd.Plo \
@@ -2017,33 +2026,33 @@ SOURCES = $(Magick___lib_libGraphicsMagick___la_SOURCES) \
 	$(coders_mpc_la_SOURCES) $(coders_mpeg_la_SOURCES) \
 	$(coders_mpr_la_SOURCES) $(coders_msl_la_SOURCES) \
 	$(coders_mtv_la_SOURCES) $(coders_mvg_la_SOURCES) \
-	$(coders_null_la_SOURCES) $(coders_otb_la_SOURCES) \
-	$(coders_palm_la_SOURCES) $(coders_pcd_la_SOURCES) \
-	$(coders_pcl_la_SOURCES) $(coders_pcx_la_SOURCES) \
-	$(coders_pdb_la_SOURCES) $(coders_pdf_la_SOURCES) \
-	$(coders_pict_la_SOURCES) $(coders_pix_la_SOURCES) \
-	$(coders_plasma_la_SOURCES) $(coders_png_la_SOURCES) \
-	$(coders_pnm_la_SOURCES) $(coders_preview_la_SOURCES) \
-	$(coders_ps_la_SOURCES) $(coders_ps2_la_SOURCES) \
-	$(coders_ps3_la_SOURCES) $(coders_psd_la_SOURCES) \
-	$(coders_pwp_la_SOURCES) $(coders_rgb_la_SOURCES) \
-	$(coders_rla_la_SOURCES) $(coders_rle_la_SOURCES) \
-	$(coders_sct_la_SOURCES) $(coders_sfw_la_SOURCES) \
-	$(coders_sgi_la_SOURCES) $(coders_stegano_la_SOURCES) \
-	$(coders_sun_la_SOURCES) $(coders_svg_la_SOURCES) \
-	$(coders_tga_la_SOURCES) $(coders_tiff_la_SOURCES) \
-	$(coders_tile_la_SOURCES) $(coders_tim_la_SOURCES) \
-	$(coders_topol_la_SOURCES) $(coders_ttf_la_SOURCES) \
-	$(coders_txt_la_SOURCES) $(coders_uil_la_SOURCES) \
-	$(coders_url_la_SOURCES) $(coders_uyvy_la_SOURCES) \
-	$(coders_vicar_la_SOURCES) $(coders_vid_la_SOURCES) \
-	$(coders_viff_la_SOURCES) $(coders_wbmp_la_SOURCES) \
-	$(coders_webp_la_SOURCES) $(coders_wmf_la_SOURCES) \
-	$(coders_wpg_la_SOURCES) $(coders_x_la_SOURCES) \
-	$(coders_xbm_la_SOURCES) $(coders_xc_la_SOURCES) \
-	$(coders_xcf_la_SOURCES) $(coders_xpm_la_SOURCES) \
-	$(coders_xwd_la_SOURCES) $(coders_yuv_la_SOURCES) \
-	$(filters_analyze_la_SOURCES) \
+	$(coders_null_la_SOURCES) $(coders_ora_la_SOURCES) \
+	$(coders_otb_la_SOURCES) $(coders_palm_la_SOURCES) \
+	$(coders_pcd_la_SOURCES) $(coders_pcl_la_SOURCES) \
+	$(coders_pcx_la_SOURCES) $(coders_pdb_la_SOURCES) \
+	$(coders_pdf_la_SOURCES) $(coders_pict_la_SOURCES) \
+	$(coders_pix_la_SOURCES) $(coders_plasma_la_SOURCES) \
+	$(coders_png_la_SOURCES) $(coders_pnm_la_SOURCES) \
+	$(coders_preview_la_SOURCES) $(coders_ps_la_SOURCES) \
+	$(coders_ps2_la_SOURCES) $(coders_ps3_la_SOURCES) \
+	$(coders_psd_la_SOURCES) $(coders_pwp_la_SOURCES) \
+	$(coders_rgb_la_SOURCES) $(coders_rla_la_SOURCES) \
+	$(coders_rle_la_SOURCES) $(coders_sct_la_SOURCES) \
+	$(coders_sfw_la_SOURCES) $(coders_sgi_la_SOURCES) \
+	$(coders_stegano_la_SOURCES) $(coders_sun_la_SOURCES) \
+	$(coders_svg_la_SOURCES) $(coders_tga_la_SOURCES) \
+	$(coders_tiff_la_SOURCES) $(coders_tile_la_SOURCES) \
+	$(coders_tim_la_SOURCES) $(coders_topol_la_SOURCES) \
+	$(coders_ttf_la_SOURCES) $(coders_txt_la_SOURCES) \
+	$(coders_uil_la_SOURCES) $(coders_url_la_SOURCES) \
+	$(coders_uyvy_la_SOURCES) $(coders_vicar_la_SOURCES) \
+	$(coders_vid_la_SOURCES) $(coders_viff_la_SOURCES) \
+	$(coders_wbmp_la_SOURCES) $(coders_webp_la_SOURCES) \
+	$(coders_wmf_la_SOURCES) $(coders_wpg_la_SOURCES) \
+	$(coders_x_la_SOURCES) $(coders_xbm_la_SOURCES) \
+	$(coders_xc_la_SOURCES) $(coders_xcf_la_SOURCES) \
+	$(coders_xpm_la_SOURCES) $(coders_xwd_la_SOURCES) \
+	$(coders_yuv_la_SOURCES) $(filters_analyze_la_SOURCES) \
 	$(magick_libGraphicsMagick_la_SOURCES) \
 	$(wand_libGraphicsMagickWand_la_SOURCES) \
 	$(Magick___demo_analyze_SOURCES) \
@@ -2096,33 +2105,33 @@ DIST_SOURCES = $(Magick___lib_libGraphicsMagick___la_SOURCES) \
 	$(coders_mpc_la_SOURCES) $(coders_mpeg_la_SOURCES) \
 	$(coders_mpr_la_SOURCES) $(coders_msl_la_SOURCES) \
 	$(coders_mtv_la_SOURCES) $(coders_mvg_la_SOURCES) \
-	$(coders_null_la_SOURCES) $(coders_otb_la_SOURCES) \
-	$(coders_palm_la_SOURCES) $(coders_pcd_la_SOURCES) \
-	$(coders_pcl_la_SOURCES) $(coders_pcx_la_SOURCES) \
-	$(coders_pdb_la_SOURCES) $(coders_pdf_la_SOURCES) \
-	$(coders_pict_la_SOURCES) $(coders_pix_la_SOURCES) \
-	$(coders_plasma_la_SOURCES) $(coders_png_la_SOURCES) \
-	$(coders_pnm_la_SOURCES) $(coders_preview_la_SOURCES) \
-	$(coders_ps_la_SOURCES) $(coders_ps2_la_SOURCES) \
-	$(coders_ps3_la_SOURCES) $(coders_psd_la_SOURCES) \
-	$(coders_pwp_la_SOURCES) $(coders_rgb_la_SOURCES) \
-	$(coders_rla_la_SOURCES) $(coders_rle_la_SOURCES) \
-	$(coders_sct_la_SOURCES) $(coders_sfw_la_SOURCES) \
-	$(coders_sgi_la_SOURCES) $(coders_stegano_la_SOURCES) \
-	$(coders_sun_la_SOURCES) $(coders_svg_la_SOURCES) \
-	$(coders_tga_la_SOURCES) $(coders_tiff_la_SOURCES) \
-	$(coders_tile_la_SOURCES) $(coders_tim_la_SOURCES) \
-	$(coders_topol_la_SOURCES) $(coders_ttf_la_SOURCES) \
-	$(coders_txt_la_SOURCES) $(coders_uil_la_SOURCES) \
-	$(coders_url_la_SOURCES) $(coders_uyvy_la_SOURCES) \
-	$(coders_vicar_la_SOURCES) $(coders_vid_la_SOURCES) \
-	$(coders_viff_la_SOURCES) $(coders_wbmp_la_SOURCES) \
-	$(coders_webp_la_SOURCES) $(coders_wmf_la_SOURCES) \
-	$(coders_wpg_la_SOURCES) $(coders_x_la_SOURCES) \
-	$(coders_xbm_la_SOURCES) $(coders_xc_la_SOURCES) \
-	$(coders_xcf_la_SOURCES) $(coders_xpm_la_SOURCES) \
-	$(coders_xwd_la_SOURCES) $(coders_yuv_la_SOURCES) \
-	$(filters_analyze_la_SOURCES) \
+	$(coders_null_la_SOURCES) $(coders_ora_la_SOURCES) \
+	$(coders_otb_la_SOURCES) $(coders_palm_la_SOURCES) \
+	$(coders_pcd_la_SOURCES) $(coders_pcl_la_SOURCES) \
+	$(coders_pcx_la_SOURCES) $(coders_pdb_la_SOURCES) \
+	$(coders_pdf_la_SOURCES) $(coders_pict_la_SOURCES) \
+	$(coders_pix_la_SOURCES) $(coders_plasma_la_SOURCES) \
+	$(coders_png_la_SOURCES) $(coders_pnm_la_SOURCES) \
+	$(coders_preview_la_SOURCES) $(coders_ps_la_SOURCES) \
+	$(coders_ps2_la_SOURCES) $(coders_ps3_la_SOURCES) \
+	$(coders_psd_la_SOURCES) $(coders_pwp_la_SOURCES) \
+	$(coders_rgb_la_SOURCES) $(coders_rla_la_SOURCES) \
+	$(coders_rle_la_SOURCES) $(coders_sct_la_SOURCES) \
+	$(coders_sfw_la_SOURCES) $(coders_sgi_la_SOURCES) \
+	$(coders_stegano_la_SOURCES) $(coders_sun_la_SOURCES) \
+	$(coders_svg_la_SOURCES) $(coders_tga_la_SOURCES) \
+	$(coders_tiff_la_SOURCES) $(coders_tile_la_SOURCES) \
+	$(coders_tim_la_SOURCES) $(coders_topol_la_SOURCES) \
+	$(coders_ttf_la_SOURCES) $(coders_txt_la_SOURCES) \
+	$(coders_uil_la_SOURCES) $(coders_url_la_SOURCES) \
+	$(coders_uyvy_la_SOURCES) $(coders_vicar_la_SOURCES) \
+	$(coders_vid_la_SOURCES) $(coders_viff_la_SOURCES) \
+	$(coders_wbmp_la_SOURCES) $(coders_webp_la_SOURCES) \
+	$(coders_wmf_la_SOURCES) $(coders_wpg_la_SOURCES) \
+	$(coders_x_la_SOURCES) $(coders_xbm_la_SOURCES) \
+	$(coders_xc_la_SOURCES) $(coders_xcf_la_SOURCES) \
+	$(coders_xpm_la_SOURCES) $(coders_xwd_la_SOURCES) \
+	$(coders_yuv_la_SOURCES) $(filters_analyze_la_SOURCES) \
 	$(am__magick_libGraphicsMagick_la_SOURCES_DIST) \
 	$(wand_libGraphicsMagickWand_la_SOURCES) \
 	$(Magick___demo_analyze_SOURCES) \
@@ -3126,6 +3135,7 @@ MAGICK_CODER_SRCS = \
 @WITH_MODULES_TRUE@	coders/mtv.la \
 @WITH_MODULES_TRUE@	coders/mvg.la \
 @WITH_MODULES_TRUE@	coders/null.la \
+@WITH_MODULES_TRUE@	coders/ora.la \
 @WITH_MODULES_TRUE@	coders/otb.la \
 @WITH_MODULES_TRUE@	coders/palm.la \
 @WITH_MODULES_TRUE@	coders/pcd.la \
@@ -5632,6 +5642,11 @@ coders/null_la-null.lo: coders/$(am__dirstamp) \
 
 coders/null.la: $(coders_null_la_OBJECTS) $(coders_null_la_DEPENDENCIES) $(EXTRA_coders_null_la_DEPENDENCIES) coders/$(am__dirstamp)
 	$(AM_V_CCLD)$(coders_null_la_LINK) $(am_coders_null_la_rpath) $(coders_null_la_OBJECTS) $(coders_null_la_LIBADD) $(LIBS)
+coders/ora_la-ora.lo: coders/$(am__dirstamp) \
+	coders/$(DEPDIR)/$(am__dirstamp)
+
+coders/ora.la: $(coders_ora_la_OBJECTS) $(coders_ora_la_DEPENDENCIES) $(EXTRA_coders_ora_la_DEPENDENCIES) coders/$(am__dirstamp)
+	$(AM_V_CCLD)$(coders_ora_la_LINK) $(am_coders_ora_la_rpath) $(coders_ora_la_OBJECTS) $(coders_ora_la_LIBADD) $(LIBS)
 coders/otb_la-otb.lo: coders/$(am__dirstamp) \
 	coders/$(DEPDIR)/$(am__dirstamp)
 
@@ -6767,6 +6782,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/mtv_la-mtv.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/mvg_la-mvg.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/null_la-null.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/ora_la-ora.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/otb_la-otb.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/palm_la-palm.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@coders/$(DEPDIR)/pcd_la-pcd.Plo@am__quote@ # am--include-marker
@@ -7308,6 +7324,13 @@ coders/null_la-null.lo: coders/null.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/null.c' object='coders/null_la-null.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_null_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/null_la-null.lo `test -f 'coders/null.c' || echo '$(srcdir)/'`coders/null.c
+
+coders/ora_la-ora.lo: coders/ora.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_ora_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/ora_la-ora.lo -MD -MP -MF coders/$(DEPDIR)/ora_la-ora.Tpo -c -o coders/ora_la-ora.lo `test -f 'coders/ora.c' || echo '$(srcdir)/'`coders/ora.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) coders/$(DEPDIR)/ora_la-ora.Tpo coders/$(DEPDIR)/ora_la-ora.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='coders/ora.c' object='coders/ora_la-ora.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_ora_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o coders/ora_la-ora.lo `test -f 'coders/ora.c' || echo '$(srcdir)/'`coders/ora.c
 
 coders/otb_la-otb.lo: coders/otb.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(coders_otb_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT coders/otb_la-otb.lo -MD -MP -MF coders/$(DEPDIR)/otb_la-otb.Tpo -c -o coders/otb_la-otb.lo `test -f 'coders/otb.c' || echo '$(srcdir)/'`coders/otb.c
@@ -10571,6 +10594,7 @@ distclean: distclean-am
 	-rm -f coders/$(DEPDIR)/mtv_la-mtv.Plo
 	-rm -f coders/$(DEPDIR)/mvg_la-mvg.Plo
 	-rm -f coders/$(DEPDIR)/null_la-null.Plo
+	-rm -f coders/$(DEPDIR)/ora_la-ora.Plo
 	-rm -f coders/$(DEPDIR)/otb_la-otb.Plo
 	-rm -f coders/$(DEPDIR)/palm_la-palm.Plo
 	-rm -f coders/$(DEPDIR)/pcd_la-pcd.Plo
@@ -10966,6 +10990,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f coders/$(DEPDIR)/mtv_la-mtv.Plo
 	-rm -f coders/$(DEPDIR)/mvg_la-mvg.Plo
 	-rm -f coders/$(DEPDIR)/null_la-null.Plo
+	-rm -f coders/$(DEPDIR)/ora_la-ora.Plo
 	-rm -f coders/$(DEPDIR)/otb_la-otb.Plo
 	-rm -f coders/$(DEPDIR)/palm_la-palm.Plo
 	-rm -f coders/$(DEPDIR)/pcd_la-pcd.Plo

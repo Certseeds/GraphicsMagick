@@ -469,6 +469,9 @@
 /* Define if you have LCMS (v2.0 or later) library */
 #undef HasLCMS
 
+/* Define if you have libzip library */
+#undef HasLIBZIP
+
 /* Define if using libltdl to support dynamically loadable modules */
 #undef HasLTDL
 

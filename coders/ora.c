@@ -42,10 +42,13 @@
 #include "magick/utility.h"
 
 
-#if defined(HasPNG) && defined(HasZLIB) && defined(HasUNZIP)
+#if defined(HasPNG) && defined(HasZLIB) && (defined(HasUNZIP) || defined(HasLIBZIP))
 
 #if defined(HasUNZIP)
  #include "contrib/minizip/unzip.h"
+ #if defined(_MSC_VER) && defined(HasZLIB) && defined(ProvideDllMain)
+  #pragma comment(lib, "CORE_RL_zlib_.lib")
+ #endif
 #else
  #include <zip.h> 
 #endif
