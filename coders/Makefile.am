@@ -236,6 +236,7 @@ coders_LTLIBRARIES = \
 	coders/mtv.la \
 	coders/mvg.la \
 	coders/null.la \
+	coders/ora.la \
 	coders/otb.la \
 	coders/palm.la \
 	coders/pcd.la \
