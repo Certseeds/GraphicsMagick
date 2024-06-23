@@ -611,7 +611,7 @@ coders_null_la_LIBADD      = $(LIBMAGICK)
 coders_ora_la_SOURCES      = coders/ora.c
 coders_ora_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_ora_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_ora_la_LIBADD       = $(LIBMAGICK) $(LIB_ZLIB)
+coders_ora_la_LIBADD       = $(LIBMAGICK) $(LIB_ZLIB) $(LIB_ZIP)
 
 # OTB coder module
 coders_otb_la_SOURCES      = coders/otb.c

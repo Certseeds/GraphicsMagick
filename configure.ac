@@ -811,6 +811,17 @@ if test "$with_ttf" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-ttf=$with_ttf "
 fi
 
+# Disable LIBZIP.
+AC_ARG_WITH([jpeg],
+              AS_HELP_STRING([--without-libzip],
+                             [disable libzip support]),
+              [with_jpeg=$withval],
+              [with_jpeg='yes'])
+if test "$with_libzip" != 'yes' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-libzip=$with_libzip "
+fi
+
+
 # Enable use of Google tcmalloc library.
 AC_ARG_WITH([tcmalloc],
               AS_HELP_STRING([--with-tcmalloc],
@@ -2870,7 +2881,8 @@ then
             LIBS=$OLD_LIBS
         else
             pkg_config_to_flags 'libzip' "${LIB_ZIP}" ''
-            # LIBS="$LIB_LIBZIP $LIBS"
+            LIB_ZIP='-lzip'
+            LIBS="$LIB_ZIP $LIBS"
             AC_DEFINE([HasLIBZIP],[1],[Define if you have libzip library])
             AC_MSG_RESULT([yes])
             have_libzip='yes'
