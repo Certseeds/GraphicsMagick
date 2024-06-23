@@ -7,6 +7,9 @@
 	* coders/Makefile.am: Add dependency to zlib for
 	ORA DLL module.
 
+	* coders/ora.c: This version is prepared for Linux
+	using libzip.lib.
+
 2024-06-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/zlib/LIBRARY.txt: Remove unwanted

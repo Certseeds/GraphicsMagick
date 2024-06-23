@@ -45,9 +45,9 @@
 #if defined(HasPNG) && defined(HasZLIB) && defined(HasUNZIP)
 
 #if defined(HasUNZIP)
-#include "contrib/minizip/unzip.h"
+ #include "contrib/minizip/unzip.h"
 #else
-#include <zip.h>
+ #include <zip.h> 
 #endif
 
 
@@ -87,7 +87,13 @@ static const char MERGED_IMAGE_PATH[] = "mergedimage.png";
 */
 static Image *ReadORAImage(const ImageInfo *image_info, ExceptionInfo *exception)
 {
+#if defined(HasUNZIP)
   unzFile zip_archive;
+#else
+  zip_t *zip_archive
+  zip_file_t *merged_image_file;
+#endif
+  
   Image *image;
   int res;
   void *buf;
@@ -105,16 +111,27 @@ static Image *ReadORAImage(const ImageInfo *image_info, ExceptionInfo *exception
   if(buf == NULL)
         ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
+#if defined(HasUNZIP)
   zip_archive = unzOpen(image_info->filename);
+#else
+  zip_archive = zip_open(image_info->filename,ZIP_RDONLY,&res);
+#endif
   if(zip_archive == NULL)
   {
     MagickFreeResourceLimitedMemory(buf);
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   }
 
+#if defined(HasUNZIP)
   if(UNZ_OK != unzLocateFile(zip_archive,MERGED_IMAGE_PATH,0))
   {
     unzClose(zip_archive);
+#else
+  merged_image_file = zip_fopen(zip_archive,MERGED_IMAGE_PATH,ZIP_FL_UNCHANGED);
+  if (merged_image_file == NULL)
+  {
+    zip_discard(zip_archive);
+#endif
     MagickFreeResourceLimitedMemory(buf);
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   }
@@ -126,17 +143,31 @@ static Image *ReadORAImage(const ImageInfo *image_info, ExceptionInfo *exception
   {
     DestroyImageInfo(clone_info);
     clone_info = (ImageInfo *) NULL;
+#if defined(HasUNZIP)
     unzClose(zip_archive);
+#else    
+    zip_discard(zip_archive);
+#endif
     MagickFreeResourceLimitedMemory(buf);
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
   }
 
+#if defined(HasUNZIP)
   unzOpenCurrentFile(zip_archive);
   while((res=unzReadCurrentFile(zip_archive,buf,BUFFER_SIZE)) > 0)
   {
     fwrite(buf,res,1,PngFile);
   }
   unzCloseCurrentFile(zip_archive);
+#else
+  while((res=zip_fread(merged_image_file,buf,BUFFER_SIZE)) > 0)
+  {
+    fwrite(buf,res,1,PngFile);
+  }
+  (void)zip_fclose(merged_image_file);
+  (void)zip_discard(zip_archive);
+#endif
+
   fclose(PngFile);
 
   MagickFreeResourceLimitedMemory(buf);
