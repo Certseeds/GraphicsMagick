@@ -2840,6 +2840,49 @@ fi
 AM_CONDITIONAL([HasWEBP],[test "$have_webp" = 'yes'])
 AC_SUBST([LIB_WEBP])
 
+
+#
+# Check for LIBZIP
+#
+have_libzip='no'
+LIB_ZIP=''
+if test "$with_libzip" != 'no'
+then
+    AC_MSG_CHECKING([for libzip support ])
+    AC_MSG_RESULT()
+    OLD_CPPFLAGS=$CPPFLAGS
+    OLD_LDFLAGS=$LDFLAGS
+    OLD_LIBS=$LIBS
+    failed=0
+    passed=0
+    AC_CHECK_HEADER([zip.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
+    AC_CHECK_LIB([zip],[zip_open],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
+
+    AC_MSG_CHECKING([if libzip package is complete])
+    if test $passed -gt 0
+    then
+        if test $failed -gt 0
+        then
+            AC_MSG_RESULT([no -- some components failed test])
+            have_libzip='no (failed tests)'
+            CPPFLAGS=$OLD_CPPFLAGS
+            LDFLAGS=$OLD_LDFLAGS
+            LIBS=$OLD_LIBS
+        else
+            pkg_config_to_flags 'libzip' "${LIB_ZIP}" ''
+            # LIBS="$LIB_LIBZIP $LIBS"
+            AC_DEFINE([HasLIBZIP],[1],[Define if you have libzip library])
+            AC_MSG_RESULT([yes])
+            have_libzip='yes'
+        fi
+    else
+        AC_MSG_RESULT([no])
+    fi
+fi
+AM_CONDITIONAL([HasLIBZIP],[test "$have_libzip" = 'yes'])
+AC_SUBST([LIB_ZIP])
+
+
 #
 # Check for JBIG
 #

@@ -10,6 +10,8 @@
 	* coders/ora.c: This version is prepared for Linux
 	using libzip.lib.
 
+	* configure.ac: Look for presence of libzip.
+
 2024-06-22  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/zlib/LIBRARY.txt: Remove unwanted
