@@ -135,7 +135,7 @@ static const struct
   STATICM("MTV",RegisterMTVImage,UnregisterMTVImage),
   STATICM("MVG",RegisterMVGImage,UnregisterMVGImage),
   STATICM("NULL",RegisterNULLImage,UnregisterNULLImage),
-#if defined(HasPNG) && defined(HasUNZIP)
+#if defined(HasPNG) && (defined(HasUNZIP) || defined(HasLIBZIP))
   STATICM("ORA",RegisterORAImage,UnregisterORAImage),
 #endif
   STATICM("OTB",RegisterOTBImage,UnregisterOTBImage),

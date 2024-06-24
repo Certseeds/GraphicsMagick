@@ -1,3 +1,10 @@
+2024-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/static.c: Also need to enable ORA for HasLIBZIP
+
+	* coders/ora.c: Change back to POSIX file format. Fix syntax
+	errors so code compiles with libzip.
+
 2024-06-23  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* zlib/contrib/minizip/unzip.c

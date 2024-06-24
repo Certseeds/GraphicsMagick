@@ -50,7 +50,7 @@
   #pragma comment(lib, "CORE_RL_zlib_.lib")
  #endif
 #else
- #include <zip.h> 
+ #include <zip.h>
 #endif
 
 
@@ -93,10 +93,10 @@ static Image *ReadORAImage(const ImageInfo *image_info, ExceptionInfo *exception
 #if defined(HasUNZIP)
   unzFile zip_archive;
 #else
-  zip_t *zip_archive
+  zip_t *zip_archive;
   zip_file_t *merged_image_file;
 #endif
-  
+
   Image *image;
   int res;
   void *buf;
@@ -148,7 +148,7 @@ static Image *ReadORAImage(const ImageInfo *image_info, ExceptionInfo *exception
     clone_info = (ImageInfo *) NULL;
 #if defined(HasUNZIP)
     unzClose(zip_archive);
-#else    
+#else
     zip_discard(zip_archive);
 #endif
     MagickFreeResourceLimitedMemory(buf);
@@ -174,7 +174,9 @@ static Image *ReadORAImage(const ImageInfo *image_info, ExceptionInfo *exception
   fclose(PngFile);
 
   MagickFreeResourceLimitedMemory(buf);
+#if defined(HasUNZIP)
   unzClose(zip_archive);
+#endif
 
   DestroyImage(image);
 
