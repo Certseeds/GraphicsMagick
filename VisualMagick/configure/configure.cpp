@@ -1476,7 +1476,7 @@ void CConfigureApp::process_module( const char *root,
             if (useX11Stubs)
               workspace->write_project_dependency(project,"CORE_xlib");
           }
-        if (name.compare("mat") == 0)
+        if (name.compare("mat") == 0 || name.compare("ora") == 0)
           {
             workspace->write_project_dependency(project,"CORE_zlib");
           }

@@ -2,6 +2,11 @@
 
 	* VisualMagick/configure/configure.exe: Needs to be updated,
 	because header files are hardcoded in it :(.
+	* VisualMagick/configure/configure.cpp: dependency to core_rl_zlib_.lib
+	is also configured in C source code - too bad!
+
+	* coders/ora.c: Remove library include hack. Configure.exe should
+	do the job.
 
 2024-06-23  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
