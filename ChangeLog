@@ -1,5 +1,8 @@
 2024-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/topol.c (CheckFName): Addess Coverity 427449 "Overflowed
+	array index read".
+
 	* magick/blob.c (DetachBlob): Fix location of assert.  Quiet
 	Coverity 427429 "Data race condition".
 	(DestroyBlob): Quiet Coverity 427446 "Data race condition".
