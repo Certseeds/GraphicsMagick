@@ -1219,11 +1219,15 @@ MagickExport void DestroyBlob(Image *image)
         Destroy blob object.
       */
       if (image->blob->logging)
-        (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                              "  Destroy blob (real): image %p, blob %p,"
-                              " ref %lu, filename \"%s\"",
-                              image,image->blob,
-                              image->blob->reference_count,image->filename);
+        {
+          LockSemaphoreInfo(image->blob->semaphore);
+          (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                                "  Destroy blob (real): image %p, blob %p,"
+                                " ref %lu, filename \"%s\"",
+                                image,image->blob,
+                                image->blob->reference_count,image->filename);
+          UnlockSemaphoreInfo(image->blob->semaphore);
+        }
       if (image->blob->type != UndefinedStream)
         CloseBlob(image);
       if (image->blob->mapped)
@@ -1315,10 +1319,15 @@ MagickExport void DestroyBlobInfo(BlobInfo *blob)
 */
 MagickExport void DetachBlob(BlobInfo *blob_info)
 {
-  (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                        "Detach (reset) blob: blob %p, ref %lu",
-                        blob_info,blob_info->reference_count);
- assert(blob_info != (BlobInfo *) NULL);
+  assert(blob_info != (BlobInfo *) NULL);
+  if (blob_info->logging)
+    {
+      LockSemaphoreInfo(blob_info->semaphore);
+      (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                            "Detach (reset) blob: blob %p, ref %lu",
+                            blob_info,blob_info->reference_count);
+      UnlockSemaphoreInfo(blob_info->semaphore);
+    }
   if (blob_info->mapped)
     {
       if (blob_info->data != (unsigned char *) NULL)

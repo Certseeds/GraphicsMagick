@@ -525,10 +525,13 @@ GetMagickInfoArray(ExceptionInfo *exception)
     Load all modules and obtain pointer to head of list
   */
   (void) GetMagickInfo("*",exception);
-  if (!magick_list)
-    return ((MagickInfo **) NULL);
 
   LockSemaphoreInfo(magick_semaphore);
+  if (!magick_list)
+    {
+      UnlockSemaphoreInfo(magick_semaphore);
+      return ((MagickInfo **) NULL);
+    }
 
   list=magick_list;
 

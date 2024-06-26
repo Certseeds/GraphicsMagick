@@ -1,3 +1,12 @@
+2024-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (DetachBlob): Fix location of assert.  Quiet
+	Coverity 427429 "Data race condition".
+	(DestroyBlob): Quiet Coverity 427446 "Data race condition".
+
+	* magick/magick.c (GetMagickInfoArray): Address Coverity 427435
+	"Data race condition".
+
 2024-06-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* VisualMagick/configure/configure.exe: Needs to be updated,

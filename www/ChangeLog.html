@@ -38,6 +38,27 @@
 
 <div class="document" id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-06-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>magick/blob.c (DetachBlob): Fix location of assert.  Quiet
+Coverity 427429 &quot;Data race condition&quot;.
+(DestroyBlob): Quiet Coverity 427446 &quot;Data race condition&quot;.</p></li>
+<li><p>magick/magick.c (GetMagickInfoArray): Address Coverity 427435
+&quot;Data race condition&quot;.</p></li>
+</ul>
+</blockquote>
+<p>2024-06-24  Fojtik Jaroslav  &lt;<a class="reference external" href="mailto:JaFojtik&#37;&#52;&#48;yandex&#46;com">JaFojtik<span>&#64;</span>yandex<span>&#46;</span>com</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>VisualMagick/configure/configure.exe: Needs to be updated,
+because header files are hardcoded in it :(.</p></li>
+<li><p>VisualMagick/configure/configure.cpp: dependency to core_rl_zlib_.lib
+is also configured in C source code - too bad!</p></li>
+<li><p>coders/ora.c: Remove library include hack. Configure.exe should
+do the job.</p></li>
+</ul>
+</blockquote>
 <p>2024-06-23  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
