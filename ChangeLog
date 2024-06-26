@@ -4,6 +4,9 @@
 
 2024-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/wpg.c (ReadWPGImage): Quiet Coverity 427434 "Overflowed
+	constant".
+
 	* magick/blob.c (CloseBlob): Quiet Coverity 427439 "Data race
 	condition".
 

@@ -1351,8 +1351,11 @@ static Image *ReadWPGImage(const ImageInfo *image_info,
           if(SeekBlob(image,FilePos,SEEK_SET) != FilePos)
             break;
 
-          Rec.RecType = (i=ReadBlobByte(image));
-          if(i==EOF) break;
+          Rec.RecType = 0;
+          i=ReadBlobByte(image); /* unsigned char RecType,  EOF =-1 !!! */
+          if(i==EOF)
+            break;
+          Rec.RecType = (unsigned char) i;
           FilePos += 1;
 
           FilePos += Rd_WP_DWORD(image,&Rec.RecordLength);
