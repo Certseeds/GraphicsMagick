@@ -812,7 +812,7 @@ if test "$with_ttf" != 'yes' ; then
 fi
 
 # Disable LIBZIP.
-AC_ARG_WITH([jpeg],
+AC_ARG_WITH([libzip],
               AS_HELP_STRING([--without-libzip],
                              [disable libzip support]),
               [with_libzip=$withval],

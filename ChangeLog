@@ -1,3 +1,7 @@
+2024-06-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* configure.ac: Typo fixed in library name.
+
 2024-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (CloseBlob): Quiet Coverity 427439 "Data race
