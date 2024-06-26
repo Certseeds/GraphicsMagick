@@ -1,5 +1,8 @@
 2024-06-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/blob.c (CloseBlob): Quiet Coverity 427439 "Data race
+	condition".
+
 	* coders/topol.c (CheckFName): Addess Coverity 427449 "Overflowed
 	array index read".
 

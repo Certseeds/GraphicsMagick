@@ -41,6 +41,8 @@
 <p>2024-06-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>magick/blob.c (CloseBlob): Quiet Coverity 427439 &quot;Data race
+condition&quot;.</p></li>
 <li><p>coders/topol.c (CheckFName): Addess Coverity 427449 &quot;Overflowed
 array index read&quot;.</p></li>
 <li><p>magick/blob.c (DetachBlob): Fix location of assert.  Quiet

@@ -953,16 +953,19 @@ MagickExport MagickPassFail CloseBlob(Image *image)
     return MagickPass;
 
   if (blob->logging)
-    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                          "Closing %sStream blob: image %p, blob %p, ref %lu",
-                          BlobStreamTypeToString(blob->type),
-                          image,blob,blob->reference_count);
-  if (blob->logging)
-    (void) LogMagickEvent(BlobEvent,GetMagickModule(),
-                        "Blob "
-                        "wrote %" MAGICK_UINT64_F "u bytes, "
-                        "read %" MAGICK_UINT64_F "u bytes",
-                        blob->write_total, blob->read_total);
+    {
+      LockSemaphoreInfo(image->blob->semaphore);
+      (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                            "Closing %sStream blob: image %p, blob %p, ref %lu",
+                            BlobStreamTypeToString(blob->type),
+                            image,blob,blob->reference_count);
+      (void) LogMagickEvent(BlobEvent,GetMagickModule(),
+                            "Blob "
+                            "wrote %" MAGICK_UINT64_F "u bytes, "
+                            "read %" MAGICK_UINT64_F "u bytes",
+                            blob->write_total, blob->read_total);
+      UnlockSemaphoreInfo(image->blob->semaphore);
+    }
 
   status=blob->status;
   switch (blob->type)
