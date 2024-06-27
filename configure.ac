@@ -2866,6 +2866,24 @@ then
     OLD_LIBS=$LIBS
     failed=0
     passed=0
+
+    PKG_CHECK_MODULES([LIBZIP], [libzip], [passed=`expr $passed + 1`], [failed=`expr $failed + 1`])
+    if test $failed -eq 0
+    then
+        if test -n "$VERBOSE"
+        then
+            printf "LIBZIP_LIBS=${LIBZIP_LIBS}\n"
+            printf "LIBZIP_CFLAGS=${LIBZIP_CFLAGS}\n"
+        fi
+        pkg_config_to_flags 'libzip' "${LIBZIP_LIBS}" "${LIBZIP_CFLAGS}"
+    else
+      if test -n "${LIBZIP_PKG_ERRORS}"
+      then
+        printf "${LIBZIP_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+
     AC_CHECK_HEADER([zip.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[])
     AC_CHECK_LIB([zip],[zip_open],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],)
 

@@ -277,12 +277,19 @@ in order to read or write the MPEG image format.</p></li>
 upon the ZLIB library (see below).</p>
 </li>
 <li><p>GraphicsMagick requires Sam Leffler's TIFF software available via
-HTTP at</p>
+HTTPS at</p>
 <blockquote>
 <p><a class="reference external" href="https://libtiff.gitlab.io/libtiff/">https://libtiff.gitlab.io/libtiff/</a></p>
 </blockquote>
 <p>to read the TIFF image format. It in turn optionally requires the
 JPEG and ZLIB libraries.  Libtiff 3.8.2 or later is recommended.</p>
+</li>
+<li><p>GraphicsMagick requires libzip available via HTTPS at</p>
+<blockquote>
+<p><a class="reference external" href="https://libzip.org/">https://libzip.org/</a></p>
+</blockquote>
+<p>in in order to read the ORA format.  It in turn optionally requires
+libbzip2 and OpenSSL libraries.</p>
 </li>
 <li><p>GraphicsMagick may optionally use the TRIO library from</p>
 <blockquote>

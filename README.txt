@@ -246,12 +246,19 @@ building under Microsoft Windows:
   upon the ZLIB library (see below).
 
 * GraphicsMagick requires Sam Leffler's TIFF software available via
-  HTTP at
+  HTTPS at
 
      https://libtiff.gitlab.io/libtiff/
 
   to read the TIFF image format. It in turn optionally requires the
   JPEG and ZLIB libraries.  Libtiff 3.8.2 or later is recommended.
+
+* GraphicsMagick requires libzip available via HTTPS at
+
+     https://libzip.org/
+
+  in in order to read the ORA format.  It in turn optionally requires
+  libbzip2 and OpenSSL libraries.
 
 * GraphicsMagick may optionally use the TRIO library from
 

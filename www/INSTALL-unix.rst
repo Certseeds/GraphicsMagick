@@ -351,6 +351,10 @@ Optional Packages/Options
 
     disable TrueType support
 
+--without-libzip
+
+    disable libzip support
+
 --with-tcmalloc
 
     enable Google perftools tcmalloc (minimal) memory allocation

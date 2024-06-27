@@ -757,6 +757,8 @@ HasJBIG_TRUE
 LIB_ZIP
 HasLIBZIP_FALSE
 HasLIBZIP_TRUE
+LIBZIP_LIBS
+LIBZIP_CFLAGS
 LIB_WEBP
 HasWEBP_FALSE
 HasWEBP_TRUE
@@ -1171,6 +1173,8 @@ WEBPMUX_CFLAGS
 WEBPMUX_LIBS
 WEBP_CFLAGS
 WEBP_LIBS
+LIBZIP_CFLAGS
+LIBZIP_LIBS
 TIFF_CFLAGS
 TIFF_LIBS
 LIBJXL_THREADS_CFLAGS
@@ -1936,6 +1940,9 @@ Some influential environment variables:
               linker flags for WEBPMUX, overriding pkg-config
   WEBP_CFLAGS C compiler flags for WEBP, overriding pkg-config
   WEBP_LIBS   linker flags for WEBP, overriding pkg-config
+  LIBZIP_CFLAGS
+              C compiler flags for LIBZIP, overriding pkg-config
+  LIBZIP_LIBS linker flags for LIBZIP, overriding pkg-config
   TIFF_CFLAGS C compiler flags for TIFF, overriding pkg-config
   TIFF_LIBS   linker flags for TIFF, overriding pkg-config
   LIBJXL_THREADS_CFLAGS
@@ -28337,6 +28344,94 @@ $as_echo "" >&6; }
     OLD_LIBS=$LIBS
     failed=0
     passed=0
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libzip" >&5
+$as_echo_n "checking for libzip... " >&6; }
+
+if test -n "$LIBZIP_CFLAGS"; then
+    pkg_cv_LIBZIP_CFLAGS="$LIBZIP_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libzip\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libzip") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBZIP_CFLAGS=`$PKG_CONFIG --cflags "libzip" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBZIP_LIBS"; then
+    pkg_cv_LIBZIP_LIBS="$LIBZIP_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libzip\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libzip") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBZIP_LIBS=`$PKG_CONFIG --libs "libzip" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBZIP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libzip" 2>&1`
+        else
+	        LIBZIP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libzip" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBZIP_PKG_ERRORS" >&5
+
+	failed=`expr $failed + 1`
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	failed=`expr $failed + 1`
+else
+	LIBZIP_CFLAGS=$pkg_cv_LIBZIP_CFLAGS
+	LIBZIP_LIBS=$pkg_cv_LIBZIP_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	passed=`expr $passed + 1`
+fi
+    if test $failed -eq 0
+    then
+        if test -n "$VERBOSE"
+        then
+            printf "LIBZIP_LIBS=${LIBZIP_LIBS}\n"
+            printf "LIBZIP_CFLAGS=${LIBZIP_CFLAGS}\n"
+        fi
+        pkg_config_to_flags 'libzip' "${LIBZIP_LIBS}" "${LIBZIP_CFLAGS}"
+    else
+      if test -n "${LIBZIP_PKG_ERRORS}"
+      then
+        printf "${LIBZIP_PKG_ERRORS}\n"
+      fi
+      failed=0
+    fi
+
     ac_fn_c_check_header_mongrel "$LINENO" "zip.h" "ac_cv_header_zip_h" "$ac_includes_default"
 if test "x$ac_cv_header_zip_h" = xyes; then :
   passed=`expr $passed + 1`

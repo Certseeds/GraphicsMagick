@@ -1,5 +1,11 @@
 2024-06-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* www/INSTALL-unix.rst: Add mention of --without-libzip.
+
+	* README.txt: Add a section for libzip.
+
+	* configure.ac: Add pkg-config support for libzip.
+
 	* coders/tiff.c (WriteTIFFImage): Report an error if input image
 	is not valid.
 
