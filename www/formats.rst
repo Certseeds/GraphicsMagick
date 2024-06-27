@@ -214,6 +214,9 @@ image formats.
    | HTML         | RW   | with a client-side image  | Also known as "HTM". Requires html2ps to read.   |
    |              |      | map                       |                                                  |
    +--------------+------+---------------------------+--------------------------------------------------+
+   | HRZ          | RW   | Slow-Scan Television      | This a format used when an image is transmitted  |
+   |              |      | (SSTV)                    | over amateur radio using audio equipment.        |
+   +--------------+------+---------------------------+--------------------------------------------------+
    | ICO          | R    | Microsoft icon            | Also known as "ICON".                            |
    +--------------+------+---------------------------+--------------------------------------------------+
    |              |      | Joint Bi-level Image      | Also known as "BIE" and "JBG". Requires          |
