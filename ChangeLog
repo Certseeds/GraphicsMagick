@@ -1,5 +1,8 @@
 2024-06-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (WriteTIFFImage): Report an error if input image
+	is not valid.
+
 	* www/formats.rst: Add an entry for HRZ format.
 
 2024-06-24  Fojtik Jaroslav  <JaFojtik@yandex.com>

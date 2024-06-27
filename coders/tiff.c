@@ -4985,15 +4985,27 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
   size_t
     image_list_length;
 
-  /*
-    Open TIFF file.
-  */
   assert(image_info != (const ImageInfo *) NULL);
   assert(image_info->signature == MagickSignature);
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
-  image_list_length=GetImageListLength(image);
+
   logging=IsEventLogged(CoderEvent);
+
+  if ((image->columns == 0) || (image->rows == 0) || !GetPixelCachePresent(image))
+    {
+      if (logging)
+        (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                              "Image columns=%lu, rows=%lu, pixel-cache=%s",
+                              image->columns, image->rows,
+                              GetPixelCachePresent(image) ? "Present" : "Missing!");
+      ThrowWriterException(CoderError,ImageColumnOrRowSizeIsNotSupported,image);
+    }
+
+  /*
+    Open TIFF file.
+  */
+  image_list_length=GetImageListLength(image);
   status=OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
   if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
