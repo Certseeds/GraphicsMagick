@@ -6105,12 +6105,17 @@ WriteTIFFImage(const ImageInfo *image_info,Image *image)
           }
         }
 
-      if (scanline_size < (tsize_t) bytes_per_strip_target)
-        rows_per_strip *= (uint32) ((size_t) bytes_per_strip_target / ((size_t) rows_per_strip*scanline_size));
-      if (rows_per_strip > image->rows)
-        rows_per_strip=image->rows;
-      if (rows_per_strip < 1)
+      if(rows_per_strip==0 || scanline_size==0)
         rows_per_strip=1;
+      else
+      {
+        if (scanline_size < (tsize_t) bytes_per_strip_target)
+          rows_per_strip *= (uint32) ((size_t) bytes_per_strip_target / ((size_t) rows_per_strip*scanline_size));
+        if (rows_per_strip > image->rows)
+          rows_per_strip=image->rows;
+        if (rows_per_strip < 1)
+          rows_per_strip=1;
+      }
 
       /*
         It seems that some programs fail to handle more than 32K or

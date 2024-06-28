@@ -1,3 +1,7 @@
+2024-06-28 Fojtik Jaroslav  <JaFojtik@yandex.com>
+
+	* magick/tiff.c: Possible division by 0 fixed.
+
 2024-06-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/INSTALL-unix.rst: Add mention of --without-libzip.
@@ -11,7 +15,7 @@
 
 	* www/formats.rst: Add an entry for HRZ format.
 
-2024-06-24  Fojtik Jaroslav  <JaFojtik@yandex.com>
+2024-06-26  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* configure.ac: Typo fixed in library name.
 
