@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2014 GraphicsMagick Group */
+/* Copyright (C) 2003-2024 GraphicsMagick Group */
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -157,7 +157,7 @@ ClonePixelWand(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  ClonePixelWands creates a deep-copy an array of PixelWands.
+%  ClonePixelWands creates a deep-copy of an array of PixelWands.
 %
 %  The format of the ClonePixelWands method is:
 %
@@ -168,7 +168,7 @@ ClonePixelWand(const PixelWand *wand)
 %
 %    o wands: The pixel wands to clone.
 %
-%    o number_wands: The number of wands in the array
+%    o number_wands: The number of wands in the array.
 %
 */
 WandExport PixelWand **
@@ -184,7 +184,7 @@ ClonePixelWands(const PixelWand **wands,const unsigned long number_wands)
   assert(number_wands > 0);
 
   clone_wands=MagickAllocateArray(PixelWand **,
-                                  sizeof(PixelWand *),number_wands);
+                                  number_wands,sizeof(PixelWand *));
   if (clone_wands == (PixelWand **) NULL)
     MagickFatalError3(ResourceLimitFatalError,MemoryAllocationFailed,
                       UnableToAllocateWand);
@@ -210,7 +210,7 @@ ClonePixelWands(const PixelWand **wands,const unsigned long number_wands)
 %
 %  The format of the DestroyPixelWand method is:
 %
-%      unsigned int DestroyPixelWand(PixelWand *wand)
+%      void DestroyPixelWand(PixelWand *wand)
 %
 %  A description of each parameter follows:
 %
@@ -240,7 +240,7 @@ WandExport void DestroyPixelWand(PixelWand *wand)
 %
 %  The format of the NewPixelWand method is:
 %
-%      PixelWand NewPixelWand(void)
+%      PixelWand *NewPixelWand(void)
 %
 %
 */
@@ -291,7 +291,7 @@ WandExport PixelWand *NewPixelWand(void)
 %
 %  The format of the NewPixelWand method is:
 %
-%      PixelWand NewPixelWands(const unsigned long number_wands)
+%      PixelWand **NewPixelWands(const unsigned long number_wands)
 %
 %  A description of each parameter follows:
 %
@@ -406,7 +406,7 @@ WandExport double PixelGetBlack(const PixelWand *wand)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelGetBlackQuantum() returns the black color of the pixel wand.  The
-%  color is in the range of [0..MaxRGB]
+%  color is in the range of [0..MaxRGB].
 %
 %  The format of the PixelGetBlackQuantum method is:
 %
@@ -435,7 +435,7 @@ WandExport Quantum PixelGetBlackQuantum(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetBlue(const) returns the normalized blue color of the pixel wand.
+%  PixelGetBlue() returns the normalized blue color of the pixel wand.
 %
 %  The format of the PixelGetBlue method is:
 %
@@ -464,8 +464,8 @@ WandExport double PixelGetBlue(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetBlueQuantum(const ) returns the blue color of the pixel wand.  The
-%  color is in the range of [0..MaxRGB]
+%  PixelGetBlueQuantum() returns the blue color of the pixel wand.  The
+%  color is in the range of [0..MaxRGB].
 %
 %  The format of the PixelGetBlueQuantum method is:
 %
@@ -494,7 +494,8 @@ WandExport Quantum PixelGetBlueQuantum(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetColorAsString() gets the color of the pixel wand.
+%  PixelGetColorAsString() gets the color of the pixel wand expressed as
+%  a string.
 %
 %  The format of the PixelGetColorAsString method is:
 %
@@ -595,7 +596,7 @@ WandExport double PixelGetCyan(const PixelWand *wand)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelGetCyanQuantum() returns the cyan color of the pixel wand.  The color
-%  is in the range of [0..MaxRGB]
+%  is in the range of [0..MaxRGB].
 %
 %  The format of the PixelGetCyanQuantum method is:
 %
@@ -624,7 +625,7 @@ WandExport Quantum PixelGetCyanQuantum(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetGreen(const ) returns the normalized green color of the pixel wand.
+%  PixelGetGreen() returns the normalized green color of the pixel wand.
 %
 %  The format of the PixelGetGreen method is:
 %
@@ -653,8 +654,8 @@ WandExport double PixelGetGreen(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetGreenQuantum(const ) returns the green color of the pixel wand.  The
-%  color is in the range of [0..MaxRGB]
+%  PixelGetGreenQuantum() returns the green color of the pixel wand.  The
+%  color is in the range of [0..MaxRGB].
 %
 %  The format of the PixelGetGreenQuantum method is:
 %
@@ -713,7 +714,7 @@ WandExport double PixelGetMagenta(const PixelWand *wand)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelGetMagentaQuantum() returns the magenta color of the pixel wand.  The
-%  color is in the range of [0..MaxRGB]
+%  color is in the range of [0..MaxRGB].
 %
 %  The format of the PixelGetMagentaQuantum method is:
 %
@@ -742,7 +743,7 @@ WandExport Quantum PixelGetMagentaQuantum(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetOpacity(const ) returns the normalized opacity color of the pixel
+%  PixelGetOpacity() returns the normalized opacity color of the pixel
 %  wand.
 %
 %  The format of the PixelGetOpacity method is:
@@ -772,8 +773,8 @@ WandExport double PixelGetOpacity(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetOpacityQuantum(const ) returns the opacity color of the pixel wand.
-%  The color is in the range of [0..MaxRGB]
+%  PixelGetOpacityQuantum() returns the opacity color of the pixel wand.
+%  The color is in the range of [0..MaxRGB].
 %
 %  The format of the PixelGetOpacityQuantum method is:
 %
@@ -806,7 +807,7 @@ WandExport Quantum PixelGetOpacityQuantum(const PixelWand *wand)
 %
 %  The format of the PixelGetQuantumColor method is:
 %
-%      PixelGetQuantumColor(PixelWand *wand,PixelPacket *color)
+%      void PixelGetQuantumColor(PixelWand *wand,PixelPacket *color)
 %
 %  A description of each parameter follows:
 %
@@ -837,7 +838,7 @@ WandExport void PixelGetQuantumColor(const PixelWand *wand,PixelPacket *color)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetRed(const ) returns the normalized red color of the pixel wand.
+%  PixelGetRed() returns the normalized red color of the pixel wand.
 %
 %  The format of the PixelGetRed method is:
 %
@@ -866,8 +867,8 @@ WandExport double PixelGetRed(const PixelWand *wand)
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  PixelGetRedQuantum(const ) returns the red color of the pixel wand.  The
-%  color is in the range of [0..MaxRGB]
+%  PixelGetRedQuantum() returns the red color of the pixel wand.  The
+%  color is in the range of [0..MaxRGB].
 %
 %  The format of the PixelGetRedQuantum method is:
 %
@@ -926,7 +927,7 @@ WandExport double PixelGetYellow(const PixelWand *wand)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelGetYellowQuantum() returns the yellow color of the pixel wand.  The
-%  color is in the range of [0..MaxRGB]
+%  color is in the range of [0..MaxRGB].
 %
 %  The format of the PixelGetYellowQuantum method is:
 %
@@ -959,7 +960,7 @@ WandExport Quantum PixelGetYellowQuantum(const PixelWand *wand)
 %
 %  The format of the PixelSetBlack method is:
 %
-%      unsigned int PixelSetBlack(PixelWand *wand,const double black)
+%      void PixelSetBlack(PixelWand *wand,const double black)
 %
 %  A description of each parameter follows:
 %
@@ -993,12 +994,11 @@ WandExport void PixelSetBlack(PixelWand *wand,const double black)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetBlackQuantum() sets the black color of the pixel wand.  The color
-%  must be in the range of [0..MaxRGB]
+%  must be in the range of [0..MaxRGB].
 %
 %  The format of the PixelSetBlackQuantum method is:
 %
-%      unsigned int PixelSetBlackQuantum(PixelWand *wand,
-%        const Quantum black)
+%      void PixelSetBlackQuantum(PixelWand *wand, const Quantum black)
 %
 %  A description of each parameter follows:
 %
@@ -1029,7 +1029,7 @@ WandExport void PixelSetBlackQuantum(PixelWand *wand,const Quantum black)
 %
 %  The format of the PixelSetBlue method is:
 %
-%      unsigned int PixelSetBlue(PixelWand *wand,const double blue)
+%      void PixelSetBlue(PixelWand *wand,const double blue)
 %
 %  A description of each parameter follows:
 %
@@ -1063,11 +1063,11 @@ WandExport void PixelSetBlue(PixelWand *wand,const double blue)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetBlueQuantum() sets the blue color of the pixel wand.  The color must
-%  be in the range of [0..MaxRGB]
+%  be in the range of [0..MaxRGB].
 %
 %  The format of the PixelSetBlueQuantum method is:
 %
-%      unsigned int PixelSetBlueQuantum(PixelWand *wand,const Quantum blue)
+%      void PixelSetBlueQuantum(PixelWand *wand,const Quantum blue)
 %
 %  A description of each parameter follows:
 %
@@ -1095,7 +1095,8 @@ WandExport void PixelSetBlueQuantum(PixelWand *wand,const Quantum blue)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetColor() sets the color of the pixel wand with a string (e.g.
-%  "blue", "#0000ff", "rgb(0,0,255)", etc.).
+%  "blue", "#0000ff", "rgb(0,0,255)", etc.).  MagickFalse is returned
+%  on failure
 %
 %  The format of the PixelSetColor method is:
 %
@@ -1149,8 +1150,7 @@ WandExport unsigned int PixelSetColor(PixelWand *wand,const char *color)
 %
 %  The format of the PixelSetColorCount method is:
 %
-%      unsigned int PixelSetColorCount(PixelWand *wand,
-%        const unsigned long count)
+%      void PixelSetColorCount(PixelWand *wand, const unsigned long count)
 %
 %  A description of each parameter follows:
 %
@@ -1181,7 +1181,7 @@ WandExport void PixelSetColorCount(PixelWand *wand,const unsigned long count)
 %
 %  The format of the PixelSetCyan method is:
 %
-%      unsigned int PixelSetCyan(PixelWand *wand,const double cyan)
+%      void PixelSetCyan(PixelWand *wand,const double cyan)
 %
 %  A description of each parameter follows:
 %
@@ -1215,11 +1215,11 @@ WandExport void PixelSetCyan(PixelWand *wand,const double cyan)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetCyanQuantum() sets the cyan color of the pixel wand.  The color must
-%  be in the range of [0..MaxRGB]
+%  be in the range of [0..MaxRGB].
 %
 %  The format of the PixelSetCyanQuantum method is:
 %
-%      unsigned int PixelSetCyanQuantum(PixelWand *wand,const Quantum cyan)
+%      void PixelSetCyanQuantum(PixelWand *wand, const Quantum cyan)
 %
 %  A description of each parameter follows:
 %
@@ -1250,7 +1250,7 @@ WandExport void PixelSetCyanQuantum(PixelWand *wand,const Quantum cyan)
 %
 %  The format of the PixelSetGreen method is:
 %
-%      unsigned int PixelSetGreen(PixelWand *wand,const double green)
+%      void PixelSetGreen(PixelWand *wand,const double green)
 %
 %  A description of each parameter follows:
 %
@@ -1284,11 +1284,11 @@ WandExport void PixelSetGreen(PixelWand *wand,const double green)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetGreenQuantum() sets the green color of the pixel wand.  The color must
-%  be in the range of [0..MaxRGB]
+%  be in the range of [0..MaxRGB].
 %
 %  The format of the PixelSetGreenQuantum method is:
 %
-%      unsigned int PixelSetGreenQuantum(PixelWand *wand,const Quantum green)
+%      void PixelSetGreenQuantum(PixelWand *wand,const Quantum green)
 %
 %  A description of each parameter follows:
 %
@@ -1319,7 +1319,7 @@ WandExport void PixelSetGreenQuantum(PixelWand *wand,const Quantum green)
 %
 %  The format of the PixelSetMagenta method is:
 %
-%      unsigned int PixelSetMagenta(PixelWand *wand,const double magenta)
+%      void PixelSetMagenta(PixelWand *wand,const double magenta)
 %
 %  A description of each parameter follows:
 %
@@ -1353,12 +1353,11 @@ WandExport void PixelSetMagenta(PixelWand *wand,const double magenta)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetMagentaQuantum() sets the magenta color of the pixel wand.  The
-%  color must be in the range of [0..MaxRGB]
+%  color must be in the range of [0..MaxRGB].
 %
 %  The format of the PixelSetMagentaQuantum method is:
 %
-%      unsigned int PixelSetMagentaQuantum(PixelWand *wand,
-%        const Quantum magenta)
+%      void PixelSetMagentaQuantum(PixelWand *wand, const Quantum magenta)
 %
 %  A description of each parameter follows:
 %
@@ -1389,7 +1388,7 @@ WandExport void PixelSetMagentaQuantum(PixelWand *wand,const Quantum magenta)
 %
 %  The format of the PixelSetOpacity method is:
 %
-%      unsigned int PixelSetOpacity(PixelWand *wand,const double opacity)
+%      void PixelSetOpacity(PixelWand *wand,const double opacity)
 %
 %  A description of each parameter follows:
 %
@@ -1423,12 +1422,11 @@ WandExport void PixelSetOpacity(PixelWand *wand,const double opacity)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetOpacityQuantum() sets the opacity color of the pixel wand.  The
-%  color must be in the range of [0..MaxRGB]
+%  color must be in the range of [0..MaxRGB].
 %
 %  The format of the PixelSetOpacityQuantum method is:
 %
-%      unsigned int PixelSetOpacityQuantum(PixelWand *wand,
-%        const Quantum opacity)
+%      void PixelSetOpacityQuantum(PixelWand *wand,const Quantum opacity)
 %
 %  A description of each parameter follows:
 %
@@ -1459,7 +1457,7 @@ WandExport void PixelSetOpacityQuantum(PixelWand *wand,const Quantum opacity)
 %
 %  The format of the PixelSetQuantumColor method is:
 %
-%      PixelSetQuantumColor(PixelWand *wand,PixelPacket *color)
+%      void PixelSetQuantumColor(PixelWand *wand,const PixelPacket *color)
 %
 %  A description of each parameter follows:
 %
@@ -1468,8 +1466,7 @@ WandExport void PixelSetOpacityQuantum(PixelWand *wand,const Quantum opacity)
 %    o color: The pixel wand color (expressed as a PixelPacket).
 %
 */
-/* FIXME: color argument should be const! */
-WandExport void PixelSetQuantumColor(PixelWand *wand,PixelPacket *color)
+WandExport void PixelSetQuantumColor(PixelWand *wand,const PixelPacket *color)
 {
   assert(wand != (PixelWand *) NULL);
   assert(wand->signature == MagickSignature);
@@ -1495,7 +1492,7 @@ WandExport void PixelSetQuantumColor(PixelWand *wand,PixelPacket *color)
 %
 %  The format of the PixelSetRed method is:
 %
-%      unsigned int PixelSetRed(PixelWand *wand,const double red)
+%      void PixelSetRed(PixelWand *wand,const double red)
 %
 %  A description of each parameter follows:
 %
@@ -1529,11 +1526,11 @@ WandExport void PixelSetRed(PixelWand *wand,const double red)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetRedQuantum() sets the red color of the pixel wand.  The color must
-%  be in the range of [0..MaxRGB]
+%  be in the range of [0..MaxRGB].
 %
 %  The format of the PixelSetRedQuantum method is:
 %
-%      unsigned int PixelSetRedQuantum(PixelWand *wand,const Quantum red)
+%      void PixelSetRedQuantum(PixelWand *wand,const Quantum red)
 %
 %  A description of each parameter follows:
 %
@@ -1564,7 +1561,7 @@ WandExport void PixelSetRedQuantum(PixelWand *wand,const Quantum red)
 %
 %  The format of the PixelSetYellow method is:
 %
-%      unsigned int PixelSetYellow(PixelWand *wand,const double yellow)
+%      void PixelSetYellow(PixelWand *wand,const double yellow)
 %
 %  A description of each parameter follows:
 %
@@ -1598,11 +1595,11 @@ WandExport void PixelSetYellow(PixelWand *wand,const double yellow)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  PixelSetYellowQuantum() sets the yellow color of the pixel wand.  The color
-%  must be in the range of [0..MaxRGB]
+%  must be in the range of [0..MaxRGB].
 %
 %  The format of the PixelSetYellowQuantum method is:
 %
-%      unsigned int PixelSetYellowQuantum(PixelWand *wand,const Quantum yellow)
+%      void PixelSetYellowQuantum(PixelWand *wand,const Quantum yellow)
 %
 %  A description of each parameter follows:
 %

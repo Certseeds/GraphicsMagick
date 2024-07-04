@@ -544,7 +544,7 @@ GetMagickInfoArray(ExceptionInfo *exception)
   /*
     Allocate array memory
   */
-  array=MagickAllocateArray(MagickInfo **,sizeof(MagickInfo *),(entries+1));
+  array=MagickAllocateArray(MagickInfo **,(entries+1),sizeof(MagickInfo *));
   if (!array)
     {
       UnlockSemaphoreInfo(magick_semaphore);

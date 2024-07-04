@@ -1,3 +1,19 @@
+2024-07-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* wand/pixel_wand.c (ClonePixelWands): Eliminate GCC 14
+	warning about MagickAllocateArray() argument order.
+
+	* magick/magick.c (GetMagickInfoArray): Eliminate GCC 14
+	warning about MagickAllocateArray() argument order.
+
+	* magick/colormap.c (ReplaceImageColormap): Eliminate GCC 14
+	warning about MagickAllocateArray() argument order.
+
+	* wand/pixel_wand.c (PixelSetQuantumColor): Color argument is now
+	a const pointer.
+	* wand/pixel_wand.c Tidy and correct errors in the documentation
+	text.
+
 2024-06-28 Fojtik Jaroslav  <JaFojtik@yandex.com>
 
 	* magick/tiff.c: Possible division by 0 fixed.

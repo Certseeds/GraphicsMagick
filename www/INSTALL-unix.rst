@@ -886,8 +886,8 @@ GraphicsMagick itself::
 Building under Cygwin
 ---------------------
 
-GraphicsMagick may be built under the Windows '95-XP Cygwin
-Unix-emulation environment available for free from
+GraphicsMagick may be built under the Windows Cygwin Unix-emulation
+environment available for free from
 
     http://www.cygwin.com/
 
@@ -898,15 +898,16 @@ to support TrueType and Postscript Type 1 fonts. Make sure that
 /usr/X11R6/bin is in your PATH prior to running configure.
 
 If you are using Cygwin version 1.3.9 or later, you may specify the
-configure option '--enable-shared' to build Cygwin DLLs. Specifying
-'--enable-shared' is required if you want to build PerlMagick under
-Cygwin because Cygwin does not provide the libperl.a static library
-required to create a static PerlMagick.  Note that older Cygwin
-compilers may not generate code which supports reliably catching C++
-exceptions thrown by DLL code.  The Magick++ library requires that it
-be possible to catch C++ exceptions thrown from DLLs.  The test suite
-``make check`` includes several tests to verify that C++ exceptions
-are working properly.
+configure option '--enable-shared' to build Cygwin DLLs, and
+additionally '--with-modules' to enable use of loadable
+modules. Specifying '--enable-shared' is required if you want to build
+PerlMagick under Cygwin because Cygwin does not provide the libperl.a
+static library required to create a static PerlMagick.  Note that
+older Cygwin compilers may not generate code which supports reliably
+catching C++ exceptions thrown by DLL code.  The Magick++ library
+requires that it be possible to catch C++ exceptions thrown from DLLs.
+The test suite ``make check`` includes several tests to verify that
+C++ exceptions are working properly.
 
 Building under MinGW & MSYS2
 ----------------------------
@@ -914,10 +915,9 @@ Building under MinGW & MSYS2
 GraphicsMagick may easily be built using the free `MSYS2
 <https://www.msys2.org/>`_ distribution which provides GCC compilers,
 libraries, and headers, targeting native Windows along with a
-Unix-like command shell and a package manager ('Pacman') to install
-pre-compiled components.  Using the pre-compiled packages, it is
-almost as easy to compile GraphicsMagick under MSYS2 as it is under
-Linux!
+Unix-like command shell and a package manager ('pacman') to install
+pre-compiled components.  Using the pre-compiled packages, it is as
+easy to compile GraphicsMagick under MSYS2 as it is under Linux!
 
 When using MSYS2, requesting to install these packages using 'pacman
 -S' should result in getting up to speed very quicky with a featureful
@@ -927,21 +927,23 @@ mingw-w64-x86_64-toolchain, mingw-w64-x86_64-bzip2,
 mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
 mingw-w64-x86_64-jasper, mingw-w64-x86_64-jbigkit,
 mingw-w64-x86_64-lcms2, mingw-w64-x86_64-libheif,
-mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
-mingw-w64-x86_64-libtiff, mingw-w64-x86_64-libtool,
-mingw-w64-x86_64-libwebp, mingw-w64-x86_64-libwmf,
-mingw-w64-x86_64-libxml2, mingw-w64-x86_64-zlib
+mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libjxl,
+mingw-w64-x86_64-libpng, mingw-w64-x86_64-libtiff,
+mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp,
+mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2,
+mingw-w64-x86_64-libzip, mingw-w64-x86_64-zlib,
 
 and/or use the following to add support for a 32-bit build:
 
 mingw-w64-i686-toolchain, mingw-w64-i686-bzip2,
 mingw-w64-i686-freetype, mingw-w64-i686-ghostscript,
-mingw-w64-i686-jasper, mingw-w64-i686-libheif,
-mingw-w64-i686-jbigkit, mingw-w64-i686-lcms2,
-mingw-w64-i686-libjpeg-turbo, mingw-w64-i686-libpng,
-mingw-w64-i686-libtiff, mingw-w64-i686-libtool,
-mingw-w64-i686-libwebp, mingw-w64-i686-libwmf,
-mingw-w64-i686-libxml2, mingw-w64-i686-zlib
+mingw-w64-i686-jasper, mingw-w64-i686-jbigkit,
+mingw-w64-i686-lcms2, mingw-w64-i686-libheif,
+mingw-w64-i686-libjpeg-turbo, mingw-w64-i686-libjxl,
+mingw-w64-i686-libpng, mingw-w64-i686-libtiff,
+mingw-w64-i686-libtool, mingw-w64-i686-libwebp,
+mingw-w64-i686-libwmf, mingw-w64-i686-libxml2,
+mingw-w64-i686-libzip, mingw-w64-i686-zlib,
 
 GraphicsMagick may also be built using the free MinGW
 ("Minimalistic GNU for Windows") package, available from

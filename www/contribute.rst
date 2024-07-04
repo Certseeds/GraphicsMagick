@@ -27,20 +27,20 @@ There are a number of ways you can contribute:
 
 * Create a new language interface, dependent library, or application.
 
-* Join the GraphicsMagick Group as a full-fledged developer with CVS
-  commit access.
+* Join the GraphicsMagick Group as a full-fledged developer with
+  Mercurial commit access.
 
 Regardless of how you choose to contribute, your contributions will be
 treated with the respect and value that they deserve.
 
 Becoming a member of the GraphicsMagick Group requires a majority vote
 from existing members. Your chances of being admitted to the group are
-increased significantly if you have a proven track-record of success on
-other open source projects, are a recognized expert in the field, or have
-already demonstrated your capabilities and commitment by contributing to
-the project in other ways. Please contact Bob Friesenhahn
-<bfriesen@simple.dallas.tx.us> in order to be considered for group
-membership.
+increased significantly if you have a proven track-record of success
+on other open source projects, are a recognized expert in the field,
+or have already demonstrated your capabilities and commitment by
+contributing to the project in other ways. Please contact Bob
+Friesenhahn <bobjfriesenhahn@gmail.com> in order to be considered for
+group membership.
 
 Areas To Contribute
 -------------------
