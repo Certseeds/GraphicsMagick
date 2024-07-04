@@ -41,6 +41,10 @@
 <p>2024-07-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>configure.ac: Assume that targets matching *-w64-mingw* are
+capable of supporting 'C99 printf syntax.
+(INT64_F, UINT64_F, MAGICK_SIZE_T_F, MAGICK_SSIZE_T_F): Try to
+intuit better MinGW printf syntax based on host_vendor setting.</p></li>
 <li><p>wand/pixel_wand.c (ClonePixelWands): Eliminate GCC 14
 warning about MagickAllocateArray() argument order.</p></li>
 <li><p>magick/magick.c (GetMagickInfoArray): Eliminate GCC 14

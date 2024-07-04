@@ -1,5 +1,10 @@
 2024-07-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac: Assume that targets matching *-w64-mingw* are
+	capable of supporting 'C99 printf syntax.
+	(INT64_F, UINT64_F, MAGICK_SIZE_T_F, MAGICK_SSIZE_T_F): Try to
+	intuit better MinGW printf syntax based on host_vendor setting.
+
 	* wand/pixel_wand.c (ClonePixelWands): Eliminate GCC 14
 	warning about MagickAllocateArray() argument order.
 

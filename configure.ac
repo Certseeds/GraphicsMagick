@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2023 GraphicsMagick Group
+# Copyright (C) 2003-2024 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998, 1999 E. I. du Pont de Nemours and Company
 #
@@ -1183,8 +1183,13 @@ then
 fi
 case "${host_os}" in
   mingw* )
-    INT64_F='"I64"'
-    ;;
+    # Note that config.guess sets vendor to 'pc' but mingw-w64
+    # config.site overrides it and sets host_vendor to 'w64'.
+    case "${host_vendor}" in
+      'pc' ) # Original MinGW, use Microsoft syntax
+        INT64_F='"I64"'
+        ;;
+    esac
 esac
 AC_MSG_RESULT([$INT64_T])
 AC_SUBST([INT64_T])
@@ -1205,8 +1210,11 @@ then
 fi
 case "${host_os}" in
   mingw* )
-    UINT64_F='"I64"'
-    ;;
+    case "${host_vendor}" in
+      'pc' ) # Original MinGW, use Microsoft syntax
+        UINT64_F='"I64"'
+        ;;
+    esac
 esac
 AC_MSG_RESULT([$UINT64_T])
 AC_SUBST([UINT64_T])
@@ -1278,19 +1286,19 @@ then
 elif test $ac_cv_sizeof_size_t -eq $ac_cv_sizeof_unsigned_long_long
 then
   # Maybe a LLP64 architecture like WIN64
+  MAGICK_SIZE_T='unsigned long long'
+  MAGICK_SIZE_T_F='"ll"'
+  MAGICK_SSIZE_T='signed long long'
+  MAGICK_SSIZE_T_F='"ll"'
   case "${host_os}" in
     mingw* )
-      MAGICK_SIZE_T='unsigned long long'
-      MAGICK_SIZE_T_F='"I64"'
-      MAGICK_SSIZE_T='signed long long'
-      MAGICK_SSIZE_T_F='"I64"'
-    ;;
-    *)
-      MAGICK_SIZE_T='unsigned long long'
-      MAGICK_SIZE_T_F='"ll"'
-      MAGICK_SSIZE_T='signed long long'
-      MAGICK_SSIZE_T_F='"ll"'
-    ;;
+      case "${host_vendor}" in
+        'pc' ) # Original MinGW, use Microsoft syntax
+          MAGICK_SIZE_T_F='"I64"'
+          MAGICK_SSIZE_T_F='"I64"'
+          ;;
+      esac
+      ;;
   esac
 fi
 AC_MSG_RESULT([$MAGICK_SIZE_T_F])

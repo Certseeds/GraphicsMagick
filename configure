@@ -21518,8 +21518,13 @@ then
 fi
 case "${host_os}" in
   mingw* )
-    INT64_F='"I64"'
-    ;;
+    # Note that config.guess sets vendor to 'pc' but mingw-w64
+    # config.site overrides it and sets host_vendor to 'w64'.
+    case "${host_vendor}" in
+      'pc' ) # Original MinGW, use Microsoft syntax
+        INT64_F='"I64"'
+        ;;
+    esac
 esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $INT64_T" >&5
 $as_echo "$INT64_T" >&6; }
@@ -21542,8 +21547,11 @@ then
 fi
 case "${host_os}" in
   mingw* )
-    UINT64_F='"I64"'
-    ;;
+    case "${host_vendor}" in
+      'pc' ) # Original MinGW, use Microsoft syntax
+        UINT64_F='"I64"'
+        ;;
+    esac
 esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $UINT64_T" >&5
 $as_echo "$UINT64_T" >&6; }
@@ -21623,19 +21631,19 @@ then
 elif test $ac_cv_sizeof_size_t -eq $ac_cv_sizeof_unsigned_long_long
 then
   # Maybe a LLP64 architecture like WIN64
+  MAGICK_SIZE_T='unsigned long long'
+  MAGICK_SIZE_T_F='"ll"'
+  MAGICK_SSIZE_T='signed long long'
+  MAGICK_SSIZE_T_F='"ll"'
   case "${host_os}" in
     mingw* )
-      MAGICK_SIZE_T='unsigned long long'
-      MAGICK_SIZE_T_F='"I64"'
-      MAGICK_SSIZE_T='signed long long'
-      MAGICK_SSIZE_T_F='"I64"'
-    ;;
-    *)
-      MAGICK_SIZE_T='unsigned long long'
-      MAGICK_SIZE_T_F='"ll"'
-      MAGICK_SSIZE_T='signed long long'
-      MAGICK_SSIZE_T_F='"ll"'
-    ;;
+      case "${host_vendor}" in
+        'pc' ) # Original MinGW, use Microsoft syntax
+          MAGICK_SIZE_T_F='"I64"'
+          MAGICK_SSIZE_T_F='"I64"'
+          ;;
+      esac
+      ;;
   esac
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MAGICK_SIZE_T_F" >&5
