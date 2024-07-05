@@ -688,8 +688,28 @@ static Image *ReadFITSImage(const ImageInfo *image_info,
 
   CloseBlob(image);
 
-  while (image->previous != (Image *) NULL)
-    image=image->previous;
+  /*
+    Verify frames
+  */
+  image=GetFirstImageInList(image);
+  do
+    {
+      if ((image->columns == 0) || (image->rows == 0) || !GetPixelCachePresent(image))
+        {
+          if (logging)
+            (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                  "Scene %lu: Image columns=%lu, rows=%lu, pixel-cache=%s",
+                                  image->scene, image->columns, image->rows,
+                                  GetPixelCachePresent(image) ? "Present" : "Missing!");
+          ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
+      if (image->next)
+        image=image->next;
+      else
+        break;
+    } while (1);
+
+  image=GetFirstImageInList(image);
 
   if (logging) (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return");
   return(image);

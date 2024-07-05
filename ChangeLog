@@ -1,5 +1,11 @@
 2024-07-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/fits.c (ReadFITSImage): Report an error if FITS frames
+	have zero dimensions or contain no pixels.  Addresses core issue
+	which resulted in oss-fuzz issue 69925:
+	"graphicsmagick:coder_TIFF_any_fuzzer: Floating-point-exception in
+	WriteTIFFImage".
+
 	* www/INSTALL-unix.rst: Remove mention of the original MinGW which
 	became dead and unusable at OSDN a couple of years ago.  It is not
 	even possible to download the installer program.  The old version
