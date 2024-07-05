@@ -1,3 +1,10 @@
+2024-07-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/INSTALL-unix.rst: Remove mention of the original MinGW which
+	became dead and unusable at OSDN a couple of years ago.  It is not
+	even possible to download the installer program.  The old version
+	at SourceForge is all which remains working.
+
 2024-07-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Assume that targets matching *-w64-mingw* are
