@@ -41,6 +41,16 @@
 <p>2024-07-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/gif.c (ReadGIFImage): Don't evaluate background color if
+image-&gt;colors == 0.  Coverity did not detect that previous error
+handling would already have caught this issue.</p></li>
+<li><p>coders/pnm.c (PNMInteger): Code simplification, and convince
+Convince Coverity that value returned by ReadBlobByte() is
+positive if it is not EOF.</p></li>
+<li><p>coders/txt.c (ReadInt): Convince Coverity that value returned by
+ReadBlobByte() is positive if it is not EOF.</p></li>
+<li><p>coders/sct.c (ReadSCTImage): Convince Coverity that value
+returned by ReadBlobByte() is positive if it is not EOF.</p></li>
 <li><p>coders/png.c (ReadMNGImage): Eliminate warning: variable
 'loops_active' set but not used&quot;.</p></li>
 <li><p>coders/pcd.c (DecodeImage): Eliminate &quot;warning: variable 'count'

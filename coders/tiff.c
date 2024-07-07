@@ -1260,6 +1260,15 @@ InitializeImageColormap(Image *image, TIFF *tiff)
   /*
     Compute colormap size
   */
+  if (bits_per_sample > 64)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "Bits per sample (%u) is out of range!",
+                            (unsigned) bits_per_sample);
+      ThrowException(&image->exception,CorruptImageError,ImproperImageHeader,
+                     image->filename);
+      return status;
+    }
   max_sample_value=MaxValueGivenBits(bits_per_sample);
 
   image->colors=0;

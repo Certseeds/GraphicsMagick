@@ -1,5 +1,22 @@
 2024-07-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/tiff.c (InitializeImageColormap): Verify that
+	TIFFTAG_BITSPERSAMPLE is within a rational range.
+
+	* coders/gif.c (ReadGIFImage): Don't evaluate background color if
+	image->colors == 0.  Coverity did not detect that previous error
+	handling would already have caught this issue.
+
+	* coders/pnm.c (PNMInteger): Code simplification, and convince
+	Coverity that value returned by ReadBlobByte() is positive if it
+	is not EOF.
+
+	* coders/txt.c (ReadInt): Convince Coverity that value returned by
+	ReadBlobByte() is positive if it is not EOF.
+
+	* coders/sct.c (ReadSCTImage): Convince Coverity that value
+	returned by ReadBlobByte() is positive if it is not EOF.
+
 	* coders/png.c (ReadMNGImage): Eliminate warning: variable
 	'loops_active' set but not used".
 

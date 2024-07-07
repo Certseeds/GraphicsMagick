@@ -131,6 +131,7 @@ static long ReadInt(Image *image, int *pch)
       ch = ReadBlobByte(image);
       if (ch == EOF)
         return (n);
+      ch &= 0xff;
       digits++;
     }
 
