@@ -1,3 +1,14 @@
+2024-07-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/png.c (ReadMNGImage): Eliminate warning: variable
+	'loops_active' set but not used".
+
+	* coders/pcd.c (DecodeImage): Eliminate "warning: variable 'count'
+	set but not used".
+
+	* magick/color.c (IsPaletteImage): Eliminate "warning: variable
+	'index' set but not used".
+
 2024-07-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/fits.c (ReadFITSImage): Report an error if FITS frames
