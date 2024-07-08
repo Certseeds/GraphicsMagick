@@ -38,15 +38,27 @@
 
 <main id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-07-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>wand/drawing_wand.c (DrawGetStrokeDashArray): Avoid integer
+underflow in loop. Addresses Coverity 427450 &quot;Overflowed
+constant.&quot;</p></li>
+<li><p>magick/draw.c (DrawGetStrokeDashArray): Avoid integer underflow
+in loop. Addresses Coverity 427460 &quot;Overflowed constant&quot;.</p></li>
+</ul>
+</blockquote>
 <p>2024-07-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>coders/tiff.c (InitializeImageColormap): Verify that
+TIFFTAG_BITSPERSAMPLE is within a rational range.</p></li>
 <li><p>coders/gif.c (ReadGIFImage): Don't evaluate background color if
 image-&gt;colors == 0.  Coverity did not detect that previous error
 handling would already have caught this issue.</p></li>
 <li><p>coders/pnm.c (PNMInteger): Code simplification, and convince
-Convince Coverity that value returned by ReadBlobByte() is
-positive if it is not EOF.</p></li>
+Coverity that value returned by ReadBlobByte() is positive if it
+is not EOF.</p></li>
 <li><p>coders/txt.c (ReadInt): Convince Coverity that value returned by
 ReadBlobByte() is positive if it is not EOF.</p></li>
 <li><p>coders/sct.c (ReadSCTImage): Convince Coverity that value

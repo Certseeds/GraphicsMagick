@@ -1,3 +1,12 @@
+2024-07-08  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* wand/drawing_wand.c (DrawGetStrokeDashArray): Avoid integer
+	underflow in loop. Addresses Coverity 427450 "Overflowed
+	constant."
+
+	* magick/draw.c (DrawGetStrokeDashArray): Avoid integer underflow
+	in loop. Addresses Coverity 427460 "Overflowed constant".
+
 2024-07-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/tiff.c (InitializeImageColormap): Verify that

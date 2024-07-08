@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="draw">
+<main id="draw">
 <h1 class="title">draw</h1>
 <p class="subtitle" id="user-friendly-methods-to-draw-on-an-image">User-friendly methods to draw on an image</p>
 <div class="contents topic" id="contents">
@@ -157,14 +157,14 @@
 <li><p><a class="reference internal" href="#drawsetviewbox" id="id337">DrawSetViewbox</a></p></li>
 </ul>
 </div>
-<div class="section" id="drawannotation">
+<section id="drawannotation">
 <h1><a class="toc-backref" href="#id225">DrawAnnotation</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawAnnotation( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y,
                      const unsigned char *text );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>DrawAnnotation() draws text on the image.</p>
 <p>The format of the DrawAnnotation method is:</p>
@@ -184,15 +184,15 @@
 <dd><p>text to draw</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawaffine">
+</section>
+</section>
+<section id="drawaffine">
 <h1><a class="toc-backref" href="#id226">DrawAffine</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawAffine( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#affinematrix">AffineMatrix</a> *affine );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>DrawAffine() adjusts the current affine transformation matrix with
 the specified affine transformation matrix. Note that the current affine
@@ -208,15 +208,15 @@ transform is adjusted rather than replaced.</p>
 <dd><p>Affine matrix parameters</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawallocatecontext">
+</section>
+</section>
+<section id="drawallocatecontext">
 <h1><a class="toc-backref" href="#id227">DrawAllocateContext</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> DrawAllocateContext( const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>DrawAllocateContext() allocates an initial drawing context which is an
 opaque handle required by the remaining drawing methods.</p>
@@ -231,16 +231,16 @@ GraphicsMagick defaults.</p>
 <dd><p>The image to draw on.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawarc">
+</section>
+</section>
+<section id="drawarc">
 <h1><a class="toc-backref" href="#id228">DrawArc</a></h1>
-<div class="section" id="id5">
+<section id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawArc( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double sx, const double sy, const double ex,
               const double ey, const double sd, const double ed );</pre>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>Description</h2>
 <p>DrawArc() draws an arc falling within a specified bounding rectangle on the
 image.</p>
@@ -270,16 +270,16 @@ image.</p>
 <dd><p>ending degrees of rotation</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawbezier">
+</section>
+</section>
+<section id="drawbezier">
 <h1><a class="toc-backref" href="#id229">DrawBezier</a></h1>
-<div class="section" id="id7">
+<section id="id7">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawBezier( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const unsigned long num_coords,
                  const <a class="reference external" href="../api/types.html#pointinfo">PointInfo</a> *coordinates );</pre>
-</div>
-<div class="section" id="id8">
+</section>
+<section id="id8">
 <h2>Description</h2>
 <p>DrawBezier() draws a bezier curve through a set of points on the image.</p>
 <p>The format of the DrawBezier method is:</p>
@@ -296,16 +296,16 @@ image.</p>
 <dd><p>coordinates</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawcircle">
+</section>
+</section>
+<section id="drawcircle">
 <h1><a class="toc-backref" href="#id230">DrawCircle</a></h1>
-<div class="section" id="id9">
+<section id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawCircle( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double ox, const double oy, const double px,
                  const double py );</pre>
-</div>
-<div class="section" id="id10">
+</section>
+<section id="id10">
 <h2>Description</h2>
 <p>DrawCircle() draws a circle on the image.</p>
 <p>The format of the DrawCircle method is:</p>
@@ -328,15 +328,15 @@ image.</p>
 <dd><p>perimeter y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetclippath">
+</section>
+</section>
+<section id="drawgetclippath">
 <h1><a class="toc-backref" href="#id231">DrawGetClipPath</a></h1>
-<div class="section" id="id11">
+<section id="id11">
 <h2>Synopsis</h2>
 <pre class="literal-block">char *DrawGetClipPath( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id12">
+</section>
+<section id="id12">
 <h2>Description</h2>
 <p>DrawGetClipPath() obtains the current clipping path ID. The value returned
 must be deallocated by the user when it is no longer needed.</p>
@@ -348,15 +348,15 @@ must be deallocated by the user when it is no longer needed.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetclippath">
+</section>
+</section>
+<section id="drawsetclippath">
 <h1><a class="toc-backref" href="#id232">DrawSetClipPath</a></h1>
-<div class="section" id="id13">
+<section id="id13">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetClipPath( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *clip_path );</pre>
-</div>
-<div class="section" id="id14">
+</section>
+<section id="id14">
 <h2>Description</h2>
 <p>DrawSetClipPath() associates a named clipping path with the image.  Only
 the areas drawn on by the clipping path will be modified as long as it
@@ -372,15 +372,15 @@ remains in effect.</p>
 <dd><p>name of clipping path to associate with image</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetcliprule">
+</section>
+</section>
+<section id="drawgetcliprule">
 <h1><a class="toc-backref" href="#id233">DrawGetClipRule</a></h1>
-<div class="section" id="id15">
+<section id="id15">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#fillrule">FillRule</a> DrawGetClipRule( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id16">
+</section>
+<section id="id16">
 <h2>Description</h2>
 <p>DrawGetClipRule() returns the current polygon fill rule to be used by the
 clipping path.</p>
@@ -392,15 +392,15 @@ clipping path.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetcliprule">
+</section>
+</section>
+<section id="drawsetcliprule">
 <h1><a class="toc-backref" href="#id234">DrawSetClipRule</a></h1>
-<div class="section" id="id17">
+<section id="id17">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetClipRule( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#fillrule">FillRule</a> fill_rule );</pre>
-</div>
-<div class="section" id="id18">
+</section>
+<section id="id18">
 <h2>Description</h2>
 <p>DrawSetClipRule() set the polygon fill rule to be used by the clipping path.</p>
 <p>The format of the DrawSetClipRule method is:</p>
@@ -413,15 +413,15 @@ clipping path.</p>
 <dd><p>fill rule (EvenOddRule or NonZeroRule)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetclipunits">
+</section>
+</section>
+<section id="drawgetclipunits">
 <h1><a class="toc-backref" href="#id235">DrawGetClipUnits</a></h1>
-<div class="section" id="id19">
+<section id="id19">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#clippathunits">ClipPathUnits</a> DrawGetClipUnits( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id20">
+</section>
+<section id="id20">
 <h2>Description</h2>
 <p>DrawGetClipUnits() returns the interpretation of clip path units.</p>
 <p>The format of the DrawGetClipUnits method is:</p>
@@ -432,15 +432,15 @@ clipping path.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetclipunits">
+</section>
+</section>
+<section id="drawsetclipunits">
 <h1><a class="toc-backref" href="#id236">DrawSetClipUnits</a></h1>
-<div class="section" id="id21">
+<section id="id21">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetClipUnits( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#clippathunits">ClipPathUnits</a> clip_units );</pre>
-</div>
-<div class="section" id="id22">
+</section>
+<section id="id22">
 <h2>Description</h2>
 <p>DrawSetClipUnits() sets the interpretation of clip path units.</p>
 <p>The format of the DrawSetClipUnits method is:</p>
@@ -453,16 +453,16 @@ clipping path.</p>
 <dd><p>units to use (UserSpace, UserSpaceOnUse, or ObjectBoundingBox)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawcolor">
+</section>
+</section>
+<section id="drawcolor">
 <h1><a class="toc-backref" href="#id237">DrawColor</a></h1>
-<div class="section" id="id23">
+<section id="id23">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawColor( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y,
                 const <a class="reference external" href="../api/types.html#paintmethod">PaintMethod</a> paintMethod );</pre>
-</div>
-<div class="section" id="id24">
+</section>
+<section id="id24">
 <h2>Description</h2>
 <p>DrawColor() draws color on image using the current fill color, starting at
 specified position, and using specified paint method. The available paint
@@ -489,15 +489,15 @@ ResetMethod: Recolor all pixels.</p>
 <dd><p>paint method</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawcomment">
+</section>
+</section>
+<section id="drawcomment">
 <h1><a class="toc-backref" href="#id238">DrawComment</a></h1>
-<div class="section" id="id25">
+<section id="id25">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawComment( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *comment );</pre>
-</div>
-<div class="section" id="id26">
+</section>
+<section id="id26">
 <h2>Description</h2>
 <p>DrawComment() adds a comment to a vector output stream.</p>
 <p>The format of the DrawComment method is:</p>
@@ -511,15 +511,15 @@ ResetMethod: Recolor all pixels.</p>
 <dd><p>comment text</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawdestroycontext">
+</section>
+</section>
+<section id="drawdestroycontext">
 <h1><a class="toc-backref" href="#id239">DrawDestroyContext</a></h1>
-<div class="section" id="id27">
+<section id="id27">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawDestroyContext( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id28">
+</section>
+<section id="id28">
 <h2>Description</h2>
 <p>DrawDestroyContext() frees all resources associated with the drawing
 context. Once the drawing context has been freed, it should not be used
@@ -532,16 +532,16 @@ any further unless it re-allocated.</p>
 <dd><p>drawing context to destroy</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawellipse">
+</section>
+</section>
+<section id="drawellipse">
 <h1><a class="toc-backref" href="#id240">DrawEllipse</a></h1>
-<div class="section" id="id29">
+<section id="id29">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawEllipse( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double ox, const double oy, const double rx,
                   const double ry, const double start, const double end );</pre>
-</div>
-<div class="section" id="id30">
+</section>
+<section id="id30">
 <h2>Description</h2>
 <p>DrawEllipse() draws an ellipse on the image.</p>
 <p>The format of the DrawEllipse method is:</p>
@@ -570,15 +570,15 @@ any further unless it re-allocated.</p>
 <dd><p>ending rotation in degrees</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfillcolor">
+</section>
+</section>
+<section id="drawgetfillcolor">
 <h1><a class="toc-backref" href="#id241">DrawGetFillColor</a></h1>
-<div class="section" id="id31">
+<section id="id31">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> DrawGetFillColor( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id32">
+</section>
+<section id="id32">
 <h2>Description</h2>
 <p>DrawGetFillColor() returns the fill color used for drawing filled objects.</p>
 <p>The format of the DrawGetFillColor method is:</p>
@@ -589,15 +589,15 @@ any further unless it re-allocated.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfillcolor">
+</section>
+</section>
+<section id="drawsetfillcolor">
 <h1><a class="toc-backref" href="#id242">DrawSetFillColor</a></h1>
-<div class="section" id="id33">
+<section id="id33">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFillColor( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *fill_color );</pre>
-</div>
-<div class="section" id="id34">
+</section>
+<section id="id34">
 <h2>Description</h2>
 <p>DrawSetFillColor() sets the fill color to be used for drawing filled objects.</p>
 <p>The format of the DrawSetFillColor method is:</p>
@@ -610,15 +610,15 @@ any further unless it re-allocated.</p>
 <dd><p>fill color</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfillcolorstring">
+</section>
+</section>
+<section id="drawsetfillcolorstring">
 <h1><a class="toc-backref" href="#id243">DrawSetFillColorString</a></h1>
-<div class="section" id="id35">
+<section id="id35">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFillColorString( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *fill_color );</pre>
-</div>
-<div class="section" id="id36">
+</section>
+<section id="id36">
 <h2>Description</h2>
 <p>DrawSetFillColorString() sets the fill color to be used for drawing filled
 objects.</p>
@@ -633,15 +633,15 @@ objects.</p>
 <dd><p>fill color</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfillpatternurl">
+</section>
+</section>
+<section id="drawsetfillpatternurl">
 <h1><a class="toc-backref" href="#id244">DrawSetFillPatternURL</a></h1>
-<div class="section" id="id37">
+<section id="id37">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFillPatternURL( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *fill_url );</pre>
-</div>
-<div class="section" id="id38">
+</section>
+<section id="id38">
 <h2>Description</h2>
 <p>DrawSetFillPatternURL() sets the URL to use as a fill pattern for filling
 objects. Only local URLs (&quot;#identifier&quot;) are supported at this time. These
@@ -658,15 +658,15 @@ DrawPushPattern/DrawPopPattern.</p>
 <dd><p>URL to use to obtain fill pattern.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfillopacity">
+</section>
+</section>
+<section id="drawgetfillopacity">
 <h1><a class="toc-backref" href="#id245">DrawGetFillOpacity</a></h1>
-<div class="section" id="id39">
+<section id="id39">
 <h2>Synopsis</h2>
 <pre class="literal-block">double DrawGetFillOpacity( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id40">
+</section>
+<section id="id40">
 <h2>Description</h2>
 <p>DrawGetFillOpacity() returns the opacity used when drawing using the fill
 color or fill texture.  Fully opaque is 1.0.</p>
@@ -678,15 +678,15 @@ color or fill texture.  Fully opaque is 1.0.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfillopacity">
+</section>
+</section>
+<section id="drawsetfillopacity">
 <h1><a class="toc-backref" href="#id246">DrawSetFillOpacity</a></h1>
-<div class="section" id="id41">
+<section id="id41">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFillOpacity( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double fill_opacity );</pre>
-</div>
-<div class="section" id="id42">
+</section>
+<section id="id42">
 <h2>Description</h2>
 <p>DrawSetFillOpacity() sets the opacity to use when drawing using the fill
 color or fill texture.  Fully opaque is 1.0.</p>
@@ -701,15 +701,15 @@ color or fill texture.  Fully opaque is 1.0.</p>
 <dd><p>fill opacity</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfillrule">
+</section>
+</section>
+<section id="drawgetfillrule">
 <h1><a class="toc-backref" href="#id247">DrawGetFillRule</a></h1>
-<div class="section" id="id43">
+<section id="id43">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#fillrule">FillRule</a> DrawGetFillRule( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id44">
+</section>
+<section id="id44">
 <h2>Description</h2>
 <p>DrawGetFillRule() returns the fill rule used while drawing polygons.</p>
 <p>The format of the DrawGetFillRule method is:</p>
@@ -720,15 +720,15 @@ color or fill texture.  Fully opaque is 1.0.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfillrule">
+</section>
+</section>
+<section id="drawsetfillrule">
 <h1><a class="toc-backref" href="#id248">DrawSetFillRule</a></h1>
-<div class="section" id="id45">
+<section id="id45">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFillRule( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#fillrule">FillRule</a> fill_rule );</pre>
-</div>
-<div class="section" id="id46">
+</section>
+<section id="id46">
 <h2>Description</h2>
 <p>DrawSetFillRule() sets the fill rule to use while drawing polygons.</p>
 <p>The format of the DrawSetFillRule method is:</p>
@@ -742,15 +742,15 @@ color or fill texture.  Fully opaque is 1.0.</p>
 <dd><p>fill rule (EvenOddRule or NonZeroRule)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfont">
+</section>
+</section>
+<section id="drawgetfont">
 <h1><a class="toc-backref" href="#id249">DrawGetFont</a></h1>
-<div class="section" id="id47">
+<section id="id47">
 <h2>Synopsis</h2>
 <pre class="literal-block">char *DrawGetFont( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id48">
+</section>
+<section id="id48">
 <h2>Description</h2>
 <p>DrawGetFont() returns a null-terminaged string specifying the font used
 when annotating with text. The value returned must be freed by the user
@@ -763,15 +763,15 @@ when no longer needed.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfont">
+</section>
+</section>
+<section id="drawsetfont">
 <h1><a class="toc-backref" href="#id250">DrawSetFont</a></h1>
-<div class="section" id="id49">
+<section id="id49">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFont( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *font_name );</pre>
-</div>
-<div class="section" id="id50">
+</section>
+<section id="id50">
 <h2>Description</h2>
 <p>DrawSetFont() sets the fully-sepecified font to use when annotating with
 text.</p>
@@ -786,15 +786,15 @@ text.</p>
 <dd><p>font name</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfontfamily">
+</section>
+</section>
+<section id="drawgetfontfamily">
 <h1><a class="toc-backref" href="#id251">DrawGetFontFamily</a></h1>
-<div class="section" id="id51">
+<section id="id51">
 <h2>Synopsis</h2>
 <pre class="literal-block">char *DrawGetFontFamily( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id52">
+</section>
+<section id="id52">
 <h2>Description</h2>
 <p>DrawGetFontFamily() returns the font family to use when annotating with text.
 The value returned must be freed by the user when it is no longer needed.</p>
@@ -806,15 +806,15 @@ The value returned must be freed by the user when it is no longer needed.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfontfamily">
+</section>
+</section>
+<section id="drawsetfontfamily">
 <h1><a class="toc-backref" href="#id252">DrawSetFontFamily</a></h1>
-<div class="section" id="id53">
+<section id="id53">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFontFamily( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *font_family );</pre>
-</div>
-<div class="section" id="id54">
+</section>
+<section id="id54">
 <h2>Description</h2>
 <p>DrawSetFontFamily() sets the font family to use when annotating with text.</p>
 <p>The format of the DrawSetFontFamily method is:</p>
@@ -828,15 +828,15 @@ The value returned must be freed by the user when it is no longer needed.</p>
 <dd><p>font family</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfontsize">
+</section>
+</section>
+<section id="drawgetfontsize">
 <h1><a class="toc-backref" href="#id253">DrawGetFontSize</a></h1>
-<div class="section" id="id55">
+<section id="id55">
 <h2>Synopsis</h2>
 <pre class="literal-block">double DrawGetFontSize( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id56">
+</section>
+<section id="id56">
 <h2>Description</h2>
 <p>DrawGetFontSize() returns the font pointsize used when annotating with text.</p>
 <p>The format of the DrawGetFontSize method is:</p>
@@ -847,15 +847,15 @@ The value returned must be freed by the user when it is no longer needed.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfontsize">
+</section>
+</section>
+<section id="drawsetfontsize">
 <h1><a class="toc-backref" href="#id254">DrawSetFontSize</a></h1>
-<div class="section" id="id57">
+<section id="id57">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFontSize( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double pointsize );</pre>
-</div>
-<div class="section" id="id58">
+</section>
+<section id="id58">
 <h2>Description</h2>
 <p>DrawSetFontSize() sets the font pointsize to use when annotating with text.</p>
 <p>The format of the DrawSetFontSize method is:</p>
@@ -869,15 +869,15 @@ The value returned must be freed by the user when it is no longer needed.</p>
 <dd><p>text pointsize</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfontstretch">
+</section>
+</section>
+<section id="drawgetfontstretch">
 <h1><a class="toc-backref" href="#id255">DrawGetFontStretch</a></h1>
-<div class="section" id="id59">
+<section id="id59">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#stretchtype">StretchType</a> DrawGetFontStretch( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id60">
+</section>
+<section id="id60">
 <h2>Description</h2>
 <p>DrawGetFontStretch() returns the font stretch used when annotating with text.</p>
 <p>The format of the DrawGetFontStretch method is:</p>
@@ -888,15 +888,15 @@ The value returned must be freed by the user when it is no longer needed.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfontstretch">
+</section>
+</section>
+<section id="drawsetfontstretch">
 <h1><a class="toc-backref" href="#id256">DrawSetFontStretch</a></h1>
-<div class="section" id="id61">
+<section id="id61">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFontStretch( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#stretchtype">StretchType</a> font_stretch );</pre>
-</div>
-<div class="section" id="id62">
+</section>
+<section id="id62">
 <h2>Description</h2>
 <p>DrawSetFontStretch() sets the font stretch to use when annotating with text.
 The AnyStretch enumeration acts as a wild-card &quot;don't care&quot; option.</p>
@@ -913,15 +913,15 @@ SemiExpandedStretch, ExpandedStretch,
 ExtraExpandedStretch, UltraExpandedStretch, AnyStretch)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfontstyle">
+</section>
+</section>
+<section id="drawgetfontstyle">
 <h1><a class="toc-backref" href="#id257">DrawGetFontStyle</a></h1>
-<div class="section" id="id63">
+<section id="id63">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#styletype">StyleType</a> DrawGetFontStyle( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id64">
+</section>
+<section id="id64">
 <h2>Description</h2>
 <p>DrawGetFontStyle() returns the font style used when annotating with text.</p>
 <p>The format of the DrawGetFontStyle method is:</p>
@@ -932,15 +932,15 @@ ExtraExpandedStretch, UltraExpandedStretch, AnyStretch)</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfontstyle">
+</section>
+</section>
+<section id="drawsetfontstyle">
 <h1><a class="toc-backref" href="#id258">DrawSetFontStyle</a></h1>
-<div class="section" id="id65">
+<section id="id65">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFontStyle( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#styletype">StyleType</a> style );</pre>
-</div>
-<div class="section" id="id66">
+</section>
+<section id="id66">
 <h2>Description</h2>
 <p>DrawSetFontStyle() sets the font style to use when annotating with text.
 The AnyStyle enumeration acts as a wild-card &quot;don't care&quot; option.</p>
@@ -955,15 +955,15 @@ The AnyStyle enumeration acts as a wild-card &quot;don't care&quot; option.</p>
 <dd><p>font style (NormalStyle, ItalicStyle, ObliqueStyle, AnyStyle)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetfontweight">
+</section>
+</section>
+<section id="drawgetfontweight">
 <h1><a class="toc-backref" href="#id259">DrawGetFontWeight</a></h1>
-<div class="section" id="id67">
+<section id="id67">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned long DrawGetFontWeight( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id68">
+</section>
+<section id="id68">
 <h2>Description</h2>
 <p>DrawGetFontWeight() returns the font weight used when annotating with text.</p>
 <p>The format of the DrawGetFontWeight method is:</p>
@@ -974,15 +974,15 @@ The AnyStyle enumeration acts as a wild-card &quot;don't care&quot; option.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetfontweight">
+</section>
+</section>
+<section id="drawsetfontweight">
 <h1><a class="toc-backref" href="#id260">DrawSetFontWeight</a></h1>
-<div class="section" id="id69">
+<section id="id69">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetFontWeight( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const unsigned long font_weight );</pre>
-</div>
-<div class="section" id="id70">
+</section>
+<section id="id70">
 <h2>Description</h2>
 <p>DrawSetFontWeight() sets the font weight to use when annotating with text.</p>
 <p>The format of the DrawSetFontWeight method is:</p>
@@ -995,15 +995,15 @@ The AnyStyle enumeration acts as a wild-card &quot;don't care&quot; option.</p>
 <dd><p>font weight (valid range 100-900)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetgravity">
+</section>
+</section>
+<section id="drawgetgravity">
 <h1><a class="toc-backref" href="#id261">DrawGetGravity</a></h1>
-<div class="section" id="id71">
+<section id="id71">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#gravitytype">GravityType</a> DrawGetGravity( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id72">
+</section>
+<section id="id72">
 <h2>Description</h2>
 <p>DrawGetGravity() returns the text placement gravity used when annotating
 with text.</p>
@@ -1015,15 +1015,15 @@ with text.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetgravity">
+</section>
+</section>
+<section id="drawsetgravity">
 <h1><a class="toc-backref" href="#id262">DrawSetGravity</a></h1>
-<div class="section" id="id73">
+<section id="id73">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetGravity( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#gravitytype">GravityType</a> gravity );</pre>
-</div>
-<div class="section" id="id74">
+</section>
+<section id="id74">
 <h2>Description</h2>
 <p>DrawSetGravity() sets the text placement gravity to use when annotating
 with text.</p>
@@ -1041,17 +1041,17 @@ EastGravity, SouthWestGravity, SouthGravity,
 SouthEastGravity)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawcomposite">
+</section>
+</section>
+<section id="drawcomposite">
 <h1><a class="toc-backref" href="#id263">DrawComposite</a></h1>
-<div class="section" id="id75">
+<section id="id75">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawComposite( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#compositeoperator">CompositeOperator</a> composite_operator,
                     const double x, const double y, const double width, const double height,
                     const <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id76">
+</section>
+<section id="id76">
 <h2>Description</h2>
 <p>DrawComposite() composites an image onto the current image, using the
 specified composition operator, specified position, and at the specified
@@ -1085,16 +1085,16 @@ to use existing height.</p>
 <dd><p>Image to composite</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawline">
+</section>
+</section>
+<section id="drawline">
 <h1><a class="toc-backref" href="#id264">DrawLine</a></h1>
-<div class="section" id="id77">
+<section id="id77">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawLine( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double sx, const double sy, const double ex,
                const double ey );</pre>
-</div>
-<div class="section" id="id78">
+</section>
+<section id="id78">
 <h2>Description</h2>
 <p>DrawLine() draws a line on the image using the current stroke color,
 stroke opacity, and stroke width.</p>
@@ -1118,16 +1118,16 @@ stroke opacity, and stroke width.</p>
 <dd><p>ending y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawmatte">
+</section>
+</section>
+<section id="drawmatte">
 <h1><a class="toc-backref" href="#id265">DrawMatte</a></h1>
-<div class="section" id="id79">
+<section id="id79">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawMatte( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y,
                 const <a class="reference external" href="../api/types.html#paintmethod">PaintMethod</a> paint_method );</pre>
-</div>
-<div class="section" id="id80">
+</section>
+<section id="id80">
 <h2>Description</h2>
 <p>DrawMatte() paints on the image's opacity channel in order to set effected
 pixels to transparent.  The available paint methods are:</p>
@@ -1152,15 +1152,15 @@ ResetMethod: Select all pixels.</p>
 </dd>
 </dl>
 <p>o paint_method:</p>
-</div>
-</div>
-<div class="section" id="drawpathclose">
+</section>
+</section>
+<section id="drawpathclose">
 <h1><a class="toc-backref" href="#id266">DrawPathClose</a></h1>
-<div class="section" id="id81">
+<section id="id81">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathClose( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id82">
+</section>
+<section id="id82">
 <h2>Description</h2>
 <p>DrawPathClose() adds a path element to the current path which closes the
 current subpath by drawing a straight line from the current point to the
@@ -1174,17 +1174,17 @@ moveto point).</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathcurvetoabsolute">
+</section>
+</section>
+<section id="drawpathcurvetoabsolute">
 <h1><a class="toc-backref" href="#id267">DrawPathCurveToAbsolute</a></h1>
-<div class="section" id="id83">
+<section id="id83">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathCurveToAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x1, const double y1,
                               const double x2, const double y2, const double x,
                               const double y );</pre>
-</div>
-<div class="section" id="id84">
+</section>
+<section id="id84">
 <h2>Description</h2>
 <p>DrawPathCurveToAbsolute() draws a cubic Bezier curve from the current
 point to (x,y) using (x1,y1) as the control point at the beginning of
@@ -1218,17 +1218,17 @@ becomes the final (x,y) coordinate pair used in the polybezier.</p>
 <dd><p>y ordinate of the end of the curve</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathcurvetorelative">
+</section>
+</section>
+<section id="drawpathcurvetorelative">
 <h1><a class="toc-backref" href="#id268">DrawPathCurveToRelative</a></h1>
-<div class="section" id="id85">
+<section id="id85">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathCurveToRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x1, const double y1,
                               const double x2, const double y2, const double x,
                               const double y );</pre>
-</div>
-<div class="section" id="id86">
+</section>
+<section id="id86">
 <h2>Description</h2>
 <p>DrawPathCurveToRelative() draws a cubic Bezier curve from the current
 point to (x,y) using (x1,y1) as the control point at the beginning of
@@ -1262,17 +1262,17 @@ becomes the final (x,y) coordinate pair used in the polybezier.</p>
 <dd><p>y ordinate of the end of the curve</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathcurvetoquadraticbezierabsolute">
+</section>
+</section>
+<section id="drawpathcurvetoquadraticbezierabsolute">
 <h1><a class="toc-backref" href="#id269">DrawPathCurveToQuadraticBezierAbsolute</a></h1>
-<div class="section" id="id87">
+<section id="id87">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathCurveToQuadraticBezierAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x1,
                                              const double y1, const double x,
                                              const double y );</pre>
-</div>
-<div class="section" id="id88">
+</section>
+<section id="id88">
 <h2>Description</h2>
 <p>DrawPathCurveToQuadraticBezierAbsolute() draws a quadratic Bezier curve
 from the current point to (x,y) using (x1,y1) as the control point using
@@ -1299,17 +1299,17 @@ becomes the final (x,y) coordinate pair used in the polybezier.</p>
 <dd><p>y ordinate of final point</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathcurvetoquadraticbezierrelative">
+</section>
+</section>
+<section id="drawpathcurvetoquadraticbezierrelative">
 <h1><a class="toc-backref" href="#id270">DrawPathCurveToQuadraticBezierRelative</a></h1>
-<div class="section" id="id89">
+<section id="id89">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathCurveToQuadraticBezierRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x1,
                                              const double y1, const double x,
                                              const double y );</pre>
-</div>
-<div class="section" id="id90">
+</section>
+<section id="id90">
 <h2>Description</h2>
 <p>DrawPathCurveToQuadraticBezierRelative() draws a quadratic Bezier curve
 from the current point to (x,y) using (x1,y1) as the control point using
@@ -1336,16 +1336,16 @@ becomes the final (x,y) coordinate pair used in the polybezier.</p>
 <dd><p>y ordinate of final point</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathcurvetoquadraticbeziersmoothabsolute">
+</section>
+</section>
+<section id="drawpathcurvetoquadraticbeziersmoothabsolute">
 <h1><a class="toc-backref" href="#id271">DrawPathCurveToQuadraticBezierSmoothAbsolute</a></h1>
-<div class="section" id="id91">
+<section id="id91">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathCurveToQuadraticBezierSmoothAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x,
                                                    const double y );</pre>
-</div>
-<div class="section" id="id92">
+</section>
+<section id="id92">
 <h2>Description</h2>
 <p>DrawPathCurveToQuadraticBezierSmoothAbsolute() draws a quadratic
 Bezier curve (using absolute coordinates) from the current point to
@@ -1373,16 +1373,16 @@ polybezier.</p>
 <dd><p>y ordinate of final point</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathcurvetoquadraticbeziersmoothrelative">
+</section>
+</section>
+<section id="drawpathcurvetoquadraticbeziersmoothrelative">
 <h1><a class="toc-backref" href="#id272">DrawPathCurveToQuadraticBezierSmoothRelative</a></h1>
-<div class="section" id="id93">
+<section id="id93">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathCurveToQuadraticBezierSmoothRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x,
                                                    const double y );</pre>
-</div>
-<div class="section" id="id94">
+</section>
+<section id="id94">
 <h2>Description</h2>
 <p>DrawPathCurveToQuadraticBezierSmoothAbsolute() draws a quadratic
 Bezier curve (using relative coordinates) from the current point to
@@ -1410,16 +1410,16 @@ polybezier.</p>
 <dd><p>y ordinate of final point</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathcurvetosmoothabsolute">
+</section>
+</section>
+<section id="drawpathcurvetosmoothabsolute">
 <h1><a class="toc-backref" href="#id273">DrawPathCurveToSmoothAbsolute</a></h1>
-<div class="section" id="id95">
+<section id="id95">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathCurveToSmoothAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x2, const double y2,
                                     const double x, const double y );</pre>
-</div>
-<div class="section" id="id96">
+</section>
+<section id="id96">
 <h2>Description</h2>
 <p>DrawPathCurveToSmoothAbsolute() draws a cubic Bezier curve from the
 current point to (x,y) using absolute coordinates. The first control
@@ -1452,16 +1452,16 @@ final (x,y) coordinate pair used in the polybezier.</p>
 <dd><p>y ordinate of termination point</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathcurvetosmoothrelative">
+</section>
+</section>
+<section id="drawpathcurvetosmoothrelative">
 <h1><a class="toc-backref" href="#id274">DrawPathCurveToSmoothRelative</a></h1>
-<div class="section" id="id97">
+<section id="id97">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathCurveToSmoothRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x2, const double y2,
                                     const double x, const double y );</pre>
-</div>
-<div class="section" id="id98">
+</section>
+<section id="id98">
 <h2>Description</h2>
 <p>DrawPathCurveToSmoothRelative() draws a cubic Bezier curve from the
 current point to (x,y) using relative coordinates. The first control
@@ -1494,18 +1494,18 @@ final (x,y) coordinate pair used in the polybezier.</p>
 <dd><p>y ordinate of termination point</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathellipticarcabsolute">
+</section>
+</section>
+<section id="drawpathellipticarcabsolute">
 <h1><a class="toc-backref" href="#id275">DrawPathEllipticArcAbsolute</a></h1>
-<div class="section" id="id99">
+<section id="id99">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathEllipticArcAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double rx, const double ry,
                                   const double x_axis_rotation,
                                   unsigned int large_arc_flag, unsigned int sweep_flag,
                                   const double x, const double y );</pre>
-</div>
-<div class="section" id="id100">
+</section>
+<section id="id100">
 <h2>Description</h2>
 <p>DrawPathEllipticArcAbsolute() draws an elliptical arc from the current
 point to (x, y) using absolute coordinates. The size and orientation
@@ -1545,18 +1545,18 @@ available arcs</p>
 clock-wise rotation</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathellipticarcrelative">
+</section>
+</section>
+<section id="drawpathellipticarcrelative">
 <h1><a class="toc-backref" href="#id276">DrawPathEllipticArcRelative</a></h1>
-<div class="section" id="id101">
+<section id="id101">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathEllipticArcRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double rx, const double ry,
                                   const double x_axis_rotation,
                                   unsigned int large_arc_flag, unsigned int sweep_flag,
                                   const double x, const double y );</pre>
-</div>
-<div class="section" id="id102">
+</section>
+<section id="id102">
 <h2>Description</h2>
 <p>DrawPathEllipticArcRelative() draws an elliptical arc from the current
 point to (x, y) using relative coordinates. The size and orientation
@@ -1596,15 +1596,15 @@ available arcs</p>
 clock-wise rotation</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathfinish">
+</section>
+</section>
+<section id="drawpathfinish">
 <h1><a class="toc-backref" href="#id277">DrawPathFinish</a></h1>
-<div class="section" id="id103">
+<section id="id103">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathFinish( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id104">
+</section>
+<section id="id104">
 <h2>Description</h2>
 <p>DrawPathFinish() terminates the current path.</p>
 <p>The format of the DrawPathFinish method is:</p>
@@ -1615,15 +1615,15 @@ clock-wise rotation</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathlinetoabsolute">
+</section>
+</section>
+<section id="drawpathlinetoabsolute">
 <h1><a class="toc-backref" href="#id278">DrawPathLineToAbsolute</a></h1>
-<div class="section" id="id105">
+<section id="id105">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathLineToAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y );</pre>
-</div>
-<div class="section" id="id106">
+</section>
+<section id="id106">
 <h2>Description</h2>
 <p>DrawPathLineToAbsolute() draws a line path from the current point to the
 given coordinate using absolute coordinates. The coordinate then becomes
@@ -1641,15 +1641,15 @@ the new current point.</p>
 <dd><p>target y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathlinetorelative">
+</section>
+</section>
+<section id="drawpathlinetorelative">
 <h1><a class="toc-backref" href="#id279">DrawPathLineToRelative</a></h1>
-<div class="section" id="id107">
+<section id="id107">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathLineToRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y );</pre>
-</div>
-<div class="section" id="id108">
+</section>
+<section id="id108">
 <h2>Description</h2>
 <p>DrawPathLineToRelative() draws a line path from the current point to the
 given coordinate using relative coordinates. The coordinate then becomes
@@ -1667,15 +1667,15 @@ the new current point.</p>
 <dd><p>target y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathlinetohorizontalabsolute">
+</section>
+</section>
+<section id="drawpathlinetohorizontalabsolute">
 <h1><a class="toc-backref" href="#id280">DrawPathLineToHorizontalAbsolute</a></h1>
-<div class="section" id="id109">
+<section id="id109">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathLineToHorizontalAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x );</pre>
-</div>
-<div class="section" id="id110">
+</section>
+<section id="id110">
 <h2>Description</h2>
 <p>DrawPathLineToHorizontalAbsolute() draws a horizontal line path from the
 current point to the target point using absolute coordinates.  The target
@@ -1690,15 +1690,15 @@ point then becomes the new current point.</p>
 <dd><p>target x ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathlinetohorizontalrelative">
+</section>
+</section>
+<section id="drawpathlinetohorizontalrelative">
 <h1><a class="toc-backref" href="#id281">DrawPathLineToHorizontalRelative</a></h1>
-<div class="section" id="id111">
+<section id="id111">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathLineToHorizontalRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x );</pre>
-</div>
-<div class="section" id="id112">
+</section>
+<section id="id112">
 <h2>Description</h2>
 <p>DrawPathLineToHorizontalRelative() draws a horizontal line path from the
 current point to the target point using relative coordinates.  The target
@@ -1714,15 +1714,15 @@ point then becomes the new current point.</p>
 <dd><p>target x ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathlinetoverticalabsolute">
+</section>
+</section>
+<section id="drawpathlinetoverticalabsolute">
 <h1><a class="toc-backref" href="#id282">DrawPathLineToVerticalAbsolute</a></h1>
-<div class="section" id="id113">
+<section id="id113">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathLineToVerticalAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double y );</pre>
-</div>
-<div class="section" id="id114">
+</section>
+<section id="id114">
 <h2>Description</h2>
 <p>DrawPathLineToVerticalAbsolute() draws a vertical line path from the
 current point to the target point using absolute coordinates.  The target
@@ -1737,15 +1737,15 @@ point then becomes the new current point.</p>
 <dd><p>target y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathlinetoverticalrelative">
+</section>
+</section>
+<section id="drawpathlinetoverticalrelative">
 <h1><a class="toc-backref" href="#id283">DrawPathLineToVerticalRelative</a></h1>
-<div class="section" id="id115">
+<section id="id115">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathLineToVerticalRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double y );</pre>
-</div>
-<div class="section" id="id116">
+</section>
+<section id="id116">
 <h2>Description</h2>
 <p>DrawPathLineToVerticalRelative() draws a vertical line path from the
 current point to the target point using relative coordinates.  The target
@@ -1760,15 +1760,15 @@ point then becomes the new current point.</p>
 <dd><p>target y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathmovetoabsolute">
+</section>
+</section>
+<section id="drawpathmovetoabsolute">
 <h1><a class="toc-backref" href="#id284">DrawPathMoveToAbsolute</a></h1>
-<div class="section" id="id117">
+<section id="id117">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathMoveToAbsolute( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y );</pre>
-</div>
-<div class="section" id="id118">
+</section>
+<section id="id118">
 <h2>Description</h2>
 <p>DrawPathMoveToAbsolute() starts a new sub-path at the given coordinate
 using absolute coordinates. The current point then becomes the
@@ -1786,15 +1786,15 @@ specified coordinate.</p>
 <dd><p>target y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathmovetorelative">
+</section>
+</section>
+<section id="drawpathmovetorelative">
 <h1><a class="toc-backref" href="#id285">DrawPathMoveToRelative</a></h1>
-<div class="section" id="id119">
+<section id="id119">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathMoveToRelative( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y );</pre>
-</div>
-<div class="section" id="id120">
+</section>
+<section id="id120">
 <h2>Description</h2>
 <p>DrawPathMoveToRelative() starts a new sub-path at the given coordinate
 using relative coordinates. The current point then becomes the
@@ -1812,15 +1812,15 @@ specified coordinate.</p>
 <dd><p>target y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpathstart">
+</section>
+</section>
+<section id="drawpathstart">
 <h1><a class="toc-backref" href="#id286">DrawPathStart</a></h1>
-<div class="section" id="id121">
+<section id="id121">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPathStart( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id122">
+</section>
+<section id="id122">
 <h2>Description</h2>
 <p>DrawPathStart() declares the start of a path drawing list which is terminated
 by a matching DrawPathFinish() command. All other DrawPath commands must
@@ -1835,15 +1835,15 @@ function by themselves.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpeekgraphiccontext">
+</section>
+</section>
+<section id="drawpeekgraphiccontext">
 <h1><a class="toc-backref" href="#id287">DrawPeekGraphicContext</a></h1>
-<div class="section" id="id123">
+<section id="id123">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *DrawPeekGraphicContext( const <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id124">
+</section>
+<section id="id124">
 <h2>Description</h2>
 <p>DrawPeekGraphicContext() returns a copy of the the DrawInfo structure at
 the head of the drawing context stack. The user is responsible for
@@ -1856,15 +1856,15 @@ deallocating the returned object using DestroyDrawInfo.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpoint">
+</section>
+</section>
+<section id="drawpoint">
 <h1><a class="toc-backref" href="#id288">DrawPoint</a></h1>
-<div class="section" id="id125">
+<section id="id125">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPoint( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y );</pre>
-</div>
-<div class="section" id="id126">
+</section>
+<section id="id126">
 <h2>Description</h2>
 <p>DrawPoint() draws a point using the current stroke color and stroke
 thickness at the specified coordinates.</p>
@@ -1882,16 +1882,16 @@ thickness at the specified coordinates.</p>
 <dd><p>target y coordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpolygon">
+</section>
+</section>
+<section id="drawpolygon">
 <h1><a class="toc-backref" href="#id289">DrawPolygon</a></h1>
-<div class="section" id="id127">
+<section id="id127">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPolygon( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const unsigned long num_coords,
                   const <a class="reference external" href="../api/types.html#pointinfo">PointInfo</a> *coordinates );</pre>
-</div>
-<div class="section" id="id128">
+</section>
+<section id="id128">
 <h2>Description</h2>
 <p>DrawPolygon() draws a polygon using the current stroke, stroke width, and
 fill color or texture, using the specified array of coordinates.</p>
@@ -1909,16 +1909,16 @@ fill color or texture, using the specified array of coordinates.</p>
 <dd><p>coordinate array</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpolyline">
+</section>
+</section>
+<section id="drawpolyline">
 <h1><a class="toc-backref" href="#id290">DrawPolyline</a></h1>
-<div class="section" id="id129">
+<section id="id129">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPolyline( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const unsigned long num_coords,
                    const <a class="reference external" href="../api/types.html#pointinfo">PointInfo</a> *coordinates );</pre>
-</div>
-<div class="section" id="id130">
+</section>
+<section id="id130">
 <h2>Description</h2>
 <p>DrawPolyline() draws a polyline using the current stroke, stroke width, and
 fill color or texture, using the specified array of coordinates.</p>
@@ -1936,15 +1936,15 @@ fill color or texture, using the specified array of coordinates.</p>
 <dd><p>coordinate array</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpopclippath">
+</section>
+</section>
+<section id="drawpopclippath">
 <h1><a class="toc-backref" href="#id291">DrawPopClipPath</a></h1>
-<div class="section" id="id131">
+<section id="id131">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPopClipPath( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id132">
+</section>
+<section id="id132">
 <h2>Description</h2>
 <p>DrawPopClipPath() terminates a clip path definition.</p>
 <p>The format of the DrawPopClipPath method is:</p>
@@ -1955,15 +1955,15 @@ fill color or texture, using the specified array of coordinates.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpopdefs">
+</section>
+</section>
+<section id="drawpopdefs">
 <h1><a class="toc-backref" href="#id292">DrawPopDefs</a></h1>
-<div class="section" id="id133">
+<section id="id133">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPopDefs( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id134">
+</section>
+<section id="id134">
 <h2>Description</h2>
 <p>DrawPopDefs() terminates a definition list</p>
 <p>The format of the DrawPopDefs method is:</p>
@@ -1974,15 +1974,15 @@ fill color or texture, using the specified array of coordinates.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpopgraphiccontext">
+</section>
+</section>
+<section id="drawpopgraphiccontext">
 <h1><a class="toc-backref" href="#id293">DrawPopGraphicContext</a></h1>
-<div class="section" id="id135">
+<section id="id135">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPopGraphicContext( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id136">
+</section>
+<section id="id136">
 <h2>Description</h2>
 <p>DrawPopGraphicContext() destroys the current context returning to the
 previously pushed context. Multiple contexts may exist. It is an error
@@ -1996,15 +1996,15 @@ form to pop all contexts which have been pushed.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpoppattern">
+</section>
+</section>
+<section id="drawpoppattern">
 <h1><a class="toc-backref" href="#id294">DrawPopPattern</a></h1>
-<div class="section" id="id137">
+<section id="id137">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPopPattern( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id138">
+</section>
+<section id="id138">
 <h2>Description</h2>
 <p>DrawPopPattern() terminates a pattern definition.</p>
 <p>The format of the DrawPopPattern method is:</p>
@@ -2015,15 +2015,15 @@ form to pop all contexts which have been pushed.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpushclippath">
+</section>
+</section>
+<section id="drawpushclippath">
 <h1><a class="toc-backref" href="#id295">DrawPushClipPath</a></h1>
-<div class="section" id="id139">
+<section id="id139">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPushClipPath( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *clip_path_id );</pre>
-</div>
-<div class="section" id="id140">
+</section>
+<section id="id140">
 <h2>Description</h2>
 <p>DrawPushClipPath() starts a clip path definition which is comprized of
 any number of drawing commands and terminated by a DrawPopClipPath()
@@ -2040,15 +2040,15 @@ command.</p>
 later use.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpushdefs">
+</section>
+</section>
+<section id="drawpushdefs">
 <h1><a class="toc-backref" href="#id296">DrawPushDefs</a></h1>
-<div class="section" id="id141">
+<section id="id141">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPushDefs( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id142">
+</section>
+<section id="id142">
 <h2>Description</h2>
 <p>DrawPushDefs() indicates that commands up to a terminating DrawPopDefs()
 command create named elements (e.g. clip-paths, textures, etc.) which
@@ -2061,15 +2061,15 @@ may safely be processed earlier for the sake of efficiency.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpushgraphiccontext">
+</section>
+</section>
+<section id="drawpushgraphiccontext">
 <h1><a class="toc-backref" href="#id297">DrawPushGraphicContext</a></h1>
-<div class="section" id="id143">
+<section id="id143">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPushGraphicContext( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id144">
+</section>
+<section id="id144">
 <h2>Description</h2>
 <p>DrawPushGraphicContext() clones the current drawing context to create a
 new drawing context. The original drawing context(s) may be returned to
@@ -2083,16 +2083,16 @@ stack.  For every Pop there must have already been an equivalent Push.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpushpattern">
+</section>
+</section>
+<section id="drawpushpattern">
 <h1><a class="toc-backref" href="#id298">DrawPushPattern</a></h1>
-<div class="section" id="id145">
+<section id="id145">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawPushPattern( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *pattern_id, const double x,
                       const double y, const double width, const double height );</pre>
-</div>
-<div class="section" id="id146">
+</section>
+<section id="id146">
 <h2>Description</h2>
 <p>DrawPushPattern() indicates that subsequent commands up to a
 DrawPopPattern() command comprise the definition of a named pattern.
@@ -2123,16 +2123,16 @@ Named patterns may be used as stroke or brush definitions.</p>
 <dd><p>height of pattern space</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawrectangle">
+</section>
+</section>
+<section id="drawrectangle">
 <h1><a class="toc-backref" href="#id299">DrawRectangle</a></h1>
-<div class="section" id="id147">
+<section id="id147">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawRectangle( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x1, const double y1, const double x2,
                     const double y2 );</pre>
-</div>
-<div class="section" id="id148">
+</section>
+<section id="id148">
 <h2>Description</h2>
 <p>DrawRectangle() draws a rectangle given two coordinates and using
 the current stroke, stroke width, and fill settings.</p>
@@ -2153,15 +2153,15 @@ the current stroke, stroke width, and fill settings.</p>
 <dd><p>y ordinate of second coordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawrender">
+</section>
+</section>
+<section id="drawrender">
 <h1><a class="toc-backref" href="#id300">DrawRender</a></h1>
-<div class="section" id="id149">
+<section id="id149">
 <h2>Synopsis</h2>
 <pre class="literal-block">int DrawRender( const <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id150">
+</section>
+<section id="id150">
 <h2>Description</h2>
 <p>DrawRender() renders all preceding drawing commands onto the image.</p>
 <p>The format of the DrawRender method is:</p>
@@ -2172,15 +2172,15 @@ the current stroke, stroke width, and fill settings.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawrotate">
+</section>
+</section>
+<section id="drawrotate">
 <h1><a class="toc-backref" href="#id301">DrawRotate</a></h1>
-<div class="section" id="id151">
+<section id="id151">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawRotate( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double degrees );</pre>
-</div>
-<div class="section" id="id152">
+</section>
+<section id="id152">
 <h2>Description</h2>
 <p>DrawRotate() applies the specified rotation to the current coordinate
 space.</p>
@@ -2195,16 +2195,16 @@ space.</p>
 <dd><p>degrees of rotation</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawroundrectangle">
+</section>
+</section>
+<section id="drawroundrectangle">
 <h1><a class="toc-backref" href="#id302">DrawRoundRectangle</a></h1>
-<div class="section" id="id153">
+<section id="id153">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawRoundRectangle( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, double x1, double y1, double x2, double y2,
                          double rx, double ry );</pre>
-</div>
-<div class="section" id="id154">
+</section>
+<section id="id154">
 <h2>Description</h2>
 <p>DrawRoundRectangle() draws a rounted rectangle given two coordinates,
 x &amp; y corner radiuses and using the current stroke, stroke width,
@@ -2235,15 +2235,15 @@ and fill settings.</p>
 <dd><p>radius of corner in vertical direction</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawscale">
+</section>
+</section>
+<section id="drawscale">
 <h1><a class="toc-backref" href="#id303">DrawScale</a></h1>
-<div class="section" id="id155">
+<section id="id155">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawScale( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y );</pre>
-</div>
-<div class="section" id="id156">
+</section>
+<section id="id156">
 <h2>Description</h2>
 <p>DrawScale() adjusts the scaling factor to apply in the horizontal and
 vertical directions to the current coordinate space.</p>
@@ -2261,15 +2261,15 @@ vertical directions to the current coordinate space.</p>
 <dd><p>vertical scale factor</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawskewx">
+</section>
+</section>
+<section id="drawskewx">
 <h1><a class="toc-backref" href="#id304">DrawSkewX</a></h1>
-<div class="section" id="id157">
+<section id="id157">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSkewX( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double degrees );</pre>
-</div>
-<div class="section" id="id158">
+</section>
+<section id="id158">
 <h2>Description</h2>
 <p>DrawSkewX() skews the current coordinate system in the horizontal
 direction.</p>
@@ -2284,15 +2284,15 @@ direction.</p>
 <dd><p>number of degrees to skew the coordinates</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawskewy">
+</section>
+</section>
+<section id="drawskewy">
 <h1><a class="toc-backref" href="#id305">DrawSkewY</a></h1>
-<div class="section" id="id159">
+<section id="id159">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSkewY( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double degrees );</pre>
-</div>
-<div class="section" id="id160">
+</section>
+<section id="id160">
 <h2>Description</h2>
 <p>DrawSkewY() skews the current coordinate system in the vertical
 direction.</p>
@@ -2307,16 +2307,16 @@ direction.</p>
 <dd><p>number of degrees to skew the coordinates</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstopcolor">
+</section>
+</section>
+<section id="drawsetstopcolor">
 <h1><a class="toc-backref" href="#id306">DrawSetStopColor</a></h1>
-<div class="section" id="id161">
+<section id="id161">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStopColor( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *stop_color,
                        const double offset );</pre>
-</div>
-<div class="section" id="id162">
+</section>
+<section id="id162">
 <h2>Description</h2>
 <p>DrawSetStopColor() sets the stop color and offset for gradients</p>
 <p>The format of the DrawSetStopColor method is:</p>
@@ -2329,15 +2329,15 @@ direction.</p>
 </dl>
 <p>o stop_color:</p>
 <p>o offset:</p>
-</div>
-</div>
-<div class="section" id="drawgetstrokecolor">
+</section>
+</section>
+<section id="drawgetstrokecolor">
 <h1><a class="toc-backref" href="#id307">DrawGetStrokeColor</a></h1>
-<div class="section" id="id163">
+<section id="id163">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> DrawGetStrokeColor( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id164">
+</section>
+<section id="id164">
 <h2>Description</h2>
 <p>DrawGetStrokeColor() returns the color used for stroking object outlines.</p>
 <p>The format of the DrawGetStrokeColor method is:</p>
@@ -2348,15 +2348,15 @@ direction.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokecolor">
+</section>
+</section>
+<section id="drawsetstrokecolor">
 <h1><a class="toc-backref" href="#id308">DrawSetStrokeColor</a></h1>
-<div class="section" id="id165">
+<section id="id165">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeColor( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *stroke_color );</pre>
-</div>
-<div class="section" id="id166">
+</section>
+<section id="id166">
 <h2>Description</h2>
 <p>DrawSetStrokeColor() sets the color used for stroking object outlines.</p>
 <p>The format of the DrawSetStrokeColor method is:</p>
@@ -2369,15 +2369,15 @@ direction.</p>
 <dd><p>stroke color</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokecolorstring">
+</section>
+</section>
+<section id="drawsetstrokecolorstring">
 <h1><a class="toc-backref" href="#id309">DrawSetStrokeColorString</a></h1>
-<div class="section" id="id167">
+<section id="id167">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeColorString( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *stroke_color );</pre>
-</div>
-<div class="section" id="id168">
+</section>
+<section id="id168">
 <h2>Description</h2>
 <p>DrawSetStrokeColorString() sets the color used for stroking object outlines.</p>
 <p>The format of the DrawSetStrokeColorString method is:</p>
@@ -2390,15 +2390,15 @@ direction.</p>
 <dd><p>stroke color</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokepatternurl">
+</section>
+</section>
+<section id="drawsetstrokepatternurl">
 <h1><a class="toc-backref" href="#id310">DrawSetStrokePatternURL</a></h1>
-<div class="section" id="id169">
+<section id="id169">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokePatternURL( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *stroke_url );</pre>
-</div>
-<div class="section" id="id170">
+</section>
+<section id="id170">
 <h2>Description</h2>
 <p>DrawSetStrokePatternURL() sets the pattern used for stroking object outlines.</p>
 <p>The format of the DrawSetStrokePatternURL method is:</p>
@@ -2412,15 +2412,15 @@ direction.</p>
 <dd><p>URL specifying pattern ID (e.g. &quot;#pattern_id&quot;)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetstrokeantialias">
+</section>
+</section>
+<section id="drawgetstrokeantialias">
 <h1><a class="toc-backref" href="#id311">DrawGetStrokeAntialias</a></h1>
-<div class="section" id="id171">
+<section id="id171">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int DrawGetStrokeAntialias( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id172">
+</section>
+<section id="id172">
 <h2>Description</h2>
 <p>DrawGetStrokeAntialias() returns the current stroke antialias setting.
 Stroked outlines are antialiased by default.  When antialiasing is disabled
@@ -2434,15 +2434,15 @@ underlying canvas color should be used.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokeantialias">
+</section>
+</section>
+<section id="drawsetstrokeantialias">
 <h1><a class="toc-backref" href="#id312">DrawSetStrokeAntialias</a></h1>
-<div class="section" id="id173">
+<section id="id173">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeAntialias( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const unsigned int stroke_antialias );</pre>
-</div>
-<div class="section" id="id174">
+</section>
+<section id="id174">
 <h2>Description</h2>
 <p>DrawSetStrokeAntialias() controls whether stroked outlines are antialiased.
 Stroked outlines are antialiased by default.  When antialiasing is disabled
@@ -2458,15 +2458,15 @@ underlying canvas color should be used.</p>
 <dd><p>set to false (zero) to disable antialiasing</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetstrokedasharray">
+</section>
+</section>
+<section id="drawgetstrokedasharray">
 <h1><a class="toc-backref" href="#id313">DrawGetStrokeDashArray</a></h1>
-<div class="section" id="id175">
+<section id="id175">
 <h2>Synopsis</h2>
 <pre class="literal-block">double *DrawGetStrokeDashArray( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, unsigned long *num_elems );</pre>
-</div>
-<div class="section" id="id176">
+</section>
+<section id="id176">
 <h2>Description</h2>
 <p>DrawGetStrokeDashArray() returns an array representing the pattern of
 dashes and gaps used to stroke paths (see DrawSetStrokeDashArray). The
@@ -2478,20 +2478,20 @@ array must be freed once it is no longer required by the user.</p>
 <dt>context:</dt>
 <dd><p>drawing context</p>
 </dd>
-<dt>num_elems:</dt>
+<dt>number_elements:</dt>
 <dd><p>address to place number of elements in dash array</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokedasharray">
+</section>
+</section>
+<section id="drawsetstrokedasharray">
 <h1><a class="toc-backref" href="#id314">DrawSetStrokeDashArray</a></h1>
-<div class="section" id="id177">
+<section id="id177">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeDashArray( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const unsigned long num_elems,
                              const double *dasharray );</pre>
-</div>
-<div class="section" id="id178">
+</section>
+<section id="id178">
 <h2>Description</h2>
 <p>DrawSetStrokeDashArray() specifies the pattern of dashes and gaps used to
 stroke paths. The strokeDashArray represents an array of numbers that
@@ -2514,15 +2514,15 @@ contain the members 5 3 2.</p>
 <dd><p>dash array values</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetstrokedashoffset">
+</section>
+</section>
+<section id="drawgetstrokedashoffset">
 <h1><a class="toc-backref" href="#id315">DrawGetStrokeDashOffset</a></h1>
-<div class="section" id="id179">
+<section id="id179">
 <h2>Synopsis</h2>
 <pre class="literal-block">double DrawGetStrokeDashOffset( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id180">
+</section>
+<section id="id180">
 <h2>Description</h2>
 <p>DrawGetStrokeDashOffset() returns the offset into the dash pattern to
 start the dash.</p>
@@ -2534,15 +2534,15 @@ start the dash.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokedashoffset">
+</section>
+</section>
+<section id="drawsetstrokedashoffset">
 <h1><a class="toc-backref" href="#id316">DrawSetStrokeDashOffset</a></h1>
-<div class="section" id="id181">
+<section id="id181">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeDashOffset( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double dash_offset );</pre>
-</div>
-<div class="section" id="id182">
+</section>
+<section id="id182">
 <h2>Description</h2>
 <p>DrawSetStrokeDashOffset() specifies the offset into the dash pattern to
 start the dash.</p>
@@ -2556,15 +2556,15 @@ start the dash.</p>
 <dd><p>dash offset</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetstrokelinecap">
+</section>
+</section>
+<section id="drawgetstrokelinecap">
 <h1><a class="toc-backref" href="#id317">DrawGetStrokeLineCap</a></h1>
-<div class="section" id="id183">
+<section id="id183">
 <h2>Synopsis</h2>
 <pre class="literal-block">LineCap DrawGetStrokeLineCap( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id184">
+</section>
+<section id="id184">
 <h2>Description</h2>
 <p>DrawGetStrokeLineCap() returns the shape to be used at the end of
 open subpaths when they are stroked. Values of LineCap are
@@ -2577,15 +2577,15 @@ UndefinedCap, ButtCap, RoundCap, and SquareCap.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokelinecap">
+</section>
+</section>
+<section id="drawsetstrokelinecap">
 <h1><a class="toc-backref" href="#id318">DrawSetStrokeLineCap</a></h1>
-<div class="section" id="id185">
+<section id="id185">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeLineCap( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const LineCap linecap );</pre>
-</div>
-<div class="section" id="id186">
+</section>
+<section id="id186">
 <h2>Description</h2>
 <p>DrawSetStrokeLineCap() specifies the shape to be used at the end of
 open subpaths when they are stroked. Values of LineCap are
@@ -2600,15 +2600,15 @@ UndefinedCap, ButtCap, RoundCap, and SquareCap.</p>
 <dd><p>linecap style</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetstrokelinejoin">
+</section>
+</section>
+<section id="drawgetstrokelinejoin">
 <h1><a class="toc-backref" href="#id319">DrawGetStrokeLineJoin</a></h1>
-<div class="section" id="id187">
+<section id="id187">
 <h2>Synopsis</h2>
 <pre class="literal-block">LineJoin DrawGetStrokeLineJoin( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id188">
+</section>
+<section id="id188">
 <h2>Description</h2>
 <p>DrawGetStrokeLineJoin() returns the shape to be used at the
 corners of paths (or other vector shapes) when they are
@@ -2622,15 +2622,15 @@ and BevelJoin.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokelinejoin">
+</section>
+</section>
+<section id="drawsetstrokelinejoin">
 <h1><a class="toc-backref" href="#id320">DrawSetStrokeLineJoin</a></h1>
-<div class="section" id="id189">
+<section id="id189">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeLineJoin( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const LineJoin linejoin );</pre>
-</div>
-<div class="section" id="id190">
+</section>
+<section id="id190">
 <h2>Description</h2>
 <p>DrawSetStrokeLineJoin() specifies the shape to be used at the
 corners of paths (or other vector shapes) when they are
@@ -2647,15 +2647,15 @@ and BevelJoin.</p>
 <dd><p>line join style</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetstrokemiterlimit">
+</section>
+</section>
+<section id="drawgetstrokemiterlimit">
 <h1><a class="toc-backref" href="#id321">DrawGetStrokeMiterLimit</a></h1>
-<div class="section" id="id191">
+<section id="id191">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned long DrawGetStrokeMiterLimit( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id192">
+</section>
+<section id="id192">
 <h2>Description</h2>
 <p>DrawGetStrokeMiterLimit() returns the miter limit. When two line
 segments meet at a sharp angle and miter joins have been specified for
@@ -2670,15 +2670,15 @@ limit on the ratio of the miter length to the 'lineWidth'.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokemiterlimit">
+</section>
+</section>
+<section id="drawsetstrokemiterlimit">
 <h1><a class="toc-backref" href="#id322">DrawSetStrokeMiterLimit</a></h1>
-<div class="section" id="id193">
+<section id="id193">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeMiterLimit( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const unsigned long miterlimit );</pre>
-</div>
-<div class="section" id="id194">
+</section>
+<section id="id194">
 <h2>Description</h2>
 <p>DrawSetStrokeMiterLimit() specifies the miter limit. When two line
 segments meet at a sharp angle and miter joins have been specified for
@@ -2695,15 +2695,15 @@ limit on the ratio of the miter length to the 'lineWidth'.</p>
 <dd><p>miter limit</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetstrokeopacity">
+</section>
+</section>
+<section id="drawgetstrokeopacity">
 <h1><a class="toc-backref" href="#id323">DrawGetStrokeOpacity</a></h1>
-<div class="section" id="id195">
+<section id="id195">
 <h2>Synopsis</h2>
 <pre class="literal-block">double DrawGetStrokeOpacity( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id196">
+</section>
+<section id="id196">
 <h2>Description</h2>
 <p>DrawGetStrokeOpacity() returns the opacity of stroked object outlines.</p>
 <p>The format of the DrawGetStrokeOpacity method is:</p>
@@ -2714,15 +2714,15 @@ limit on the ratio of the miter length to the 'lineWidth'.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokeopacity">
+</section>
+</section>
+<section id="drawsetstrokeopacity">
 <h1><a class="toc-backref" href="#id324">DrawSetStrokeOpacity</a></h1>
-<div class="section" id="id197">
+<section id="id197">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeOpacity( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double stroke_opacity );</pre>
-</div>
-<div class="section" id="id198">
+</section>
+<section id="id198">
 <h2>Description</h2>
 <p>DrawSetStrokeOpacity() specifies the opacity of stroked object outlines.</p>
 <p>The format of the DrawSetStrokeOpacity method is:</p>
@@ -2735,15 +2735,15 @@ limit on the ratio of the miter length to the 'lineWidth'.</p>
 <dd><p>stroke opacity.  The value 1.0 is opaque.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgetstrokewidth">
+</section>
+</section>
+<section id="drawgetstrokewidth">
 <h1><a class="toc-backref" href="#id325">DrawGetStrokeWidth</a></h1>
-<div class="section" id="id199">
+<section id="id199">
 <h2>Synopsis</h2>
 <pre class="literal-block">double DrawGetStrokeWidth( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id200">
+</section>
+<section id="id200">
 <h2>Description</h2>
 <p>DrawGetStrokeWidth() returns the width of the stroke used to draw object
 outlines.</p>
@@ -2755,15 +2755,15 @@ outlines.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetstrokewidth">
+</section>
+</section>
+<section id="drawsetstrokewidth">
 <h1><a class="toc-backref" href="#id326">DrawSetStrokeWidth</a></h1>
-<div class="section" id="id201">
+<section id="id201">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetStrokeWidth( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double stroke_width );</pre>
-</div>
-<div class="section" id="id202">
+</section>
+<section id="id202">
 <h2>Description</h2>
 <p>DrawSetStrokeWidth() sets the width of the stroke used to draw object
 outlines.</p>
@@ -2778,15 +2778,15 @@ outlines.</p>
 <dd><p>stroke width</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgettextantialias">
+</section>
+</section>
+<section id="drawgettextantialias">
 <h1><a class="toc-backref" href="#id327">DrawGetTextAntialias</a></h1>
-<div class="section" id="id203">
+<section id="id203">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int DrawGetTextAntialias( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id204">
+</section>
+<section id="id204">
 <h2>Description</h2>
 <p>DrawGetTextAntialias() returns the current text antialias setting, which
 determines whether text is antialiased.  Text is antialiased by default.</p>
@@ -2798,15 +2798,15 @@ determines whether text is antialiased.  Text is antialiased by default.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsettextantialias">
+</section>
+</section>
+<section id="drawsettextantialias">
 <h1><a class="toc-backref" href="#id328">DrawSetTextAntialias</a></h1>
-<div class="section" id="id205">
+<section id="id205">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetTextAntialias( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const unsigned int text_antialias );</pre>
-</div>
-<div class="section" id="id206">
+</section>
+<section id="id206">
 <h2>Description</h2>
 <p>DrawSetTextAntialias() controls whether text is antialiased.  Text is
 antialiased by default.</p>
@@ -2821,15 +2821,15 @@ antialiased by default.</p>
 antialiasing.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgettextdecoration">
+</section>
+</section>
+<section id="drawgettextdecoration">
 <h1><a class="toc-backref" href="#id329">DrawGetTextDecoration</a></h1>
-<div class="section" id="id207">
+<section id="id207">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#decorationtype">DecorationType</a> DrawGetTextDecoration( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id208">
+</section>
+<section id="id208">
 <h2>Description</h2>
 <p>DrawGetTextDecoration() returns the decoration applied when annotating with
 text.</p>
@@ -2841,15 +2841,15 @@ text.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsettextdecoration">
+</section>
+</section>
+<section id="drawsettextdecoration">
 <h1><a class="toc-backref" href="#id330">DrawSetTextDecoration</a></h1>
-<div class="section" id="id209">
+<section id="id209">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetTextDecoration( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#decorationtype">DecorationType</a> decoration );</pre>
-</div>
-<div class="section" id="id210">
+</section>
+<section id="id210">
 <h2>Description</h2>
 <p>DrawSetTextDecoration() specifies a decoration to be applied when
 annotating with text.</p>
@@ -2864,15 +2864,15 @@ annotating with text.</p>
 OverlineDecoration, or LineThroughDecoration</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgettextencoding">
+</section>
+</section>
+<section id="drawgettextencoding">
 <h1><a class="toc-backref" href="#id331">DrawGetTextEncoding</a></h1>
-<div class="section" id="id211">
+<section id="id211">
 <h2>Synopsis</h2>
 <pre class="literal-block">char *DrawGetTextEncoding( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id212">
+</section>
+<section id="id212">
 <h2>Description</h2>
 <p>DrawGetTextEncoding() returns a null-terminated string which specifies the
 code set used for text annotations. The string must be freed by the user
@@ -2885,15 +2885,15 @@ once it is no longer required.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsettextencoding">
+</section>
+</section>
+<section id="drawsettextencoding">
 <h1><a class="toc-backref" href="#id332">DrawSetTextEncoding</a></h1>
-<div class="section" id="id213">
+<section id="id213">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetTextEncoding( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *encoding );</pre>
-</div>
-<div class="section" id="id214">
+</section>
+<section id="id214">
 <h2>Description</h2>
 <p>DrawSetTextEncoding() specifies specifies the code set to use for
 text annotations. The only character encoding which may be specified
@@ -2912,15 +2912,15 @@ designed to support Unicode.</p>
 <dd><p>character string specifying text encoding</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawgettextundercolor">
+</section>
+</section>
+<section id="drawgettextundercolor">
 <h1><a class="toc-backref" href="#id333">DrawGetTextUnderColor</a></h1>
-<div class="section" id="id215">
+<section id="id215">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> DrawGetTextUnderColor( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context );</pre>
-</div>
-<div class="section" id="id216">
+</section>
+<section id="id216">
 <h2>Description</h2>
 <p>DrawGetTextUnderColor() returns the color of a background rectangle
 to place under text annotations.</p>
@@ -2932,15 +2932,15 @@ to place under text annotations.</p>
 <dd><p>drawing context</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsettextundercolor">
+</section>
+</section>
+<section id="drawsettextundercolor">
 <h1><a class="toc-backref" href="#id334">DrawSetTextUnderColor</a></h1>
-<div class="section" id="id217">
+<section id="id217">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetTextUnderColor( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *under_color );</pre>
-</div>
-<div class="section" id="id218">
+</section>
+<section id="id218">
 <h2>Description</h2>
 <p>DrawSetTextUnderColor() specifies the color of a background rectangle
 to place under text annotations.</p>
@@ -2954,15 +2954,15 @@ to place under text annotations.</p>
 <dd><p>text under color</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsettextundercolorstring">
+</section>
+</section>
+<section id="drawsettextundercolorstring">
 <h1><a class="toc-backref" href="#id335">DrawSetTextUnderColorString</a></h1>
-<div class="section" id="id219">
+<section id="id219">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetTextUnderColorString( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const char *under_color );</pre>
-</div>
-<div class="section" id="id220">
+</section>
+<section id="id220">
 <h2>Description</h2>
 <p>DrawSetTextUnderColorString() specifies the color of a background rectangle
 to place under text annotations.</p>
@@ -2976,15 +2976,15 @@ to place under text annotations.</p>
 <dd><p>text under color</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawtranslate">
+</section>
+</section>
+<section id="drawtranslate">
 <h1><a class="toc-backref" href="#id336">DrawTranslate</a></h1>
-<div class="section" id="id221">
+<section id="id221">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawTranslate( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, const double x, const double y );</pre>
-</div>
-<div class="section" id="id222">
+</section>
+<section id="id222">
 <h2>Description</h2>
 <p>DrawTranslate() applies a translation to the current coordinate
 system which moves the coordinate system origin to the specified
@@ -3002,16 +3002,16 @@ coordinate.</p>
 <dd><p>new y ordinate for coordinate system origin</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawsetviewbox">
+</section>
+</section>
+<section id="drawsetviewbox">
 <h1><a class="toc-backref" href="#id337">DrawSetViewbox</a></h1>
-<div class="section" id="id223">
+<section id="id223">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DrawSetViewbox( <a class="reference external" href="../api/types.html#drawcontext">DrawContext</a> context, unsigned long x1, unsigned long y1,
                      unsigned long x2, unsigned long y2 );</pre>
-</div>
-<div class="section" id="id224">
+</section>
+<section id="id224">
 <h2>Description</h2>
 <p>DrawSetViewbox() sets the overall canvas size to be recorded with the
 drawing vector data.  Usually this will be specified using the same
@@ -3038,9 +3038,9 @@ a viewer will render the vector data on.</p>
 <dd><p>bottom y ordinate</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -3048,6 +3048,6 @@ a viewer will render the vector data on.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>
