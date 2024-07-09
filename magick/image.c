@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2876,7 +2876,8 @@ MagickParseSubImageSpecification(const char *subimage_spec,
         }
       if (*q == '\0')
         {
-          subrange -= subimage-1;
+          if (subimage > 0)
+            subrange -= subimage-1;
           *subimage_ptr=subimage;
           *subrange_ptr=subrange;
           status=MagickPass;
