@@ -17074,8 +17074,11 @@ TimeImageCommand(ImageInfo *image_info,
   (void) fflush(stdout);
 
   screen_width=0;
-  if (getenv("COLUMNS"))
-    screen_width=MagickAtoI(getenv("COLUMNS"))-1;
+  {
+    const char * const columns_env = getenv("COLUMNS");
+    if (columns_env)
+      screen_width=MagickAtoI(columns_env)-1;
+  }
   if (screen_width < 80)
     screen_width=80;
 

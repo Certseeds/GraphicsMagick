@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -1216,8 +1216,11 @@ MagickExport unsigned int ListDelegateInfo(FILE *file,ExceptionInfo *exception)
 
       /* Format output so that command spans multiple lines if
          necessary */
-      if (getenv("COLUMNS"))
-        screen_width=MagickAtoI(getenv("COLUMNS"))-1;
+      {
+        const char * const columns_env = getenv("COLUMNS");
+        if (columns_env)
+          screen_width=MagickAtoI(columns_env)-1;
+      }
       command_length=strlen(commands[0]);
       command_start_column=fprintf(file,"%8s%c=%c%s  ",p->decode ? p->decode : "",
         p->mode <= 0 ? '<' : ' ',p->mode >= 0 ? '>' : ' ',delegate);

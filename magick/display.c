@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -10682,9 +10682,9 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
     handler;
 
   RectangleInfo
-    crop_info,
-    highlight_info,
-    roi_info;
+    crop_info = { 0, 0, 0, 0},
+    highlight_info = { 0, 0, 0, 0},
+    roi_info = { 0, 0, 0, 0};
 
   unsigned int
     height,

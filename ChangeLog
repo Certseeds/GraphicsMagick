@@ -1,3 +1,11 @@
+2024-07-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/display.c (MagickXROIImage): Fix clang-analyzer issue.
+
+	* magick/delegate.c (ListDelegateInfo): Fix clang-analyzer issue.
+
+	* magick/command.c (TimeImageCommand): Fix clang-analyzer issue.
+
 2024-07-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/image.c (MagickParseSubImageSpecification): Quiet
