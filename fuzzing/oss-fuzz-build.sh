@@ -16,6 +16,9 @@
 # ~/src/GM% docker cp fuzzing/oss-fuzz-build.sh $(docker ps -lq):/src/graphicsmagick/fuzzing/oss-fuzz-build.sh
 # ~/src/GM% docker cp fuzzing/coder_fuzzer.cc $(docker ps -lq):/src/graphicsmagick/fuzzing/
 #
+# Execute in the oss-fuzz shell environment like "/src/build.sh" while
+# in the initial "/src/graphicsmagick" directory.
+#
 #
 # Useful environment variables:
 #
@@ -28,6 +31,15 @@
 # WORK=/work
 # OUT=/out
 # SRC=/src
+
+printf "SANITIZER=${SANITIZER}\n"
+printf "ARCHITECTURE=${ARCHITECTURE}\n"
+printf "FUZZING_ENGINE=${FUZZING_ENGINE}\n"
+printf "LIB_FUZZING_ENGINE=${LIB_FUZZING_ENGINE}\n"
+printf "FUZZER_LDFLAGS=${FUZZER_LDFLAGS}\n"
+printf "WORK=${WORK}\n"
+printf "OUT=${OUT}\n"
+printf "SRC=${SRC}\n"
 
 enable_aom=true
 enable_bzip2=true
@@ -46,6 +58,7 @@ enable_x265=false
 enable_xml=false
 enable_xz=true
 enable_zstd=true
+enable_libzip=true
 
 export PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
 export PKG_CONFIG='pkg-config --static'
@@ -70,6 +83,8 @@ printf "WORK=${WORK}\n"
 ls -l "${WORK}"
 printf "OUT=${OUT}\n"
 ls -l "${OUT}"
+
+rm -f ${OUT}/*_fuzzer
 
 set -x
 
@@ -577,6 +592,47 @@ then
     make -j$(nproc)
     make install
     popd
+fi
+
+# Libzip also wants Nettle, GnuTLS, MbedTLS, or OpenSSL (checked in
+# that order).  Each of these is quite an onerous dependency!
+# Hopefully not required in order to work. Libzip's own oss-fuzz build
+# seems to dynamically link with OpenSSL and expects the same shared
+# library on the fuzzing host.
+if $enable_libzip
+then
+    LIBZIP_BUILD="${SRC}/libzip_build"
+    if [ -d ${SRC}/libzip ]
+    then
+        printf "=== Building ${SRC}/libzip...\n"
+        rm -rf ${LIBZIP_BUILD}
+        mkdir -p ${LIBZIP_BUILD}
+        pushd ${LIBZIP_BUILD}
+        cmake \
+            -DBUILD_SHARED_LIBS=off \
+            -DBUILD_TESTING=off \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_COMPILER=$CXX \
+            -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+            -DCMAKE_C_COMPILER=$CC \
+            -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+            -DCMAKE_INSTALL_PREFIX=$WORK \
+            -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+            -DBUILD_DOC=OFF \
+            -DBUILD_EXAMPLES=OFF \
+            -DBUILD_OSSFUZZ=OFF \
+            -DBUILD_REGRESS=OFF \
+            -DBUILD_TOOLS=OFF \
+            -DBUILD_TOOLS=OFF \
+            -DENABLE_GNUTLS=OFF \
+            -DENABLE_MBEDTLS=OFF \
+            -DENABLE_OPENSSL=OFF \
+            -DHAVE_CRYPTO=OFF  \
+            "${SRC}/libzip"
+        make -j$(nproc)
+        make install
+        popd
+    fi
 fi
 
 printf "Built libraries:\n"

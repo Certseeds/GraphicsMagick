@@ -1,3 +1,7 @@
+2024-07-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Added support for building libzip.
+
 2024-07-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/display.c (MagickXROIImage): Fix clang-analyzer issue.
