@@ -1,3 +1,8 @@
+2024-07-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/floats.c (_Gm_convert_fp32_to_fp24): Coverity fixes for
+	arithmetic overflow in mantissa related code.
+
 2024-07-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Added support for building libzip.
