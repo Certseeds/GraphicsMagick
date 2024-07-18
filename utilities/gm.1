@@ -1,4 +1,4 @@
-.TH gm 1 "2024/04/20" "GraphicsMagick"
+.TH gm 1 "2024/07/18" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -2045,11 +2045,10 @@ between 1 and \fBQuantumDepth\fP (build option) may be specified,
 although 8 or 16 are the most common values. Use this option to specify
 the depth of raw images whose depth is unknown such as GRAY, RGB, or
 CMYK, or to change the depth of any image after it has been read.
-The depth option is applied to the pixels immediately so it may be
-used as a form of simple compression by discarding the least significant
-bits. Reducing the depth in advance may speed up color quantization, and
-help create smaller file sizes when using a compression algorithm like
-LZW or ZIP.
+
+See the -operator option for a way (via '-operator All Depth N') to
+apply a depth limit to the pixels immediately rather than setting an
+image attribute.
 .TP
 .B "-descend"
 \fRobtain image by descending window hierarchy

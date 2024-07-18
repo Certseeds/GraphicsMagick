@@ -9698,8 +9698,9 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
           }
         if (LocaleCompare("depth",option+1) == 0)
           {
-            /* (*image)->depth = MagickAtoL(argv[++i]); */
-            (void) SetImageDepth(*image,MagickAtoL(argv[++i]));
+            (*image)->depth = MagickAtoL(argv[++i]);
+            /* Below is equivalent to '-operator All Depth [value]' */
+            /* (void) SetImageDepth(*image,MagickAtoL(argv[++i])); */
             continue;
           }
         if (LocaleCompare("despeckle",option+1) == 0)

@@ -41,6 +41,13 @@
 <p>2024-07-18  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>magick/command.c (MogrifyImage): Change utility '-depth N' to a
+simple image depth attribute assignment rather than also being an
+image processing operation.  Obtain the previous result (which
+immediately modified the image pixels) using '-operator All Depth
+N'.  Most users use -depth in order to influence the bits/sample
+of the file being written rather than as an intermediate image
+processing operation.</p></li>
 <li><p>magick/floats.c (_Gm_convert_fp32_to_fp24): Coverity fixes for
 arithmetic overflow in mantissa related code.</p></li>
 </ul>
