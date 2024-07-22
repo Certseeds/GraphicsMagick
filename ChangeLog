@@ -1,3 +1,11 @@
+2024-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/blob.c (MagickMaxFileSystemBlockSize): Place an artibrary
+	limit on maximum filesystem block size.
+
+	* coders/Makefile.am (MAGICK_ORA_MODULES): ORA module is dependent
+	on HasLIBZIP.
+
 2024-07-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/command.c (MogrifyImage): Change utility '-depth N' to a

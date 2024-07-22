@@ -67,7 +67,9 @@
   Define declarations.
 */
 #define DefaultBlobQuantum  65541
-
+#if !defined(MagickMaxFileSystemBlockSize)
+#define MagickMaxFileSystemBlockSize 4194304
+#endif /* if !defined(MagickMaxFileSystemBlockSize) */
 
 /*
   Enum declarations.
@@ -631,11 +633,12 @@ MagickExport MagickPassFail BlobToFile(const char *filename,const void *blob,
         block_size;
 
       block_size=MagickGetFileSystemBlockSize();
+      block_size=Min(MagickMaxFileSystemBlockSize,block_size);
 
       /*
         Write data to file.
       */
-      for (i=0; i < length; i+=count)
+      for (i=0; i < length; i+=(size_t) count)
         {
           size_t
             remaining;
@@ -644,11 +647,7 @@ MagickExport MagickPassFail BlobToFile(const char *filename,const void *blob,
             amount;
 
           remaining=length - i;
-          if (remaining > block_size)
-            amount=(MAGICK_POSIX_IO_SIZE_T) block_size;
-          else
-            amount=(MAGICK_POSIX_IO_SIZE_T) remaining;
-
+          amount=Min(remaining,block_size);
           count=write(file,(char *) blob+i,amount);
           if (count <= 0)
             break;
@@ -1509,6 +1508,7 @@ MagickExport void *FileToBlob(const char *filename,size_t *length,
         vbuf_size;
 
       vbuf_size=MagickGetFileSystemBlockSize();
+      vbuf_size=Min(MagickMaxFileSystemBlockSize,vbuf_size);
       if (0 != vbuf_size)
         (void) setvbuf(file,NULL,_IOFBF,vbuf_size);
 
@@ -2508,6 +2508,7 @@ MagickExport MagickPassFail ImageToFile(Image *image,const char *filename,
       return(MagickFail);
     }
   block_size=MagickGetFileSystemBlockSize();
+  block_size=Min(MagickMaxFileSystemBlockSize,block_size);
   buffer=MagickAllocateMemory(char *,block_size);
   if (buffer == (char *) NULL)
     {
@@ -2518,7 +2519,7 @@ MagickExport MagickPassFail ImageToFile(Image *image,const char *filename,
     }
   for (i=0; (length=ReadBlob(image,block_size,buffer)) > 0; )
   {
-    for (i=0; i < length; i+=count)
+    for (i=0; i < length; i+=(size_t) count)
     {
       count=write(file,buffer+i,(MAGICK_POSIX_IO_SIZE_T) (length-i));
       if (count <= 0)
@@ -2824,6 +2825,7 @@ MagickExport MagickPassFail OpenBlob(const ImageInfo *image_info,Image *image,
     Cache I/O block size
   */
   image->blob->block_size=MagickGetFileSystemBlockSize();
+  image->blob->block_size=Min(MagickMaxFileSystemBlockSize,image->blob->block_size);
   assert(image->blob->block_size > 0);
   /*
     Attach existing memory buffer for I/O and immediately return.

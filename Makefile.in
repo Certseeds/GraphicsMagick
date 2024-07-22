@@ -767,7 +767,8 @@ coders_ora_la_OBJECTS = $(am_coders_ora_la_OBJECTS)
 coders_ora_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(coders_ora_la_LDFLAGS) $(LDFLAGS) -o $@
-@WITH_MODULES_TRUE@am_coders_ora_la_rpath = -rpath $(codersdir)
+@HasLIBZIP_TRUE@@WITH_MODULES_TRUE@am_coders_ora_la_rpath = -rpath \
+@HasLIBZIP_TRUE@@WITH_MODULES_TRUE@	$(codersdir)
 coders_otb_la_DEPENDENCIES = $(LIBMAGICK)
 am_coders_otb_la_OBJECTS = coders/otb_la-otb.lo
 coders_otb_la_OBJECTS = $(am_coders_otb_la_OBJECTS)
@@ -1355,16 +1356,18 @@ am__objects_2 = magick/libGraphicsMagick_la-analyze.lo \
 @HasJPEG_TRUE@	coders/magick_libGraphicsMagick_la-jpeg.lo
 @HasJXL_TRUE@am__objects_12 =  \
 @HasJXL_TRUE@	coders/magick_libGraphicsMagick_la-jxl.lo
-@HasPNG_TRUE@am__objects_13 =  \
+@HasLIBZIP_TRUE@am__objects_13 =  \
+@HasLIBZIP_TRUE@	coders/magick_libGraphicsMagick_la-ora.lo
+@HasPNG_TRUE@am__objects_14 =  \
 @HasPNG_TRUE@	coders/magick_libGraphicsMagick_la-png.lo
-@HasTIFF_TRUE@am__objects_14 =  \
+@HasTIFF_TRUE@am__objects_15 =  \
 @HasTIFF_TRUE@	coders/magick_libGraphicsMagick_la-ept.lo \
 @HasTIFF_TRUE@	coders/magick_libGraphicsMagick_la-tiff.lo
-@HasWEBP_TRUE@am__objects_15 =  \
+@HasWEBP_TRUE@am__objects_16 =  \
 @HasWEBP_TRUE@	coders/magick_libGraphicsMagick_la-webp.lo
-@HasX11_TRUE@am__objects_16 = coders/magick_libGraphicsMagick_la-x.lo \
+@HasX11_TRUE@am__objects_17 = coders/magick_libGraphicsMagick_la-x.lo \
 @HasX11_TRUE@	coders/magick_libGraphicsMagick_la-xwd.lo
-am__objects_17 = coders/magick_libGraphicsMagick_la-aai.lo \
+am__objects_18 = coders/magick_libGraphicsMagick_la-aai.lo \
 	coders/magick_libGraphicsMagick_la-art.lo \
 	coders/magick_libGraphicsMagick_la-avs.lo \
 	coders/magick_libGraphicsMagick_la-bmp.lo \
@@ -1406,8 +1409,7 @@ am__objects_17 = coders/magick_libGraphicsMagick_la-aai.lo \
 	coders/magick_libGraphicsMagick_la-msl.lo \
 	coders/magick_libGraphicsMagick_la-mtv.lo \
 	coders/magick_libGraphicsMagick_la-mvg.lo \
-	coders/magick_libGraphicsMagick_la-null.lo \
-	coders/magick_libGraphicsMagick_la-ora.lo \
+	coders/magick_libGraphicsMagick_la-null.lo $(am__objects_13) \
 	coders/magick_libGraphicsMagick_la-otb.lo \
 	coders/magick_libGraphicsMagick_la-palm.lo \
 	coders/magick_libGraphicsMagick_la-pcd.lo \
@@ -1417,7 +1419,7 @@ am__objects_17 = coders/magick_libGraphicsMagick_la-aai.lo \
 	coders/magick_libGraphicsMagick_la-pdf.lo \
 	coders/magick_libGraphicsMagick_la-pict.lo \
 	coders/magick_libGraphicsMagick_la-pix.lo \
-	coders/magick_libGraphicsMagick_la-plasma.lo $(am__objects_13) \
+	coders/magick_libGraphicsMagick_la-plasma.lo $(am__objects_14) \
 	coders/magick_libGraphicsMagick_la-pnm.lo \
 	coders/magick_libGraphicsMagick_la-preview.lo \
 	coders/magick_libGraphicsMagick_la-ps.lo \
@@ -1433,7 +1435,7 @@ am__objects_17 = coders/magick_libGraphicsMagick_la-aai.lo \
 	coders/magick_libGraphicsMagick_la-stegano.lo \
 	coders/magick_libGraphicsMagick_la-sun.lo \
 	coders/magick_libGraphicsMagick_la-svg.lo \
-	coders/magick_libGraphicsMagick_la-tga.lo $(am__objects_14) \
+	coders/magick_libGraphicsMagick_la-tga.lo $(am__objects_15) \
 	coders/magick_libGraphicsMagick_la-tile.lo \
 	coders/magick_libGraphicsMagick_la-tim.lo \
 	coders/magick_libGraphicsMagick_la-topol.lo \
@@ -1445,18 +1447,18 @@ am__objects_17 = coders/magick_libGraphicsMagick_la-aai.lo \
 	coders/magick_libGraphicsMagick_la-vicar.lo \
 	coders/magick_libGraphicsMagick_la-vid.lo \
 	coders/magick_libGraphicsMagick_la-viff.lo \
-	coders/magick_libGraphicsMagick_la-wbmp.lo $(am__objects_15) \
+	coders/magick_libGraphicsMagick_la-wbmp.lo $(am__objects_16) \
 	coders/magick_libGraphicsMagick_la-wmf.lo \
-	coders/magick_libGraphicsMagick_la-wpg.lo $(am__objects_16) \
+	coders/magick_libGraphicsMagick_la-wpg.lo $(am__objects_17) \
 	coders/magick_libGraphicsMagick_la-xbm.lo \
 	coders/magick_libGraphicsMagick_la-xc.lo \
 	coders/magick_libGraphicsMagick_la-xcf.lo \
 	coders/magick_libGraphicsMagick_la-xpm.lo \
 	coders/magick_libGraphicsMagick_la-yuv.lo
-am__objects_18 = filters/magick_libGraphicsMagick_la-analyze.lo
+am__objects_19 = filters/magick_libGraphicsMagick_la-analyze.lo
 @WITH_MODULES_FALSE@am_magick_libGraphicsMagick_la_OBJECTS =  \
 @WITH_MODULES_FALSE@	$(am__objects_2) $(am__objects_3) \
-@WITH_MODULES_FALSE@	$(am__objects_17) $(am__objects_18)
+@WITH_MODULES_FALSE@	$(am__objects_18) $(am__objects_19)
 @WITH_MODULES_TRUE@am_magick_libGraphicsMagick_la_OBJECTS =  \
 @WITH_MODULES_TRUE@	$(am__objects_2) $(am__objects_3)
 magick_libGraphicsMagick_la_OBJECTS =  \
@@ -1467,11 +1469,11 @@ magick_libGraphicsMagick_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(LDFLAGS) -o $@
 wand_libGraphicsMagickWand_la_DEPENDENCIES = $(LIBMAGICK) \
 	$(am__DEPENDENCIES_1)
-am__objects_19 = wand/libGraphicsMagickWand_la-drawing_wand.lo \
+am__objects_20 = wand/libGraphicsMagickWand_la-drawing_wand.lo \
 	wand/libGraphicsMagickWand_la-magick_compat.lo \
 	wand/libGraphicsMagickWand_la-magick_wand.lo \
 	wand/libGraphicsMagickWand_la-pixel_wand.lo
-am_wand_libGraphicsMagickWand_la_OBJECTS = $(am__objects_19)
+am_wand_libGraphicsMagickWand_la_OBJECTS = $(am__objects_20)
 wand_libGraphicsMagickWand_la_OBJECTS =  \
 	$(am_wand_libGraphicsMagickWand_la_OBJECTS)
 wand_libGraphicsMagickWand_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -2976,6 +2978,8 @@ codersdir = $(MagickCoderModulesPath)
 @HasX11_TRUE@MAGICK_X11_CODER_SRCS = coders/x.c coders/xwd.c
 @HasWEBP_TRUE@MAGICK_WEBP_MODULES = coders/webp.la
 @HasWEBP_TRUE@MAGICK_WEBP_SRCS = coders/webp.c
+@HasLIBZIP_TRUE@MAGICK_ORA_MODULES = coders/ora.la
+@HasLIBZIP_TRUE@MAGICK_ORA_SRCS = coders/ora.c
 @ENABLE_BROKEN_CODERS_TRUE@MAGICK_BROKEN_MODULES = coders/psd.la
 @ENABLE_BROKEN_CODERS_TRUE@MAGICK_BROKEN_SRCS = coders/psd.c
 MAGICK_CODER_CPPFLAGS = \
@@ -3034,7 +3038,7 @@ MAGICK_CODER_SRCS = \
 	coders/mtv.c \
 	coders/mvg.c \
 	coders/null.c \
-        coders/ora.c \
+        $(MAGICK_ORA_SRCS) \
 	coders/otb.c \
 	coders/palm.c \
 	coders/pcd.c \
@@ -3138,7 +3142,7 @@ MAGICK_CODER_SRCS = \
 @WITH_MODULES_TRUE@	coders/mtv.la \
 @WITH_MODULES_TRUE@	coders/mvg.la \
 @WITH_MODULES_TRUE@	coders/null.la \
-@WITH_MODULES_TRUE@	coders/ora.la \
+@WITH_MODULES_TRUE@	$(MAGICK_ORA_MODULES) \
 @WITH_MODULES_TRUE@	coders/otb.la \
 @WITH_MODULES_TRUE@	coders/palm.la \
 @WITH_MODULES_TRUE@	coders/pcd.la \
