@@ -71,6 +71,11 @@ MAGICK_WEBP_MODULES = coders/webp.la
 MAGICK_WEBP_SRCS = coders/webp.c
 endif
 
+if HasLIBZIP
+MAGICK_ORA_MODULES = coders/ora.la
+MAGICK_ORA_SRCS = coders/ora.c
+endif
+
 if ENABLE_BROKEN_CODERS
 MAGICK_BROKEN_MODULES = coders/psd.la
 MAGICK_BROKEN_SRCS = coders/psd.c
@@ -132,7 +137,7 @@ MAGICK_CODER_SRCS = \
 	coders/mtv.c \
 	coders/mvg.c \
 	coders/null.c \
-        coders/ora.c \
+        $(MAGICK_ORA_SRCS) \
 	coders/otb.c \
 	coders/palm.c \
 	coders/pcd.c \
@@ -236,7 +241,7 @@ coders_LTLIBRARIES = \
 	coders/mtv.la \
 	coders/mvg.la \
 	coders/null.la \
-	coders/ora.la \
+	$(MAGICK_ORA_MODULES) \
 	coders/otb.la \
 	coders/palm.la \
 	coders/pcd.la \
