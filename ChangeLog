@@ -1,3 +1,11 @@
+2024-07-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Add LIB_FPX and LIB_GS back into the LIBS
+	list. LIB_FPX was commented out long ago, but it seems that LIB_GS
+	was accidentally dropped within the past year during the big
+	re-write to depend more on pkg-config.  These changes are due to
+	SourceForge issue #745 "missing fpx library during linking".
+
 2024-07-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/blob.c (MagickMaxFileSystemBlockSize): Place an artibrary

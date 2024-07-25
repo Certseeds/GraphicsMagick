@@ -2316,7 +2316,7 @@ then
         have_fpx='no (failed tests)'
     else
         LIB_FPX='-lfpx'
-        # LIBS="$LIB_FPX $LIBS"
+        LIBS="$LIB_FPX $LIBS"
         AC_DEFINE([HasFPX],[1],[Define if you have FlashPIX library])
         AC_MSG_RESULT([yes])
         have_fpx='yes'
@@ -4286,7 +4286,7 @@ fi
 if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS=''
-  for token in $LCMS2_LIBS $FREETYPE_LIBS $LIB_GS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIBS_USER $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
+  for token in $LIB_FPX $LCMS2_LIBS $FREETYPE_LIBS $LIB_GS $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIBS_USER $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
   do
     case $token in
       -l*)
