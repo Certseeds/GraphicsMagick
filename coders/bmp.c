@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2024 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1407,7 +1407,7 @@ CheckBitSize:
                                     image);
         }
 
-      if (~((size_t) 0) - image->columns < 1)
+      if ((image->columns+1UL) < image->columns)
         ThrowBMPReaderException(CoderError,ArithmeticOverflow,image);
       pixels_size=MagickArraySize(Max(bytes_per_line,(size_t) image->columns+1),
                                   image->rows);

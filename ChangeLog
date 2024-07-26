@@ -1,3 +1,11 @@
+2024-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Remove defunct LIB_GS variable.
+
+	* coders/dib.c (ReadDIBImage): Eliminate GCC 14 warning.
+
+	* coders/bmp.c (ReadBMPImage): Eliminate GCC 14 warning.
+
 2024-07-25  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Add LIB_FPX and LIB_GS back into the LIBS
