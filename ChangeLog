@@ -1,3 +1,18 @@
+2024-08-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news.
+
+	* www/index.rst (https): Update Coverity statistics.  Add mention
+	of how ImageMagick has now removed classic utilities such as
+	'convert'.
+
+	* www/INSTALL-windows.rst: Add a note regarding problems building
+	UTIL_IMDisplay in some free Visual Studio versions, and how to fix
+	it.
+
+	* www/contribute.rst: Add another idea for contributing to
+	GraphicsMagick.
+
 2024-07-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Remove defunct LIB_GS variable.
@@ -258,7 +273,7 @@
 
 2024-06-10  Fojtik Jaroslav  <JaFojtik@yandex.com>
 
-	* coders/aai.c coders/avs.c: Both with and height variables
+	* coders/aai.c coders/avs.c: Both width and height variables
 	should be unsigned.
 
 2024-06-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>

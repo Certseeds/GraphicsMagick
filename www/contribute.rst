@@ -30,6 +30,10 @@ There are a number of ways you can contribute:
 * Join the GraphicsMagick Group as a full-fledged developer with
   Mercurial commit access.
 
+* Develop new 'convert6' and 'mogrify6' front ends which emulate
+  essential option parsing features of ImageMagick 6.X while
+  supporting operations currently in GraphicsMagick.
+
 Regardless of how you choose to contribute, your contributions will be
 treated with the respect and value that they deserve.
 

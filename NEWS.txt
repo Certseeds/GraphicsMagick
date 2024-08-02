@@ -19,6 +19,149 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
+1.3.44 (??? ??, 2024)
+===========================
+
+Special Issues:
+
+* Due to my Internet provider (which I have used since 2001) failing
+  to support the antiquated technology which hosts GraphicsMagick.org,
+  and the simple.dallas.tx.us domain I have used since 1994, these
+  services are now failing.  To make matters worse, due to dramatic
+  changes in US domain registration in recent years, I do not know how
+  to update the DNS registrations for simple.dallas.tx.us and my
+  historical email address may be lost.  As time permits,
+  GraphicsMagick.org will be re-hosted in the cloud at Linode.
+
+* GraphicsMagick really does need some additional productive
+  volunteers.  For several years now, the burden has entirely been on
+  me (Bob Friesenhahn).  I have been sheparding the project for 22
+  years already (and contributed to ImageMagick and GraphicsMagick
+  combined for 28 years already).  It is not reasonable to expect
+  someone with a full time job (and expecting to retire in a few
+  years) to do all of the work.
+
+Security Fixes:
+
+* GraphicsMagick is participating in Google's oss-fuzz project since
+  February 4 2018 due to the contributions and assistance of Alex
+  Gaynor and Paul Kehrer. The issues list is available at
+  https://bugs.chromium.org/p/oss-fuzz/issues/list under search term
+  "graphicsmagick".  Issues are available for anyone to view and
+  duplicate if they have been in "Verified" status for 30 days, or if
+  they have been in "New" status for 90 days.  Please consult the
+  GraphicsMagick ChangeLog file, Mercurial repository commit log, and
+  the oss-fuzz issues list for details.
+
+* GraphicsMagick has been participating in Synopsys's Coverity program
+  for free software projects since 2015.  There has been a continuing
+  objective to keep outstanding defects at 0, or very close to 0.
+  Information about the Coverity status may be found at
+  https://scan.coverity.com/projects/graphicsmagick.
+
+* TIFF: Fixed multiple heap and stack buffer overflows (directed by
+  the source EXIF profile) while writing EXIF into the native TIFF
+  IFD.
+
+* FITS: Fix problem that the FITS reader could return invalid image
+  frames with rows or columns set to zero. Other code in the library
+  crashes, or even asserts, if invalid image frames with rows or
+  columns set to zero are returned.
+
+* Coverity fixes: Various fixes for Coverity issues raised after the
+  update to version 2023.12.2.
+
+* Clang Analyzer (scan-build) fixes: Various fixes for new issues
+  discovered by Clang Analyzer.
+
+Bug fixes:
+
+* configure.ac: Fix a shell syntax error.
+
+* GCC 14: Eliminate some new warnings which appeared while in -Wall
+  mode.
+
+* JPEG: FormatJPEGSamplingFactors() now properly handles the number of
+  samples for each colorspace.
+
+* JXL: Additional validations of color channel and alpha channel
+  depth.
+
+* TGA: Fix issues discovered by Coverity.
+
+* TGA: Fix writing TGA with opacity values in palette.
+
+* TGA: Default orientation is (again) TopLeftOrientation.
+
+* TIFF: Verify that TIFFTAG_BITSPERSAMPLE is within a rational range.
+
+* TXT: Eliminate use of an uninitialized-value in GetColorTuple().
+
+* XML: Improve detection of if the deprecated HTTP and FTP protocols
+  are supported by libxml2.
+
+New Features:
+
+* Add support for reading the pre-rendered image from the Open Raster
+  ("ORA") format. Actual rendering of Open Raster is not supported.
+
+* Add support for Dune HD AAI Image (aka Auburn Animation Image) image
+  format ("AAI").
+
+* Add support for a --version option, which produces GNU style summary
+  version output.
+
+* Identify output now indicates if the image is opaque.
+
+* WebP: Add support for '-define webp:exact=true' to preserve exact
+  RGB values under transparent areas while writing WebP format.
+  Enable this automatically when lossless is enabled.  If lossless is
+  enabled, this option may be used to disable exact mode.
+
+* PerlMagick: Add AccessDefinition(), AddDefinition(),
+  AddDefinitions(), and RemoveDefinitions() methods to supporting
+  adding, updating, removing definitions.
+
+API Updates:
+
+* Magick++/STL.h: The deprecated std::unary_function is no longer used
+  given C++'11 or later. Continued use of it caused too many issues
+  due to an abundance of warnings.
+
+* Wand API PixelSetQuantumColor(): The color argument is now a const
+  pointer.
+
+Windows Delegate Updates/Additions:
+
+* Zip support is obtained from existing zlib contrib/minizip source code.
+
+Build Changes:
+
+* Libzip is now supported in the build in order to support the ORA
+  format.  Please note that this library often depends on a large
+  crypto library such as OpenSSL, although crypto is not required to
+  read the ORA format.
+
+* The VisualMagick build is modified to use existing minizip source
+  files to support the ORA format.
+
+* fuzzing/oss-fuzz-build.sh: Continued improvements to the oss-fuzz
+  build script, which builds almost all 3rd party libraries that
+  GraphicsMagick depends on.
+
+* Improve the build for Mingw-w64.  Remove mention from the
+  documentation regarding the original MinGW (for which the build
+  still works) given that the project seems to be defunct and
+  unusable.
+
+* FPX: Support building with libfpx ("FlashPIX") again.
+
+Behavior Changes:
+
+* MagickMaxFileSystemBlockSize: Place an arbitrary limit (4,194,304
+  bytes) on maximum filesystem block size.
+
+
 1.3.43 (March 23, 2024)
 ===========================
 
