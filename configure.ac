@@ -640,16 +640,6 @@ if test "$with_bzlib" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-bzlib=$with_bzlib "
 fi
 
-# Disable Display Postscript.
-AC_ARG_WITH([dps],
-              AS_HELP_STRING([--without-dps],
-                             [disable Display Postscript support]),
-              [with_dps=$withval],
-              [with_dps='yes'])
-if test "$with_dps" != 'yes' ; then
-    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-dps=$with_dps "
-fi
-
 # Enable FlashPIX.
 AC_ARG_WITH([fpx],
               AS_HELP_STRING([--with-fpx],
@@ -2229,68 +2219,6 @@ then
   LIBS="$LIB_DL $LIBS"
 fi
 AC_SUBST([LIB_DL])
-
-#
-# Check for Display Postscript
-#
-have_dps='no'
-LIB_DPS=''
-if test "$with_dps" != 'no' && test "$with_x" != 'no'
-then
-    AC_MSG_CHECKING([for Display Postscript support ])
-    AC_MSG_RESULT()
-    failed=0
-    passed=0
-    O_CPPFLAGS="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS -I${ac_x_includes}/X11"
-    AC_CHECK_HEADER([DPS/dpsXclient.h],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`])
-    # DPS issues:
-    # XFree86-4.x needs -lXt to provide XtMalloc for -ldps.
-    # Cygwin doesn't deliver -lXt as a DLL, which prevents a DLL build.
-    # Adobe DPS (as delivered on Solaris) doesn't require -lXt.
-    # GraphicsMagick itself doesn't use -lXt.
-    have_libdps='no'
-    LIBDPS_XT=''
-    AC_CHECK_LIB([dps],[DPSInitialize],[have_libdps='yes'],[have_libdps='no'],)
-    if test "$have_libdps" != 'yes'
-    then
-      # Unset cache variable so we can try again.
-      unset ac_cv_lib_dps_DPSInitialize
-      AC_CHECK_LIB([dps],[DPSInitialize],[have_libdps='yes'],[have_libdps='no'],[-lXt])
-      if test "$have_libdps" = 'yes'
-      then
-        LIBDPS_XT='-lXt'
-      fi
-    fi
-    if test "$have_libdps" = 'yes'
-    then
-      passed=`expr $passed + 1`
-    else
-      failed=`expr $failed + 1`
-    fi
-    AC_CHECK_LIB([dpstk],[XDPSPixelsPerPoint],[passed=`expr $passed + 1`],[failed=`expr $failed + 1`],[-ldps $LIBDPS_XT])
-    AC_MSG_CHECKING([if DPS package is complete])
-    if test $passed -gt 0
-    then
-    if test $failed -gt 0
-    then
-        AC_MSG_RESULT([no -- some components failed test])
-        have_dps='no (failed tests)'
-        CPPFLAGS="$O_CPPFLAGS"
-    else
-        LIB_DPS="-ldpstk -ldps ${LIBDPS_XT}"
-        LIBS="$LIB_DPS $LIBS"
-        AC_DEFINE([HasDPS],[1],[Define if you have Display Postscript])
-        AC_MSG_RESULT([yes])
-        have_dps='yes'
-    fi
-    else
-    AC_MSG_RESULT([no])
-    CPPFLAGS=$O_CPPFLAGS
-    fi
-fi
-AM_CONDITIONAL([HasDPS],[test "$have_dps" = 'yes'])
-AC_SUBST([LIB_DPS])
 
 #
 # Check for FlashPIX
@@ -4194,8 +4122,7 @@ if test "$have_png"    = 'yes' ; then
 fi
 
 have_ps='no'
-if test "$have_dps"    = 'yes' || \
-   test "$have_gs" = 'yes' ; then
+if test "$have_gs" = 'yes' ; then
    have_ps='yes'
 fi
 if test "$have_ps"     = 'yes' ; then
@@ -4286,7 +4213,7 @@ fi
 if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS=''
-  for token in $LIB_FPX $LCMS2_LIBS $FREETYPE_LIBS $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIBS_USER $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
+  for token in $LIB_FPX $LCMS2_LIBS $FREETYPE_LIBS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIBS_USER $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
   do
     case $token in
       -l*)
@@ -4428,7 +4355,6 @@ printf "OpenMP            --enable-openmp=$enable_openmp\t\t${OPENMP_ENABLED} ${
 printf "\n"
 printf "Delegate Configuration:\n"
 printf "BZLIB             --with-bzlib=$with_bzlib         \t$have_bzlib\n"
-printf "DPS               --with-dps=$with_dps          \t$have_dps\n"
 printf "FlashPIX          --with-fpx=$with_fpx          \t$have_fpx\n"
 printf "FreeType 2.0      --with-ttf=$with_ttf          \t$have_ttf\n"
 printf "Ghostscript       --with-gs=$with_gs            \t$PSDelegate ($GSVersion)\n"

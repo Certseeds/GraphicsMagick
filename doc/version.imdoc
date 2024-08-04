@@ -66,7 +66,6 @@ software was configured and the host system.</p>
     Large Files (> 32 bit)     yes
     Large Memory (> 32 bit)    yes
     BZIP                       yes
-    DPS                        no
     FlashPix                   no
     FreeType                   yes
     Ghostscript (Library)      no

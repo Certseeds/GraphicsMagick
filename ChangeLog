@@ -1,5 +1,10 @@
 2024-08-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* configure.ac, coders/dps.c: Display Postscript stopped being
+	available in Sun's Solaris in 2002 and has been gone from the
+	world for a long time already.  Remove support for Display
+	Postscript.
+
 	* config/{config.guess,config.sub}: Re-bootstrap with latest
 	config.guess and config.sub.
 

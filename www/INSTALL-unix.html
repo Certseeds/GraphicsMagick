@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="unix-cygwin-mingw-msys2-compilation">
+<main id="unix-cygwin-mingw-msys2-compilation">
 <h1 class="title">UNIX/Cygwin/MinGW/MSYS2 Compilation</h1>
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
@@ -68,7 +68,7 @@
 <li><p><a class="reference internal" href="#verifying-the-build" id="id14">Verifying The Build</a></p></li>
 </ul>
 </div>
-<div class="section" id="archive-formats">
+<section id="archive-formats">
 <h1><a class="toc-backref" href="#id1">Archive Formats</a></h1>
 <p>GraphicsMagick is distributed in a number of different archive formats.
 The source code must be extracted prior to compilation as follows:</p>
@@ -118,8 +118,8 @@ similar to 'GraphicsMagick-1.3'. After the source code extracted,
 change to the new directory (using the actual directory name) using
 a command similar to:</p>
 <pre class="literal-block">cd GraphicsMagick-1.3</pre>
-</div>
-<div class="section" id="build-configuration">
+</section>
+<section id="build-configuration">
 <h1><a class="toc-backref" href="#id2">Build Configuration</a></h1>
 <p>Use 'configure' to automatically configure, build, and install
 GraphicsMagick. The configure script may be executed from the
@@ -215,7 +215,7 @@ options.  When disabling an option --disable-something is equivalent
 to specifying --enable-something=no and --without-something is
 equivalent to --with-something=no.  The configure options are as
 follows (execute 'configure --help' to see all options).</p>
-<div class="section" id="optional-features">
+<section id="optional-features">
 <h2><a class="toc-backref" href="#id3">Optional Features</a></h2>
 <dl class="option-list">
 <dt><kbd><span class="option">--disable-compressed-files</span></kbd></dt>
@@ -270,8 +270,8 @@ libraries with different quantum depths to co-exist in same
 directory (only one can be used for development)</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="optional-packages-options">
+</section>
+<section id="optional-packages-options">
 <h2><a class="toc-backref" href="#id4">Optional Packages/Options</a></h2>
 <dl class="option-list">
 <dt><kbd><span class="option">--with-quantum-depth</span></kbd></dt>
@@ -301,9 +301,6 @@ directory (only one can be used for development)</p>
 </dd>
 <dt><kbd><span class="option">--without-bzlib</span></kbd></dt>
 <dd><p>disable BZLIB support</p>
-</dd>
-<dt><kbd><span class="option">--without-dps</span></kbd></dt>
-<dd><p>disable Display Postscript support</p>
 </dd>
 <dt><kbd><span class="option">--with-fpx</span></kbd></dt>
 <dd><p>enable FlashPIX support</p>
@@ -842,9 +839,9 @@ the default libc memory allocator, and more performant in
 multi-threaded programs than umem, but is less memory efficient.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="jpeg-xl">
+</section>
+</section>
+<section id="jpeg-xl">
 <h1><a class="toc-backref" href="#id5">JPEG XL</a></h1>
 <p>JPEG XL seems to be a work in progress, with previous APIs being
 deprecated, and replacement APIs introduced.  We have taken an
@@ -863,13 +860,13 @@ make test
 make install</pre>
 <p>While the JPEG XL project recommends using Clang, it is observed to
 work without known issues when compiled using GCC 9.4.0.</p>
-</div>
-<div class="section" id="popular-distribution-packages">
+</section>
+<section id="popular-distribution-packages">
 <h1><a class="toc-backref" href="#id6">Popular Distribution Packages</a></h1>
 <p>We will attempt to document the package names useful for
 GraphicsMagick on various primordial operating system distributions
 here.</p>
-<div class="section" id="debian-packages">
+<section id="debian-packages">
 <h2><a class="toc-backref" href="#id7">Debian Packages</a></h2>
 <p>These packages may be installed on a Debian Linux system (or one that
 derives from Debian such as Ubuntu or Mint) in order to quickly build
@@ -888,9 +885,9 @@ ttf-mscorefonts-installer</pre>
 <p>These additional packages are useful in order to maintain
 GraphicsMagick itself:</p>
 <pre class="literal-block">autoconf, automake, graphviz, libtool, docutils-common, python, m4</pre>
-</div>
-</div>
-<div class="section" id="building-under-cygwin">
+</section>
+</section>
+<section id="building-under-cygwin">
 <h1><a class="toc-backref" href="#id8">Building under Cygwin</a></h1>
 <p>GraphicsMagick may be built under the Windows Cygwin Unix-emulation
 environment available for free from</p>
@@ -913,8 +910,8 @@ catching C++ exceptions thrown by DLL code.  The Magick++ library
 requires that it be possible to catch C++ exceptions thrown from DLLs.
 The test suite <span class="docutils literal">make check</span> includes several tests to verify that
 C++ exceptions are working properly.</p>
-</div>
-<div class="section" id="building-under-mingw-w64-msys2">
+</section>
+<section id="building-under-mingw-w64-msys2">
 <h1><a class="toc-backref" href="#id9">Building under MinGW-W64 &amp; MSYS2</a></h1>
 <p>GraphicsMagick may easily be built using the free <a class="reference external" href="https://www.msys2.org/">MSYS2</a> distribution which provides GCC compilers,
 libraries, and headers, targeting native Windows along with a
@@ -953,7 +950,7 @@ installation layout (e.g. <span class="docutils literal"><span class="pre">C:\Gr
 <span class="docutils literal"><span class="pre">C:\GraphicsMagick\lib</span></span>, <span class="docutils literal"><span class="pre">C:\GraphicsMagick\share</span></span>, etc.). Paths
 which may be embedded in libraries and configuration files are
 transformed into Windows paths so they don't depend on MSYS.</p>
-<div class="section" id="cross-compilation-on-unix-linux-host">
+<section id="cross-compilation-on-unix-linux-host">
 <h2><a class="toc-backref" href="#id10">Cross-compilation On Unix/Linux Host</a></h2>
 <p>Given a modern and working MinGW32 or mingw-w64 installation, it is
 easy to cross-compile GraphicsMagick from a Unix-type host to produce
@@ -984,9 +981,9 @@ tested/supported by GraphicsMagick authors).</p>
 section is recommended in order to install the build products into a
 formal directory tree before preparing to copy onto the Windows target
 system (e.g. by packaging via an installer).</p>
-</div>
-</div>
-<div class="section" id="dealing-with-configuration-failures">
+</section>
+</section>
+<section id="dealing-with-configuration-failures">
 <h1><a class="toc-backref" href="#id11">Dealing with configuration failures</a></h1>
 <p>While configure is designed to ease installation of GraphicsMagick, it
 often discovers problems that would otherwise be encountered later
@@ -1021,8 +1018,8 @@ and/or the config.log file may be valuable in order to find the
 problem. If you send a config.log, please also send a script of the
 configure output and a description of what you expected to see (and
 why) so the failure you are observing can be identified and resolved.</p>
-</div>
-<div class="section" id="makefile-build-targets">
+</section>
+<section id="makefile-build-targets">
 <h1><a class="toc-backref" href="#id12">Makefile Build Targets</a></h1>
 <p>Once GraphicsMagick is configured, these standard build targets are
 available from the generated Makefiles:</p>
@@ -1061,8 +1058,8 @@ target does not work for PerlMagick since Perl no longer supports
 an 'uninstall' target.</p>
 </blockquote>
 </blockquote>
-</div>
-<div class="section" id="build-install">
+</section>
+<section id="build-install">
 <h1><a class="toc-backref" href="#id13">Build &amp; Install</a></h1>
 <p>Now that GraphicsMagick is configured, type</p>
 <pre class="literal-block">make</pre>
@@ -1073,8 +1070,8 @@ an 'uninstall' target.</p>
 tree layout (e.g. as part of the process for packaging the built
 software), specify DESTDIR like</p>
 <pre class="literal-block">make DESTDIR=/my/dest/dir install</pre>
-</div>
-<div class="section" id="verifying-the-build">
+</section>
+<section id="verifying-the-build">
 <h1><a class="toc-backref" href="#id14">Verifying The Build</a></h1>
 <p>To confirm your installation of the GraphicsMagick distribution was
 successful, ensure that the installation directory is in your executable
@@ -1107,8 +1104,8 @@ the developer's environment environment and your own may include the
 compiler, the CPU type, and the library versions used. The
 GraphicsMagick developers use the current release of all dependent
 libraries.</p>
-</div>
-</div>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -1116,6 +1113,6 @@ libraries.</p>
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

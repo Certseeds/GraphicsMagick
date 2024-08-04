@@ -816,9 +816,6 @@ LCMS2_CFLAGS
 LIB_FPX
 HasFPX_FALSE
 HasFPX_TRUE
-LIB_DPS
-HasDPS_FALSE
-HasDPS_TRUE
 LIB_DL
 LIB_XEXT
 LIB_X11
@@ -1133,7 +1130,6 @@ with_magick_plus_plus
 with_perl
 with_perl_options
 with_bzlib
-with_dps
 with_fpx
 with_gdi32
 with_gs
@@ -1898,7 +1894,6 @@ Optional Packages:
                           options to pass on command-line when generating
                           PerlMagick's Makefile from Makefile.PL
   --without-bzlib         disable BZLIB support
-  --without-dps           disable Display Postscript support
   --with-fpx              enable FlashPIX support
   --without-gdi32         disable Windows gdi32/user32 (clipboard) support
   --without-gs            disable Ghostscript support
@@ -21051,20 +21046,6 @@ if test "$with_bzlib" != 'yes' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-bzlib=$with_bzlib "
 fi
 
-# Disable Display Postscript.
-
-# Check whether --with-dps was given.
-if test ${with_dps+y}
-then :
-  withval=$with_dps; with_dps=$withval
-else $as_nop
-  with_dps='yes'
-fi
-
-if test "$with_dps" != 'yes' ; then
-    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-dps=$with_dps "
-fi
-
 # Enable FlashPIX.
 
 # Check whether --with-fpx was given.
@@ -27891,213 +27872,6 @@ fi
 
 
 #
-# Check for Display Postscript
-#
-have_dps='no'
-LIB_DPS=''
-if test "$with_dps" != 'no' && test "$with_x" != 'no'
-then
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Display Postscript support " >&5
-printf %s "checking for Display Postscript support ... " >&6; }
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: " >&5
-printf "%s\n" "" >&6; }
-    failed=0
-    passed=0
-    O_CPPFLAGS="$CPPFLAGS"
-    CPPFLAGS="$CPPFLAGS -I${ac_x_includes}/X11"
-    ac_fn_c_check_header_compile "$LINENO" "DPS/dpsXclient.h" "ac_cv_header_DPS_dpsXclient_h" "$ac_includes_default"
-if test "x$ac_cv_header_DPS_dpsXclient_h" = xyes
-then :
-  passed=`expr $passed + 1`
-else $as_nop
-  failed=`expr $failed + 1`
-fi
-
-    # DPS issues:
-    # XFree86-4.x needs -lXt to provide XtMalloc for -ldps.
-    # Cygwin doesn't deliver -lXt as a DLL, which prevents a DLL build.
-    # Adobe DPS (as delivered on Solaris) doesn't require -lXt.
-    # GraphicsMagick itself doesn't use -lXt.
-    have_libdps='no'
-    LIBDPS_XT=''
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for DPSInitialize in -ldps" >&5
-printf %s "checking for DPSInitialize in -ldps... " >&6; }
-if test ${ac_cv_lib_dps_DPSInitialize+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldps  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char DPSInitialize ();
-int
-main (void)
-{
-return DPSInitialize ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_dps_DPSInitialize=yes
-else $as_nop
-  ac_cv_lib_dps_DPSInitialize=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dps_DPSInitialize" >&5
-printf "%s\n" "$ac_cv_lib_dps_DPSInitialize" >&6; }
-if test "x$ac_cv_lib_dps_DPSInitialize" = xyes
-then :
-  have_libdps='yes'
-else $as_nop
-  have_libdps='no'
-fi
-
-    if test "$have_libdps" != 'yes'
-    then
-      # Unset cache variable so we can try again.
-      unset ac_cv_lib_dps_DPSInitialize
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for DPSInitialize in -ldps" >&5
-printf %s "checking for DPSInitialize in -ldps... " >&6; }
-if test ${ac_cv_lib_dps_DPSInitialize+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldps -lXt $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char DPSInitialize ();
-int
-main (void)
-{
-return DPSInitialize ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_dps_DPSInitialize=yes
-else $as_nop
-  ac_cv_lib_dps_DPSInitialize=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dps_DPSInitialize" >&5
-printf "%s\n" "$ac_cv_lib_dps_DPSInitialize" >&6; }
-if test "x$ac_cv_lib_dps_DPSInitialize" = xyes
-then :
-  have_libdps='yes'
-else $as_nop
-  have_libdps='no'
-fi
-
-      if test "$have_libdps" = 'yes'
-      then
-        LIBDPS_XT='-lXt'
-      fi
-    fi
-    if test "$have_libdps" = 'yes'
-    then
-      passed=`expr $passed + 1`
-    else
-      failed=`expr $failed + 1`
-    fi
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for XDPSPixelsPerPoint in -ldpstk" >&5
-printf %s "checking for XDPSPixelsPerPoint in -ldpstk... " >&6; }
-if test ${ac_cv_lib_dpstk_XDPSPixelsPerPoint+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldpstk -ldps $LIBDPS_XT $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char XDPSPixelsPerPoint ();
-int
-main (void)
-{
-return XDPSPixelsPerPoint ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_dpstk_XDPSPixelsPerPoint=yes
-else $as_nop
-  ac_cv_lib_dpstk_XDPSPixelsPerPoint=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dpstk_XDPSPixelsPerPoint" >&5
-printf "%s\n" "$ac_cv_lib_dpstk_XDPSPixelsPerPoint" >&6; }
-if test "x$ac_cv_lib_dpstk_XDPSPixelsPerPoint" = xyes
-then :
-  passed=`expr $passed + 1`
-else $as_nop
-  failed=`expr $failed + 1`
-fi
-
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if DPS package is complete" >&5
-printf %s "checking if DPS package is complete... " >&6; }
-    if test $passed -gt 0
-    then
-    if test $failed -gt 0
-    then
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no -- some components failed test" >&5
-printf "%s\n" "no -- some components failed test" >&6; }
-        have_dps='no (failed tests)'
-        CPPFLAGS="$O_CPPFLAGS"
-    else
-        LIB_DPS="-ldpstk -ldps ${LIBDPS_XT}"
-        LIBS="$LIB_DPS $LIBS"
-
-printf "%s\n" "#define HasDPS 1" >>confdefs.h
-
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }
-        have_dps='yes'
-    fi
-    else
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-    CPPFLAGS=$O_CPPFLAGS
-    fi
-fi
- if test "$have_dps" = 'yes'; then
-  HasDPS_TRUE=
-  HasDPS_FALSE='#'
-else
-  HasDPS_TRUE='#'
-  HasDPS_FALSE=
-fi
-
-
-
-#
 # Check for FlashPIX
 #
 have_fpx='no'
@@ -34587,8 +34361,7 @@ if test "$have_png"    = 'yes' ; then
 fi
 
 have_ps='no'
-if test "$have_dps"    = 'yes' || \
-   test "$have_gs" = 'yes' ; then
+if test "$have_gs" = 'yes' ; then
    have_ps='yes'
 fi
 if test "$have_ps"     = 'yes' ; then
@@ -34675,7 +34448,7 @@ fi
 if test "$build_modules" != 'no'
 then
   MAGICK_DEP_LIBS=''
-  for token in $LIB_FPX $LCMS2_LIBS $FREETYPE_LIBS $LIB_DPS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIBS_USER $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
+  for token in $LIB_FPX $LCMS2_LIBS $FREETYPE_LIBS $LIB_XEXT $LIB_IPC $LIB_X11 $LIB_BZLIB $ZLIB_LIBS $LIB_LTDL $LIB_TRIO $LIB_GDI32 $LIBS_USER $LIB_MATH $LIB_THREAD $LIB_TCMALLOC $LIB_UMEM $LIB_MTMALLOC
   do
     case $token in
       -l*)
@@ -35018,10 +34791,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasX11_TRUE}" && test -z "${HasX11_FALSE}"; then
   as_fn_error $? "conditional \"HasX11\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HasDPS_TRUE}" && test -z "${HasDPS_FALSE}"; then
-  as_fn_error $? "conditional \"HasDPS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HasFPX_TRUE}" && test -z "${HasFPX_FALSE}"; then
@@ -37603,7 +37372,6 @@ printf "OpenMP            --enable-openmp=$enable_openmp\t\t${OPENMP_ENABLED} ${
 printf "\n"
 printf "Delegate Configuration:\n"
 printf "BZLIB             --with-bzlib=$with_bzlib         \t$have_bzlib\n"
-printf "DPS               --with-dps=$with_dps          \t$have_dps\n"
 printf "FlashPIX          --with-fpx=$with_fpx          \t$have_fpx\n"
 printf "FreeType 2.0      --with-ttf=$with_ttf          \t$have_ttf\n"
 printf "Ghostscript       --with-gs=$with_gs            \t$PSDelegate ($GSVersion)\n"

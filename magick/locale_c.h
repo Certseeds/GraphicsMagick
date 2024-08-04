@@ -3,7 +3,7 @@
 
 extern MagickExport const char *GetLocaleMessageFromID(const int) MAGICK_FUNC_CONST;
 
-#define MAX_LOCALE_MSGS 592
+#define MAX_LOCALE_MSGS 591
 
 #define MGK_BlobErrorUnableToCreateBlob 1
 #define MGK_BlobErrorUnableToDeduceImageFormat 2
@@ -273,330 +273,329 @@ extern MagickExport const char *GetLocaleMessageFromID(const int) MAGICK_FUNC_CO
 #define MGK_ImageErrorWidthOrHeightExceedsLimit 266
 #define MGK_ImageFatalErrorUnableToPersistKey 267
 #define MGK_ImageWarningDefault 268
-#define MGK_MissingDelegateErrorDPSLibraryIsNotAvailable 269
-#define MGK_MissingDelegateErrorFPXLibraryIsNotAvailable 270
-#define MGK_MissingDelegateErrorFreeTypeLibraryIsNotAvailable 271
-#define MGK_MissingDelegateErrorJPEGLibraryIsNotAvailable 272
-#define MGK_MissingDelegateErrorLCMSLibraryIsNotAvailable 273
-#define MGK_MissingDelegateErrorLZWEncodingNotEnabled 274
-#define MGK_MissingDelegateErrorNoDecodeDelegateForThisImageFormat 275
-#define MGK_MissingDelegateErrorNoEncodeDelegateForThisImageFormat 276
-#define MGK_MissingDelegateErrorTIFFLibraryIsNotAvailable 277
-#define MGK_MissingDelegateErrorXMLLibraryIsNotAvailable 278
-#define MGK_MissingDelegateErrorXWindowLibraryIsNotAvailable 279
-#define MGK_MissingDelegateErrorZipLibraryIsNotAvailable 280
-#define MGK_MissingDelegateFatalErrorDefault 281
-#define MGK_MissingDelegateWarningDefault 282
-#define MGK_ModuleErrorFailedToCloseModule 283
-#define MGK_ModuleErrorFailedToFindSymbol 284
-#define MGK_ModuleErrorUnableToLoadModule 285
-#define MGK_ModuleErrorUnableToRegisterImageFormat 286
-#define MGK_ModuleErrorUnrecognizedModule 287
-#define MGK_ModuleFatalErrorUnableToInitializeModuleLoader 288
-#define MGK_ModuleWarningDefault 289
-#define MGK_MonitorErrorDefault 290
-#define MGK_MonitorFatalErrorDefault 291
-#define MGK_MonitorFatalErrorUserRequestedTerminationBySignal 292
-#define MGK_MonitorWarningDefault 293
-#define MGK_OptionErrorBevelWidthIsNegative 294
-#define MGK_OptionErrorColorSeparatedImageRequired 295
-#define MGK_OptionErrorFrameIsLessThanImageSize 296
-#define MGK_OptionErrorGeometryDimensionsAreZero 297
-#define MGK_OptionErrorGeometryDoesNotContainImage 298
-#define MGK_OptionErrorHaldClutImageDimensionsInvalid 299
-#define MGK_OptionErrorImagesAreNotTheSameSize 300
-#define MGK_OptionErrorImageSizeMustExceedBevelWidth 301
-#define MGK_OptionErrorImageSmallerThanKernelWidth 302
-#define MGK_OptionErrorImageSmallerThanRadius 303
-#define MGK_OptionErrorImageWidthsOrHeightsDiffer 304
-#define MGK_OptionErrorInputImagesAlreadySpecified 305
-#define MGK_OptionErrorInvalidSubimageSpecification 306
-#define MGK_OptionErrorKernelRadiusIsTooSmall 307
-#define MGK_OptionErrorKernelWidthMustBeAnOddNumber 308
-#define MGK_OptionErrorMatrixIsNotSquare 309
-#define MGK_OptionErrorMatrixOrderOutOfRange 310
-#define MGK_OptionErrorMissingAnImageFilename 311
-#define MGK_OptionErrorMissingArgument 312
-#define MGK_OptionErrorMustSpecifyAnImageName 313
-#define MGK_OptionErrorMustSpecifyImageSize 314
-#define MGK_OptionErrorNoBlobDefined 315
-#define MGK_OptionErrorNoImagesDefined 316
-#define MGK_OptionErrorNonzeroWidthAndHeightRequired 317
-#define MGK_OptionErrorNoProfileNameWasGiven 318
-#define MGK_OptionErrorNullBlobArgument 319
-#define MGK_OptionErrorReferenceImageRequired 320
-#define MGK_OptionErrorReferenceIsNotMyType 321
-#define MGK_OptionErrorRegionAreaExceedsLimit 322
-#define MGK_OptionErrorRequestDidNotReturnAnImage 323
-#define MGK_OptionErrorSteganoImageRequired 324
-#define MGK_OptionErrorStereoImageRequired 325
-#define MGK_OptionErrorSubimageSpecificationReturnsNoImages 326
-#define MGK_OptionErrorTileNotBoundedByImageDimensions 327
-#define MGK_OptionErrorUnableToAddOrRemoveProfile 328
-#define MGK_OptionErrorUnableToAverageImageSequence 329
-#define MGK_OptionErrorUnableToBlurImage 330
-#define MGK_OptionErrorUnableToChopImage 331
-#define MGK_OptionErrorUnableToColorMatrixImage 332
-#define MGK_OptionErrorUnableToConstituteImage 333
-#define MGK_OptionErrorUnableToConvolveImage 334
-#define MGK_OptionErrorUnableToEdgeImage 335
-#define MGK_OptionErrorUnableToEqualizeImage 336
-#define MGK_OptionErrorUnableToFilterImage 337
-#define MGK_OptionErrorUnableToFormatImageMetadata 338
-#define MGK_OptionErrorUnableToFrameImage 339
-#define MGK_OptionErrorUnableToOilPaintImage 340
-#define MGK_OptionErrorUnableToPaintImage 341
-#define MGK_OptionErrorUnableToRaiseImage 342
-#define MGK_OptionErrorUnableToSharpenImage 343
-#define MGK_OptionErrorUnableToSpreadImage 344
-#define MGK_OptionErrorUnableToThresholdImage 345
-#define MGK_OptionErrorUnableToWaveImage 346
-#define MGK_OptionErrorUnrecognizedAttribute 347
-#define MGK_OptionErrorUnrecognizedChannelType 348
-#define MGK_OptionErrorUnrecognizedColor 349
-#define MGK_OptionErrorUnrecognizedColormapType 350
-#define MGK_OptionErrorUnrecognizedColorspace 351
-#define MGK_OptionErrorUnrecognizedCommand 352
-#define MGK_OptionErrorUnrecognizedComposeOperator 353
-#define MGK_OptionErrorUnrecognizedDisposeMethod 354
-#define MGK_OptionErrorUnrecognizedElement 355
-#define MGK_OptionErrorUnrecognizedEndianType 356
-#define MGK_OptionErrorUnrecognizedGravityType 357
-#define MGK_OptionErrorUnrecognizedHighlightStyle 358
-#define MGK_OptionErrorUnrecognizedImageCompression 359
-#define MGK_OptionErrorUnrecognizedImageFilter 360
-#define MGK_OptionErrorUnrecognizedImageFormat 361
-#define MGK_OptionErrorUnrecognizedImageMode 362
-#define MGK_OptionErrorUnrecognizedImageType 363
-#define MGK_OptionErrorUnrecognizedIntentType 364
-#define MGK_OptionErrorUnrecognizedInterlaceType 365
-#define MGK_OptionErrorUnrecognizedListType 366
-#define MGK_OptionErrorUnrecognizedMetric 367
-#define MGK_OptionErrorUnrecognizedModeType 368
-#define MGK_OptionErrorUnrecognizedNoiseType 369
-#define MGK_OptionErrorUnrecognizedOperator 370
-#define MGK_OptionErrorUnrecognizedOption 371
-#define MGK_OptionErrorUnrecognizedPerlMagickMethod 372
-#define MGK_OptionErrorUnrecognizedPixelMap 373
-#define MGK_OptionErrorUnrecognizedPreviewType 374
-#define MGK_OptionErrorUnrecognizedResourceType 375
-#define MGK_OptionErrorUnrecognizedType 376
-#define MGK_OptionErrorUnrecognizedUnitsType 377
-#define MGK_OptionErrorUnrecognizedVirtualPixelMethod 378
-#define MGK_OptionErrorUnsupportedSamplingFactor 379
-#define MGK_OptionErrorUsageError 380
-#define MGK_OptionFatalErrorInvalidColorspaceType 381
-#define MGK_OptionFatalErrorInvalidEndianType 382
-#define MGK_OptionFatalErrorInvalidImageType 383
-#define MGK_OptionFatalErrorInvalidInterlaceType 384
-#define MGK_OptionFatalErrorMissingAnImageFilename 385
-#define MGK_OptionFatalErrorMissingArgument 386
-#define MGK_OptionFatalErrorNoImagesWereLoaded 387
-#define MGK_OptionFatalErrorOptionLengthExceedsLimit 388
-#define MGK_OptionFatalErrorRequestDidNotReturnAnImage 389
-#define MGK_OptionFatalErrorUnableToOpenXServer 390
-#define MGK_OptionFatalErrorUnableToPersistKey 391
-#define MGK_OptionFatalErrorUnrecognizedColormapType 392
-#define MGK_OptionFatalErrorUnrecognizedColorspaceType 393
-#define MGK_OptionFatalErrorUnrecognizedDisposeMethod 394
-#define MGK_OptionFatalErrorUnrecognizedEndianType 395
-#define MGK_OptionFatalErrorUnrecognizedFilterType 396
-#define MGK_OptionFatalErrorUnrecognizedImageCompressionType 397
-#define MGK_OptionFatalErrorUnrecognizedImageType 398
-#define MGK_OptionFatalErrorUnrecognizedInterlaceType 399
-#define MGK_OptionFatalErrorUnrecognizedOption 400
-#define MGK_OptionFatalErrorUnrecognizedResourceType 401
-#define MGK_OptionFatalErrorUnrecognizedVirtualPixelMethod 402
-#define MGK_OptionWarningUnrecognizedColor 403
-#define MGK_RegistryErrorImageExpected 404
-#define MGK_RegistryErrorImageInfoExpected 405
-#define MGK_RegistryErrorStructureSizeMismatch 406
-#define MGK_RegistryErrorUnableToGetRegistryID 407
-#define MGK_RegistryErrorUnableToLocateImage 408
-#define MGK_RegistryErrorUnableToSetRegistry 409
-#define MGK_RegistryFatalErrorDefault 410
-#define MGK_RegistryWarningDefault 411
-#define MGK_ResourceLimitErrorCacheResourcesExhausted 412
-#define MGK_ResourceLimitErrorImagePixelHeightLimitExceeded 413
-#define MGK_ResourceLimitErrorImagePixelLimitExceeded 414
-#define MGK_ResourceLimitErrorImagePixelWidthLimitExceeded 415
-#define MGK_ResourceLimitErrorMemoryAllocationFailed 416
-#define MGK_ResourceLimitErrorNexusPixelHeightLimitExceeded 417
-#define MGK_ResourceLimitErrorNexusPixelLimitExceeded 418
-#define MGK_ResourceLimitErrorNexusPixelWidthLimitExceeded 419
-#define MGK_ResourceLimitErrorNoPixelsDefinedInCache 420
-#define MGK_ResourceLimitErrorPixelCacheAllocationFailed 421
-#define MGK_ResourceLimitErrorReadLimitExceeded 422
-#define MGK_ResourceLimitErrorUnableToAddColorProfile 423
-#define MGK_ResourceLimitErrorUnableToAddGenericProfile 424
-#define MGK_ResourceLimitErrorUnableToAddIPTCProfile 425
-#define MGK_ResourceLimitErrorUnableToAddOrRemoveProfile 426
-#define MGK_ResourceLimitErrorUnableToAllocateCoefficients 427
-#define MGK_ResourceLimitErrorUnableToAllocateColormap 428
-#define MGK_ResourceLimitErrorUnableToAllocateICCProfile 429
-#define MGK_ResourceLimitErrorUnableToAllocateImage 430
-#define MGK_ResourceLimitErrorUnableToAllocateString 431
-#define MGK_ResourceLimitErrorUnableToAnnotateImage 432
-#define MGK_ResourceLimitErrorUnableToAverageImageSequence 433
-#define MGK_ResourceLimitErrorUnableToCloneDrawingWand 434
-#define MGK_ResourceLimitErrorUnableToCloneImage 435
-#define MGK_ResourceLimitErrorUnableToComputeImageSignature 436
-#define MGK_ResourceLimitErrorUnableToConstituteImage 437
-#define MGK_ResourceLimitErrorUnableToConvertFont 438
-#define MGK_ResourceLimitErrorUnableToConvertStringToTokens 439
-#define MGK_ResourceLimitErrorUnableToCreateColormap 440
-#define MGK_ResourceLimitErrorUnableToCreateColorTransform 441
-#define MGK_ResourceLimitErrorUnableToCreateCommandWidget 442
-#define MGK_ResourceLimitErrorUnableToCreateImageGroup 443
-#define MGK_ResourceLimitErrorUnableToCreateImageMontage 444
-#define MGK_ResourceLimitErrorUnableToCreateXWindow 445
-#define MGK_ResourceLimitErrorUnableToCropImage 446
-#define MGK_ResourceLimitErrorUnableToDespeckleImage 447
-#define MGK_ResourceLimitErrorUnableToDetermineImageClass 448
-#define MGK_ResourceLimitErrorUnableToDetermineTheNumberOfImageColors 449
-#define MGK_ResourceLimitErrorUnableToDitherImage 450
-#define MGK_ResourceLimitErrorUnableToDrawOnImage 451
-#define MGK_ResourceLimitErrorUnableToEdgeImage 452
-#define MGK_ResourceLimitErrorUnableToEmbossImage 453
-#define MGK_ResourceLimitErrorUnableToEnhanceImage 454
-#define MGK_ResourceLimitErrorUnableToFloodfillImage 455
-#define MGK_ResourceLimitErrorUnableToGammaCorrectImage 456
-#define MGK_ResourceLimitErrorUnableToGetBestIconSize 457
-#define MGK_ResourceLimitErrorUnableToGetFromRegistry 458
-#define MGK_ResourceLimitErrorUnableToGetPackageInfo 459
-#define MGK_ResourceLimitErrorUnableToInterpretMSLImage 460
-#define MGK_ResourceLimitErrorUnableToLevelImage 461
-#define MGK_ResourceLimitErrorUnableToMagnifyImage 462
-#define MGK_ResourceLimitErrorUnableToManageColor 463
-#define MGK_ResourceLimitErrorUnableToMapImage 464
-#define MGK_ResourceLimitErrorUnableToMapImageSequence 465
-#define MGK_ResourceLimitErrorUnableToMedianFilterImage 466
-#define MGK_ResourceLimitErrorUnableToMotionBlurImage 467
-#define MGK_ResourceLimitErrorUnableToNoiseFilterImage 468
-#define MGK_ResourceLimitErrorUnableToNormalizeImage 469
-#define MGK_ResourceLimitErrorUnableToOpenColorProfile 470
-#define MGK_ResourceLimitErrorUnableToQuantizeImage 471
-#define MGK_ResourceLimitErrorUnableToQuantizeImageSequence 472
-#define MGK_ResourceLimitErrorUnableToReadTextChunk 473
-#define MGK_ResourceLimitErrorUnableToReadXImage 474
-#define MGK_ResourceLimitErrorUnableToReadXServerColormap 475
-#define MGK_ResourceLimitErrorUnableToResizeImage 476
-#define MGK_ResourceLimitErrorUnableToRotateImage 477
-#define MGK_ResourceLimitErrorUnableToSampleImage 478
-#define MGK_ResourceLimitErrorUnableToScaleImage 479
-#define MGK_ResourceLimitErrorUnableToSelectImage 480
-#define MGK_ResourceLimitErrorUnableToSharpenImage 481
-#define MGK_ResourceLimitErrorUnableToShaveImage 482
-#define MGK_ResourceLimitErrorUnableToShearImage 483
-#define MGK_ResourceLimitErrorUnableToSortImageColormap 484
-#define MGK_ResourceLimitErrorUnableToThresholdImage 485
-#define MGK_ResourceLimitErrorUnableToTransformColorspace 486
-#define MGK_ResourceLimitErrorWriteLimitExceeded 487
-#define MGK_ResourceLimitFatalErrorMemoryAllocationFailed 488
-#define MGK_ResourceLimitFatalErrorSemaporeOperationFailed 489
-#define MGK_ResourceLimitFatalErrorUnableToAllocateAscii85Info 490
-#define MGK_ResourceLimitFatalErrorUnableToAllocateCacheInfo 491
-#define MGK_ResourceLimitFatalErrorUnableToAllocateCacheView 492
-#define MGK_ResourceLimitFatalErrorUnableToAllocateColorInfo 493
-#define MGK_ResourceLimitFatalErrorUnableToAllocateDashPattern 494
-#define MGK_ResourceLimitFatalErrorUnableToAllocateDelegateInfo 495
-#define MGK_ResourceLimitFatalErrorUnableToAllocateDerivatives 496
-#define MGK_ResourceLimitFatalErrorUnableToAllocateDrawContext 497
-#define MGK_ResourceLimitFatalErrorUnableToAllocateDrawInfo 498
-#define MGK_ResourceLimitFatalErrorUnableToAllocateDrawingWand 499
-#define MGK_ResourceLimitFatalErrorUnableToAllocateGammaMap 500
-#define MGK_ResourceLimitFatalErrorUnableToAllocateImage 501
-#define MGK_ResourceLimitFatalErrorUnableToAllocateImagePixels 502
-#define MGK_ResourceLimitFatalErrorUnableToAllocateLogInfo 503
-#define MGK_ResourceLimitFatalErrorUnableToAllocateMagicInfo 504
-#define MGK_ResourceLimitFatalErrorUnableToAllocateMagickInfo 505
-#define MGK_ResourceLimitFatalErrorUnableToAllocateMagickMap 506
-#define MGK_ResourceLimitFatalErrorUnableToAllocateModuleInfo 507
-#define MGK_ResourceLimitFatalErrorUnableToAllocateMontageInfo 508
-#define MGK_ResourceLimitFatalErrorUnableToAllocateQuantizeInfo 509
-#define MGK_ResourceLimitFatalErrorUnableToAllocateRandomKernel 510
-#define MGK_ResourceLimitFatalErrorUnableToAllocateRegistryInfo 511
-#define MGK_ResourceLimitFatalErrorUnableToAllocateSemaphoreInfo 512
-#define MGK_ResourceLimitFatalErrorUnableToAllocateString 513
-#define MGK_ResourceLimitFatalErrorUnableToAllocateTypeInfo 514
-#define MGK_ResourceLimitFatalErrorUnableToAllocateWand 515
-#define MGK_ResourceLimitFatalErrorUnableToAnimateImageSequence 516
-#define MGK_ResourceLimitFatalErrorUnableToCloneBlobInfo 517
-#define MGK_ResourceLimitFatalErrorUnableToCloneCacheInfo 518
-#define MGK_ResourceLimitFatalErrorUnableToCloneImage 519
-#define MGK_ResourceLimitFatalErrorUnableToCloneImageInfo 520
-#define MGK_ResourceLimitFatalErrorUnableToConcatenateString 521
-#define MGK_ResourceLimitFatalErrorUnableToConvertText 522
-#define MGK_ResourceLimitFatalErrorUnableToCreateColormap 523
-#define MGK_ResourceLimitFatalErrorUnableToDestroySemaphore 524
-#define MGK_ResourceLimitFatalErrorUnableToDisplayImage 525
-#define MGK_ResourceLimitFatalErrorUnableToEscapeString 526
-#define MGK_ResourceLimitFatalErrorUnableToInitializeSemaphore 527
-#define MGK_ResourceLimitFatalErrorUnableToInterpretMSLImage 528
-#define MGK_ResourceLimitFatalErrorUnableToLockSemaphore 529
-#define MGK_ResourceLimitFatalErrorUnableToObtainRandomEntropy 530
-#define MGK_ResourceLimitFatalErrorUnableToUnlockSemaphore 531
-#define MGK_ResourceLimitWarningMemoryAllocationFailed 532
-#define MGK_StreamErrorImageDoesNotContainTheStreamGeometry 533
-#define MGK_StreamErrorNoStreamHandlerIsDefined 534
-#define MGK_StreamErrorPixelCacheIsNotOpen 535
-#define MGK_StreamErrorUnableToAcquirePixelStream 536
-#define MGK_StreamErrorUnableToSetPixelStream 537
-#define MGK_StreamErrorUnableToSyncPixelStream 538
-#define MGK_StreamFatalErrorDefault 539
-#define MGK_StreamWarningDefault 540
-#define MGK_TypeErrorFontNotSpecified 541
-#define MGK_TypeErrorFontSubstitutionRequired 542
-#define MGK_TypeErrorUnableToGetTypeMetrics 543
-#define MGK_TypeErrorUnableToInitializeFreetypeLibrary 544
-#define MGK_TypeErrorUnableToReadFont 545
-#define MGK_TypeErrorUnrecognizedFontEncoding 546
-#define MGK_TypeFatalErrorDefault 547
-#define MGK_TypeWarningDefault 548
-#define MGK_WandErrorInvalidColormapIndex 549
-#define MGK_WandErrorWandAPINotImplemented 550
-#define MGK_WandErrorWandContainsNoImageIndexs 551
-#define MGK_WandErrorWandContainsNoImages 552
-#define MGK_XServerErrorColorIsNotKnownToServer 553
-#define MGK_XServerErrorNoWindowWithSpecifiedIDExists 554
-#define MGK_XServerErrorStandardColormapIsNotInitialized 555
-#define MGK_XServerErrorUnableToConnectToRemoteDisplay 556
-#define MGK_XServerErrorUnableToCreateBitmap 557
-#define MGK_XServerErrorUnableToCreateColormap 558
-#define MGK_XServerErrorUnableToCreatePixmap 559
-#define MGK_XServerErrorUnableToCreateProperty 560
-#define MGK_XServerErrorUnableToCreateStandardColormap 561
-#define MGK_XServerErrorUnableToDisplayImageInfo 562
-#define MGK_XServerErrorUnableToGetProperty 563
-#define MGK_XServerErrorUnableToGetStandardColormap 564
-#define MGK_XServerErrorUnableToGetVisual 565
-#define MGK_XServerErrorUnableToGrabMouse 566
-#define MGK_XServerErrorUnableToLoadFont 567
-#define MGK_XServerErrorUnableToMatchVisualToStandardColormap 568
-#define MGK_XServerErrorUnableToOpenXServer 569
-#define MGK_XServerErrorUnableToReadXAttributes 570
-#define MGK_XServerErrorUnableToReadXWindowImage 571
-#define MGK_XServerErrorUnrecognizedColormapType 572
-#define MGK_XServerErrorUnrecognizedGravityType 573
-#define MGK_XServerErrorUnrecognizedVisualSpecifier 574
-#define MGK_XServerFatalErrorUnableToAllocateXHints 575
-#define MGK_XServerFatalErrorUnableToCreateCursor 576
-#define MGK_XServerFatalErrorUnableToCreateGraphicContext 577
-#define MGK_XServerFatalErrorUnableToCreateStandardColormap 578
-#define MGK_XServerFatalErrorUnableToCreateTextProperty 579
-#define MGK_XServerFatalErrorUnableToCreateXImage 580
-#define MGK_XServerFatalErrorUnableToCreateXPixmap 581
-#define MGK_XServerFatalErrorUnableToCreateXWindow 582
-#define MGK_XServerFatalErrorUnableToDisplayImage 583
-#define MGK_XServerFatalErrorUnableToDitherImage 584
-#define MGK_XServerFatalErrorUnableToGetPixelInfo 585
-#define MGK_XServerFatalErrorUnableToGetVisual 586
-#define MGK_XServerFatalErrorUnableToLoadFont 587
-#define MGK_XServerFatalErrorUnableToMakeXWindow 588
-#define MGK_XServerFatalErrorUnableToOpenXServer 589
-#define MGK_XServerFatalErrorUnableToViewFonts 590
-#define MGK_XServerWarningUnableToGetVisual 591
-#define MGK_XServerWarningUsingDefaultVisual 592
+#define MGK_MissingDelegateErrorFPXLibraryIsNotAvailable 269
+#define MGK_MissingDelegateErrorFreeTypeLibraryIsNotAvailable 270
+#define MGK_MissingDelegateErrorJPEGLibraryIsNotAvailable 271
+#define MGK_MissingDelegateErrorLCMSLibraryIsNotAvailable 272
+#define MGK_MissingDelegateErrorLZWEncodingNotEnabled 273
+#define MGK_MissingDelegateErrorNoDecodeDelegateForThisImageFormat 274
+#define MGK_MissingDelegateErrorNoEncodeDelegateForThisImageFormat 275
+#define MGK_MissingDelegateErrorTIFFLibraryIsNotAvailable 276
+#define MGK_MissingDelegateErrorXMLLibraryIsNotAvailable 277
+#define MGK_MissingDelegateErrorXWindowLibraryIsNotAvailable 278
+#define MGK_MissingDelegateErrorZipLibraryIsNotAvailable 279
+#define MGK_MissingDelegateFatalErrorDefault 280
+#define MGK_MissingDelegateWarningDefault 281
+#define MGK_ModuleErrorFailedToCloseModule 282
+#define MGK_ModuleErrorFailedToFindSymbol 283
+#define MGK_ModuleErrorUnableToLoadModule 284
+#define MGK_ModuleErrorUnableToRegisterImageFormat 285
+#define MGK_ModuleErrorUnrecognizedModule 286
+#define MGK_ModuleFatalErrorUnableToInitializeModuleLoader 287
+#define MGK_ModuleWarningDefault 288
+#define MGK_MonitorErrorDefault 289
+#define MGK_MonitorFatalErrorDefault 290
+#define MGK_MonitorFatalErrorUserRequestedTerminationBySignal 291
+#define MGK_MonitorWarningDefault 292
+#define MGK_OptionErrorBevelWidthIsNegative 293
+#define MGK_OptionErrorColorSeparatedImageRequired 294
+#define MGK_OptionErrorFrameIsLessThanImageSize 295
+#define MGK_OptionErrorGeometryDimensionsAreZero 296
+#define MGK_OptionErrorGeometryDoesNotContainImage 297
+#define MGK_OptionErrorHaldClutImageDimensionsInvalid 298
+#define MGK_OptionErrorImagesAreNotTheSameSize 299
+#define MGK_OptionErrorImageSizeMustExceedBevelWidth 300
+#define MGK_OptionErrorImageSmallerThanKernelWidth 301
+#define MGK_OptionErrorImageSmallerThanRadius 302
+#define MGK_OptionErrorImageWidthsOrHeightsDiffer 303
+#define MGK_OptionErrorInputImagesAlreadySpecified 304
+#define MGK_OptionErrorInvalidSubimageSpecification 305
+#define MGK_OptionErrorKernelRadiusIsTooSmall 306
+#define MGK_OptionErrorKernelWidthMustBeAnOddNumber 307
+#define MGK_OptionErrorMatrixIsNotSquare 308
+#define MGK_OptionErrorMatrixOrderOutOfRange 309
+#define MGK_OptionErrorMissingAnImageFilename 310
+#define MGK_OptionErrorMissingArgument 311
+#define MGK_OptionErrorMustSpecifyAnImageName 312
+#define MGK_OptionErrorMustSpecifyImageSize 313
+#define MGK_OptionErrorNoBlobDefined 314
+#define MGK_OptionErrorNoImagesDefined 315
+#define MGK_OptionErrorNonzeroWidthAndHeightRequired 316
+#define MGK_OptionErrorNoProfileNameWasGiven 317
+#define MGK_OptionErrorNullBlobArgument 318
+#define MGK_OptionErrorReferenceImageRequired 319
+#define MGK_OptionErrorReferenceIsNotMyType 320
+#define MGK_OptionErrorRegionAreaExceedsLimit 321
+#define MGK_OptionErrorRequestDidNotReturnAnImage 322
+#define MGK_OptionErrorSteganoImageRequired 323
+#define MGK_OptionErrorStereoImageRequired 324
+#define MGK_OptionErrorSubimageSpecificationReturnsNoImages 325
+#define MGK_OptionErrorTileNotBoundedByImageDimensions 326
+#define MGK_OptionErrorUnableToAddOrRemoveProfile 327
+#define MGK_OptionErrorUnableToAverageImageSequence 328
+#define MGK_OptionErrorUnableToBlurImage 329
+#define MGK_OptionErrorUnableToChopImage 330
+#define MGK_OptionErrorUnableToColorMatrixImage 331
+#define MGK_OptionErrorUnableToConstituteImage 332
+#define MGK_OptionErrorUnableToConvolveImage 333
+#define MGK_OptionErrorUnableToEdgeImage 334
+#define MGK_OptionErrorUnableToEqualizeImage 335
+#define MGK_OptionErrorUnableToFilterImage 336
+#define MGK_OptionErrorUnableToFormatImageMetadata 337
+#define MGK_OptionErrorUnableToFrameImage 338
+#define MGK_OptionErrorUnableToOilPaintImage 339
+#define MGK_OptionErrorUnableToPaintImage 340
+#define MGK_OptionErrorUnableToRaiseImage 341
+#define MGK_OptionErrorUnableToSharpenImage 342
+#define MGK_OptionErrorUnableToSpreadImage 343
+#define MGK_OptionErrorUnableToThresholdImage 344
+#define MGK_OptionErrorUnableToWaveImage 345
+#define MGK_OptionErrorUnrecognizedAttribute 346
+#define MGK_OptionErrorUnrecognizedChannelType 347
+#define MGK_OptionErrorUnrecognizedColor 348
+#define MGK_OptionErrorUnrecognizedColormapType 349
+#define MGK_OptionErrorUnrecognizedColorspace 350
+#define MGK_OptionErrorUnrecognizedCommand 351
+#define MGK_OptionErrorUnrecognizedComposeOperator 352
+#define MGK_OptionErrorUnrecognizedDisposeMethod 353
+#define MGK_OptionErrorUnrecognizedElement 354
+#define MGK_OptionErrorUnrecognizedEndianType 355
+#define MGK_OptionErrorUnrecognizedGravityType 356
+#define MGK_OptionErrorUnrecognizedHighlightStyle 357
+#define MGK_OptionErrorUnrecognizedImageCompression 358
+#define MGK_OptionErrorUnrecognizedImageFilter 359
+#define MGK_OptionErrorUnrecognizedImageFormat 360
+#define MGK_OptionErrorUnrecognizedImageMode 361
+#define MGK_OptionErrorUnrecognizedImageType 362
+#define MGK_OptionErrorUnrecognizedIntentType 363
+#define MGK_OptionErrorUnrecognizedInterlaceType 364
+#define MGK_OptionErrorUnrecognizedListType 365
+#define MGK_OptionErrorUnrecognizedMetric 366
+#define MGK_OptionErrorUnrecognizedModeType 367
+#define MGK_OptionErrorUnrecognizedNoiseType 368
+#define MGK_OptionErrorUnrecognizedOperator 369
+#define MGK_OptionErrorUnrecognizedOption 370
+#define MGK_OptionErrorUnrecognizedPerlMagickMethod 371
+#define MGK_OptionErrorUnrecognizedPixelMap 372
+#define MGK_OptionErrorUnrecognizedPreviewType 373
+#define MGK_OptionErrorUnrecognizedResourceType 374
+#define MGK_OptionErrorUnrecognizedType 375
+#define MGK_OptionErrorUnrecognizedUnitsType 376
+#define MGK_OptionErrorUnrecognizedVirtualPixelMethod 377
+#define MGK_OptionErrorUnsupportedSamplingFactor 378
+#define MGK_OptionErrorUsageError 379
+#define MGK_OptionFatalErrorInvalidColorspaceType 380
+#define MGK_OptionFatalErrorInvalidEndianType 381
+#define MGK_OptionFatalErrorInvalidImageType 382
+#define MGK_OptionFatalErrorInvalidInterlaceType 383
+#define MGK_OptionFatalErrorMissingAnImageFilename 384
+#define MGK_OptionFatalErrorMissingArgument 385
+#define MGK_OptionFatalErrorNoImagesWereLoaded 386
+#define MGK_OptionFatalErrorOptionLengthExceedsLimit 387
+#define MGK_OptionFatalErrorRequestDidNotReturnAnImage 388
+#define MGK_OptionFatalErrorUnableToOpenXServer 389
+#define MGK_OptionFatalErrorUnableToPersistKey 390
+#define MGK_OptionFatalErrorUnrecognizedColormapType 391
+#define MGK_OptionFatalErrorUnrecognizedColorspaceType 392
+#define MGK_OptionFatalErrorUnrecognizedDisposeMethod 393
+#define MGK_OptionFatalErrorUnrecognizedEndianType 394
+#define MGK_OptionFatalErrorUnrecognizedFilterType 395
+#define MGK_OptionFatalErrorUnrecognizedImageCompressionType 396
+#define MGK_OptionFatalErrorUnrecognizedImageType 397
+#define MGK_OptionFatalErrorUnrecognizedInterlaceType 398
+#define MGK_OptionFatalErrorUnrecognizedOption 399
+#define MGK_OptionFatalErrorUnrecognizedResourceType 400
+#define MGK_OptionFatalErrorUnrecognizedVirtualPixelMethod 401
+#define MGK_OptionWarningUnrecognizedColor 402
+#define MGK_RegistryErrorImageExpected 403
+#define MGK_RegistryErrorImageInfoExpected 404
+#define MGK_RegistryErrorStructureSizeMismatch 405
+#define MGK_RegistryErrorUnableToGetRegistryID 406
+#define MGK_RegistryErrorUnableToLocateImage 407
+#define MGK_RegistryErrorUnableToSetRegistry 408
+#define MGK_RegistryFatalErrorDefault 409
+#define MGK_RegistryWarningDefault 410
+#define MGK_ResourceLimitErrorCacheResourcesExhausted 411
+#define MGK_ResourceLimitErrorImagePixelHeightLimitExceeded 412
+#define MGK_ResourceLimitErrorImagePixelLimitExceeded 413
+#define MGK_ResourceLimitErrorImagePixelWidthLimitExceeded 414
+#define MGK_ResourceLimitErrorMemoryAllocationFailed 415
+#define MGK_ResourceLimitErrorNexusPixelHeightLimitExceeded 416
+#define MGK_ResourceLimitErrorNexusPixelLimitExceeded 417
+#define MGK_ResourceLimitErrorNexusPixelWidthLimitExceeded 418
+#define MGK_ResourceLimitErrorNoPixelsDefinedInCache 419
+#define MGK_ResourceLimitErrorPixelCacheAllocationFailed 420
+#define MGK_ResourceLimitErrorReadLimitExceeded 421
+#define MGK_ResourceLimitErrorUnableToAddColorProfile 422
+#define MGK_ResourceLimitErrorUnableToAddGenericProfile 423
+#define MGK_ResourceLimitErrorUnableToAddIPTCProfile 424
+#define MGK_ResourceLimitErrorUnableToAddOrRemoveProfile 425
+#define MGK_ResourceLimitErrorUnableToAllocateCoefficients 426
+#define MGK_ResourceLimitErrorUnableToAllocateColormap 427
+#define MGK_ResourceLimitErrorUnableToAllocateICCProfile 428
+#define MGK_ResourceLimitErrorUnableToAllocateImage 429
+#define MGK_ResourceLimitErrorUnableToAllocateString 430
+#define MGK_ResourceLimitErrorUnableToAnnotateImage 431
+#define MGK_ResourceLimitErrorUnableToAverageImageSequence 432
+#define MGK_ResourceLimitErrorUnableToCloneDrawingWand 433
+#define MGK_ResourceLimitErrorUnableToCloneImage 434
+#define MGK_ResourceLimitErrorUnableToComputeImageSignature 435
+#define MGK_ResourceLimitErrorUnableToConstituteImage 436
+#define MGK_ResourceLimitErrorUnableToConvertFont 437
+#define MGK_ResourceLimitErrorUnableToConvertStringToTokens 438
+#define MGK_ResourceLimitErrorUnableToCreateColormap 439
+#define MGK_ResourceLimitErrorUnableToCreateColorTransform 440
+#define MGK_ResourceLimitErrorUnableToCreateCommandWidget 441
+#define MGK_ResourceLimitErrorUnableToCreateImageGroup 442
+#define MGK_ResourceLimitErrorUnableToCreateImageMontage 443
+#define MGK_ResourceLimitErrorUnableToCreateXWindow 444
+#define MGK_ResourceLimitErrorUnableToCropImage 445
+#define MGK_ResourceLimitErrorUnableToDespeckleImage 446
+#define MGK_ResourceLimitErrorUnableToDetermineImageClass 447
+#define MGK_ResourceLimitErrorUnableToDetermineTheNumberOfImageColors 448
+#define MGK_ResourceLimitErrorUnableToDitherImage 449
+#define MGK_ResourceLimitErrorUnableToDrawOnImage 450
+#define MGK_ResourceLimitErrorUnableToEdgeImage 451
+#define MGK_ResourceLimitErrorUnableToEmbossImage 452
+#define MGK_ResourceLimitErrorUnableToEnhanceImage 453
+#define MGK_ResourceLimitErrorUnableToFloodfillImage 454
+#define MGK_ResourceLimitErrorUnableToGammaCorrectImage 455
+#define MGK_ResourceLimitErrorUnableToGetBestIconSize 456
+#define MGK_ResourceLimitErrorUnableToGetFromRegistry 457
+#define MGK_ResourceLimitErrorUnableToGetPackageInfo 458
+#define MGK_ResourceLimitErrorUnableToInterpretMSLImage 459
+#define MGK_ResourceLimitErrorUnableToLevelImage 460
+#define MGK_ResourceLimitErrorUnableToMagnifyImage 461
+#define MGK_ResourceLimitErrorUnableToManageColor 462
+#define MGK_ResourceLimitErrorUnableToMapImage 463
+#define MGK_ResourceLimitErrorUnableToMapImageSequence 464
+#define MGK_ResourceLimitErrorUnableToMedianFilterImage 465
+#define MGK_ResourceLimitErrorUnableToMotionBlurImage 466
+#define MGK_ResourceLimitErrorUnableToNoiseFilterImage 467
+#define MGK_ResourceLimitErrorUnableToNormalizeImage 468
+#define MGK_ResourceLimitErrorUnableToOpenColorProfile 469
+#define MGK_ResourceLimitErrorUnableToQuantizeImage 470
+#define MGK_ResourceLimitErrorUnableToQuantizeImageSequence 471
+#define MGK_ResourceLimitErrorUnableToReadTextChunk 472
+#define MGK_ResourceLimitErrorUnableToReadXImage 473
+#define MGK_ResourceLimitErrorUnableToReadXServerColormap 474
+#define MGK_ResourceLimitErrorUnableToResizeImage 475
+#define MGK_ResourceLimitErrorUnableToRotateImage 476
+#define MGK_ResourceLimitErrorUnableToSampleImage 477
+#define MGK_ResourceLimitErrorUnableToScaleImage 478
+#define MGK_ResourceLimitErrorUnableToSelectImage 479
+#define MGK_ResourceLimitErrorUnableToSharpenImage 480
+#define MGK_ResourceLimitErrorUnableToShaveImage 481
+#define MGK_ResourceLimitErrorUnableToShearImage 482
+#define MGK_ResourceLimitErrorUnableToSortImageColormap 483
+#define MGK_ResourceLimitErrorUnableToThresholdImage 484
+#define MGK_ResourceLimitErrorUnableToTransformColorspace 485
+#define MGK_ResourceLimitErrorWriteLimitExceeded 486
+#define MGK_ResourceLimitFatalErrorMemoryAllocationFailed 487
+#define MGK_ResourceLimitFatalErrorSemaporeOperationFailed 488
+#define MGK_ResourceLimitFatalErrorUnableToAllocateAscii85Info 489
+#define MGK_ResourceLimitFatalErrorUnableToAllocateCacheInfo 490
+#define MGK_ResourceLimitFatalErrorUnableToAllocateCacheView 491
+#define MGK_ResourceLimitFatalErrorUnableToAllocateColorInfo 492
+#define MGK_ResourceLimitFatalErrorUnableToAllocateDashPattern 493
+#define MGK_ResourceLimitFatalErrorUnableToAllocateDelegateInfo 494
+#define MGK_ResourceLimitFatalErrorUnableToAllocateDerivatives 495
+#define MGK_ResourceLimitFatalErrorUnableToAllocateDrawContext 496
+#define MGK_ResourceLimitFatalErrorUnableToAllocateDrawInfo 497
+#define MGK_ResourceLimitFatalErrorUnableToAllocateDrawingWand 498
+#define MGK_ResourceLimitFatalErrorUnableToAllocateGammaMap 499
+#define MGK_ResourceLimitFatalErrorUnableToAllocateImage 500
+#define MGK_ResourceLimitFatalErrorUnableToAllocateImagePixels 501
+#define MGK_ResourceLimitFatalErrorUnableToAllocateLogInfo 502
+#define MGK_ResourceLimitFatalErrorUnableToAllocateMagicInfo 503
+#define MGK_ResourceLimitFatalErrorUnableToAllocateMagickInfo 504
+#define MGK_ResourceLimitFatalErrorUnableToAllocateMagickMap 505
+#define MGK_ResourceLimitFatalErrorUnableToAllocateModuleInfo 506
+#define MGK_ResourceLimitFatalErrorUnableToAllocateMontageInfo 507
+#define MGK_ResourceLimitFatalErrorUnableToAllocateQuantizeInfo 508
+#define MGK_ResourceLimitFatalErrorUnableToAllocateRandomKernel 509
+#define MGK_ResourceLimitFatalErrorUnableToAllocateRegistryInfo 510
+#define MGK_ResourceLimitFatalErrorUnableToAllocateSemaphoreInfo 511
+#define MGK_ResourceLimitFatalErrorUnableToAllocateString 512
+#define MGK_ResourceLimitFatalErrorUnableToAllocateTypeInfo 513
+#define MGK_ResourceLimitFatalErrorUnableToAllocateWand 514
+#define MGK_ResourceLimitFatalErrorUnableToAnimateImageSequence 515
+#define MGK_ResourceLimitFatalErrorUnableToCloneBlobInfo 516
+#define MGK_ResourceLimitFatalErrorUnableToCloneCacheInfo 517
+#define MGK_ResourceLimitFatalErrorUnableToCloneImage 518
+#define MGK_ResourceLimitFatalErrorUnableToCloneImageInfo 519
+#define MGK_ResourceLimitFatalErrorUnableToConcatenateString 520
+#define MGK_ResourceLimitFatalErrorUnableToConvertText 521
+#define MGK_ResourceLimitFatalErrorUnableToCreateColormap 522
+#define MGK_ResourceLimitFatalErrorUnableToDestroySemaphore 523
+#define MGK_ResourceLimitFatalErrorUnableToDisplayImage 524
+#define MGK_ResourceLimitFatalErrorUnableToEscapeString 525
+#define MGK_ResourceLimitFatalErrorUnableToInitializeSemaphore 526
+#define MGK_ResourceLimitFatalErrorUnableToInterpretMSLImage 527
+#define MGK_ResourceLimitFatalErrorUnableToLockSemaphore 528
+#define MGK_ResourceLimitFatalErrorUnableToObtainRandomEntropy 529
+#define MGK_ResourceLimitFatalErrorUnableToUnlockSemaphore 530
+#define MGK_ResourceLimitWarningMemoryAllocationFailed 531
+#define MGK_StreamErrorImageDoesNotContainTheStreamGeometry 532
+#define MGK_StreamErrorNoStreamHandlerIsDefined 533
+#define MGK_StreamErrorPixelCacheIsNotOpen 534
+#define MGK_StreamErrorUnableToAcquirePixelStream 535
+#define MGK_StreamErrorUnableToSetPixelStream 536
+#define MGK_StreamErrorUnableToSyncPixelStream 537
+#define MGK_StreamFatalErrorDefault 538
+#define MGK_StreamWarningDefault 539
+#define MGK_TypeErrorFontNotSpecified 540
+#define MGK_TypeErrorFontSubstitutionRequired 541
+#define MGK_TypeErrorUnableToGetTypeMetrics 542
+#define MGK_TypeErrorUnableToInitializeFreetypeLibrary 543
+#define MGK_TypeErrorUnableToReadFont 544
+#define MGK_TypeErrorUnrecognizedFontEncoding 545
+#define MGK_TypeFatalErrorDefault 546
+#define MGK_TypeWarningDefault 547
+#define MGK_WandErrorInvalidColormapIndex 548
+#define MGK_WandErrorWandAPINotImplemented 549
+#define MGK_WandErrorWandContainsNoImageIndexs 550
+#define MGK_WandErrorWandContainsNoImages 551
+#define MGK_XServerErrorColorIsNotKnownToServer 552
+#define MGK_XServerErrorNoWindowWithSpecifiedIDExists 553
+#define MGK_XServerErrorStandardColormapIsNotInitialized 554
+#define MGK_XServerErrorUnableToConnectToRemoteDisplay 555
+#define MGK_XServerErrorUnableToCreateBitmap 556
+#define MGK_XServerErrorUnableToCreateColormap 557
+#define MGK_XServerErrorUnableToCreatePixmap 558
+#define MGK_XServerErrorUnableToCreateProperty 559
+#define MGK_XServerErrorUnableToCreateStandardColormap 560
+#define MGK_XServerErrorUnableToDisplayImageInfo 561
+#define MGK_XServerErrorUnableToGetProperty 562
+#define MGK_XServerErrorUnableToGetStandardColormap 563
+#define MGK_XServerErrorUnableToGetVisual 564
+#define MGK_XServerErrorUnableToGrabMouse 565
+#define MGK_XServerErrorUnableToLoadFont 566
+#define MGK_XServerErrorUnableToMatchVisualToStandardColormap 567
+#define MGK_XServerErrorUnableToOpenXServer 568
+#define MGK_XServerErrorUnableToReadXAttributes 569
+#define MGK_XServerErrorUnableToReadXWindowImage 570
+#define MGK_XServerErrorUnrecognizedColormapType 571
+#define MGK_XServerErrorUnrecognizedGravityType 572
+#define MGK_XServerErrorUnrecognizedVisualSpecifier 573
+#define MGK_XServerFatalErrorUnableToAllocateXHints 574
+#define MGK_XServerFatalErrorUnableToCreateCursor 575
+#define MGK_XServerFatalErrorUnableToCreateGraphicContext 576
+#define MGK_XServerFatalErrorUnableToCreateStandardColormap 577
+#define MGK_XServerFatalErrorUnableToCreateTextProperty 578
+#define MGK_XServerFatalErrorUnableToCreateXImage 579
+#define MGK_XServerFatalErrorUnableToCreateXPixmap 580
+#define MGK_XServerFatalErrorUnableToCreateXWindow 581
+#define MGK_XServerFatalErrorUnableToDisplayImage 582
+#define MGK_XServerFatalErrorUnableToDitherImage 583
+#define MGK_XServerFatalErrorUnableToGetPixelInfo 584
+#define MGK_XServerFatalErrorUnableToGetVisual 585
+#define MGK_XServerFatalErrorUnableToLoadFont 586
+#define MGK_XServerFatalErrorUnableToMakeXWindow 587
+#define MGK_XServerFatalErrorUnableToOpenXServer 588
+#define MGK_XServerFatalErrorUnableToViewFonts 589
+#define MGK_XServerWarningUnableToGetVisual 590
+#define MGK_XServerWarningUsingDefaultVisual 591
 
 #endif
 
@@ -668,34 +667,34 @@ static const SeverityInfo severity_map[] =
     { "Image/FatalError", 266, ImageFatalError },
     { "Image/Warning", 267, ImageWarning },
     { "Missing/Delegate/Error", 268, MissingDelegateError },
-    { "Missing/Delegate/FatalError", 280, MissingDelegateFatalError },
-    { "Missing/Delegate/Warning", 281, MissingDelegateWarning },
-    { "Module/Error", 282, ModuleError },
-    { "Module/FatalError", 287, ModuleFatalError },
-    { "Module/Warning", 288, ModuleWarning },
-    { "Monitor/Error", 289, MonitorError },
-    { "Monitor/FatalError", 290, MonitorFatalError },
-    { "Monitor/Warning", 292, MonitorWarning },
-    { "Option/Error", 293, OptionError },
-    { "Option/FatalError", 380, OptionFatalError },
-    { "Option/Warning", 402, OptionWarning },
-    { "Registry/Error", 403, RegistryError },
-    { "Registry/FatalError", 409, RegistryFatalError },
-    { "Registry/Warning", 410, RegistryWarning },
-    { "Resource/Limit/Error", 411, ResourceLimitError },
-    { "Resource/Limit/FatalError", 487, ResourceLimitFatalError },
-    { "Resource/Limit/Warning", 531, ResourceLimitWarning },
-    { "Stream/Error", 532, StreamError },
-    { "Stream/FatalError", 538, StreamFatalError },
-    { "Stream/Warning", 539, StreamWarning },
-    { "Type/Error", 540, TypeError },
-    { "Type/FatalError", 546, TypeFatalError },
-    { "Type/Warning", 547, TypeWarning },
-    { "Wand/Error", 548, WandError },
-    { "XServer/Error", 552, XServerError },
-    { "XServer/FatalError", 574, XServerFatalError },
-    { "XServer/Warning", 590, XServerWarning },
-    { "", 592, UndefinedException }
+    { "Missing/Delegate/FatalError", 279, MissingDelegateFatalError },
+    { "Missing/Delegate/Warning", 280, MissingDelegateWarning },
+    { "Module/Error", 281, ModuleError },
+    { "Module/FatalError", 286, ModuleFatalError },
+    { "Module/Warning", 287, ModuleWarning },
+    { "Monitor/Error", 288, MonitorError },
+    { "Monitor/FatalError", 289, MonitorFatalError },
+    { "Monitor/Warning", 291, MonitorWarning },
+    { "Option/Error", 292, OptionError },
+    { "Option/FatalError", 379, OptionFatalError },
+    { "Option/Warning", 401, OptionWarning },
+    { "Registry/Error", 402, RegistryError },
+    { "Registry/FatalError", 408, RegistryFatalError },
+    { "Registry/Warning", 409, RegistryWarning },
+    { "Resource/Limit/Error", 410, ResourceLimitError },
+    { "Resource/Limit/FatalError", 486, ResourceLimitFatalError },
+    { "Resource/Limit/Warning", 530, ResourceLimitWarning },
+    { "Stream/Error", 531, StreamError },
+    { "Stream/FatalError", 537, StreamFatalError },
+    { "Stream/Warning", 538, StreamWarning },
+    { "Type/Error", 539, TypeError },
+    { "Type/FatalError", 545, TypeFatalError },
+    { "Type/Warning", 546, TypeWarning },
+    { "Wand/Error", 547, WandError },
+    { "XServer/Error", 551, XServerError },
+    { "XServer/FatalError", 573, XServerFatalError },
+    { "XServer/Warning", 589, XServerWarning },
+    { "", 591, UndefinedException }
   };
 #endif
 
@@ -976,7 +975,6 @@ static const MessageInfo message_map[] =
     { "WidthOrHeightExceedsLimit", MGK_ImageErrorWidthOrHeightExceedsLimit },
     { "UnableToPersistKey", MGK_ImageFatalErrorUnableToPersistKey },
     { "Default", MGK_ImageWarningDefault },
-    { "DPSLibraryIsNotAvailable", MGK_MissingDelegateErrorDPSLibraryIsNotAvailable },
     { "FPXLibraryIsNotAvailable", MGK_MissingDelegateErrorFPXLibraryIsNotAvailable },
     { "FreeTypeLibraryIsNotAvailable", MGK_MissingDelegateErrorFreeTypeLibraryIsNotAvailable },
     { "JPEGLibraryIsNotAvailable", MGK_MissingDelegateErrorJPEGLibraryIsNotAvailable },
@@ -1575,7 +1573,6 @@ static const char message_dat[] =
     "width or height exceeds limit\0"
     "Unable to persist key\0"
     "default warning\0"
-    "DPS library is not available\0"
     "FPX library is not available\0"
     "FreeType library is not available\0"
     "JPEG compression library is not available\0"
@@ -2174,329 +2171,328 @@ static const unsigned short message_dat_offsets[] =
     7886,
     7902,
     7931,
-    7960,
-    7994,
-    8036,
-    8062,
-    8087,
-    8128,
-    8169,
+    7965,
+    8007,
+    8033,
+    8058,
+    8099,
+    8140,
+    8170,
     8199,
-    8228,
-    8262,
-    8304,
-    8318,
-    8334,
-    8357,
-    8379,
-    8401,
-    8433,
-    8453,
-    8488,
-    8504,
-    8518,
-    8532,
-    8572,
-    8588,
-    8612,
-    8643,
+    8233,
+    8275,
+    8289,
+    8305,
+    8328,
+    8350,
+    8372,
+    8404,
+    8424,
+    8459,
+    8475,
+    8489,
+    8503,
+    8543,
+    8559,
+    8583,
+    8614,
+    8644,
     8673,
-    8702,
-    8734,
+    8705,
+    8744,
     8773,
     8802,
-    8831,
-    8863,
-    8889,
-    8920,
-    8951,
-    8982,
-    9009,
-    9044,
-    9079,
-    9107,
-    9133,
-    9191,
-    9217,
-    9241,
-    9273,
-    9291,
-    9326,
-    9352,
-    9371,
-    9396,
-    9421,
-    9462,
-    9494,
-    9517,
-    9539,
-    9580,
-    9620,
-    9652,
-    9685,
-    9706,
+    8834,
+    8860,
+    8891,
+    8922,
+    8953,
+    8980,
+    9015,
+    9050,
+    9078,
+    9104,
+    9162,
+    9188,
+    9212,
+    9244,
+    9262,
+    9297,
+    9323,
+    9342,
+    9367,
+    9392,
+    9433,
+    9465,
+    9488,
+    9510,
+    9551,
+    9591,
+    9623,
+    9656,
+    9677,
+    9698,
     9727,
-    9756,
-    9783,
-    9808,
-    9829,
-    9854,
-    9877,
-    9910,
-    9932,
-    9958,
-    9980,
-    10002,
-    10026,
-    10049,
-    10075,
-    10096,
-    10119,
-    10145,
-    10164,
-    10191,
-    10221,
-    10293,
-    10323,
-    10351,
-    10372,
-    10397,
+    9754,
+    9779,
+    9800,
+    9825,
+    9848,
+    9881,
+    9903,
+    9929,
+    9951,
+    9973,
+    9997,
+    10020,
+    10046,
+    10067,
+    10090,
+    10116,
+    10135,
+    10162,
+    10192,
+    10264,
+    10294,
+    10322,
+    10343,
+    10368,
+    10394,
     10423,
-    10452,
-    10483,
-    10509,
-    10535,
-    10559,
-    10583,
-    10608,
-    10636,
-    10659,
-    10685,
-    10708,
-    10732,
-    10754,
-    10774,
-    10805,
-    10828,
-    10854,
-    10881,
-    10899,
-    10923,
-    10957,
-    10985,
-    11032,
-    11056,
-    11076,
-    11095,
-    11118,
-    11144,
-    11202,
-    11224,
-    11252,
-    11284,
-    11307,
-    11329,
+    10454,
+    10480,
+    10506,
+    10530,
+    10554,
+    10579,
+    10607,
+    10630,
+    10656,
+    10679,
+    10703,
+    10725,
+    10745,
+    10776,
+    10799,
+    10825,
+    10852,
+    10870,
+    10894,
+    10928,
+    10956,
+    11003,
+    11027,
+    11047,
+    11066,
+    11089,
+    11115,
+    11173,
+    11195,
+    11223,
+    11255,
+    11278,
+    11300,
+    11327,
     11356,
-    11385,
-    11413,
-    11438,
-    11463,
-    11493,
-    11517,
-    11545,
-    11565,
-    11592,
-    11626,
-    11645,
-    11660,
-    11680,
-    11704,
-    11730,
-    11753,
-    11776,
-    11790,
-    11806,
-    11850,
-    11904,
-    11951,
-    12003,
-    12028,
-    12082,
-    12129,
-    12181,
-    12208,
-    12238,
-    12276,
-    12308,
-    12338,
-    12365,
-    12397,
-    12429,
-    12457,
-    12488,
-    12513,
-    12539,
-    12564,
+    11384,
+    11409,
+    11434,
+    11464,
+    11488,
+    11516,
+    11536,
+    11563,
+    11597,
+    11616,
+    11631,
+    11651,
+    11675,
+    11701,
+    11724,
+    11747,
+    11761,
+    11777,
+    11821,
+    11875,
+    11922,
+    11974,
+    11999,
+    12053,
+    12100,
+    12152,
+    12179,
+    12209,
+    12247,
+    12279,
+    12309,
+    12336,
+    12368,
+    12400,
+    12428,
+    12459,
+    12484,
+    12510,
+    12535,
+    12568,
     12597,
-    12626,
-    12648,
-    12682,
-    12709,
-    12732,
-    12768,
-    12794,
-    12827,
+    12619,
+    12653,
+    12680,
+    12703,
+    12739,
+    12765,
+    12798,
+    12830,
     12859,
-    12888,
-    12919,
-    12945,
-    12966,
-    12992,
-    13024,
-    13071,
-    13094,
-    13118,
-    13139,
-    13162,
-    13186,
-    13212,
+    12890,
+    12916,
+    12937,
+    12963,
+    12995,
+    13042,
+    13065,
+    13089,
+    13110,
+    13133,
+    13157,
+    13183,
+    13213,
     13242,
-    13271,
-    13299,
-    13326,
-    13356,
-    13378,
-    13402,
-    13425,
+    13270,
+    13297,
+    13327,
+    13349,
+    13373,
+    13396,
+    13416,
     13445,
-    13474,
-    13504,
+    13475,
+    13503,
     13532,
-    13561,
+    13558,
     13587,
-    13616,
-    13641,
-    13675,
-    13701,
-    13724,
-    13757,
-    13780,
-    13803,
-    13826,
-    13848,
-    13871,
-    13895,
-    13917,
-    13939,
-    13969,
-    13995,
-    14026,
-    14066,
-    14091,
-    14118,
-    14150,
-    14180,
-    14210,
-    14240,
-    14272,
+    13612,
+    13646,
+    13672,
+    13695,
+    13728,
+    13751,
+    13774,
+    13797,
+    13819,
+    13842,
+    13866,
+    13888,
+    13910,
+    13940,
+    13966,
+    13997,
+    14037,
+    14062,
+    14089,
+    14121,
+    14151,
+    14181,
+    14211,
+    14243,
+    14276,
     14305,
-    14334,
+    14337,
     14366,
-    14395,
+    14398,
     14427,
-    14456,
-    14481,
-    14513,
-    14541,
-    14571,
-    14602,
-    14632,
-    14663,
-    14695,
-    14728,
-    14761,
-    14794,
-    14828,
+    14452,
+    14484,
+    14512,
+    14542,
+    14573,
+    14603,
+    14634,
+    14666,
+    14699,
+    14732,
+    14765,
+    14799,
+    14825,
     14854,
-    14883,
-    14907,
-    14940,
-    14966,
-    14993,
-    15015,
+    14878,
+    14911,
+    14937,
+    14964,
+    14986,
+    15013,
     15042,
-    15071,
-    15094,
-    15120,
-    15148,
-    15172,
-    15196,
-    15227,
-    15257,
-    15282,
-    15334,
-    15361,
-    15386,
+    15065,
+    15091,
+    15119,
+    15143,
+    15167,
+    15198,
+    15228,
+    15253,
+    15305,
+    15332,
+    15357,
+    15400,
     15429,
-    15458,
-    15482,
-    15513,
-    15540,
-    15568,
-    15582,
-    15598,
-    15622,
-    15649,
-    15676,
-    15714,
-    15734,
-    15761,
-    15775,
-    15791,
-    15823,
-    15857,
-    15897,
+    15453,
+    15484,
+    15511,
+    15539,
+    15553,
+    15569,
+    15593,
+    15620,
+    15647,
+    15685,
+    15705,
+    15732,
+    15746,
+    15762,
+    15794,
+    15828,
+    15868,
+    15901,
     15930,
-    15959,
-    15994,
-    16031,
-    16067,
-    16091,
-    16117,
-    16141,
-    16167,
+    15965,
+    16002,
+    16038,
+    16062,
+    16088,
+    16112,
+    16138,
+    16173,
     16202,
-    16231,
-    16254,
-    16286,
-    16307,
-    16328,
-    16348,
-    16392,
-    16416,
-    16444,
-    16474,
-    16501,
-    16527,
-    16557,
-    16584,
-    16610,
-    16643,
-    16678,
-    16709,
-    16734,
-    16760,
-    16786,
-    16810,
-    16833,
-    16858,
-    16879,
-    16899,
-    16923,
-    16947,
-    16968,
-    16989,
-    17008,
+    16225,
+    16257,
+    16278,
+    16299,
+    16319,
+    16363,
+    16387,
+    16415,
+    16445,
+    16472,
+    16498,
+    16528,
+    16555,
+    16581,
+    16614,
+    16649,
+    16680,
+    16705,
+    16731,
+    16757,
+    16781,
+    16804,
+    16829,
+    16850,
+    16870,
+    16894,
+    16918,
+    16939,
+    16960,
+    16979,
     0
   };
 #endif /* if defined(_INCLUDE_MESSAGE_TABLE_) */

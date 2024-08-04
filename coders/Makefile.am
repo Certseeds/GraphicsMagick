@@ -11,11 +11,6 @@
 # Where coder modules get installed
 codersdir = $(MagickCoderModulesPath)
 
-if HasDPS
-MAGICK_DPS_MODULES = coders/dps.la
-MAGICK_DPS_SRCS = coders/dps.c
-endif
-
 if HasFPX
 MAGICK_FPX_MODULES = coders/fpx.la
 MAGICK_FPX_SRCS = coders/fpx.c
@@ -100,7 +95,6 @@ MAGICK_CODER_SRCS = \
 	coders/dcm.c \
 	coders/dcraw.c \
 	coders/dib.c \
-	$(MAGICK_DPS_SRCS) \
 	coders/dpx.c \
 	coders/fax.c \
 	coders/fits.c \
@@ -204,7 +198,6 @@ coders_LTLIBRARIES = \
 	coders/dcm.la \
 	coders/dcraw.la \
 	coders/dib.la \
-	$(MAGICK_DPS_MODULES) \
 	coders/dpx.la \
 	coders/fax.la \
 	coders/fits.la \
@@ -378,12 +371,6 @@ coders_dib_la_SOURCES      = coders/dib.c
 coders_dib_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_dib_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_dib_la_LIBADD       = $(LIBMAGICK)
-
-# DPS coder module
-coders_dps_la_SOURCES      = coders/dps.c
-coders_dps_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
-coders_dps_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_dps_la_LIBADD       = $(LIBMAGICK) $(LIB_DPS) $(LIB_XEXT) $(LIB_X11)
 
 # DPX coder module
 coders_dpx_la_SOURCES      = coders/dpx.c

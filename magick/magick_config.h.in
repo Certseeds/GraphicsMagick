@@ -448,9 +448,6 @@
 /* Define if you have the bzip2 library */
 #undef HasBZLIB
 
-/* Define if you have Display Postscript */
-#undef HasDPS
-
 /* Define if you have FlashPIX library */
 #undef HasFPX
 

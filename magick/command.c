@@ -17216,13 +17216,6 @@ static MagickPassFail VersionCommand(ImageInfo *image_info_ignored,
 #endif /* defined(HasBZLIB) */
   PrintFeature("BZIP", supported);
 
-  /* DPS */
-  supported=MagickFalse;
-#if defined(HasDPS)
-  supported=MagickTrue;
-#endif /* defined(HasDPS) */
-  PrintFeature("DPS", supported);
-
   /* FlashPix */
   supported=MagickFalse;
 #if defined(HasFPX)

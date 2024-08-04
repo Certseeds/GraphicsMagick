@@ -295,10 +295,6 @@ Optional Packages/Options
 
     disable BZLIB support
 
---without-dps
-
-    disable Display Postscript support
-
 --with-fpx
 
     enable FlashPIX support

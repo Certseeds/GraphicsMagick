@@ -76,9 +76,6 @@ static const struct
   STATICM("DCM",RegisterDCMImage,UnregisterDCMImage),
   STATICM("DCRAW",RegisterDCRAWImage,UnregisterDCRAWImage),
   STATICM("DIB",RegisterDIBImage,UnregisterDIBImage),
-#if defined(HasDPS)
-  STATICM("DPS",RegisterDPSImage,UnregisterDPSImage),
-#endif
   STATICM("DPX",RegisterDPXImage,UnregisterDPXImage),
 #if defined(HasWINGDI32)
   STATICM("EMF",RegisterEMFImage,UnregisterEMFImage),
