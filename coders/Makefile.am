@@ -137,7 +137,7 @@ MAGICK_CODER_SRCS = \
 	coders/mtv.c \
 	coders/mvg.c \
 	coders/null.c \
-        $(MAGICK_ORA_SRCS) \
+	$(MAGICK_ORA_SRCS) \
 	coders/otb.c \
 	coders/palm.c \
 	coders/pcd.c \

@@ -1,3 +1,8 @@
+2024-08-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* config/{config.guess,config.sub}: Re-bootstrap with latest
+	config.guess and config.sub.
+
 2024-08-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update the news.
