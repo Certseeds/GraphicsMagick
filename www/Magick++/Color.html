@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="magick-color-class">
+<main id="magick-color-class">
 <h1 class="title">Magick::Color Class</h1>
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
@@ -53,7 +53,7 @@ cases. This choice was made since it avoided using more memory. The
 default Color constructor constructs an invalid color
 (i.e. transparent black) and may be used as a parameter in order to
 remove a color setting.</p>
-<div class="section" id="quantum">
+<section id="quantum">
 <h1>Quantum</h1>
 <p>The base type used to represent color samples in GraphicsMagick is the
 Quantum type. Pixels are represented by a structure of Quantum
@@ -63,8 +63,8 @@ quantums. The maximum value that a Quantum can attain is specified by
 a constant value represented by the MaxRGB define, which is itself
 determined by the number of bits in a Quantum. The QuantumDepth build
 option determines the number of bits in a Quantum.</p>
-</div>
-<div class="section" id="pixelpacket">
+</section>
+<section id="pixelpacket">
 <h1>PixelPacket</h1>
 <p>PixelPacket is the internal representation of a pixel in
 GraphicsMagick. GraphicsMagick may be compiled to support 32, 64, or
@@ -103,8 +103,8 @@ QuantumDepth, the type of Quantum, and the overall PixelPacket size:</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="color-class">
+</section>
+<section id="color-class">
 <h1>Color Class</h1>
 <p>The Color base class is not intended to be used directly. Normally a
 user will construct a derived class or inherit from this class. Color
@@ -190,8 +190,8 @@ public:
   const Color&amp; operator= ( const PixelPacket &amp;color_ );
 
 };</pre>
-</div>
-<div class="section" id="color-derived-classes">
+</section>
+<section id="color-derived-classes">
 <h1>Color Derived Classes</h1>
 <p>Available derived color specification classes are shown in the following table:</p>
 <table>
@@ -226,8 +226,8 @@ colorspace</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="colorrgb">
+</section>
+<section id="colorrgb">
 <h1>ColorRGB</h1>
 <p>Representation of an RGB color in floating point. All color arguments
 have a valid range of 0.0 - 1.0. Note that floating point alpha may be
@@ -256,8 +256,8 @@ protected:
   // Constructor to construct with PixelPacket*
   ColorRGB ( PixelPacket* rep_, PixelType pixelType_ );
 };</pre>
-</div>
-<div class="section" id="colorgray">
+</section>
+<section id="colorgray">
 <h1>ColorGray</h1>
 <p>Representation of a floating point grayscale color (in RGB
 colorspace). Grayscale is simply RGB with equal parts of red, green,
@@ -277,8 +277,8 @@ public:
   ColorGray&amp; operator= ( const Color&amp; color_ );
 
 };</pre>
-</div>
-<div class="section" id="colormono">
+</section>
+<section id="colormono">
 <h1>ColorMono</h1>
 <p>Representation of a black/white pixel (in RGB colorspace). Color
 arguments are constrained to 'false' (black pixel) and 'true' (white
@@ -298,8 +298,8 @@ public:
   ColorMono&amp; operator= ( const Color&amp; color_ );
 
 };</pre>
-</div>
-<div class="section" id="colorhsl">
+</section>
+<section id="colorhsl">
 <h1>ColorHSL</h1>
 <p>Representation of a color in Hue/Saturation/Luminosity (HSL) colorspace:</p>
 <pre class="literal-block">class MagickDLLDecl ColorHSL : public Color
@@ -323,8 +323,8 @@ public:
   ColorHSL&amp; operator= ( const Color&amp; color_ );
 
 };</pre>
-</div>
-<div class="section" id="coloryuv">
+</section>
+<section id="coloryuv">
 <h1>ColorYUV</h1>
 <p>Representation of a color in YUV colorspace (used to encode color for
 television transmission).  Argument ranges are</p>
@@ -369,8 +369,8 @@ public:
 
 };</pre>
 <p>Copyright © Bob Friesenhahn 1999 - 2022</p>
-</div>
-</div>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -378,6 +378,6 @@ public:
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

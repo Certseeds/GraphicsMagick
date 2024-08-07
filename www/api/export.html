@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="export">
+<main id="export">
 <h1 class="title">export</h1>
 <p class="subtitle" id="export-image-pixels-into-common-representations">Export image pixels into common representations</p>
 <div class="contents topic" id="contents">
@@ -47,16 +47,16 @@
 <li><p><a class="reference internal" href="#exportpixelareaoptionsinit" id="id7">ExportPixelAreaOptionsInit</a></p></li>
 </ul>
 </div>
-<div class="section" id="exportimagepixelarea">
+<section id="exportimagepixelarea">
 <h1><a class="toc-backref" href="#id5">ExportImagePixelArea</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail ExportImagePixelArea( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
                                      unsigned int quantum_size, unsigned char *destination,
                                      const ExportPixelAreaOptions *options,
                                      ExportPixelAreaInfo *export_info );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>ExportImagePixelArea() transfers one or more pixel components from the
 default image pixel cache view to a user supplied buffer.  By default,
@@ -104,18 +104,18 @@ enough.</p>
 exported (may be NULL)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="exportviewpixelarea">
+</section>
+</section>
+<section id="exportviewpixelarea">
 <h1><a class="toc-backref" href="#id6">ExportViewPixelArea</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail ExportViewPixelArea( const <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
                                     unsigned int quantum_size, unsigned char *destination,
                                     const ExportPixelAreaOptions *options,
                                     ExportPixelAreaInfo *export_info );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>ExportViewPixelArea() transfers one or more pixel components from the
 specified image pixel cache view to a user supplied buffer.  By default,
@@ -163,15 +163,15 @@ enough.</p>
 exported (may be NULL)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="exportpixelareaoptionsinit">
+</section>
+</section>
+<section id="exportpixelareaoptionsinit">
 <h1><a class="toc-backref" href="#id7">ExportPixelAreaOptionsInit</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">void ExportPixelAreaOptionsInit( ExportPixelAreaOptions *options );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>ExportPixelAreaOptionsInit() initializes the options structure which is
 optionally passed to ExportPixelArea()</p>
@@ -183,9 +183,9 @@ optionally passed to ExportPixelArea()</p>
 <dd><p>Options structure to initialize.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -193,6 +193,6 @@ optionally passed to ExportPixelArea()</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

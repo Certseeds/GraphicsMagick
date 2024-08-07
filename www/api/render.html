@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="render">
+<main id="render">
 <h1 class="title">render</h1>
 <p class="subtitle" id="low-level-methods-to-draw-on-an-image">Low-level methods to draw on an image</p>
 <div class="contents topic" id="contents">
@@ -51,13 +51,13 @@
 <li><p><a class="reference internal" href="#drawpatternpath" id="id19">DrawPatternPath</a></p></li>
 </ul>
 </div>
-<div class="section" id="clonedrawinfo">
+<section id="clonedrawinfo">
 <h1><a class="toc-backref" href="#id13">CloneDrawInfo</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *CloneDrawInfo( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>CloneDrawInfo() makes a copy of the given draw info structure.  If NULL
 is specified, a new DrawInfo structure is created initialized to
@@ -72,15 +72,15 @@ default values.</p>
 <dd><p>The draw info.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="destroydrawinfo">
+</section>
+</section>
+<section id="destroydrawinfo">
 <h1><a class="toc-backref" href="#id14">DestroyDrawInfo</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DestroyDrawInfo( <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>DestroyDrawInfo() deallocates memory associated with an DrawInfo
 structure.  Nothing is done if the pointer passed is NULL.</p>
@@ -92,16 +92,16 @@ structure.  Nothing is done if the pointer passed is NULL.</p>
 <dd><p>The draw info.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawaffineimage">
+</section>
+</section>
+<section id="drawaffineimage">
 <h1><a class="toc-backref" href="#id15">DrawAffineImage</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int DrawAffineImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#image">Image</a> *composite,
                               const <a class="reference external" href="../api/types.html#affinematrix">AffineMatrix</a> *affine );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>DrawAffineImage() composites the source over the destination image as
 dictated by the affine transform.</p>
@@ -119,16 +119,16 @@ dictated by the affine transform.</p>
 <dd><p>The affine transform.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawclippath">
+</section>
+</section>
+<section id="drawclippath">
 <h1><a class="toc-backref" href="#id16">DrawClipPath</a></h1>
-<div class="section" id="id5">
+<section id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail DrawClipPath( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info,
                              const char *name );</pre>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>Description</h2>
 <p>DrawClipPath() draws the clip path on the image mask.</p>
 <p>The format of the DrawClipPath method is:</p>
@@ -145,16 +145,16 @@ dictated by the affine transform.</p>
 <dd><p>The name of the clip path.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawcompositemask">
+</section>
+</section>
+<section id="drawcompositemask">
 <h1><a class="toc-backref" href="#id17">DrawCompositeMask</a></h1>
-<div class="section" id="id7">
+<section id="id7">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail DrawCompositeMask( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info,
                                   const char *name );</pre>
-</div>
-<div class="section" id="id8">
+</section>
+<section id="id8">
 <h2>Description</h2>
 <p>DrawCompositeMask() draws the composite mask on the image mask.</p>
 <p>The format of the DrawCompositeMask method is:</p>
@@ -171,15 +171,15 @@ dictated by the affine transform.</p>
 <dd><p>The name of the composite mask.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawimage">
+</section>
+</section>
+<section id="drawimage">
 <h1><a class="toc-backref" href="#id18">DrawImage</a></h1>
-<div class="section" id="id9">
+<section id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail DrawImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info );</pre>
-</div>
-<div class="section" id="id10">
+</section>
+<section id="id10">
 <h2>Description</h2>
 <p>Use DrawImage() to draw a graphic primitive on your image.  The primitive
 may be represented as a string or filename.  Precede the filename with an
@@ -212,16 +212,16 @@ documented and less error prone.</p>
 <dd><p>The draw info.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="drawpatternpath">
+</section>
+</section>
+<section id="drawpatternpath">
 <h1><a class="toc-backref" href="#id19">DrawPatternPath</a></h1>
-<div class="section" id="id11">
+<section id="id11">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail DrawPatternPath( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info,
                                 const char *name, <a class="reference external" href="../api/types.html#image">Image</a> ** pattern );</pre>
-</div>
-<div class="section" id="id12">
+</section>
+<section id="id12">
 <h2>Description</h2>
 <p>DrawPatternPath() draws a pattern.</p>
 <p>The format of the DrawPatternPath method is:</p>
@@ -241,9 +241,9 @@ documented and less error prone.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -251,6 +251,6 @@ documented and less error prone.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

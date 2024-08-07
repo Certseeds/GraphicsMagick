@@ -1,9 +1,27 @@
+2024-08-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/docutils-articles.css: reStructuredText style sheet
+	adjustments to work with HTML 4 and 5 synax, by Mark Mitchell.
+
+	* www/docutils-api.css: reStructuredText style sheet adjustments
+	for HTML 5, by Mark Mitchell.
+
+	* tests/rwfile.tap: Adjustments for FlashPIX tests.
+
+	* coders/fpx.c: Add tracing and attempt to reduce the amount of
+	memory which is leaked by the defective library.
+
+	* coders/hrz.c: Tidy and clarify code.
+
 2024-08-04  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac, coders/dps.c: Display Postscript stopped being
-	available in Sun's Solaris in 2002 and has been gone from the
-	world for a long time already.  Remove support for Display
-	Postscript.
+	available after Sun Solaris 10 (if legacy Xsun was used rather
+	than Xorg) and has been substantially gone from the world for a
+	long time already since Oracle stopped supporting desktop systems
+	not long after acquiring Sun in 2010.  Remove support for Display
+	Postscript. Ghostscript works better since it supports multiple
+	pages whereas Display Postscript only supported one page.
 
 	* config/{config.guess,config.sub}: Re-bootstrap with latest
 	config.guess and config.sub.

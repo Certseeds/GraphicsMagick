@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="graphicsmagick-perl-api-perlmagick">
+<main id="graphicsmagick-perl-api-perlmagick">
 <h1 class="title">GraphicsMagick Perl API -- PerlMagick</h1>
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
@@ -63,7 +63,7 @@
 <li><p><a class="reference internal" href="#handling-errors" id="id15">Handling Errors</a></p></li>
 </ul>
 </div>
-<div class="section" id="introduction">
+<section id="introduction">
 <h1><a class="toc-backref" href="#id1">Introduction</a></h1>
 <p>PerlMagick is an objected-oriented Perl interface to GraphicsMagick. Use
 the module to read, manipulate, or write an image or image sequence from
@@ -73,18 +73,18 @@ greater installed on your system for either of these utilities to work.
 There are a number of useful scripts available to show you the value of
 PerlMagick. The PerlMagick demo directory provides a number of sample
 demos.</p>
-</div>
-<div class="section" id="installation">
+</section>
+<section id="installation">
 <h1><a class="toc-backref" href="#id2">Installation</a></h1>
-<div class="section" id="unix">
+<section id="unix">
 <h2><a class="toc-backref" href="#id3">UNIX</a></h2>
 <p>PerlMagick is installed by default by installing GraphicsMagick.
 Installing PerlMagick as a subordinate package of GraphicsMagick is the
 best way to avoid problems.</p>
 <p>For Unix, you typically need to be root to install the software. There
 are ways around this. Consult the Perl manual pages for more information.</p>
-</div>
-<div class="section" id="windows-xp-windows-12">
+</section>
+<section id="windows-xp-windows-12">
 <h2><a class="toc-backref" href="#id4">Windows XP - Windows 12</a></h2>
 <p>[ These procedures have not been exercised for some time ]</p>
 <p>After GraphicsMagick has been compiled from the GraphicsMagick Windows
@@ -98,8 +98,8 @@ nmake
 nmake install</pre>
 <p>See the PerlMagick Windows HowTo page for further installation
 instructions.</p>
-</div>
-<div class="section" id="running-the-regression-tests">
+</section>
+<section id="running-the-regression-tests">
 <h2><a class="toc-backref" href="#id5">Running the Regression Tests</a></h2>
 <p>To verify a correct installation, type:</p>
 <pre class="literal-block">make test</pre>
@@ -109,9 +109,9 @@ available to exercise many of the functions PerlMagick can perform. Type</p>
 make</pre>
 <p>You are now ready to utilize the PerlMagick methods from within your Perl
 scripts.</p>
-</div>
-</div>
-<div class="section" id="overview">
+</section>
+</section>
+<section id="overview">
 <h1><a class="toc-backref" href="#id6">Overview</a></h1>
 <p>Any script that wants to use PerlMagick methods must first define the
 methods within its namespace and instantiate an image object. Do this
@@ -152,8 +152,8 @@ manipulate an image sequence.</p>
 Ghostscript. This may require an explicit path in your PATH environment
 variable to work properly. For example,</p>
 <pre class="literal-block">$ENV{PATH}='/bin:/usr/bin:/usr/local/bin';</pre>
-</div>
-<div class="section" id="example-script">
+</section>
+<section id="example-script">
 <h1><a class="toc-backref" href="#id7">Example Script</a></h1>
 <p>Here is an example script to get you started:</p>
 <pre class="literal-block">#!/usr/local/bin/perl
@@ -203,8 +203,8 @@ $image-&gt;Annotate(font=&gt;'kai.ttf', pointsize=&gt;40, fill=&gt;'green', text
 push(&#64;$q, &#64;$p); # push the images from object p onto object q
 &#64;$p = (); # delete the images but not the object p
 $p-&gt;Convolve([1, 2, 1, 2, 4, 2, 1, 2, 1]); # 3x3 Gaussian kernel</pre>
-</div>
-<div class="section" id="read-or-write-an-image">
+</section>
+<section id="read-or-write-an-image">
 <h1><a class="toc-backref" href="#id8">Read or Write an Image</a></h1>
 <p>Use the methods listed below to either read, write, or display an image
 or image sequence.</p>
@@ -303,8 +303,8 @@ $image-&gt;Write(filename=&amp;gt;'webp:output.webp');</p>
 <p>$image-&gt;AddDefinitions('webp:lossless=TRUE');
 $image-&gt;Write(filename=&amp;gt;'webp:output.webp');</p>
 </blockquote>
-</div>
-<div class="section" id="manipulate-an-image">
+</section>
+<section id="manipulate-an-image">
 <h1><a class="toc-backref" href="#id9">Manipulate an Image</a></h1>
 <p>Once you create an image with, for example, method ReadImage() you may want
 to operate on it. Below is a list of all the image manipulations methods
@@ -953,8 +953,8 @@ bird.miff and whose width is 512 and height is 480.</p>
 is an alias for method Trim().</p>
 <p>Most of the attributes listed above have an analog in convert. See the
 documentation for a more detailed description of these attributes.</p>
-</div>
-<div class="section" id="set-an-image-attribute">
+</section>
+<section id="set-an-image-attribute">
 <h1><a class="toc-backref" href="#id10">Set an Image Attribute</a></h1>
 <p>Use method Set() to set an image attribute. For example,</p>
 <pre class="literal-block">$image-&gt;Set(dither=&gt;'True');
@@ -1334,8 +1334,8 @@ parameters (e.g. geometry=&gt;'106x80' is equivalent to width=&gt;106, height=&g
 <p>SetAttribute() is an alias for method Set().</p>
 <p>Most of the attributes listed above have an analog in gm convert. See the
 gm documentation for a more detailed description of these attributes.</p>
-</div>
-<div class="section" id="get-an-image-attribute">
+</section>
+<section id="get-an-image-attribute">
 <h1><a class="toc-backref" href="#id11">Get an Image Attribute</a></h1>
 <p>Use method Get() to get an image attribute. For example,</p>
 <pre class="literal-block">($a, $b, $c) = $image-&gt;Get('colorspace', 'magick', 'adjoin');
@@ -1465,8 +1465,8 @@ False}</p></td>
 <p>GetAttribute() is an alias for method Get().</p>
 <p>Most of the attributes listed above have an analog in convert. See the
 documentation for a more detailed description of these attributes.</p>
-</div>
-<div class="section" id="create-an-image-montage">
+</section>
+<section id="create-an-image-montage">
 <h1><a class="toc-backref" href="#id12">Create an Image Montage</a></h1>
 <p>Use method Montage() to create a composite image by combining several
 separate images. The images are tiled on the composite image with the
@@ -1600,8 +1600,8 @@ parameters (e.g. geometry=&gt;'106x80' is equivalent to width=&gt;106, height=&g
 <p>MontageImage() is an alias for method Montage().</p>
 <p>Most of the attributes listed above have an analog in montage. See the
 documentation for a more detailed description of these attributes.</p>
-</div>
-<div class="section" id="working-with-blobs">
+</section>
+<section id="working-with-blobs">
 <h1><a class="toc-backref" href="#id13">Working with Blobs</a></h1>
 <p>A blob contains data that directly represent a particular image format in
 memory instead of on disk. PerlMagick supports blobs in any of these
@@ -1654,8 +1654,8 @@ the supplied blob:</p>
 <pre class="literal-block">&#64;blob=$db-&gt;GetImage();
 $image=Graphics::Magick-&gt;new(magick=&gt;'jpg');
 $image-&gt;BlobToImage(&#64;blob);</pre>
-</div>
-<div class="section" id="miscellaneous-methods">
+</section>
+<section id="miscellaneous-methods">
 <h1><a class="toc-backref" href="#id14">Miscellaneous Methods</a></h1>
 <p>The Append() method append a set of images. For example,</p>
 <pre class="literal-block">$p = $image-&gt;Append(stack=&gt;{true,false});</pre>
@@ -1739,8 +1739,8 @@ specification for cropping or resizing one or more images. For example,</p>
 <pre class="literal-block">$p = $image-&gt;Transform(crop=&gt;'100x100');</pre>
 <p>You can optionally add Image to any method name above. For example,
 PingImage() is an alias for method Ping().</p>
-</div>
-<div class="section" id="handling-errors">
+</section>
+<section id="handling-errors">
 <h1><a class="toc-backref" href="#id15">Handling Errors</a></h1>
 <p>All PerlMagick methods return an undefined string context upon success. If
 any problems occur, the error is returned as a string with an embedded
@@ -1956,8 +1956,8 @@ file</p></td>
 <pre class="literal-block">$status = $image-&gt;Read('rose.png');
 $status =~ /(\d+)/;
 die &quot;unable to continue&quot; if ($1 == ResourceLimitError);</pre>
-</div>
-</div>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -1965,6 +1965,6 @@ die &quot;unable to continue&quot; if ($1 == ResourceLimitError);</pre>
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

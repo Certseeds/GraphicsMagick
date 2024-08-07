@@ -38,13 +38,29 @@
 
 <main id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-08-07  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>www/docutils-articles.css: reStructuredText style sheet
+adjustments to work with HTML 4 and 5 synax, by Mark Mitchell.</p></li>
+<li><p>www/docutils-api.css: reStructuredText style sheet adjustments
+for HTML 5, by Mark Mitchell.</p></li>
+<li><p>tests/rwfile.tap: Adjustments for FlashPIX tests.</p></li>
+<li><p>coders/fpx.c: Add tracing and attempt to reduce the amount of
+memory which is leaked by the defective library.</p></li>
+<li><p>coders/hrz.c: Tidy and clarify code.</p></li>
+</ul>
+</blockquote>
 <p>2024-08-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
 <li><p>configure.ac, coders/dps.c: Display Postscript stopped being
-available in Sun's Solaris in 2002 and has been gone from the
-world for a long time already.  Remove support for Display
-Postscript.</p></li>
+available after Sun Solaris 10 (if legacy Xsun was used rather
+than Xorg) and has been substantially gone from the world for a
+long time already since Oracle stopped supporting desktop systems
+not long after acquiring Sun in 2010.  Remove support for Display
+Postscript. Ghostscript works better since it supports multiple
+pages whereas Display Postscript only supported one page.</p></li>
 <li><p>config/{config.guess,config.sub}: Re-bootstrap with latest
 config.guess and config.sub.</p></li>
 </ul>

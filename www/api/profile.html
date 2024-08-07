@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="profile">
+<main id="profile">
 <h1 class="title">profile</h1>
 <p class="subtitle" id="manipulate-embedded-profiles">Manipulate embedded profiles</p>
 <div class="contents topic" id="contents">
@@ -52,13 +52,13 @@
 <li><p><a class="reference internal" href="#setimageprofile" id="id22">SetImageProfile</a></p></li>
 </ul>
 </div>
-<div class="section" id="allocateimageprofileiterator">
+<section id="allocateimageprofileiterator">
 <h1><a class="toc-backref" href="#id15">AllocateImageProfileIterator</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">ImageProfileIterator AllocateImageProfileIterator( const <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>AllocateImageProfileIterator allocates an iterator to traverse the
 image profile list.  It is an error (i.e. will surely crash) to invoke
@@ -74,17 +74,17 @@ invalidate the current iterator.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="appendimageprofile">
+</section>
+</section>
+<section id="appendimageprofile">
 <h1><a class="toc-backref" href="#id16">AppendImageProfile</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">MaickPassFail AppendImageProfile( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *name,
                                   const unsigned char *profile_chunk,
                                   const size_t chunk_length );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>AppendImageProfile adds a named profile to the image. If a profile with the
 same name already exists, then the new profile data is appended to the
@@ -113,15 +113,15 @@ to remove an existing profile.</p>
 <dd><p>The length of the profile chunk to add or append.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="deallocateimageprofileiterator">
+</section>
+</section>
+<section id="deallocateimageprofileiterator">
 <h1><a class="toc-backref" href="#id17">DeallocateImageProfileIterator</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DeallocateImageProfileIterator( ImageProfileIterator profile_iterator );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>DeallocateImageProfileIterator deallocates an image profile iterator.</p>
 <p>The format of the DeallocateImageProfileIterator method is:</p>
@@ -132,15 +132,15 @@ to remove an existing profile.</p>
 <dd><p>Profile iterator to deallocate.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="deleteimageprofile">
+</section>
+</section>
+<section id="deleteimageprofile">
 <h1><a class="toc-backref" href="#id18">DeleteImageProfile</a></h1>
-<div class="section" id="id5">
+<section id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int DeleteImageProfile( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *name );</pre>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>Description</h2>
 <p>DeleteImageProfile removes a named profile from the image.</p>
 <p>The format of the DeleteImageProfile method is:</p>
@@ -155,16 +155,16 @@ to remove an existing profile.</p>
 generic profile name.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="getimageprofile">
+</section>
+</section>
+<section id="getimageprofile">
 <h1><a class="toc-backref" href="#id19">GetImageProfile</a></h1>
-<div class="section" id="id7">
+<section id="id7">
 <h2>Synopsis</h2>
 <pre class="literal-block">const unsigned char *GetImageProfile( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *name,
                                       size_t *length );</pre>
-</div>
-<div class="section" id="id8">
+</section>
+<section id="id8">
 <h2>Description</h2>
 <p>GetImageProfile returns a pointer to the named image profile if it is
 present. A null pointer is returned if the named profile is not present.</p>
@@ -188,16 +188,16 @@ requested profile name is not available.</p>
 if length is not needed.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="nextimageprofile">
+</section>
+</section>
+<section id="nextimageprofile">
 <h1><a class="toc-backref" href="#id20">NextImageProfile</a></h1>
-<div class="section" id="id9">
+<section id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail NextImageProfile( ImageProfileIterator profile_iterator, const char ** name,
                                  const unsigned char ** profile, size_t *length );</pre>
-</div>
-<div class="section" id="id10">
+</section>
+<section id="id10">
 <h2>Description</h2>
 <p>NextImageProfile iterates forward to the next image profile. The profile
 name is returned along with the profile data, and length.  If there are
@@ -219,16 +219,16 @@ no more entries in the list, then MagickFail is returned.</p>
 <dd><p>Address of parameter to update with profile length.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="profileimage">
+</section>
+</section>
+<section id="profileimage">
 <h1><a class="toc-backref" href="#id21">ProfileImage</a></h1>
-<div class="section" id="id11">
+<section id="id11">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int ProfileImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *name, unsigned char *profile,
                            const size_t length, unsigned int clone );</pre>
-</div>
-<div class="section" id="id12">
+</section>
+<section id="id12">
 <h2>Description</h2>
 <p>ProfileImage() adds, applies, or removes a ICM, IPTC, or generic profile
 from an image.  If the profile is NULL, it is removed from the image
@@ -266,16 +266,16 @@ is treated as 'const' if 'clone' is set to MagickTrue.</p>
 ownership of it.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimageprofile">
+</section>
+</section>
+<section id="setimageprofile">
 <h1><a class="toc-backref" href="#id22">SetImageProfile</a></h1>
-<div class="section" id="id13">
+<section id="id13">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int SetImageProfile( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *name, const unsigned char *profile,
                               const size_t length );</pre>
-</div>
-<div class="section" id="id14">
+</section>
+<section id="id14">
 <h2>Description</h2>
 <p>SetImageProfile adds a named profile to the image. If a profile with the
 same name already exists, then it is replaced. If a null profile address
@@ -308,9 +308,9 @@ profile.</p>
 <dd><p>The length of the profile.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -318,6 +318,6 @@ profile.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

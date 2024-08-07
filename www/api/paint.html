@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="paint">
+<main id="paint">
 <h1 class="title">paint</h1>
 <p class="subtitle" id="methods-to-fill-image-pixel-regions">Methods to fill image pixel regions</p>
 <div class="contents topic" id="contents">
@@ -48,15 +48,15 @@
 <li><p><a class="reference internal" href="#transparentimage" id="id10">TransparentImage</a></p></li>
 </ul>
 </div>
-<div class="section" id="colorfloodfillimage">
+<section id="colorfloodfillimage">
 <h1><a class="toc-backref" href="#id7">ColorFloodfillImage</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int ColorFloodfillImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#drawinfo">DrawInfo</a> *draw_info,
                                   const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> target, const long x_offset,
                                   const long y_offset, const <a class="reference external" href="../api/types.html#paintmethod">PaintMethod</a> method );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>ColorFloodfill() changes the color value of any pixel that matches
 target and is an immediate neighbor.  If the method FillToBorderMethod is
@@ -89,17 +89,17 @@ interpreted as the same color for the purposes of the floodfill.</p>
 <dd><p>Choose either FloodfillMethod or FillToBorderMethod.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="mattefloodfillimage">
+</section>
+</section>
+<section id="mattefloodfillimage">
 <h1><a class="toc-backref" href="#id8">MatteFloodfillImage</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int MatteFloodfillImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> target,
                                   const unsigned int opacity, const long x_offset,
                                   const long y_offset, const <a class="reference external" href="../api/types.html#paintmethod">PaintMethod</a> method );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>MatteFloodfill() changes the transparency value of any pixel that matches
 target and is an immediate neighbor.  If the method FillToBorderMethod
@@ -133,16 +133,16 @@ fully transparent.</p>
 <dd><p>Choose either FloodfillMethod or FillToBorderMethod.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="opaqueimage">
+</section>
+</section>
+<section id="opaqueimage">
 <h1><a class="toc-backref" href="#id9">OpaqueImage</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int OpaqueImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> target,
                           const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> fill );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>OpaqueImage() changes any pixel that matches color with the color
 defined by fill.</p>
@@ -165,16 +165,16 @@ For example, set fuzz to 10 and the color red at intensities of 100 and
 <dd><p>The replacement color.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="transparentimage">
+</section>
+</section>
+<section id="transparentimage">
 <h1><a class="toc-backref" href="#id10">TransparentImage</a></h1>
-<div class="section" id="id5">
+<section id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int TransparentImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> target,
                                const unsigned int opacity );</pre>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>Description</h2>
 <p>TransparentImage() changes the opacity value associated with any pixel
 that matches color to the value defined by opacity.</p>
@@ -197,9 +197,9 @@ For example, set fuzz to 10 and the color red at intensities of 100 and
 <dd><p>The replacement opacity value.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -207,6 +207,6 @@ For example, set fuzz to 10 and the color red at intensities of 100 and
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

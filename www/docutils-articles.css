@@ -126,7 +126,7 @@ div.navmenu ul li a:hover {
     border-bottom : 1px solid #FFFFFF;
 }
 
-div.document {
+main, div.document {
     height : auto;
     padding : 1em 1% 1em 1%;
     width : auto;
@@ -137,6 +137,7 @@ div.document {
     text-align : left;
 }
 
+main h1.title,
 div.document h1.title {
     font-size : 140%;
     padding : 0;
@@ -146,6 +147,7 @@ div.document h1.title {
     text-align : center;
 }
 
+main hr.end,
 div.document hr.end {
     color : #808080;
     width : 50%;
@@ -221,6 +223,11 @@ h1 a:hover {
 tt {
     background-color : #C9EEDC;
 }
+/* docutils html5 writer uses span with classes instead of tt with classes */
+span.docutils.literal {
+    background-color : #C9EEDC;
+}
+
 
 dl.docutils dd {
     margin-bottom : 1em;
@@ -235,9 +242,15 @@ dl.docutils dt {
 dl.docutils dt tt {
     font-style : normal;
 }
+dl.docutils dt span.docutils.literal {
+	font-style : normal;
+}
 
 dl.docutils dt tt span {
     background-color : #FFFFFF;
+}
+dl.docutils dt span.docutils.literal span {
+	background-color : #FFFFFF;
 }
 
 dl.docutils dt span {
@@ -255,6 +268,7 @@ li {
     padding-bottom : 0.5ex;
 }
 
+main h1.title,
 div.document h1.title {
     font-weight : bold;
     font-size : 1.5em;
@@ -548,6 +562,9 @@ span.field-argument {
     font-size : 10pt;
 }
 
+
+/* docutils html5 writer changes <div class="document"> to <main> */
+main table,
 div.document table {
     /*table-layout:fixed;*/
     font-size : 100%;
@@ -559,10 +576,13 @@ div.document table {
     background-color : #FFFFFF;
 }
 
+main table caption,
 div.document table caption {
     font-weight : bold;
 }
 
+main table th,
+main table td,
 div.document table th,
 div.document table td {
     padding : 6px;
@@ -571,6 +591,7 @@ div.document table td {
 }
 
 
+main table th,
 div.document table th {
     border-top : 1px solid black;
     background-color : #80C6A3;
@@ -578,11 +599,13 @@ div.document table th {
     vertical-align : bottom;
 }
 
+main table td,
 div.document table td {
     background-color : #F8F8F8;
     vertical-align : top;
 }
 
+main table td.decimal,
 div.document table td.decimal {
     background-color : #F8F8F8;
     text-align : right;
@@ -669,6 +692,17 @@ h6 tt {
     font-size : inherit;
     background-color : inherit;
 }
+/* docutils html5 writer uses span with classes instead of tt with classes */
+h1 span.docutils.literal
+h2 span.docutils.literal,
+h3 span.docutils.literal,
+h4 span.docutils.literal,
+h5 span.docutils.literal,
+h6 span.docutils.literal {
+	font-size : inherit;
+	background-color : inherit;
+}
+
 
 ul.auto-toc {
     list-style-type : none;

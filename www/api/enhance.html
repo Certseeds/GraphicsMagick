@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="enhance">
+<main id="enhance">
 <h1 class="title">enhance</h1>
 <p class="subtitle" id="methods-to-enhance-or-adjust-an-image">Methods to enhance or adjust an image</p>
 <div class="contents topic" id="contents">
@@ -52,13 +52,13 @@
 <li><p><a class="reference internal" href="#normalizeimage" id="id22">NormalizeImage</a></p></li>
 </ul>
 </div>
-<div class="section" id="contrastimage">
+<section id="contrastimage">
 <h1><a class="toc-backref" href="#id15">ContrastImage</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int ContrastImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int sharpen );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>ContrastImage() enhances the intensity differences between the lighter and
 darker elements of the image.  Set sharpen to a value other than 0 to
@@ -74,15 +74,15 @@ increase the image contrast otherwise the contrast is reduced.</p>
 <dd><p>Increase or decrease image contrast.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="equalizeimage">
+</section>
+</section>
+<section id="equalizeimage">
 <h1><a class="toc-backref" href="#id16">EqualizeImage</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int EqualizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>EqualizeImage() applies a histogram equalization to the image.</p>
 <p>The format of the EqualizeImage method is:</p>
@@ -93,15 +93,15 @@ increase the image contrast otherwise the contrast is reduced.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="gammaimage">
+</section>
+</section>
+<section id="gammaimage">
 <h1><a class="toc-backref" href="#id17">GammaImage</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail GammaImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>Use GammaImage() to gamma-correct an image.  The same image viewed on
 different devices will have perceptual differences in the way the
@@ -122,15 +122,15 @@ value of 0.</p>
 <dd><p>Define the level of gamma correction.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="levelimage">
+</section>
+</section>
+<section id="levelimage">
 <h1><a class="toc-backref" href="#id18">LevelImage</a></h1>
-<div class="section" id="id5">
+<section id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int LevelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *level );</pre>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>Description</h2>
 <p>LevelImage() adjusts the levels of an image by scaling the colors falling
 between specified white and black points to the full available quantum
@@ -153,17 +153,17 @@ quantum value.</p>
 and mid has the range 0-10.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="levelimagechannel">
+</section>
+</section>
+<section id="levelimagechannel">
 <h1><a class="toc-backref" href="#id19">LevelImageChannel</a></h1>
-<div class="section" id="id7">
+<section id="id7">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail LevelImageChannel( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
                                   const double black_point, const double mid_point,
                                   const double white_point );</pre>
-</div>
-<div class="section" id="id8">
+</section>
+<section id="id8">
 <h2>Description</h2>
 <p>LevelImageChannel() adjusts the levels of one or more channels by
 scaling the colors falling between specified white and black points to
@@ -190,15 +190,15 @@ Blue, Yellow, Opacity, or All.</p>
 and white points have the range of 0-MaxRGB, and mid has the range 0-10.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="modulateimage">
+</section>
+</section>
+<section id="modulateimage">
 <h1><a class="toc-backref" href="#id20">ModulateImage</a></h1>
-<div class="section" id="id9">
+<section id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int ModulateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *modulate );</pre>
-</div>
-<div class="section" id="id10">
+</section>
+<section id="id10">
 <h2>Description</h2>
 <p>ModulateImage() lets you control the brightness, saturation, and hue
 of an image.  Modulate represents the brightness, saturation, and hue
@@ -215,15 +215,15 @@ as one parameter (e.g. 90,150,100).</p>
 hue.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="negateimage">
+</section>
+</section>
+<section id="negateimage">
 <h1><a class="toc-backref" href="#id21">NegateImage</a></h1>
-<div class="section" id="id11">
+<section id="id11">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int NegateImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int grayscale );</pre>
-</div>
-<div class="section" id="id12">
+</section>
+<section id="id12">
 <h2>Description</h2>
 <p>Method NegateImage negates the colors in the reference image.  The
 Grayscale option means that only grayscale values within the image are
@@ -236,15 +236,15 @@ negated.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="normalizeimage">
+</section>
+</section>
+<section id="normalizeimage">
 <h1><a class="toc-backref" href="#id22">NormalizeImage</a></h1>
-<div class="section" id="id13">
+<section id="id13">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int NormalizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id14">
+</section>
+<section id="id14">
 <h2>Description</h2>
 <p>The NormalizeImage() method enhances the contrast of a color image by
 adjusting the pixels color to span the entire range of colors available.</p>
@@ -256,9 +256,9 @@ adjusting the pixels color to span the entire range of colors available.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -266,6 +266,6 @@ adjusting the pixels color to span the entire range of colors available.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>
