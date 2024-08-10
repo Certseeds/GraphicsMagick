@@ -1264,7 +1264,11 @@ MagickXAnimateImages(Display *display,
           (chdir(working_directory) != 0))
         MagickFatalError(ConfigureFatalError,UnableToRestoreCurrentDirectory,
                          NULL);
-      monitor_handler=SetMonitorHandler(MagickXMagickMonitor);
+#if defined(MAGICK_USE_XMAGICK_MONITOR) && MAGICK_USE_XMAGICK_MONITOR
+      if ((resource_info->image_info->progress) &&
+          (monitor_handler == (MonitorHandler) NULL))
+        monitor_handler=SetMonitorHandler(MagickXMagickMonitor);
+#endif /* if defined(MAGICK_USE_XMAGICK_MONITOR) && MAGICK_USE_XMAGICK_MONITOR */
       warning_handler=resource_info->display_warnings ?
         SetErrorHandler(MagickXWarning) : SetErrorHandler((ErrorHandler) NULL);
       warning_handler=resource_info->display_warnings ?
@@ -1768,8 +1772,11 @@ MagickXAnimateImages(Display *display,
   /*
     Set out progress and warning handlers.
   */
-  if (monitor_handler == (MonitorHandler) NULL)
+#if defined(MAGICK_USE_XMAGICK_MONITOR) && MAGICK_USE_XMAGICK_MONITOR
+  if ((resource_info->image_info->progress)/*  && */
+      /* (monitor_handler == (MonitorHandler) NULL) */)
     monitor_handler=SetMonitorHandler(MagickXMagickMonitor);
+#endif /* if defined(MAGICK_USE_XMAGICK_MONITOR) && MAGICK_USE_XMAGICK_MONITOR */
   if (warning_handler == (WarningHandler) NULL)
     {
       warning_handler=resource_info->display_warnings ?

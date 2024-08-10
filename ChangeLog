@@ -1,3 +1,15 @@
+2024-08-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/image.c (GetImageInfo): Change the default for ImageInfo
+	'progress' to False.  This parameter is used by 'animate' and
+	'display'.  It was discovered that under Ubuntu 22.04 LTS, the
+	progress indication in 'animate' and 'display' has changed from
+	almost no cost, to taking vastly more time than the work to be
+	performed!  As a result, there will be no graphical progress
+	indication in the X11 commands unless this resource is set to
+	True.  ImageMagick had already removed this progress indication.
+	The -monitor option will cause progress output to stderr.
+
 2024-08-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/docutils-articles.css: reStructuredText style sheet

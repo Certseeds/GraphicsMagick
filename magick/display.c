@@ -13858,8 +13858,11 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       /*
         Set the progress monitor if progress monitoring is requested.
       */
-      if (resource_info->image_info->progress)
+#if defined(MAGICK_USE_XMAGICK_MONITOR) && MAGICK_USE_XMAGICK_MONITOR
+      if ((resource_info->image_info->progress) /* && */
+          /* (monitor_handler == (MonitorHandler) NULL) */)
         monitor_handler=SetMonitorHandler(MagickXMagickMonitor);
+#endif /* if defined(MAGICK_USE_XMAGICK_MONITOR) && MAGICK_USE_XMAGICK_MONITOR */
       /*
         Set the warning and signal handlers.
       */
@@ -14367,9 +14370,11 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
   /*
     Set progress monitor if progress monitoring requested.
   */
+#if defined(MAGICK_USE_XMAGICK_MONITOR)
   if ((resource_info->image_info->progress) &&
       (monitor_handler == (MonitorHandler) NULL))
     monitor_handler=SetMonitorHandler(MagickXMagickMonitor);
+#endif /* if defined(MAGICK_USE_XMAGICK_MONITOR) */
   /*
     Set warning and signal handlers.
   */

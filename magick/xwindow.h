@@ -65,6 +65,11 @@ extern "C" {
 #define MaxXWindows  10
 
 /*
+  Set to true to use MagickXMagickMonitor()
+*/
+#define MAGICK_USE_XMAGICK_MONITOR 1
+
+/*
   Enumeration declarations.
 */
 typedef enum

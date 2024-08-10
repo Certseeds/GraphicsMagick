@@ -1936,10 +1936,10 @@ MagickExport void GetImageInfo(ImageInfo *image_info)
   image_info->depth=QuantumDepth;
   image_info->interlace=UndefinedInterlace;
   image_info->quality=DefaultCompressionQuality;
-  image_info->antialias=True;
+  image_info->antialias=MagickTrue;
   image_info->pointsize=12;
-  image_info->dither=True;
-  image_info->progress=True;
+  image_info->dither=MagickTrue;
+  image_info->progress=MagickFalse;
   GetExceptionInfo(&exception);
   BackgroundColorInit(&image_info->background_color);
   BorderColorInit(&image_info->border_color);
