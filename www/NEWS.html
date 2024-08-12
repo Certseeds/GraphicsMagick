@@ -190,6 +190,15 @@ due to an abundance of warnings.</p></li>
 <li><p>Wand API PixelSetQuantumColor(): The color argument is now a const
 pointer.</p></li>
 </ul>
+<p>Behavior Changes:</p>
+<ul class="simple">
+<li><p>The graphical progress indication in the X11 sub-apps 'animate' and
+'display' is disabled due to discovering a tremendous performance
+impact while rendering text under Ubuntu 22.04 LTS.  The underlying
+cause of the performance impact is not yet known.  A text-based
+progress output to the program's console is available via
+<cite>-monitor</cite>.</p></li>
+</ul>
 <p>Windows Delegate Updates/Additions:</p>
 <ul class="simple">
 <li><p>Zip support is obtained from existing zlib contrib/minizip source code.</p></li>

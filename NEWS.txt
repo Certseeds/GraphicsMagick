@@ -131,6 +131,15 @@ API Updates:
 * Wand API PixelSetQuantumColor(): The color argument is now a const
   pointer.
 
+Behavior Changes:
+
+* The graphical progress indication in the X11 sub-apps 'animate' and
+  'display' is disabled due to discovering a tremendous performance
+  impact while rendering text under Ubuntu 22.04 LTS.  The underlying
+  cause of the performance impact is not yet known.  A text-based
+  progress output to the program's console is available via
+  `-monitor`.
+
 Windows Delegate Updates/Additions:
 
 * Zip support is obtained from existing zlib contrib/minizip source code.
