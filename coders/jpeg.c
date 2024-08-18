@@ -1173,57 +1173,130 @@ FormatJPEGColorSpace(const J_COLOR_SPACE colorspace,
 /*
   Format JPEG sampling factors to a string.
 */
-static void
+static MagickPassFail
 FormatJPEGSamplingFactors(const struct jpeg_decompress_struct *jpeg_info,
                           char *sampling_factors)
 {
+  unsigned int
+    quantums = 0;
+
+  MagickPassFail
+    status = MagickFail;
+
   switch (jpeg_info->out_color_space)
     {
-    case JCS_CMYK:
-      {
-        (void) FormatString(sampling_factors,"%dx%d,%dx%d,%dx%d,%dx%d",
-                            jpeg_info->comp_info[0].h_samp_factor,
-                            jpeg_info->comp_info[0].v_samp_factor,
-                            jpeg_info->comp_info[1].h_samp_factor,
-                            jpeg_info->comp_info[1].v_samp_factor,
-                            jpeg_info->comp_info[2].h_samp_factor,
-                            jpeg_info->comp_info[2].v_samp_factor,
-                            jpeg_info->comp_info[3].h_samp_factor,
-                            jpeg_info->comp_info[3].v_samp_factor);
-        break;
-      }
-    case JCS_GRAYSCALE:
-      {
-        (void) FormatString(sampling_factors,"%dx%d",
-                            jpeg_info->comp_info[0].h_samp_factor,
-                            jpeg_info->comp_info[0].v_samp_factor);
-        break;
-      }
-    case JCS_RGB:
-      {
-        (void) FormatString(sampling_factors,"%dx%d,%dx%d,%dx%d",
-                            jpeg_info->comp_info[0].h_samp_factor,
-                            jpeg_info->comp_info[0].v_samp_factor,
-                            jpeg_info->comp_info[1].h_samp_factor,
-                            jpeg_info->comp_info[1].v_samp_factor,
-                            jpeg_info->comp_info[2].h_samp_factor,
-                            jpeg_info->comp_info[2].v_samp_factor);
-        break;
-      }
     default:
-      {
-        (void) FormatString(sampling_factors,"%dx%d,%dx%d,%dx%d,%dx%d",
-                            jpeg_info->comp_info[0].h_samp_factor,
-                            jpeg_info->comp_info[0].v_samp_factor,
-                            jpeg_info->comp_info[1].h_samp_factor,
-                            jpeg_info->comp_info[1].v_samp_factor,
-                            jpeg_info->comp_info[2].h_samp_factor,
-                            jpeg_info->comp_info[2].v_samp_factor,
-                            jpeg_info->comp_info[3].h_samp_factor,
-                            jpeg_info->comp_info[3].v_samp_factor);
-        break;
-      }
+    case JCS_UNKNOWN:
+      /* error/unspecified */
+      break;
+    case JCS_GRAYSCALE:
+      /* monochrome */
+      quantums = 1;
+      break;
+    case JCS_RGB:
+      /* red/green/blue as specified by the RGB_RED, RGB_GREEN,
+         RGB_BLUE, and RGB_PIXELSIZE macros */
+      quantums = 3;
+      break;
+    case JCS_YCbCr:
+      /* Y/Cb/Cr (also known as YUV) */
+      quantums = 3;
+      break;
+    case JCS_CMYK:
+      /* C/M/Y/K */
+      quantums = 4;
+      break;
+    case JCS_YCCK:
+      /* Y/Cb/Cr/K */
+      quantums = 4;
+      break;
+#if 0
+#if defined(JCS_EXTENSIONS) && JCS_EXTENSIONS
+    case JCS_EXT_RGB:
+      /* red/green/blue */
+      quantums = 3;
+      break;
+    case JCS_EXT_RGBX:
+      /* red/green/blue/x */
+      quantums = 4;
+      break;
+    case JCS_EXT_BGR:
+      /* blue/green/red */
+      quantums = 3;
+      break;
+    case JCS_EXT_BGRX:
+      /* blue/green/red/x */
+      quantums = 4;
+      break;
+    case JCS_EXT_XBGR:
+      /* x/blue/green/red */
+      quantums = 4;
+      break;
+    case JCS_EXT_XRGB:
+      /* x/red/green/blue */
+      quantums = 4;
+      break;
+
+#if defined(JCS_ALPHA_EXTENSIONS) && JCS_ALPHA_EXTENSIONS
+    case JCS_EXT_RGBA:
+      /* red/green/blue/alpha */
+      quantums = 4;
+      break;
+    case JCS_EXT_BGRA:
+      /* blue/green/red/alpha */
+      quantums = 4;
+      break;
+    case JCS_EXT_ABGR:
+      /* alpha/blue/green/red */
+      quantums = 4;
+      break;
+    case JCS_EXT_ARGB:
+      /* alpha/red/green/blue */
+      quantums = 4;
+      break;
+    case JCS_RGB565:
+      /* 5-bit red/6-bit green/5-bit blue [decompression only] */
+      quantums = 3;
+      break;
+#endif /* defined(JCS_ALPHA_EXTENSIONS) && JCS_ALPHA_EXTENSIONS */
+#endif /* if defined(JCS_EXTENSIONS) && JCS_EXTENSIONS */
+#endif
     }
+
+  switch (quantums)
+    {
+    case 0:
+      break;
+    case 1:
+      (void) FormatString(sampling_factors,"%dx%d",
+                          jpeg_info->comp_info[0].h_samp_factor,
+                          jpeg_info->comp_info[0].v_samp_factor);
+      status = MagickPass;
+      break;
+    case 3:
+      (void) FormatString(sampling_factors,"%dx%d,%dx%d,%dx%d",
+                          jpeg_info->comp_info[0].h_samp_factor,
+                          jpeg_info->comp_info[0].v_samp_factor,
+                          jpeg_info->comp_info[1].h_samp_factor,
+                          jpeg_info->comp_info[1].v_samp_factor,
+                          jpeg_info->comp_info[2].h_samp_factor,
+                          jpeg_info->comp_info[2].v_samp_factor);
+      status = MagickPass;
+      break;
+    case 4:
+      (void) FormatString(sampling_factors,"%dx%d,%dx%d,%dx%d,%dx%d",
+                          jpeg_info->comp_info[0].h_samp_factor,
+                          jpeg_info->comp_info[0].v_samp_factor,
+                          jpeg_info->comp_info[1].h_samp_factor,
+                          jpeg_info->comp_info[1].v_samp_factor,
+                          jpeg_info->comp_info[2].h_samp_factor,
+                          jpeg_info->comp_info[2].v_samp_factor,
+                          jpeg_info->comp_info[3].h_samp_factor,
+                          jpeg_info->comp_info[3].v_samp_factor);
+      status = MagickPass;
+      break;
+    }
+  return status;
 }
 
 static MagickBool
@@ -1616,11 +1689,13 @@ static Image *ReadJPEGImage(const ImageInfo *image_info,
                             "Colorspace: %s (%d)", attribute,
                             jpeg_info.out_color_space);
 
-    FormatJPEGSamplingFactors(&jpeg_info,attribute);
-    (void) SetImageAttribute(image,"JPEG-Sampling-factors",attribute);
-    if (image->logging)
-      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                            "Sampling Factors: %s", attribute);
+    if (FormatJPEGSamplingFactors(&jpeg_info,attribute) != MagickFail)
+      {
+        (void) SetImageAttribute(image,"JPEG-Sampling-factors",attribute);
+        if (image->logging)
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Sampling Factors: %s", attribute);
+      }
   }
 
   image->depth=Min(jpeg_info.data_precision,Min(16,QuantumDepth));

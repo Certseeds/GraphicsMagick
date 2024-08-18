@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -31,6 +31,17 @@
 %
 %
 */
+/*
+  Please note that the FlashPIX library is very old and contains many
+  bugs.  There are many memory leaks, some of which are not easily
+  fixed due to a defective API design.  FlashPIX is based on a Windows
+  OLE filesystem.  Recently it has been noticed (using the libfpx
+  provided by the ImageMagick Github project) that libfpx modifies
+  (re-writes) its input file, even though it was only intentionally
+  opened for read!  But if the permissions on the input file are
+  read-only then the input file is not modified and there is no
+  reported error.
+*/
 
 /*
   Include declarations.
@@ -58,6 +69,143 @@
 */
 static unsigned int
   WriteFPXImage(const ImageInfo *,Image *);
+
+/*
+  Macro to free allocated content in FPXSummaryInformation
+
+  Unfortunately, the expected memory allocation/deallocation model for
+  FPX_GetSummaryInformation() is not defined.  It acts as a memory leak.
+*/
+#define MagickReleaseSummaryInfo(summary_info)                          \
+  {                                                                     \
+    if (summary_info.title_valid)                                       \
+      (void) FPX_DeleteFPXStr(&summary_info.title);                     \
+    if (summary_info.subject_valid)                                     \
+      (void) FPX_DeleteFPXStr(&summary_info.subject);                   \
+    if (summary_info.author_valid)                                      \
+      (void) FPX_DeleteFPXStr(&summary_info.author);                    \
+    if (summary_info.keywords_valid)                                    \
+      (void) FPX_DeleteFPXStr(&summary_info.keywords);                  \
+    if (summary_info.comments_valid)                                    \
+      (void) FPX_DeleteFPXStr(&summary_info.comments);                  \
+    if (summary_info.OLEtemplate_valid)                                 \
+      (void) FPX_DeleteFPXStr(&summary_info.OLEtemplate);               \
+    if (summary_info.last_author_valid)                                 \
+      (void) FPX_DeleteFPXStr(&summary_info.last_author);               \
+    if (summary_info.rev_number_valid)                                  \
+      (void) FPX_DeleteFPXStr(&summary_info.rev_number);                \
+    if (summary_info.appname_valid)                                     \
+      (void) FPX_DeleteFPXStr(&summary_info.appname);                   \
+    if (summary_info.thumbnail_valid)                                   \
+      if (summary_info.thumbnail.pClipData)                             \
+        {                                                               \
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),           \
+                                "Not freeing pClipData!");              \
+        }                                                               \
+  }
+
+#define MagickLogSummaryInfo(summary_info)                              \
+  {                                                                     \
+    if (summary_info.title_valid)                                       \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Title: %*s",                               \
+                            (int)summary_info.title.length,             \
+                            (const char *)summary_info.title.ptr);      \
+    if (summary_info.subject_valid)                                     \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Subject: %*s",                             \
+                            (int)summary_info.subject.length,           \
+                            (const char *)summary_info.subject.ptr);    \
+    if (summary_info.author_valid)                                      \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Author: %*s",                              \
+                            (int)summary_info.author.length, \
+                            (const char *)summary_info.author.ptr);     \
+    if (summary_info.keywords_valid)                                    \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Keywords: %*s",                            \
+                            (int)summary_info.keywords.length, \
+                            (const char *)summary_info.keywords.ptr);   \
+    if (summary_info.comments_valid)                                    \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Comments: %*s",                            \
+                            (int)summary_info.comments.length,          \
+                            (const char *)summary_info.comments.ptr);   \
+    if (summary_info.OLEtemplate_valid)                                 \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "OLEtemplate: %*s",                         \
+                            (int)summary_info.OLEtemplate.length,       \
+                            (const char *)summary_info.OLEtemplate.ptr); \
+    if (summary_info.last_author_valid)                                 \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Last Author: %*s",                         \
+                            (int)summary_info.last_author.length,       \
+                            (const char *)summary_info.last_author.ptr); \
+    if (summary_info.rev_number_valid)                                  \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Revision Number: %*s",                     \
+                            (int)summary_info.rev_number.length,        \
+                            (const char *)summary_info.rev_number.ptr); \
+    if (summary_info.edit_time_valid)                                   \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Edit Time: %u,%u",                         \
+                            summary_info.edit_time.dwLowDateTime,       \
+                            summary_info.edit_time.dwHighDateTime);     \
+    if (summary_info.last_printed_valid)                                \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Last Printed Time: %u,%u",                 \
+                            summary_info.last_printed.dwLowDateTime,    \
+                            summary_info.last_printed.dwHighDateTime);  \
+    if (summary_info.create_dtm_valid)                                  \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Create DTM Time: %u,%u",                   \
+                            summary_info.create_dtm.dwLowDateTime,      \
+                            summary_info.create_dtm.dwHighDateTime);    \
+    if (summary_info.last_save_dtm_valid)                               \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Save DTM Time: %u,%u",                     \
+                            summary_info.last_save_dtm.dwLowDateTime,   \
+                            summary_info.last_save_dtm.dwHighDateTime); \
+    if (summary_info.page_count_valid)                                  \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Page Count: %u",                           \
+                            summary_info.page_count);                   \
+    if (summary_info.word_count_valid)                                  \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Word Count: %u",                           \
+                            summary_info.word_count);                   \
+    if (summary_info.char_count_valid)                                  \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Char Count: %u",                           \
+                            summary_info.char_count);                   \
+    if (summary_info.thumbnail_valid)                                   \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "ThumbNail: pClipData=%p",                  \
+                            summary_info.thumbnail.pClipData);          \
+    if (summary_info.appname_valid)                                     \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "App Name: %*s",                            \
+                            (int)summary_info.appname.length,           \
+                            (const char *)summary_info.appname.ptr);    \
+    if (summary_info.security_valid)                                    \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),               \
+                            "Security: 0x%04lx",                        \
+                            summary_info.security);                     \
+}
+
+#if 0
+/* There is some issue with thumbnail cbSize and ulClipFmt being uninitialized data! */
+    if (summary_info.thumbnail_valid)                               \
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),     \
+                            "ThumbNail: cbSize=%u, ulClipFmt=%d, pClipData=%p", summary_info.thumbnail.cbSize, summary_info.thumbnail.ulClipFmt, summary_info.thumbnail.pClipData);
+#endif
+
+/* typedef CLIPDATA  FPXThumbnail; Has allocated memory (uint8_t *) in pClipData
+   And data is actually returned!
+   Allocated by (CLIPDATA*)CoTaskMemAlloc(sizeof(CLIPDATA));
+   Freed by CoTaskMemFree()
+*/
+
 
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -191,6 +339,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   size_t
     memory_limit;
 
+
   /*
     Open image.
   */
@@ -199,6 +348,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
   image=AllocateImage(image_info);
+
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == False)
     ThrowReaderException(FileOpenError,UnableToOpenFile,image);
@@ -207,6 +357,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   /*
     Initialize FPX toolkit.
   */
+  (void) memset(&summary_info,0,sizeof(summary_info));
   fpx_status=FPX_InitSystem();
   if (fpx_status != FPX_OK)
     {
@@ -219,6 +370,7 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
       FPX_ClearSystem();
       ThrowReaderException(CoderError,UnableToInitializeFPXLibrary,image);
     }
+
   tile_width=64;
   tile_height=64;
   flashpix=(FPXImageHandle *) NULL;
@@ -254,53 +406,27 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
   fpx_status=FPX_GetSummaryInformation(flashpix,&summary_info);
   if (fpx_status != FPX_OK)
     {
+      MagickReleaseSummaryInfo(summary_info);
       FPX_ClearSystem();
       ThrowReaderException(CoderError,UnableToReadSummaryInfo,image);
-    }
+  }
+  MagickLogSummaryInfo(summary_info);
   if (summary_info.title_valid)
     if ((summary_info.title.length != 0) &&
         (summary_info.title.ptr != (unsigned char *) NULL))
       {
-        char
-          *label;
-
-        /*
-          Note image label.
-        */
-        label=MagickAllocateResourceLimitedMemory(char *,summary_info.title.length+1);
-        if (label == (char *) NULL)
-          {
-            FPX_ClearSystem();
-            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-              image);
-          }
-        (void) strlcpy(label,(char *) summary_info.title.ptr,
-          summary_info.title.length+1);
-        (void) SetImageAttribute(image,"label",label);
-        MagickFreeResourceLimitedMemory(label);
+        /* It is observed that the buffer is NUL terminated */
+        (void) SetImageAttribute(image,"label",(const char *) summary_info.title.ptr);
       }
   if (summary_info.comments_valid)
     if ((summary_info.comments.length != 0) &&
         (summary_info.comments.ptr != (unsigned char *) NULL))
       {
-        char
-          *comments;
-
-        /*
-          Note image comment.
-        */
-        comments=MagickAllocateResourceLimitedMemory(char *,summary_info.comments.length+1);
-        if (comments == (char *) NULL)
-          {
-            FPX_ClearSystem();
-            ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,
-              image);
-          }
-        (void) strlcpy(comments,(char *) summary_info.comments.ptr,
-          summary_info.comments.length+1);
-        (void) SetImageAttribute(image,"comment",comments);
-        MagickFreeResourceLimitedMemory(comments);
+        /* It is observed that the buffer is NUL terminated */
+        (void) SetImageAttribute(image,"comment",(const char *) summary_info.comments.ptr);
       }
+  /* FIXME: For some reason freeing memory here still leaks it! */
+  MagickReleaseSummaryInfo(summary_info);
   /*
     Determine resolution by subimage specification.
   */
@@ -450,7 +576,9 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     if (!SyncImagePixels(image))
       break;
     if (QuantumTick(y,image->rows))
-      if (!MagickMonitor(LoadImageText,y,image->rows,exception))
+      if (!MagickMonitorFormatted(y,image->rows,exception,
+                                  LoadImageText,image->filename,
+                                  image->columns,image->rows))
         break;
   }
   MagickFreeResourceLimitedMemory(scanline);
@@ -505,6 +633,7 @@ ModuleExport void RegisterFPXImage(void)
   entry->magick=(MagickHandler) IsFPX;
   entry->description="FlashPix Format";
   entry->module="FPX";
+  entry->coder_class=UnstableCoderClass;
   (void) RegisterMagickInfo(entry);
 }
 
@@ -807,12 +936,17 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
   /*
     Initialize FPX toolkit.
   */
-  image->depth=8;
-  (void) TransformColorspace(image,RGBColorspace);
   memory_limit=20000000;
   fpx_status=FPX_SetToolkitMemoryLimit(&memory_limit);
   if (fpx_status != FPX_OK)
     ThrowWriterException(DelegateError,UnableToInitializeFPXLibrary,image);
+  fpx_status=FPX_InitSystem();
+  if (fpx_status != FPX_OK)
+    ThrowWriterException(CoderError,UnableToInitializeFPXLibrary,image);
+
+  (void) memset(&summary_info,0,sizeof(summary_info));
+  image->depth=8;
+  (void) TransformColorspace(image,RGBColorspace);
   tile_width=64;
   tile_height=64;
   colorspace.numberOfComponents=3;
@@ -872,18 +1006,8 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
   label=GetImageAttribute(image,"label");
   if (label != (ImageAttribute *) NULL)
     {
-      /*
-        Note image label.
-      */
-      summary_info.title_valid=True;
-      summary_info.title.length=strlen(label->value);
-      summary_info.title.ptr=MagickAllocateMemory(unsigned char *,
-        strlen(label->value)+1);
-      if (summary_info.title.ptr != (unsigned char *) NULL)
-        (void) strlcpy((char *) summary_info.title.ptr,label->value,
-          MaxTextExtent);
-      else
-        ThrowWriterException(CoderError,UnableToSetImageTitle,image);
+      InitFPXStr(&summary_info.title);
+      summary_info.title_valid=(FPX_Strcpy(&summary_info.title, label->value) ==  FPX_OK);
     }
   comment=GetImageAttribute(image,"comment");
   if (comment != (ImageAttribute *) NULL)
@@ -891,16 +1015,12 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
       /*
         Note image comment.
       */
-      summary_info.comments_valid=True;
-      summary_info.comments.length=strlen(comment->value);
-      summary_info.comments.ptr=MagickAllocateMemory(unsigned char *,
-        summary_info.comments.length+1);
-      if (summary_info.comments.ptr != (unsigned char *) NULL)
-        (void) strlcpy((char *) summary_info.comments.ptr,comment->value,summary_info.comments.length+1);
-      else
-        ThrowWriterException(CoderError,UnableToSetImageComments,image);
+      InitFPXStr(&summary_info.comments);
+      summary_info.comments_valid=(FPX_Strcpy(&summary_info.comments, comment->value) == FPX_OK);
     }
+  MagickLogSummaryInfo(summary_info);
   fpx_status=FPX_SetSummaryInformation(flashpix,&summary_info);
+  MagickReleaseSummaryInfo(summary_info);
   if (fpx_status != FPX_OK)
     ThrowWriterException(CoderError,UnableToSetSummaryInfo,image);
   /*
@@ -951,7 +1071,9 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
     if (fpx_status != FPX_OK)
       break;
     if (QuantumTick(y,image->rows))
-      if (!MagickMonitor(SaveImageText,y,image->rows,&image->exception))
+      if (!MagickMonitorFormatted(y,image->rows,&image->exception,
+                                  LoadImageText,image->filename,
+                                  image->columns,image->rows))
         break;
   }
   if (image_info->view != (char *) NULL)

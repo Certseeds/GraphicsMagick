@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2021 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright (C) 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -2102,6 +2102,288 @@ double
 constant(name,argument)
   char *name
   int argument
+
+#
+###############################################################################
+#                                                                             #
+#                                                                             #
+#                                                                             #
+#   A c c e s s D e f i n i t i o n                                           #
+#                                                                             #
+#                                                                             #
+#                                                                             #
+###############################################################################
+#
+#
+void
+AccessDefinition(ref,...)
+  Graphics::Magick ref=NO_INIT
+  ALIAS:
+    accessdefinition = 1
+    GetDefinition    = 2
+    getdefinition    = 3
+  PPCODE:
+  {
+    Image
+      *image;
+
+    ExceptionInfo
+      exception;
+
+    register int
+      i;
+
+    struct PackageInfo
+      *info;
+
+    SV
+      *reference,    /* reference is the SV* of ref=SvIV(reference) */
+      *return_value; /* value returned by function */
+
+    /* parameters to AccessDefinition */
+    const char
+      *magick,
+      *key,
+      *value;
+
+    if (!sv_isobject(ST(0)))
+      {
+        MagickError(OptionError,ReferenceIsNotMyType,PackageName);
+        XSRETURN_EMPTY;
+      }
+    reference=SvRV(ST(0));
+    image=SetupList(aTHX_ reference,&info,(SV ***) NULL);
+    if (!image && !info)
+      {
+        MagickError(OptionError,ReferenceIsNotMyType,NULL);
+        XSRETURN_EMPTY;
+      }
+
+    value        = NULL;
+    return_value = NULL;
+
+    if (items == 3) {
+      magick = SvPV(ST(1),na);
+      key    = SvPV(ST(2),na);
+      value = AccessDefinition( info->image_info, magick, key );
+    }
+
+    if ( value ) {
+      return_value = newSVpv(value,0);
+    }
+
+    if (return_value) {
+       ST(0) = return_value;
+      sv_2mortal(ST(0));
+    } else {
+       ST(0) = &sv_undef;
+    }
+    XSRETURN(1);
+  }
+
+#
+###############################################################################
+#                                                                             #
+#                                                                             #
+#                                                                             #
+#   A d d D e f i n i t i o n                                                 #
+#                                                                             #
+#                                                                             #
+#                                                                             #
+###############################################################################
+#
+#
+void
+AddDefinition(ref,...)
+  Graphics::Magick ref=NO_INIT
+  ALIAS:
+    adddefinition  = 1
+    SetDefinition  = 2
+    setdefinition  = 3
+  PPCODE:
+  {
+    ExceptionInfo
+      exception;
+
+    register int
+      i;
+
+    struct PackageInfo
+      *info;
+
+    SV
+      *reference;  /* reference is the SV* of ref=SvIV(reference) */
+
+    /* parameters to AddDefinition */
+    const char
+      *magick,
+      *key,
+      *value;
+
+    MagickPassFail
+      return_value;  /* return value */
+
+    return_value = MagickFail;
+
+    dMY_CXT;
+    MY_CXT.error_list=newSVpv("",0);
+    if (!sv_isobject(ST(0)))
+      {
+        goto MethodException;
+      }
+    reference=SvRV(ST(0));
+    (void)SetupList(aTHX_ reference,&info,(SV ***) NULL);
+    if (info && items == 4) {
+      magick = SvPV(ST(1),na);
+      key    = SvPV(ST(2),na);
+      value  = SvPV(ST(3),na);
+      return_value = AddDefinition( info->image_info, magick, key, value, &exception );
+    }
+
+    GetExceptionInfo(&exception);
+    if (exception.severity != UndefinedException) {
+      CatchException(&exception);
+      return_value = MagickFail;
+    }
+    DestroyExceptionInfo(&exception);
+
+  MethodException:
+    ST(0) = newSViv(return_value);
+    sv_2mortal(ST(0));
+    XSRETURN(1);
+  }
+
+#
+###############################################################################
+#                                                                             #
+#                                                                             #
+#                                                                             #
+#   A d d D e f i n i t i o n s                                               #
+#                                                                             #
+#                                                                             #
+#                                                                             #
+###############################################################################
+#
+#
+void
+AddDefinitions(ref,...)
+  Graphics::Magick ref=NO_INIT
+  ALIAS:
+    adddefinitions  = 1
+    SetDefinitions  = 2
+    setdefinitions  = 3
+  PPCODE:
+  {
+    ExceptionInfo
+      exception;
+
+    register int
+      i;
+
+    struct PackageInfo
+      *info;
+
+    SV
+      *reference;  /* reference is the SV* of ref=SvIV(reference) */
+
+    const char
+      *values;  /* parameters to AddDefinitions */
+
+    MagickPassFail
+      return_value;  /* return value */
+
+    return_value = MagickFail;
+
+    dMY_CXT;
+    MY_CXT.error_list=newSVpv("",0);
+    if (!sv_isobject(ST(0)))
+      {
+        goto MethodException;
+      }
+    reference=SvRV(ST(0));
+    (void)SetupList(aTHX_ reference,&info,(SV ***) NULL);
+    if (info && items == 2) {
+      values = SvPV(ST(1),na);
+      return_value = AddDefinitions( info->image_info, values, &exception );
+    }
+
+    GetExceptionInfo(&exception);
+    if (exception.severity != UndefinedException) {
+      CatchException(&exception);
+      return_value = MagickFail;
+    }
+    DestroyExceptionInfo(&exception);
+
+  MethodException:
+    ST(0) = newSViv(return_value);
+    sv_2mortal(ST(0));
+    XSRETURN(1);
+  }
+
+#
+###############################################################################
+#                                                                             #
+#                                                                             #
+#                                                                             #
+#   R e m o v e D e f i n i t i o n s                                         #
+#                                                                             #
+#                                                                             #
+#                                                                             #
+###############################################################################
+#
+#
+void
+RemoveDefinitions(ref,...)
+  Graphics::Magick ref=NO_INIT
+  ALIAS:
+    removedefinitions  = 1
+  PPCODE:
+  {
+    ExceptionInfo
+      exception;
+
+    register int
+      i;
+
+    struct PackageInfo
+      *info;
+
+    SV
+      *reference;  /* reference is the SV* of ref=SvIV(reference) */
+
+    const char
+      *values;  /* parameters to RemoveDefinitions */
+
+    MagickPassFail
+      return_value;  /* return value */
+
+    return_value = MagickFail;
+
+    dMY_CXT;
+    MY_CXT.error_list=newSVpv("",0);
+    if (!sv_isobject(ST(0)))
+      {
+        goto MethodException;
+      }
+    reference=SvRV(ST(0));
+    (void)SetupList(aTHX_ reference,&info,(SV ***) NULL);
+    if (info && items == 2) {
+      values = SvPV(ST(1),na);
+      return_value = RemoveDefinitions( info->image_info, values );
+    }
+
+    GetExceptionInfo(&exception);
+    if (exception.severity != UndefinedException) {
+      CatchException(&exception);
+      return_value = MagickFail;
+    }
+    DestroyExceptionInfo(&exception);
+
+  MethodException:
+    ST(0) = newSViv(return_value);
+    sv_2mortal(ST(0));
+    XSRETURN(1);
+  }
 
 #
 ###############################################################################

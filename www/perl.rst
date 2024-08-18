@@ -243,7 +243,8 @@ method Write() to write to standard out::
   binmode STDOUT;
   $image->Write('png:-');
 
-To read an image from a disk file, use::
+To read an image from a disk file, use:
+
   $image = Graphics::Magick->new;
   $filename = 'test.gif';
   $status = $image->Read ($filename);
@@ -278,6 +279,25 @@ converts files image000.miff, image001.miff, etc.
 
 You can optionally add Image to any method name. For example, ReadImage()
 is an alias for method Read().
+
+To set encoder parameters when saving a file use AddDefinition($magick, $key,
+$value); this returns 0 on success or 1 on failure. A comma-delimited list of
+parameters can also be set using AddDefinition($values); this returns 0 on
+success or 1 on failure. To remove parameters use RemoveDefinitions($keys)
+(comma-delimited; the special key * can be used to remove all definitions);
+this returns 1 if the specified keys were present and removed, 0 otherwise.
+To get the current value of a parameter use AccessDefinition($magick, $key);
+note that if no value was explicitly set then undef is returned. These are
+equivalent to using the commandline gm utility's -define option. For example,
+to save a lossless WebP image one can use:
+
+  $image->AddDefinition('webp', 'lossless', 'TRUE');
+  $image->Write(filename=&gt;'webp:output.webp');
+
+or
+
+  $image->AddDefinitions('webp:lossless=TRUE');
+  $image->Write(filename=&gt;'webp:output.webp');
 
 
 Manipulate an Image

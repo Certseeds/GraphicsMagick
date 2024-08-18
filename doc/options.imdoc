@@ -1514,8 +1514,12 @@ quality setting of 75 is translated to a compress level of 9 such that
 'quality' has a useful range of 10-184 if used for this purpose.
 </dd>
 
+<dt>webp:exact={true|false}</dt>
+<dd>Preserve exact RGB values under transparent areas.  Default false.
+</dd>
+
 <dt>webp:lossless={true|false}</dt>
-<dd>Enable lossless encoding.
+<dd>Enable lossless encoding. Also enables 'exact' mode.
 </dd>
 
 <dt>webp:method={0-6}</dt>
@@ -1707,11 +1711,10 @@ although 8 or 16 are the most common values. Use this option to specify
 the depth of raw images whose depth is unknown such as GRAY, RGB, or
 CMYK, or to change the depth of any image after it has been read.</pp>
 
-<pp>The depth option is applied to the pixels immediately so it may be
-used as a form of simple compression by discarding the least significant
-bits. Reducing the depth in advance may speed up color quantization, and
-help create smaller file sizes when using a compression algorithm like
-LZW or ZIP.</pp>
+<pp>
+See the -operator option for a way (via '-operator All Depth N') to
+apply a depth limit to the pixels immediately rather than setting an
+image attribute.</pp>
 
 </utils>
 
@@ -6022,10 +6025,32 @@ for a description of these values.</pp>
 
 <!-- ------------ -version ------------------------------------------ -->
 
-<utils apps=animate,compare,composite,conjure,convert,display,identify,import,mogrify,montage>
+<utils apps=animate,batch,compare,composite,conjure,convert,display,gm,identify,import,mogrify,montage>
 <dopt>-version</opt>
 
-<abs>print GraphicsMagick version string</abs>
+<abs>print detailed GraphicsMagick version/build information</abs>
+
+<pp>
+Reports the release version, maximum sample-depth, web-site URL,
+copyright notice, feature support, and the options used while building
+the software.  This is the same output as produced by the 'version'
+sub-command.</pp>
+
+</utils>
+
+
+
+
+<!-- ------------ --version ------------------------------------------ -->
+
+<utils apps=animate,batch,compare,composite,conjure,convert,display,gm,identify,import,mogrify,montage>
+<dopt>-version</opt>
+
+<abs>print compact GNU-style GraphicsMagick version information</abs>
+
+<pp>
+Reports the release version, maximum sample-depth, web-site URL, and
+copyright notice.</pp>
 
 </utils>
 

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2023 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -60,6 +60,7 @@ static const struct
 } StaticModules[] =
 {
 #define STATICM(name,register_fn,unregister_fn) {name,register_fn,unregister_fn,sizeof(name)-1}
+  STATICM("AAI",RegisterAAIImage,UnregisterAAIImage),
   STATICM("ART",RegisterARTImage,UnregisterARTImage),
   STATICM("AVS",RegisterAVSImage,UnregisterAVSImage),
   STATICM("BMP",RegisterBMPImage,UnregisterBMPImage),
@@ -75,9 +76,6 @@ static const struct
   STATICM("DCM",RegisterDCMImage,UnregisterDCMImage),
   STATICM("DCRAW",RegisterDCRAWImage,UnregisterDCRAWImage),
   STATICM("DIB",RegisterDIBImage,UnregisterDIBImage),
-#if defined(HasDPS)
-  STATICM("DPS",RegisterDPSImage,UnregisterDPSImage),
-#endif
   STATICM("DPX",RegisterDPXImage,UnregisterDPXImage),
 #if defined(HasWINGDI32)
   STATICM("EMF",RegisterEMFImage,UnregisterEMFImage),
@@ -134,6 +132,9 @@ static const struct
   STATICM("MTV",RegisterMTVImage,UnregisterMTVImage),
   STATICM("MVG",RegisterMVGImage,UnregisterMVGImage),
   STATICM("NULL",RegisterNULLImage,UnregisterNULLImage),
+#if defined(HasPNG) && (defined(HasUNZIP) || defined(HasLIBZIP))
+  STATICM("ORA",RegisterORAImage,UnregisterORAImage),
+#endif
   STATICM("OTB",RegisterOTBImage,UnregisterOTBImage),
   STATICM("PALM",RegisterPALMImage,UnregisterPALMImage),
   STATICM("PCD",RegisterPCDImage,UnregisterPCDImage),

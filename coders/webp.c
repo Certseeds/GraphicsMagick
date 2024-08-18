@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2013-2023 GraphicsMagick Group
+% Copyright (C) 2013-2024 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -102,6 +102,7 @@ static unsigned int WriteWEBPImage(const ImageInfo *,Image *);
 #endif
 #if WEBP_ENCODER_ABI_VERSION >= 0x0209 /* >= 0.5.0 */
 #  define SUPPORT_WEBP_MUX
+#  define SUPPORT_WEBP_EXACT
 #include <webp/mux.h>
 #endif
 #if WEBP_ENCODER_ABI_VERSION >= 0x020e /* >= 0.6.0 */
@@ -676,7 +677,13 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
     configure.quality = (float) image_info->quality;
 
   if ((value=AccessDefinition(image_info,"webp","lossless")))
-    configure.lossless=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
+    {
+      configure.lossless=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
+#if defined(SUPPORT_WEBP_EXACT)
+      /* Preserve RGB channels in 100% transparent areas */
+      configure.exact=1;
+#endif
+    }
   if ((value=AccessDefinition(image_info,"webp","method")))
     configure.method=MagickAtoI(value);
   if ((value=AccessDefinition(image_info,"webp","image-hint")))
@@ -740,6 +747,13 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
   if ((value=AccessDefinition(image_info,"webp","use-sharp-yuv")))
     configure.use_sharp_yuv=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
 #endif
+#if defined(SUPPORT_WEBP_EXACT)
+  if ((value=AccessDefinition(image_info,"webp","exact")))
+    {
+      /* Preserve RGB channels in 100% transparent areas */
+      configure.exact=(LocaleCompare(value,"TRUE") == 0 ? 1 : 0);
+    }
+#endif
   if (WebPValidateConfig(&configure) != 1)
     ThrowWriterException(CoderError,WebPInvalidConfiguration,image);
 
@@ -767,7 +781,6 @@ static unsigned int WriteWEBPImage(const ImageInfo *image_info,Image *image)
               p++;
             }
         }
-
     }
   else
     {

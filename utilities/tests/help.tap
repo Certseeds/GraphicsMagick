@@ -1,18 +1,17 @@
 #!/bin/sh
 # -*- shell-script -*-
-# Copyright (C) 2004-2013 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 # Test -list option
 . ./common.shi
 . ${top_srcdir}/utilities/tests/common.sh
 
 # Number of tests we plan to execute
-test_plan_fn 32
+test_plan_fn 29
 
-nox_commands='batch benchmark compare composite conjure convert help identify mogrify montage time version'
+# batch is skipped since its help output contains TAP test results!
+nox_commands='benchmark compare composite conjure convert help identify mogrify montage time version'
 
 test_command_fn "gm help" ${GM} help
-
-test_command_fn "gm -version" ${GM} -version
 
 for command in ${nox_commands}
 do

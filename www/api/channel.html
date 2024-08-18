@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="channel">
+<main id="channel">
 <h1 class="title">channel</h1>
 <p class="subtitle" id="image-channel-functions">Image channel functions</p>
 <div class="contents topic" id="contents">
@@ -50,13 +50,13 @@
 <li><p><a class="reference internal" href="#setimagechanneldepth" id="id16">SetImageChannelDepth</a></p></li>
 </ul>
 </div>
-<div class="section" id="channelimage">
+<section id="channelimage">
 <h1><a class="toc-backref" href="#id11">ChannelImage</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int ChannelImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>Transform an image so that the resulting image is a grayscale image
 based on a specified image channel. The resulting image is returned in
@@ -77,16 +77,16 @@ specifying RedChannel as the ChannelType argument.</p>
 Blue, Yellow, or Opacity.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="exportimagechannel">
+</section>
+</section>
+<section id="exportimagechannel">
 <h1><a class="toc-backref" href="#id12">ExportImageChannel</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ExportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
                            <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>ExportImageChannel() exports a specified image channel as a new image.</p>
 <p>The format of the ExportImageChannel method is:</p>
@@ -103,16 +103,16 @@ Blue, Yellow, or Opacity.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="getimagechanneldepth">
+</section>
+</section>
+<section id="getimagechanneldepth">
 <h1><a class="toc-backref" href="#id13">GetImageChannelDepth</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned long GetImageChannelDepth( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
                                     <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>GetImageChannelDepth() returns the minimum bit depth required to store
 the specified image channel without actual loss of color resolution.
@@ -136,16 +136,16 @@ since only one bit of resolution is required to represent a bilevel channel.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="importimagechannel">
+</section>
+</section>
+<section id="importimagechannel">
 <h1><a class="toc-backref" href="#id14">ImportImageChannel</a></h1>
-<div class="section" id="id5">
+<section id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail ImportImageChannel( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image, <a class="reference external" href="../api/types.html#image">Image</a> *update_image,
                                    const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel );</pre>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>Description</h2>
 <p>ImportImageChannel() imports an image into the specified image channel.</p>
 <p>The format of the ImportImageChannel method is:</p>
@@ -162,17 +162,17 @@ since only one bit of resolution is required to represent a bilevel channel.</p>
 <dd><p>The image channel to import</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="importimagechannelsmasked">
+</section>
+</section>
+<section id="importimagechannelsmasked">
 <h1><a class="toc-backref" href="#id15">ImportImageChannelsMasked</a></h1>
-<div class="section" id="id7">
+<section id="id7">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail ImportImageChannelsMasked( const <a class="reference external" href="../api/types.html#image">Image</a> *source_image,
                                           <a class="reference external" href="../api/types.html#image">Image</a> *update_image,
                                           const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channels );</pre>
-</div>
-<div class="section" id="id8">
+</section>
+<section id="id8">
 <h2>Description</h2>
 <p>ImportImageChannelsMasked() imports all the channels from a source
 image to an update image, except for the channels specified.</p>
@@ -191,16 +191,16 @@ image to an update image, except for the channels specified.</p>
 <dd><p>The image channel to import</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimagechanneldepth">
+</section>
+</section>
+<section id="setimagechanneldepth">
 <h1><a class="toc-backref" href="#id16">SetImageChannelDepth</a></h1>
-<div class="section" id="id9">
+<section id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail SetImageChannelDepth( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#channeltype">ChannelType</a> channel,
                                      const unsigned int depth );</pre>
-</div>
-<div class="section" id="id10">
+</section>
+<section id="id10">
 <h2>Description</h2>
 <p>SetImageChannelDepth() translates the pixel quantums in the specified
 channel so that if they are later divided to fit within the specified bit
@@ -223,9 +223,9 @@ member of image to determine the cause for any failure.</p>
 <dd><p>Desired channel depth (range 1 to QuantumDepth)</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -233,6 +233,6 @@ member of image to determine the cause for any failure.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

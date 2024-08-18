@@ -357,7 +357,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
     base,
     flag,
     offset,
-//    real,
+    /*    real, */
     skip;
 
   unsigned int
@@ -376,7 +376,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
   assert(image_info->signature == MagickSignature);
   assert(exception != (ExceptionInfo *) NULL);
   assert(exception->signature == MagickSignature);
-  LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
+  (void) LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   image = AllocateImage(image_info);
   status = OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
   if (status == MagickFalse)
@@ -689,16 +689,18 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
       base=0;
       flag=0;
       skip=MagickFalse;
-//    real=0;
+      /*    real=0; */
       index=0;
       runlength=0;
       offset=0;
       pixel.opacity=OpaqueOpacity;
       for (y=0; y < (long) image->rows; y++)
         {
-//          real=offset;
-//          if (((tga_info.attributes & 0x20) >> 5) == 0)
-//            real=image->rows-real-1;
+          /*
+            real=offset;
+            if (((tga_info.attributes & 0x20) >> 5) == 0)
+            real=image->rows-real-1;
+          */
           q=SetImagePixels(image,0,(long)offset,image->columns,1);
           if (q == (PixelPacket *) NULL)
             break;
@@ -731,7 +733,7 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
                 switch (tga_info.bits_per_pixel)
                   {
                   case 1:
-                    if ((x&7) == 0)     // Read byte every 8th bit.
+                    if ((x&7) == 0)     /* Read byte every 8th bit. */
                       index = ReadBlobByte(image);
                     else
                       index <<= 1;
@@ -836,11 +838,11 @@ static Image *ReadTGAImage(const ImageInfo *image_info, ExceptionInfo *exception
               *q++=pixel;
             }
           switch((unsigned char) (tga_info.attributes & 0xc0) >> 6)
-            {				/* http://www.paulbourke.net/dataformats/tga/ */
-            case 3:			/* 11 = reserved. - process without interleaving. */
-            case 0: offset++; break;	/* 00 = non-interleaved. */
-            case 1: offset+=2;break;	/* 01 = two-way (even/odd) interleaving. */
-            case 2: offset+=4;break;	/* 10 = four way interleaving. */
+            {                           /* http://www.paulbourke.net/dataformats/tga/ */
+            case 3:                     /* 11 = reserved. - process without interleaving. */
+            case 0: offset++; break;    /* 00 = non-interleaved. */
+            case 1: offset+=2;break;    /* 01 = two-way (even/odd) interleaving. */
+            case 2: offset+=4;break;    /* 10 = four way interleaving. */
             }
           if (offset >= image->rows)
             {
@@ -1068,7 +1070,8 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
   assert(image != (Image *) NULL);
   assert(image->signature == MagickSignature);
   image_list_length=GetImageListLength(image);
-  LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
+  if(image->logging)
+    (void) LogMagickEvent(CoderEvent,GetMagickModule(),"enter");
   if(image->logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                           "%" MAGICK_SIZE_T_F "u image frames in list",
@@ -1122,9 +1125,9 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
       */
       if (((write_grayscale == MagickFalse) &&
            (image->storage_class == PseudoClass) &&
-           (image->colors > 256)) ||
-          (image->matte == MagickTrue))
-        {
+           (image->colors > 256)) || (image->matte == MagickTrue))
+        {       /* TODO: We should decide whether opacity could be packed into palette or
+                the full alpha channel is needed. */
           /* (void) SyncImage(image); */
           image->storage_class=DirectClass;
         }
@@ -1190,16 +1193,16 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
           tga_info.colormap_type=1;
           tga_info.colormap_index=0;
           tga_info.colormap_length=(unsigned short) image->colors;
-          tga_info.colormap_size=24;
+          tga_info.colormap_size = (image->matte==MagickTrue) ? 32 : 24;
         }
 
       switch(image->orientation)
       {
+        case BottomLeftOrientation:  break;                             /* 01 Bottom left */
+        case BottomRightOrientation: tga_info.attributes|=0x10; break;  /* 01 Bottom right */
         case UndefinedOrientation:
-        case BottomLeftOrientation:  break;				/* 01 Bottom left */
-        case BottomRightOrientation: tga_info.attributes|=0x10; break;	/* 01 Bottom right */
-        case TopLeftOrientation:     tga_info.attributes|=0x20; break;	/* 10 Top left */
-        case TopRightOrientation:    tga_info.attributes|=0x30; break;	/* 11 TopRight */
+        case TopLeftOrientation:     tga_info.attributes|=0x20; break;  /* 10 Top left */
+        case TopRightOrientation:    tga_info.attributes|=0x30; break;  /* 11 TopRight */
         default: if(image->logging)
                      (void)LogMagickEvent(CoderEvent,GetMagickModule(),
                                 "Warning: Orientation %d is not supported, use -auto-orient switch.\n", (int)image->orientation);
@@ -1238,7 +1241,7 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
             Dump colormap to file (blue, green, red byte order).
           */
           targa_colormap=MagickAllocateResourceLimitedArray(unsigned char *,
-                                                            tga_info.colormap_length,3);
+                                                            tga_info.colormap_length, tga_info.colormap_size/8);
           if (targa_colormap == (unsigned char *) NULL)
             ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,
                                  image);
@@ -1248,8 +1251,10 @@ static unsigned int WriteTGAImage(const ImageInfo *image_info,Image *image)
               *q++=ScaleQuantumToChar(image->colormap[i].blue);
               *q++=ScaleQuantumToChar(image->colormap[i].green);
               *q++=ScaleQuantumToChar(image->colormap[i].red);
+              if(tga_info.colormap_size==32)
+                  *q++=ScaleQuantumToChar(image->colormap[i].opacity);
             }
-          (void) WriteBlob(image, (size_t)3*tga_info.colormap_length,
+          (void) WriteBlob(image, (size_t)(tga_info.colormap_size/8)*tga_info.colormap_length,
                            (char *) targa_colormap);
           MagickFreeResourceLimitedMemory(targa_colormap);
         }

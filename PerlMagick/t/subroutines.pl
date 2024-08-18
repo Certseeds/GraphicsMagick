@@ -1,4 +1,4 @@
-# Copyright (C) 2003-2023 GraphicsMagick Group
+# Copyright (C) 2003-2024 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1999 E. I. du Pont de Nemours and Company
 #
@@ -1322,5 +1322,88 @@ sub testFilterCompare {
   print("  $errorinfo\n");
   print "not ok $test\n";
   return 1
+}
+
+#
+# Test AccessDefinition method
+#
+# Usage: testAccessDefinition( image, magick, key, expected );
+#
+sub testAccessDefinition {
+  my( $image, $magick, $key, $expected ) = @_;
+
+        my $got = $image->AccessDefinition($magick, $key);
+
+  if( !defined( $got ) && !defined( $expected ) ) {
+    # Undefined value is expected
+    print "ok $test\n";
+  } elsif ( !defined( $got ) ) {
+    print "Expected ($expected), Got (undefined)\n";
+    print "not ok $test\n";
+  } else {
+    if ("$expected" eq "$got") {
+      print "ok $test\n";
+    } else {
+      print "Expected ($expected), Got ($got)\n";
+      print "not ok $test\n";
+    }
+  }
+}
+
+#
+# Test AddDefinition method
+#
+# Usage: testAddDefinition( image, magick, key, value, expected );
+#
+sub testAddDefinition {
+  my( $image, $magick, $key, $value, $expected ) = @_;
+
+        # returns 1 on success, 0 on failure
+  my $result = $image->AddDefinition($magick, $key, $value);
+
+  if ( $result == $expected) {
+    print "ok $test\n";
+  } else {
+    print "Expected ($expected), Got ($result)\n";
+    print "not ok $test\n";
+  }
+}
+
+#
+# Test AddDefinitions method
+#
+# Usage: testAddDefinitions( image, values, expected );
+#
+sub testAddDefinitions {
+  my( $image, $values, $expected ) = @_;
+
+        # returns 1 on success, 0 on failure
+  my $result = $image->AddDefinitions($values);
+
+  if ( $result == $expected) {
+    print "ok $test\n";
+  } else {
+    print "Expected ($expected), Got ($result)\n";
+    print "not ok $test\n";
+  }
+}
+
+#
+# Test RemoveDefinitions method
+#
+# Usage: testRemoveDefinitions( image, values, expected );
+#
+sub testRemoveDefinitions {
+  my( $image, $values, $expected ) = @_;
+
+        # returns 1 on success, 0 on failure
+  my $result = $image->RemoveDefinitions($values);
+
+  if ( $result == $expected) {
+    print "ok $test\n";
+  } else {
+    print "Expected ($expected), Got ($result)\n";
+    print "not ok $test\n";
+  }
 }
 1;

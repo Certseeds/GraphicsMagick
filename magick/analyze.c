@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -301,14 +301,14 @@ static inline unsigned char MinimumDepthForValue(const Quantum quantum)
     depth,
     scale;
 
-  for (depth=1 ; depth < MaxRGB; depth++)
+  for (depth=1 ; depth <= (unsigned int) QuantumDepth; depth++)
     {
       scale=MaxRGB / (MaxRGB >> (QuantumDepth-depth));
       if (quantum == scale*(quantum/scale))
         break;
     }
 
-  return depth;
+  return (unsigned char) depth;
 }
 static magick_uint8_t* AllocateDepthMap(void)
 {

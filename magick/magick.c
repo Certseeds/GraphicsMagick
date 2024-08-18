@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2023 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -525,10 +525,13 @@ GetMagickInfoArray(ExceptionInfo *exception)
     Load all modules and obtain pointer to head of list
   */
   (void) GetMagickInfo("*",exception);
-  if (!magick_list)
-    return ((MagickInfo **) NULL);
 
   LockSemaphoreInfo(magick_semaphore);
+  if (!magick_list)
+    {
+      UnlockSemaphoreInfo(magick_semaphore);
+      return ((MagickInfo **) NULL);
+    }
 
   list=magick_list;
 
@@ -541,7 +544,7 @@ GetMagickInfoArray(ExceptionInfo *exception)
   /*
     Allocate array memory
   */
-  array=MagickAllocateArray(MagickInfo **,sizeof(MagickInfo *),(entries+1));
+  array=MagickAllocateArray(MagickInfo **,(entries+1),sizeof(MagickInfo *));
   if (!array)
     {
       UnlockSemaphoreInfo(magick_semaphore);

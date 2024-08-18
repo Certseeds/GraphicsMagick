@@ -1,4 +1,4 @@
-# Copyright (C) 2003 GraphicsMagick Group
+# Copyright (C) 2003-2018 GraphicsMagick Group
 # Copyright (C) 2002 ImageMagick Studio
 # Copyright (C) 1998,1999 E. I. du Pont de Nemours and Company
 #
@@ -14,10 +14,21 @@
 use ExtUtils::MakeMaker;
 use Config;
 
+my $magick_CPPFLAGS='-D_LIB -D_MT';
+my $magick_DEFS=' -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES=1 -DHAVE_CONFIG_H';
+my $magick_CFLAGS='-fopenmp -g -O2 -Wall';
+my $magick_CC='gcc';
+my $magick_CPPFLAGS='-I../ -I.. -D_LIB -D_MT';
+my $magick_LDFLAGS='';
+my $magick_BIN_DIR="$ENV{'DESTDIR'}/mingw64/bin";
+my $magick_API_LIBS='-lGraphicsMagick -lgdi32 -luser32 -lzstd -lz -lm -lpthread -lgomp';
+my $magick_PERLMAINCC='';
+my $magick_LIB_DIR="$ENV{'DESTDIR'}/mingw64/lib";
+
 # Compute test specification
 my $delegate_tests='t/*.t';
 my $delegate;
-foreach $delegate (qw/ bzlib jbig jng jp2 jpeg lcms png ps tiff ttf wmf x xfig zlib/) {
+foreach $delegate (qw/zlib/) {
   if( -d "t/$delegate" ) {
     $delegate_tests .= " t/$delegate/*.t";
   }
@@ -28,61 +39,61 @@ foreach $delegate (qw/ bzlib jbig jng jp2 jpeg lcms png ps tiff ttf wmf x xfig z
 WriteMakefile
   (
    # Module description
-   'ABSTRACT'	=> 'GraphicsMagick PERL Extension',
+   'ABSTRACT'   => 'GraphicsMagick PERL Extension',
 
    # Perl module name is Graphics::Magick
-   'NAME'	=> 'Graphics::Magick',
+   'NAME'       => 'Graphics::Magick',
 
    # Module author
-   'AUTHOR'    => 'GraphicsMagick Group',
+   'AUTHOR'     => 'GraphicsMagick Group',
 
    # Module version
-   'VERSION'   => '1.4',
+   'VERSION'    => '1.4' =~ /^([\d\.]+)/g,
 
    # Preprocessor defines
-   'DEFINE'	=> ' -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES=1  -DHAVE_CONFIG_H',     # e.g., '-DHAVE_SOMETHING' 
+   'DEFINE'     => $magick_DEFS,     # e.g., '-DHAVE_SOMETHING'
 
    # Header search specification and preprocessor flags
-   'INC'	=> '-I../ -I/home/bfriesen/src/graphics/GraphicsMagick-head -I/usr/local/include/freetype2 -I/usr/openwin/include -I/usr/openwin/include/X11 -I/usr/include/libxml2',
+   'INC'        => $magick_CPPFLAGS,
 
    # C compiler
-   'CC'	        => 'gcc-4.4.3 -std=gnu99',
+   'CC'         => $magick_CC,
 
    # C pre-processor flags (e.g. -I & -D options)
-   # 'CPPFLAGS'    => "$Config{'cppflags'} -I/usr/local/include/freetype2 -I/usr/openwin/include -I/usr/openwin/include/X11 -I/usr/include/libxml2",
+   # 'CPPFLAGS'    => "$Config{'cppflags'} $magick_CPPFLAGS",
 
    # C compiler flags (e.g. -O -g)
-   'CCFLAGS'     => "$Config{'ccflags'} -fopenmp -march=opteron-sse3 -O2 -g -Wall -Winline -W -Wformat-security -Wpointer-arith -Wdisabled-optimization -Wmissing-noreturn -Wno-unknown-pragmas -Wall -D_REENTRANT -pthreads",
+   'CCFLAGS'    => "$Config{'ccflags'} $magick_CFLAGS",
 
    # Linker
-   'LD'          => $Config{'ld'} == $Config{'cc'} ? 'gcc-4.4.3 -std=gnu99' : $Config{'ld'},
+   'LD'         => $Config{'ld'} == $Config{'cc'} ? $magick_CC : $Config{'ld'},
 
    # Linker flags for building an executable
-   'LDFLAGS'    =>  "-L/home/bfriesen/build/GraphicsMagick-16-static/magick/.libs $Config{'ldflags'}",
+   'LDFLAGS'    =>  "-L$magick_LIB_DIR $Config{'ldflags'}",
 
    # Linker flags for building a dynamically loadable module
-   'LDDLFLAGS'  => "-L/home/bfriesen/build/GraphicsMagick-16-static/magick/.libs $Config{'lddlflags'}",
+   'LDDLFLAGS'  => "-L$magick_LIB_DIR $Config{'lddlflags'}",
 
    # Install PerlMagick binary into GraphicsMagick bin directory
-   'INSTALLBIN'	=> '/usr/local/bin',
+   'INSTALLBIN' => $magick_BIN_DIR,
 
    # Library specification
-   'LIBS'	=> ['-L/home/bfriesen/build/GraphicsMagick-16-static/magick/.libs -lGraphicsMagick -Wl,-zlazyload -L/usr/local/lib -R/usr/local/lib -L/usr/local/lib -R/usr/local/lib -L/usr/openwin/lib -R/usr/openwin/lib -L/usr/local/lib -L/usr/lib -ljbig -llcms -ltiff -lfreetype -ljasper -ljpeg -lpng -lwmflite -ldpstk -ldps -lXext -lSM -lICE -lX11 -lsocket -lnsl -lbz2 -lxml2 -lz -lm -lgomp -lpthread'],
+   'LIBS'       => ["-L$magick_LIB_DIR $magick_LDFLAGS $magick_API_LIBS"],
 
    # Perl binary name (if a Perl binary is built)
-   'MAP_TARGET'	=> 'PerlMagick',
+   'MAP_TARGET' => 'PerlMagick',
 
    # Let CFLAGS drive optimization flags by setting OPTIMIZE to empty
-   # 'OPTIMIZE'	=> '',
+   # 'OPTIMIZE' => '',
 
    # Use same compiler as GraphicsMagick
-   'PERLMAINCC'	=> 'gcc-4.4.3',
+   'PERLMAINCC' => $magick_PERLMAINCC,
 
    # Set Perl installation prefix to GraphicsMagick installation prefix
-#   'PREFIX'	=> '/usr/local',
+#   'PREFIX'    => '/mingw64',
 
    # Include delegate directories in tests
-   test		=> { TESTS	=>	$delegate_tests},
+   test         => { TESTS      =>      $delegate_tests},
 
    ($Config{'archname'} =~ /-object$/i ? ('CAPI' => 'TRUE') : ()),
 );
@@ -101,7 +112,7 @@ sub MY::makeaperl {
      # tries to insert our library path first. Also, use the same compiler used
      # to build perlmain.c to link so that a C++ compiler may be used if
      # necessary.
-     $inherited =~ s:MAP_LINKCMD\s.*\s*\$\(CC\):MAP_LINKCMD   = \$(PERLMAINCC) -L/home/bfriesen/build/GraphicsMagick-16-static/magick/.libs: ;
+     $inherited =~ s:MAP_LINKCMD\s.*\s*\$\(CC\):MAP_LINKCMD   = \$(PERLMAINCC) -L/mingw64/lib: ;
      $inherited;
  }
 
@@ -113,6 +124,6 @@ sub MY::makeaperl {
 #     my $inherited = shift->SUPER::test(@_);
 #
      # Run tests in our environment
-#     $inherited =~ s:PERL_DL_NONLAZY=1:/bin/bash ../rungm.sh PERL_DL_NONLAZY=1:g ;
+#     $inherited =~ s:PERL_DL_NONLAZY=1:/bin/sh ../rungm.sh PERL_DL_NONLAZY=1:g ;
 #     $inherited;
 # }

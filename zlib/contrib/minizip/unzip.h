@@ -163,7 +163,7 @@ extern int ZEXPORT unzStringFileNameCompare OF ((const char* fileName1,
 */
 
 
-extern unzFile ZEXPORT unzOpen OF((const char *path));
+ZEXTERN unzFile ZEXPORT unzOpen OF((const char *path));
 extern unzFile ZEXPORT unzOpen64 OF((const void *path));
 /*
   Open a Zip file. path contain the full pathname (by example,
@@ -195,7 +195,7 @@ extern unzFile ZEXPORT unzOpen2_64 OF((const void *path,
       for read/write the zip file (see ioapi.h)
 */
 
-extern int ZEXPORT unzClose OF((unzFile file));
+ZEXTERN int ZEXPORT unzClose OF((unzFile file));
 /*
   Close a ZipFile opened with unzOpen.
   If there is files inside the .Zip opened with unzOpenCurrentFile (see later),
@@ -239,7 +239,7 @@ extern int ZEXPORT unzGoToNextFile OF((unzFile file));
   return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
 */
 
-extern int ZEXPORT unzLocateFile OF((unzFile file,
+ZEXTERN int ZEXPORT unzLocateFile OF((unzFile file,
                      const char *szFileName,
                      int iCaseSensitivity));
 /*
@@ -328,7 +328,7 @@ extern ZPOS64_T ZEXPORT unzGetCurrentFileZStreamPos64 OF((unzFile file));
    from it, and close it (you can close it before reading all the file)
    */
 
-extern int ZEXPORT unzOpenCurrentFile OF((unzFile file));
+ZEXTERN int ZEXPORT unzOpenCurrentFile OF((unzFile file));
 /*
   Open for reading data the current file in the zipfile.
   If there is no error, the return value is UNZ_OK.
@@ -370,13 +370,13 @@ extern int ZEXPORT unzOpenCurrentFile3 OF((unzFile file,
 */
 
 
-extern int ZEXPORT unzCloseCurrentFile OF((unzFile file));
+ZEXTERN int ZEXPORT unzCloseCurrentFile OF((unzFile file));
 /*
   Close the file in zip opened with unzOpenCurrentFile
   Return UNZ_CRCERROR if all the file was read but the CRC is not good
 */
 
-extern int ZEXPORT unzReadCurrentFile OF((unzFile file,
+ZEXTERN int ZEXPORT unzReadCurrentFile OF((unzFile file,
                       voidp buf,
                       unsigned len));
 /*

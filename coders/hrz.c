@@ -53,7 +53,7 @@
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method ReadHRZImage reads an HRZ X image file and returns it.  It
+%  Method ReadHRZImage reads an HRZ image file and returns it.  It
 %  allocates the memory necessary for the new Image structure and returns a
 %  pointer to the new image.
 %
@@ -76,12 +76,11 @@
 static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
 {
   Image *image;
-  int i;
-  unsigned width,height;
-  long ldblk, j;
-  unsigned char *BImgBuff=NULL;
-  unsigned int status;
+  unsigned char *BImgBuff;
   const PixelPacket *q;
+  size_t ldblk;
+  unsigned long x,y,width,height;
+  unsigned int status;
 
   /*
     Open image file.
@@ -101,14 +100,13 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
   */
   width = 256;
   height = 240;
+  ldblk = 3*width;
 
-  ldblk = (long)(3*width);
-
-  if(BlobIsSeekable(image))
-  {
-    if(GetBlobSize(image)!=((magick_off_t) ((size_t)ldblk*height)))
-      ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
-  }
+  if (BlobIsSeekable(image))
+    {
+      if (GetBlobSize(image) != ((magick_off_t) ((size_t)ldblk*height)))
+        ThrowReaderException(CorruptImageError,ImproperImageHeader,image);
+    }
 
   image->columns = width;
   image->rows = height;
@@ -116,35 +114,40 @@ static Image *ReadHRZImage(const ImageInfo *image_info,ExceptionInfo *exception)
 
   /* printf("HRZ header checked OK %d,%d\n",image->colors,image->depth); */
 
-  /* If ping is true, then only set image size and colors without reading any image data. */
-  if (image_info->ping) goto DONE_READING;
+  /* If ping is true, then only set image size without reading any image data. */
+  if (image_info->ping)
+    goto DONE_READING;
 
-  /* ----- Load RLE compressed raster ----- */
-  BImgBuff=MagickAllocateResourceLimitedMemory(unsigned char *,((size_t) ldblk));  /*Ldblk was set in the check phase*/
-  if(BImgBuff==NULL)
+  /* ----- Load packed raster ----- */
+  BImgBuff=MagickAllocateResourceLimitedMemory(unsigned char *, ldblk);
+  if (BImgBuff==NULL)
     ThrowReaderException(ResourceLimitError,MemoryAllocationFailed,image);
 
-  for(i=0; i<(int)height; i++)
+  for (y=0; y < height; y++)
     {
-      (void) ReadBlob(image,(size_t)ldblk,(char *)BImgBuff);
+      if (ReadBlob(image,ldblk,(char *)BImgBuff) != ldblk)
+        break;
 
-      for(j=0; j<ldblk; j++)
-      {
-        BImgBuff[j] <<= 2;
-      }
+      for (x=0; x < ldblk; x++)
+        {
+          BImgBuff[x] <<= 2;
+        }
 
-      q = SetImagePixels(image,0,i,image->columns,1);
-      if(q == (PixelPacket *)NULL) break;
-      (void)ImportImagePixelArea(image,RGBQuantum,8,BImgBuff,NULL,0);
-      if(!SyncImagePixels(image)) break;
+      q = SetImagePixels(image,0,y,image->columns,1);
+      if (q == (PixelPacket *)NULL)
+        break;
+
+      (void) ImportImagePixelArea(image,RGBQuantum,8,BImgBuff,NULL,0);
+      if (!SyncImagePixels(image))
+        break;
     }
 
-  if(BImgBuff!=NULL)
+  if (BImgBuff!=NULL)
     MagickFreeResourceLimitedMemory(BImgBuff);
-  if (EOFBlob(image))
-    ThrowException(exception, CorruptImageError, UnexpectedEndOfFile, image->filename);
+  if ((y != height) || EOFBlob(image))
+    ThrowReaderException(CorruptImageError, UnexpectedEndOfFile, image);
 
-DONE_READING:
+ DONE_READING:
   CloseBlob(image);
   StopTimer(&image->timer);
   return(image);
@@ -156,12 +159,13 @@ DONE_READING:
 %                                                                             %
 %                                                                             %
 %                                                                             %
-%   W r i t e H R Z I m a g e                                           %
+%   W r i t e H R Z I m a g e                                                 %
 %                                                                             %
 %                                                                             %
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  WriteHRZImage() writes an image to a file in HRZ X image format.
+%
+%  WriteHRZImage() writes an image to a file in HRZ image format.
 %
 %  The format of the WriteHRZImage method is:
 %
@@ -198,61 +202,62 @@ static unsigned int WriteHRZImage(const ImageInfo *image_info,Image *image)
   logging = LogMagickEvent(CoderEvent,GetMagickModule(),"enter HRZ");
 
   status = OpenBlob(image_info,image,WriteBinaryBlobMode,&image->exception);
-  if(status == MagickFail)
+  if (status == MagickFail)
     ThrowWriterException(FileOpenError,UnableToOpenFile,image);
 
   hrz_image = ResizeImage(image,256,240,image->filter,1.0,&image->exception);
-  if(hrz_image == (Image *)NULL)
-  {
-    CloseBlob(image);
-    return(MagickFalse);
-  }
+  if (hrz_image == (Image *)NULL)
+    {
+      CloseBlob(image);
+      return(MagickFalse);
+    }
   /*
     Allocate memory for pixels.
   */
-  pixels = MagickAllocateResourceLimitedArray(unsigned char *,(size_t)hrz_image->columns,3*sizeof(*pixels));
-  if(pixels == (unsigned char *) NULL)
-  {
-    DestroyImage(hrz_image);
-    ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
-  }
+  pixels = MagickAllocateResourceLimitedClearedArray(unsigned char *,
+                                                     (size_t)hrz_image->columns,3*sizeof(*pixels));
+  if (pixels == (unsigned char *) NULL)
+    {
+      DestroyImage(hrz_image);
+      ThrowWriterException(ResourceLimitError,MemoryAllocationFailed,image);
+    }
   /*
     Convert MIFF to HRZ raster pixels.
   */
-  for(y=0; y<hrz_image->rows; y++)
-  {
-    if(AcquireImagePixels(image,0,y,image->columns,1,&image->exception) == (const PixelPacket *)NULL)
+  for (y=0; y < hrz_image->rows; y++)
     {
-      status=MagickFail;
-      break;
+      if (AcquireImagePixels(image,0,y,image->columns,1,&image->exception) == (const PixelPacket *)NULL)
+        {
+          status=MagickFail;
+          break;
+        }
+      if (ExportImagePixelArea(image,RGBQuantum,8,pixels,0,0) != MagickPass)
+        {
+          status = MagickFail;
+          break;
+        }
+      q = pixels;
+      for (x=0; x < hrz_image->columns; x++)
+        {
+          *q++ /= 4;
+          *q++ /= 4;
+          *q++ /= 4;
+        }
+      count = WriteBlob(image,(size_t) (q-pixels),pixels);
+      if (count != (ssize_t)(q-pixels))
+        {
+          status = MagickFail;
+          break;
+        }
+      /* status = SetImageProgress(image,SaveImageTag,y,hrz_image->rows);
+         if (status == MagickFalse)
+         break; */
     }
-    if(ExportImagePixelArea(image,RGBQuantum,8,pixels,0,0) != MagickPass)
-    {
-      status = MagickFail;
-      break;
-    }
-    q = pixels;
-    for(x=0; x < hrz_image->columns; x++)
-    {
-      *q++ /= 4;
-      *q++ /= 4;
-      *q++ /= 4;
-    }
-    count = WriteBlob(image,(size_t) (q-pixels),pixels);
-    if(count != (ssize_t)(q-pixels))
-    {
-      status = MagickFail;
-      break;
-    }
-    /* status = SetImageProgress(image,SaveImageTag,y,hrz_image->rows);
-    if(status == MagickFalse)
-      break; */
-  }
   MagickFreeResourceLimitedMemory(pixels);
   DestroyImage(hrz_image);
   status &= CloseBlob(image);
 
-  if(logging)
+  if (logging)
     (void)LogMagickEvent(CoderEvent,GetMagickModule(),"return HRZ");
 
   return(status);

@@ -214,7 +214,7 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
   } PCDTable;
 
   long
-    count,
+    /* count, */
     quantum;
 
   PCDTable
@@ -326,7 +326,7 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
   /*
     Recover the Huffman encoded luminance and chrominance deltas.
   */
-  count=0;
+  /* count=0; */
   length=0;
   plane=0;
   row=0;
@@ -350,20 +350,20 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
           case 0:
           {
             q=luma+row*(size_t)image->columns;
-            count=(long) image->columns;
+            /* count=(long) image->columns; */
             break;
           }
           case 2:
           {
             q=chroma1+(row >> 1)*(size_t)image->columns;
-            count=(long) (image->columns >> 1);
+            /* count=(long) (image->columns >> 1); */
             plane--;
             break;
           }
           case 3:
           {
             q=chroma2+(row >> 1)*(size_t)image->columns;
-            count=(long) (image->columns >> 1);
+            /* count=(long) (image->columns >> 1); */
             plane--;
             break;
           }
@@ -413,7 +413,7 @@ static MagickPassFail DecodeImage(Image *image,unsigned char *luma,
                         (unsigned char) quantum);
     q++;
     PCDGetBits(r->length);
-    count--;
+    /* count--; */
   }
  decode_image_error:
   /*

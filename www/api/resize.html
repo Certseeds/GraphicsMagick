@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="resize">
+<main id="resize">
 <h1 class="title">resize</h1>
 <p class="subtitle" id="resize-an-image">Resize an image</p>
 <div class="contents topic" id="contents">
@@ -50,13 +50,13 @@
 <li><p><a class="reference internal" href="#thumbnailimage" id="id16">ThumbnailImage</a></p></li>
 </ul>
 </div>
-<div class="section" id="magnifyimage">
+<section id="magnifyimage">
 <h1><a class="toc-backref" href="#id11">MagnifyImage</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *MagnifyImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>MagnifyImage() is a convenience method that scales an image proportionally
 to twice its size.</p>
@@ -71,15 +71,15 @@ to twice its size.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="minifyimage">
+</section>
+</section>
+<section id="minifyimage">
 <h1><a class="toc-backref" href="#id12">MinifyImage</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *MinifyImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>MinifyImage() is a convenience method that scales an image proportionally
 to half its size.</p>
@@ -94,17 +94,17 @@ to half its size.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="resizeimage">
+</section>
+</section>
+<section id="resizeimage">
 <h1><a class="toc-backref" href="#id13">ResizeImage</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ResizeImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long columns, const unsigned long rows,
                     const <a class="reference external" href="../api/types.html#filtertype">FilterTypes</a> filter, const double blur,
                     <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>ResizeImage() scales an image to the desired dimensions with one of these
 filters:</p>
@@ -141,16 +141,16 @@ are windowed (brought down to zero) with the Blackman filter.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="sampleimage">
+</section>
+</section>
+<section id="sampleimage">
 <h1><a class="toc-backref" href="#id14">SampleImage</a></h1>
-<div class="section" id="id5">
+<section id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *SampleImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long columns,
                     const unsigned long rows, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>Description</h2>
 <p>SampleImage() scales an image to the desired dimensions with pixel
 sampling.  Unlike other scaling methods, this method does not introduce
@@ -173,16 +173,16 @@ fast and may be used where speed is most important.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="scaleimage">
+</section>
+</section>
+<section id="scaleimage">
 <h1><a class="toc-backref" href="#id15">ScaleImage</a></h1>
-<div class="section" id="id7">
+<section id="id7">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ScaleImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long columns,
                    const unsigned long rows, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id8">
+</section>
+<section id="id8">
 <h2>Description</h2>
 <p>ScaleImage() changes the size of an image to the specified dimensions.
 This method is reasonably fast but it is not currently multi-threaded
@@ -205,16 +205,16 @@ is sufficient for most purposes.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="thumbnailimage">
+</section>
+</section>
+<section id="thumbnailimage">
 <h1><a class="toc-backref" href="#id16">ThumbnailImage</a></h1>
-<div class="section" id="id9">
+<section id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ThumbnailImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long columns,
                        const unsigned long rows, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id10">
+</section>
+<section id="id10">
 <h2>Description</h2>
 <p>ThumbnailImage() changes the size of an image to the given dimensions.
 This method was designed as a low cost thumbnail generator.
@@ -238,9 +238,9 @@ reduction, and then a filtering algorithm to produce the final image.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -248,6 +248,6 @@ reduction, and then a filtering algorithm to produce the final image.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

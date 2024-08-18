@@ -3437,7 +3437,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
         {
           (void) LogMagickEvent(CacheEvent,GetMagickModule(),
                                 "disk => memory clone");
-          for (offset=0; offset < cache_info->length; offset+=count)
+          for (offset=0; offset < cache_info->length; offset+=(magick_uint64_t) count)
             {
               size_t
                 requested_io_size;
@@ -3494,7 +3494,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
         {
           (void) LogMagickEvent(CacheEvent,GetMagickModule(),
                                 "memory => disk clone");
-          for (offset=0L; offset < clone_info->length; offset+=count)
+          for (offset=0L; offset < clone_info->length; offset+=(magick_uint64_t) count)
             {
               size_t
                 requested_io_size;
@@ -3543,7 +3543,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
   for (offset=0, length=0; (count=read(cache_file,buffer,MaxBufferSize)) > 0; )
     {
       length=(size_t) count;
-      for (offset=0; offset < length; offset+=count)
+      for (offset=0; offset < length; offset+=(magick_uint64_t) count)
         {
           size_t
             requested_io_size;
@@ -3552,10 +3552,7 @@ ClonePixelCache(Image *image,Image *clone_image,ExceptionInfo *exception)
             io_size;
 
           requested_io_size=(size_t) (length-offset);
-          if (requested_io_size > MAGICK_IO_MAX)
-            io_size=MAGICK_IO_MAX;
-          else
-            io_size=(MAGICK_POSIX_IO_SIZE_T) requested_io_size;
+          io_size=(MAGICK_POSIX_IO_SIZE_T) Min(MAGICK_IO_MAX,requested_io_size);
 
           count=write(clone_file,buffer+offset,io_size);
           if (count <= 0)

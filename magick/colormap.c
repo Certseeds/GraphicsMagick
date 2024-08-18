@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2019 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -435,7 +435,7 @@ ReplaceImageColormap(Image *image,
     Allocate replacement colormap
   */
   new_colormap=MagickAllocateArray(PixelPacket *,
-                                   sizeof(PixelPacket),colors);
+                                   colors,sizeof(PixelPacket));
   if (new_colormap == (PixelPacket *) NULL)
     {
       MagickFreeMemory(colormap_index);

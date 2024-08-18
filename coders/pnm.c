@@ -143,21 +143,23 @@ static unsigned int PNMInteger(Image *image,const unsigned int base)
     if (c == EOF)
       return(0);
   } while (!isdigit(c));
+  c &= 0xff;
   if (base == 2)
     return(c-'0');
   /*
     Evaluate number.
   */
   value=0;
-  do
+  while(1)
   {
     value*=10;
     value+=c-'0';
     c=ReadBlobByte(image);
-    if (c == EOF)
-      return(value);
+    if ((c == EOF) || !(isdigit(c)))
+      break;
+    c &= 0xff;
   }
-  while (isdigit(c));
+
   return(value);
 }
 
@@ -179,6 +181,7 @@ static unsigned int PNMIntegerOrComment(Image *image,const unsigned int base)
     c=ReadBlobByte(image);
     if (c == EOF)
       return(0);
+    c &= 0xff;
     if (c == '#')
       {
         char

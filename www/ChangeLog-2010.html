@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="en" name="language">
-	<title></title>
+	<title>GraphicsMagick ChangeLog - 2010</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link media="screen" href="docutils-articles.css" type="text/css" rel="stylesheet">
 
@@ -36,7 +36,8 @@
 </ul>
 </div>
 
-<div class="document">
+<main id="graphicsmagick-changelog-2010">
+<h1 class="title">GraphicsMagick ChangeLog - 2010</h1>
 <p>2011-01-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -505,12 +506,6 @@ proceed to the next file name rather than quitting.  Problem was
 reported by Patrick Welche.</p></li>
 </ul>
 </blockquote>
-<p>2010-03-08  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
-<blockquote>
-<ul class="simple">
-<li><p>version.sh: Released GraphicsMagick 1.3.12.</p></li>
-</ul>
-</blockquote>
 <p>2010-03-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -522,13 +517,9 @@ contains the current version number.</p></li>
 <p>2010-03-03  Glenn Randers-Pehrson  &lt;<a class="reference external" href="mailto:glennrp&#37;&#52;&#48;simple&#46;&#46;&#46;">glennrp<span>&#64;</span>simple<span>&#46;</span><span>&#46;</span><span>&#46;</span></a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><dl class="simple">
-<dt>coders/png.c: restored missing &quot;US&quot; in PNG_USER_CHUNK_CACHE_MAX</dt>
-<dd><p>at line 102.  Added some (unsigned long) typecasts on print statements
-to stifle warnings.</p>
-</dd>
-</dl>
-</li>
+<li><p>coders/png.c: restored missing &quot;US&quot; in PNG_USER_CHUNK_CACHE_MAX
+at line 102.  Added some (unsigned long) typecasts on print statements
+to stifle warnings.</p></li>
 </ul>
 </blockquote>
 <p>2010-03-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -559,12 +550,6 @@ Existing True/False values are mapped to equivalents using the new
 binary flag.  This is intended to resolve Debian bug 571719
 &quot;graphicsmagick: &quot;convert&quot; command is broken&quot;, reported by
 Vladimir Stavrinov.</p></li>
-</ul>
-</blockquote>
-<p>2010-02-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
-<blockquote>
-<ul class="simple">
-<li><p>version.sh: Released GraphicsMagick 1.3.11.</p></li>
 </ul>
 </blockquote>
 <p>2010-02-19  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -600,12 +585,6 @@ character value is in the extended range.  Problem reported by
 Arseny Solokha.  Resolves SourceForge patch #2953314.</p></li>
 </ul>
 </blockquote>
-<p>2010-02-10  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
-<blockquote>
-<ul class="simple">
-<li><p>version.sh: Released GraphicsMagick 1.3.10.</p></li>
-</ul>
-</blockquote>
 <p>2010-02-09  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -630,12 +609,6 @@ correctly for the case when only one image frame is present.  With
 +adjoin and writing one frame to &quot;foo%d.jpg&quot; it was outputting
 &quot;foo%d.jpg&quot; rather than &quot;foo0.jpg&quot;.  Problem reported by Frans
 Coetzee.</p></li>
-</ul>
-</blockquote>
-<p>2010-02-04  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
-<blockquote>
-<ul class="simple">
-<li><p>version.sh: Released GraphicsMagick 1.3.9.</p></li>
 </ul>
 </blockquote>
 <p>2010-02-03  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
@@ -725,13 +698,6 @@ omp_get_max_threads().  Otherwise there is a crash if the number
 of threads is reduced from the original value.</p></li>
 </ul>
 </blockquote>
-<p>2010-01-21  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
-<blockquote>
-<ul class="simple">
-<li><p>version.sh: Released GraphicsMagick 1.3.8.</p></li>
-<li><p>NEWS.txt: Update for the 1.3.8 release.</p></li>
-</ul>
-</blockquote>
 <p>2010-01-20  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
@@ -806,7 +772,7 @@ are now checked (not just initialize and destroy), and any error
 results in an immediate fatal exit.</p></li>
 </ul>
 </blockquote>
-</div>
+</main>
 
 
 <hr class="docutils">
@@ -814,6 +780,6 @@ results in an immediate fatal exit.</p></li>
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

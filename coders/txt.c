@@ -92,7 +92,7 @@ static void readln(Image *image, int *pch)
   else
     ch=' ';
 
-  while (ch != 10 && ch != 13 && ch != EOF)
+  while (ch != 10 /* LF */ && ch != 13 /* CR */ && ch != EOF)
     {
       ch = ReadBlobByte(image);
     }
@@ -131,6 +131,7 @@ static long ReadInt(Image *image, int *pch)
       ch = ReadBlobByte(image);
       if (ch == EOF)
         return (n);
+      ch &= 0xff;
       digits++;
     }
 
@@ -649,10 +650,10 @@ static Image *ReadTXTImage(const ImageInfo *image_info,ExceptionInfo *exception)
         /* Assure that all image pixels are initialized to black */
         SetImage(image,OpaqueOpacity);
 
-        BImgBuff = MagickAllocateResourceLimitedArray(unsigned char *,
-                                       ((size_t)x+1),
-                                       ((size_t)((image->matte) ? 4 : 3)
-                                         * NumOfPlanes/8));
+        BImgBuff = MagickAllocateResourceLimitedClearedArray(unsigned char *,
+                                                             ((size_t)x+1),
+                                                             ((size_t)((image->matte) ? 4 : 3)
+                                                              * NumOfPlanes/8));
         WImgBuff = (magick_uint16_t *)BImgBuff;
         DImgBuff = (magick_uint32_t *)BImgBuff;
         if (BImgBuff == NULL)

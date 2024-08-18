@@ -1,4 +1,4 @@
-.TH gm 1 "2024/02/11" "GraphicsMagick"
+.TH gm 1 "2024/08/04" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -162,7 +162,6 @@ The \fBGraphicsMagick\fP utilities recognize the following image formats:
  o  DCR       r-- Kodak Photo RAW
  o  DCX       rw+ ZSoft IBM PC multi-page Paintbrush
  o  DNG       r-- Adobe Digital Negative
- o  DPS       r-- Display PostScript Interpreter
  o  DPX       rw- Digital Moving Picture Exchange
  o  EPDF      rw- Encapsulated Portable Document Format
  o  EPI       rw- Adobe Encapsulated PostScript
@@ -1163,7 +1162,7 @@ Render,
 Resource,
 TemporaryFile,
 Transform,
-User.
+User,
 Warning, or
 X11,
 For example, to log cache and blob events, use
@@ -1788,11 +1787,19 @@ quality setting of 75 is translated to a compress level of 9 such that
 
 .in 15
 .in 15
+.B "webp:exact={true|false}"
+.in 20
+ \fR
+.in 20
+Preserve exact RGB values under transparent areas.  Default false.
+
+.in 15
+.in 15
 .B "webp:lossless={true|false}"
 .in 20
  \fR
 .in 20
-Enable lossless encoding.
+Enable lossless encoding. Also enables 'exact' mode.
 
 .in 15
 .in 15
@@ -2037,11 +2044,10 @@ between 1 and \fBQuantumDepth\fP (build option) may be specified,
 although 8 or 16 are the most common values. Use this option to specify
 the depth of raw images whose depth is unknown such as GRAY, RGB, or
 CMYK, or to change the depth of any image after it has been read.
-The depth option is applied to the pixels immediately so it may be
-used as a form of simple compression by discarding the least significant
-bits. Reducing the depth in advance may speed up color quantization, and
-help create smaller file sizes when using a compression algorithm like
-LZW or ZIP.
+
+See the -operator option for a way (via '-operator All Depth N') to
+apply a depth limit to the pixels immediately rather than setting an
+image attribute.
 .TP
 .B "-descend"
 \fRobtain image by descending window hierarchy
@@ -4878,7 +4884,18 @@ and color reduction error values are printed. Refer to quantize
 for a description of these values.
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+
+Reports the release version, maximum sample-depth, web-site URL,
+copyright notice, feature support, and the options used while building
+the software.  This is the same output as produced by the 'version'
+sub-command.
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
+
+Reports the release version, maximum sample-depth, web-site URL, and
+copyright notice.
 .TP
 .B "-view \fI<string>"\fP
 \fRFlashPix viewing parameters
@@ -5481,7 +5498,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 .TP
 .B "-visual \fI<type>"\fP
 \fRanimate images using this X visual type
@@ -6054,7 +6074,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 
 For a more detailed description of each option, see
 Options, above.
@@ -6298,7 +6321,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 .TP
 .B "-watermark \fI<brightness>x<saturation>"\fP
 \fRpercent brightness and saturation of a watermark
@@ -6396,7 +6422,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 .SH MAGICK SCRIPTING LANGUAGE
 
 The Magick Scripting Language (MSL) presently defines the following
@@ -7452,7 +7481,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 .TP
 .B "-view \fI<string>"\fP
 \fRFlashPix viewing parameters
@@ -7848,7 +7880,10 @@ detect when image file is modified and redisplay.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 .TP
 .B "-visual \fI<type>"\fP
 \fRanimate images using this X visual type
@@ -9767,7 +9802,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 
 For a more detailed description of each option, see
 Options, above.
@@ -9965,7 +10003,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 
 For a more detailed description of each option, see
 Options, above.
@@ -10423,7 +10464,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 .TP
 .B "-view \fI<string>"\fP
 \fRFlashPix viewing parameters
@@ -10776,7 +10820,10 @@ Options, above.
 \fRprint detailed information about the image
 .TP
 .B "-version"
-\fRprint GraphicsMagick version string
+\fRprint detailed GraphicsMagick version/build information
+.TP
+.B "-version"
+\fRprint compact GNU-style GraphicsMagick version information
 .TP
 .B "-white-point \fI<x>,<y>"\fP
 \fRchromaticity white point
@@ -10882,7 +10929,6 @@ To display the version information:
     Large Files (> 32 bit)     yes
     Large Memory (> 32 bit)    yes
     BZIP                       yes
-    DPS                        no
     FlashPix                   no
     FreeType                   yes
     Ghostscript (Library)      no

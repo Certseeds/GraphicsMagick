@@ -657,7 +657,7 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
   unsigned char  m1;   /* low order bits of mantissa */
   unsigned char  new_m2, new_m1;
   signed   short new_expt;
-  unsigned int   mant, new_mant;
+  magick_uint64_t mant, new_mant; /* Mantissa, with rounding */
   unsigned char *mp;
   unsigned char *src;
   unsigned char *dst;
@@ -713,7 +713,7 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
         }
 #endif /* !defined(WORDS_BIGENDIAN) */
 
-      mant = (m3 << 24) | (m2 << 16) |( m1 << 8);
+      mant = ((magick_uint64_t) m3 << 24) | (m2 << 16) |( m1 << 8);
       if (expt != 0)
         new_expt = expt - 127 + 63;
 
@@ -805,14 +805,14 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
                       /* Round up to next higher value of LSB */
                       for (i = 16; i < 32; i++)
                         {
-                          bit = mant & (1 << i);
+                          bit = mant & ((magick_uint64_t) 1U << i);
                           if (bit == 0)
                             {
                               /* Round up by inserting a 1 at first zero and
                                * clearing bits to the right
                                */
-                              new_mant = (mant | ((unsigned int)1 << i)) &
-                                (0xFFFFU << i);
+                              new_mant = (mant | ((magick_uint64_t) 1 << i)) &
+                                ((magick_uint64_t) 0xFFFFU << i);
                               mp  = (unsigned char *)&new_mant;
                               break;
                             }
@@ -825,11 +825,11 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
                           /* Round up to next higher value of LSB */
                           for (i = 16; i < 32; i++)
                             {
-                              bit = mant & (1 << i);
+                              bit = mant & ((magick_uint64_t) 1 << i);
                               if (bit == 0)
                                 {
-                                  new_mant = (mant | ((unsigned int)1 << i)) &
-                                    (0xFFFFU << i);
+                                  new_mant = (mant | ((magick_uint64_t) 1 << i)) &
+                                    ((magick_uint64_t) 0xFFFFU << i);
                                   mp  = (unsigned char *)&new_mant;
                                   break;
                                 }
@@ -863,7 +863,7 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
   printf ("%10.10f mant%s ", *fp32, (rbits & 0x8000) ? "+" : "-");
   for (j = 0, k = 31; j < 23; j++, k--)
     {
-      bit = mant & (1 << k);
+      bit = mant & ((magick_uint64_t) 1 << k);
       if ((j % 8) == 0)
         printf(" ");
       printf ("%d", bit ? 1 : 0);
@@ -927,7 +927,7 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
 #endif /* !defined(WORDS_BIGENDIAN) */
   printf ("\n");
 
-  mant = ((unsigned int)new_m2 << 8) | (unsigned int)new_m1;
+  mant = ((magick_uint64_t)new_m2 << 8) | (magick_uint64_t)new_m1;
   if (*fp32 == 0.0)
     {
       test = 0.0;
@@ -939,9 +939,9 @@ int _Gm_convert_fp32_to_fp24 (const float *fp32, fp_24bits *fp24, const int mode
       accum = 0.0;
       for (i = 15, j = 1; i >= 0; i--, j++)
         {
-          bit = mant & ((unsigned int)1 << i);
+          bit = mant & ((magick_uint64_t)1 << i);
           if (bit)
-            accum += (1.0 / ((unsigned int)1 << j));
+            accum += (1.0 / ((magick_uint64_t)1 << j));
         }
       if (new_expt != 0)
         accum += 1.0;

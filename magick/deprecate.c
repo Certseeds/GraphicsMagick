@@ -40,6 +40,10 @@
 #include "magick/utility.h"
 #include "magick/deprecate.h"
 
+/*
+  These monitor text globals were moved to <magick/studio.h> defines
+  and only exist to support the shared library ABI.
+ */
 #undef LoadImageText
 #undef SaveImageText
 #undef LoadImagesText

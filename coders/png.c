@@ -2366,6 +2366,10 @@ static Image *ReadOnePNGImage(MngInfo *mng_info,
       mng_info->scenes_found > (long) (image_info->first_scene+
                                        image_info->number_scenes))))
     {
+      image->matte=((ping_colortype == PNG_COLOR_TYPE_RGB_ALPHA) ||
+                      (ping_colortype == PNG_COLOR_TYPE_GRAY_ALPHA) ||
+                      (png_get_valid(ping, ping_info, PNG_INFO_tRNS)));
+
       /* This happens later in non-ping decodes */
       if (png_get_valid(ping,ping_info,PNG_INFO_tRNS))
         image->storage_class=DirectClass;
@@ -4320,8 +4324,11 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
     count;
 
   short
-    loop_level,
-    loops_active = 0;
+    loop_level
+#if defined(PNG_DEBUG_LOOPS_ACTIVE)
+    ,loops_active = 0
+#endif /* if defined(PNG_DEBUG_LOOPS_ACTIVE) */
+    ;
 
   volatile short
     skipping_loop;
@@ -5247,7 +5254,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
               if (length >= 5) /* To do: check spec, if empty LOOP is allowed */
                 {
                   loop_level=chunk[0]; /* 1 byte */
+#if defined(PNG_DEBUG_LOOPS_ACTIVE)
                   loops_active++;
+#endif /* if defined(PNG_DEBUG_LOOPS_ACTIVE) */
                   mng_info->loop_active[loop_level]=1;  /* mark loop active */
                   /*
                     Record starting point.
@@ -5326,7 +5335,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                   continue;
                 }
               loop_level=chunk[0];
-#if 0
+#if defined(PNG_DEBUG_LOOPS_ACTIVE)
               if (logging)
                 (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                                       "ENDL: loop_level = %d,"
@@ -5337,7 +5346,7 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                                       (int) loop_level, (int) mng_info->loop_active[loop_level],
                                       (int) loop_level, mng_info->loop_count[loop_level],
                                       (int) loop_level, mng_info->loop_iteration[loop_level]);
-#endif
+#endif /* if defined(PNG_DEBUG_LOOPS_ACTIVE) */
               if (skipping_loop > 0)
                 {
                   if (skipping_loop == loop_level)
@@ -5346,7 +5355,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                         Found end of zero-iteration loop.
                       */
                       skipping_loop=(-1);
+#if defined(PNG_DEBUG_LOOPS_ACTIVE)
                       loops_active--;
+#endif /* if defined(PNG_DEBUG_LOOPS_ACTIVE) */
                       mng_info->loop_active[loop_level]=0;
                     }
                 }
@@ -5367,7 +5378,9 @@ static Image *ReadMNGImage(const ImageInfo *image_info,
                           /*
                             Finished loop.
                           */
+#if defined(PNG_DEBUG_LOOPS_ACTIVE)
                           loops_active--;
+#endif /* if defined(PNG_DEBUG_LOOPS_ACTIVE) */
                           mng_info->loop_active[loop_level]=0;
                           last_level=(-1);
                           for (i=0; i < loop_level; i++)

@@ -491,8 +491,8 @@ release: distcheck
 # The project should have been configured to use clang.
 #	-enable-checker security.insecureAPI.DeprecatedOrUnsafeBufferHandling
 scan-build:
-	scan-build-13 -k --html-title='GraphicsMagick' \
-	-maxloop 1000 \
+	scan-build-15 -k --html-title='GraphicsMagick' \
+	-maxloop 10000 \
 	-disable-checker deadcode.DeadStores \
 	-enable-checker security.insecureAPI.bcmp \
 	-enable-checker security.insecureAPI.bcopy \

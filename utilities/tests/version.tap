@@ -1,0 +1,33 @@
+#!/bin/sh
+# -*- shell-script -*-
+# Copyright (C) 2004-2024 GraphicsMagick Group
+# Test -list option
+. ./common.shi
+. ${top_srcdir}/utilities/tests/common.sh
+
+# Number of tests we plan to execute
+test_plan_fn 48
+
+nox_commands='batch benchmark compare composite conjure convert version identify mogrify montage time version'
+
+test_command_fn "gm version" ${GM} version
+
+test_command_fn "gm -version" ${GM} -version
+
+test_command_fn "gm --version" ${GM} --version
+
+for command in ${nox_commands}
+do
+    test_command_fn "gm version ${command}" ${GM} version ${command}
+    test_command_fn "gm ${command} -version" ${GM} ${command} -version
+    test_command_fn "gm ${command} --version" ${GM} ${command} --version
+done
+
+x_commands='animate display import'
+for command in ${x_commands}
+do
+    test_command_fn "gm version ${command}" ${GM} version ${command}
+    test_command_fn "gm ${command} -version" -F X ${GM} ${command} -version
+    test_command_fn "gm ${command} --version" -F X ${GM} ${command} --version
+done
+:

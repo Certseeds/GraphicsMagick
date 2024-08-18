@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2018 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -4785,11 +4785,11 @@ MagickExport void DrawSetStrokeAntialias(DrawContext context,
 %
 %    o context: drawing context
 %
-%    o num_elems: address to place number of elements in dash array
+%    o number_elements: address to place number of elements in dash array
 %
 % */
 MagickExport double *DrawGetStrokeDashArray(DrawContext context,
-                                            unsigned long *num_elems)
+                                            unsigned long *number_elements)
 {
   register const double
     *p;
@@ -4798,37 +4798,36 @@ MagickExport double *DrawGetStrokeDashArray(DrawContext context,
     *q;
 
   double
-    *dasharray;
+    *dash_array;
 
-  unsigned int
+  unsigned long
     i,
     n = 0;
 
   assert(context != (DrawContext)NULL);
   assert(context->signature == MagickSignature);
-  assert(num_elems != (unsigned long *)NULL);
+  assert(number_elements != (unsigned long *)NULL);
 
   p = CurrentContext->dash_pattern;
-  if( p != (const double *) NULL )
-    while( *p++ != 0.0)
+  if ( p != (const double *) NULL )
+    while (*p++ != 0.0)
       n++;
 
-  *num_elems = n;
-  dasharray = (double *)NULL;
+  *number_elements = n;
+  dash_array = (double *) NULL;
   if (n != 0)
     {
-      dasharray = MagickAllocateArray(double *, (size_t) n+1, sizeof(double));
-      if (dasharray != (double*)NULL)
+      dash_array = MagickAllocateArray(double *, (size_t) n+1, sizeof(double));
+      if (dash_array != (double*) NULL)
         {
           p = CurrentContext->dash_pattern;
-          q = dasharray;
-          i = n;
-          while( i-- )
+          q = dash_array;
+          for (i=0; i < n; i++)
             *q++ = *p++;
           *q=0.0;
         }
     }
-  return dasharray;
+  return dash_array;
 }
 
 /*

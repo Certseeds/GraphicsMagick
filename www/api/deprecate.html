@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="deprecate">
+<main id="deprecate">
 <h1 class="title">deprecate</h1>
 <p class="subtitle" id="methods-which-should-no-longer-be-used">Methods which should no longer be used</p>
 <div class="contents topic" id="contents">
@@ -55,15 +55,15 @@
 <li><p><a class="reference internal" href="#strip" id="id31">Strip</a></p></li>
 </ul>
 </div>
-<div class="section" id="acquirecacheview">
+<section id="acquirecacheview">
 <h1><a class="toc-backref" href="#id21">AcquireCacheView</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *AcquireCacheView( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
                                      const unsigned long columns, const unsigned long rows,
                                      <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>Method AcquireCacheView gets pixels from the in-memory or disk pixel cache
 as defined by the geometry parameters for read-only access.   A pointer to
@@ -89,15 +89,15 @@ pixels.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="acquirememory">
+</section>
+</section>
+<section id="acquirememory">
 <h1><a class="toc-backref" href="#id22">AcquireMemory</a></h1>
-<div class="section" id="id1">
+<section id="id1">
 <h2>Synopsis</h2>
 <pre class="literal-block">void *AcquireMemory( const size_t size );</pre>
-</div>
-<div class="section" id="id2">
+</section>
+<section id="id2">
 <h2>Description</h2>
 <p>AcquireMemory() returns a pointer to a block of memory of at least size
 bytes suitably aligned for any use.  NULL is returned if insufficient
@@ -110,15 +110,15 @@ memory is available or the requested size is zero.</p>
 <dd><p>The size of the memory in bytes to allocate.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="clonememory">
+</section>
+</section>
+<section id="clonememory">
 <h1><a class="toc-backref" href="#id23">CloneMemory</a></h1>
-<div class="section" id="id3">
+<section id="id3">
 <h2>Synopsis</h2>
 <pre class="literal-block">void *CloneMemory( void *destination, const void *source, const size_t size );</pre>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h2>Description</h2>
 <p>CloneMemory() copies size bytes from memory area source to the
 destination.  Copying between objects that overlap will take place
@@ -131,16 +131,16 @@ correctly.  It returns destination.</p>
 <dd><p>The size of the memory in bytes to allocate.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="getcacheview">
+</section>
+</section>
+<section id="getcacheview">
 <h1><a class="toc-backref" href="#id24">GetCacheView</a></h1>
-<div class="section" id="id5">
+<section id="id5">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *GetCacheView( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
                            const unsigned long columns, const unsigned long rows );</pre>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>Description</h2>
 <p>GetCacheView() gets writeable pixels from the in-memory or disk pixel
 cache as defined by the geometry parameters.   A pointer to the pixels
@@ -161,15 +161,15 @@ occurs, otherwise a pointer to the view pixels.</p>
 pixels.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="liberatememory">
+</section>
+</section>
+<section id="liberatememory">
 <h1><a class="toc-backref" href="#id25">LiberateMemory</a></h1>
-<div class="section" id="id7">
+<section id="id7">
 <h2>Synopsis</h2>
 <pre class="literal-block">void LiberateMemory( void ** memory );</pre>
-</div>
-<div class="section" id="id8">
+</section>
+<section id="id8">
 <h2>Description</h2>
 <p>LiberateMemory() frees memory that has already been allocated, and
 NULLs the pointer to it.</p>
@@ -181,16 +181,16 @@ NULLs the pointer to it.</p>
 <dd><p>A pointer to a block of memory to free for reuse.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="popimagepixels">
+</section>
+</section>
+<section id="popimagepixels">
 <h1><a class="toc-backref" href="#id26">PopImagePixels</a></h1>
-<div class="section" id="id9">
+<section id="id9">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int PopImagePixels( const <a class="reference external" href="../api/types.html#image">Image</a> *, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum,
                              unsigned char *destination );</pre>
-</div>
-<div class="section" id="id10">
+</section>
+<section id="id10">
 <h2>Description</h2>
 <p>PopImagePixels() transfers one or more pixel components from the image pixel
 cache to a user supplied buffer.   True is returned if the pixels are
@@ -213,16 +213,16 @@ successfully transferred, otherwise False.</p>
 <dd><p>The components are transferred to this buffer.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="pushimagepixels">
+</section>
+</section>
+<section id="pushimagepixels">
 <h1><a class="toc-backref" href="#id27">PushImagePixels</a></h1>
-<div class="section" id="id11">
+<section id="id11">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int PushImagePixels( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#quantumtype">QuantumType</a> quantum_type,
                               const unsigned char *source );</pre>
-</div>
-<div class="section" id="id12">
+</section>
+<section id="id12">
 <h2>Description</h2>
 <p>PushImagePixels() transfers one or more pixel components from a user
 supplied buffer into the image pixel cache of an image.  It returns True if
@@ -246,15 +246,15 @@ blue, opacity, RGB, or RGBA).</p>
 <dd><p>The pixel components are transferred from this buffer.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="reacquirememory">
+</section>
+</section>
+<section id="reacquirememory">
 <h1><a class="toc-backref" href="#id28">ReacquireMemory</a></h1>
-<div class="section" id="id13">
+<section id="id13">
 <h2>Synopsis</h2>
 <pre class="literal-block">void ReacquireMemory( void ** memory, const size_t size );</pre>
-</div>
-<div class="section" id="id14">
+</section>
+<section id="id14">
 <h2>Description</h2>
 <p>ReacquireMemory() changes the size of the memory and returns a
 pointer to the (possibly moved) block.  The contents will be unchanged
@@ -271,16 +271,16 @@ may change but the contents of the original allocation will not.</p>
 <dd><p>The new size of the allocated memory.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setcacheview">
+</section>
+</section>
+<section id="setcacheview">
 <h1><a class="toc-backref" href="#id29">SetCacheView</a></h1>
-<div class="section" id="id15">
+<section id="id15">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *SetCacheView( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view, const long x, const long y,
                            const unsigned long columns, const unsigned long rows );</pre>
-</div>
-<div class="section" id="id16">
+</section>
+<section id="id16">
 <h2>Description</h2>
 <p>SetCacheView() gets pixels from the in-memory or disk pixel cache as
 defined by the geometry parameters.   A pointer to the pixels is returned
@@ -297,15 +297,15 @@ if the pixels are transferred, otherwise a NULL is returned.</p>
 pixels.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="synccacheview">
+</section>
+</section>
+<section id="synccacheview">
 <h1><a class="toc-backref" href="#id30">SyncCacheView</a></h1>
-<div class="section" id="id17">
+<section id="id17">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail SyncCacheView( <a class="reference external" href="../api/types.html#viewinfo">ViewInfo</a> *view );</pre>
-</div>
-<div class="section" id="id18">
+</section>
+<section id="id18">
 <h2>Description</h2>
 <p>SyncCacheView() saves the view pixels to the in-memory or disk cache.
 The method returns MagickPass if the pixel region is synced, otherwise
@@ -318,15 +318,15 @@ MagickFail.</p>
 <dd><p>The address of a structure of type ViewInfo.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="strip">
+</section>
+</section>
+<section id="strip">
 <h1><a class="toc-backref" href="#id31">Strip</a></h1>
-<div class="section" id="id19">
+<section id="id19">
 <h2>Synopsis</h2>
 <pre class="literal-block">void Strip( char *message );</pre>
-</div>
-<div class="section" id="id20">
+</section>
+<section id="id20">
 <h2>Description</h2>
 <p>Method Strip strips any whitespace or quotes from the beginning and end of
 a string of characters.</p>
@@ -338,9 +338,9 @@ a string of characters.</p>
 <dd><p>Specifies an array of characters.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -348,6 +348,6 @@ a string of characters.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

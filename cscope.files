@@ -17,7 +17,6 @@ coders/cut.c
 coders/dcm.c
 coders/dcraw.c
 coders/dib.c
-coders/dps.c
 coders/dpx.c
 coders/emf.c
 coders/ept.c

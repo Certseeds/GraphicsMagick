@@ -804,6 +804,7 @@
 #define ReferenceBlob GmReferenceBlob
 #define ReferenceCache GmReferenceCache
 #define ReferenceImage GmReferenceImage
+#define RegisterAAIImage GmRegisterAAIImage
 #define RegisterARTImage GmRegisterARTImage
 #define RegisterAVSImage GmRegisterAVSImage
 #define RegisterBMPImage GmRegisterBMPImage
@@ -820,6 +821,7 @@
 #define RegisterEPTImage GmRegisterEPTImage
 #define RegisterFAXImage GmRegisterFAXImage
 #define RegisterFITSImage GmRegisterFITSImage
+#define RegisterFPXImage GmRegisterFPXImage
 #define RegisterGIFImage GmRegisterGIFImage
 #define RegisterGRADIENTImage GmRegisterGRADIENTImage
 #define RegisterGRAYImage GmRegisterGRAYImage
@@ -853,6 +855,7 @@
 #define RegisterMTVImage GmRegisterMTVImage
 #define RegisterMVGImage GmRegisterMVGImage
 #define RegisterNULLImage GmRegisterNULLImage
+#define RegisterORAImage GmRegisterORAImage
 #define RegisterOTBImage GmRegisterOTBImage
 #define RegisterPALMImage GmRegisterPALMImage
 #define RegisterPCDImage GmRegisterPCDImage
@@ -1031,6 +1034,7 @@
 #define TransparentImage GmTransparentImage
 #define UnlockSemaphoreInfo GmUnlockSemaphoreInfo
 #define UnmapBlob GmUnmapBlob
+#define UnregisterAAIImage GmUnregisterAAIImage
 #define UnregisterARTImage GmUnregisterARTImage
 #define UnregisterAVSImage GmUnregisterAVSImage
 #define UnregisterBMPImage GmUnregisterBMPImage
@@ -1047,6 +1051,7 @@
 #define UnregisterEPTImage GmUnregisterEPTImage
 #define UnregisterFAXImage GmUnregisterFAXImage
 #define UnregisterFITSImage GmUnregisterFITSImage
+#define UnregisterFPXImage GmUnregisterFPXImage
 #define UnregisterGIFImage GmUnregisterGIFImage
 #define UnregisterGRADIENTImage GmUnregisterGRADIENTImage
 #define UnregisterGRAYImage GmUnregisterGRAYImage
@@ -1080,6 +1085,7 @@
 #define UnregisterMTVImage GmUnregisterMTVImage
 #define UnregisterMVGImage GmUnregisterMVGImage
 #define UnregisterNULLImage GmUnregisterNULLImage
+#define UnregisterORAImage GmUnregisterORAImage
 #define UnregisterOTBImage GmUnregisterOTBImage
 #define UnregisterPALMImage GmUnregisterPALMImage
 #define UnregisterPCDImage GmUnregisterPCDImage

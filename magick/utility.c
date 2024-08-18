@@ -1128,6 +1128,12 @@ MagickExport MagickPassFail ExpandFilenames(int *argc,char ***argv)
              for (j=0 ; j < count; j++)
                MagickFreeMemory(vector[j]);
              MagickFreeMemory(vector);
+             if (filelist != (char **) NULL)
+               {
+                 for (j=0; j < number_files; j++)
+                   MagickFreeMemory(filelist[j]);
+                 MagickFreeMemory(filelist);
+               }
              return(MagickFail);
            }
          vector=new_vector;

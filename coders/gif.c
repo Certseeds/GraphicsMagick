@@ -1129,8 +1129,10 @@ static Image *ReadGIFImage(const ImageInfo *image_info,ExceptionInfo *exception)
           if ((long) i == opacity)
             image->colormap[i].opacity=(Quantum) TransparentOpacity;
         }
-        image->background_color=
-          image->colormap[Min(background,image->colors-1)];
+
+        if (image->colors > 0)
+          image->background_color=
+            image->colormap[Min(background,image->colors-1)];
       }
     else
       {

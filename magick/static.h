@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003-2018 GraphicsMagick Group
+  Copyright (C) 2003-2024 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -17,6 +17,7 @@ extern "C" {
 
 #if !defined(BuildMagickModules)
 extern ModuleExport void
+  RegisterAAIImage(void),
   RegisterARTImage(void),
   RegisterAVIImage(void),
   RegisterAVSImage(void),
@@ -34,7 +35,6 @@ extern ModuleExport void
   RegisterDCRAWImage(void),
   RegisterDCXImage(void),
   RegisterDIBImage(void),
-  RegisterDPSImage(void),
   RegisterDPXImage(void),
   RegisterEMFImage(void),
   RegisterEPDFImage(void),
@@ -92,6 +92,7 @@ extern ModuleExport void
   RegisterNULLImage(void),
   RegisterP7Image(void),
   RegisterPBMImage(void),
+  RegisterORAImage(void),
   RegisterOTBImage(void),
   RegisterPALMImage(void),
   RegisterPCDImage(void),
@@ -164,6 +165,7 @@ extern ModuleExport void
 #endif
   RegisterXWDImage(void),
   RegisterYUVImage(void),
+  UnregisterAAIImage(void),
   UnregisterARTImage(void),
   UnregisterAVIImage(void),
   UnregisterAVSImage(void),
@@ -181,7 +183,6 @@ extern ModuleExport void
   UnregisterDCRAWImage(void),
   UnregisterDCXImage(void),
   UnregisterDIBImage(void),
-  UnregisterDPSImage(void),
   UnregisterDPXImage(void),
   UnregisterEMFImage(void),
   UnregisterEPDFImage(void),
@@ -240,6 +241,7 @@ extern ModuleExport void
   UnregisterP7Image(void),
   UnregisterPBMImage(void),
   UnregisterOTBImage(void),
+  UnregisterORAImage(void),
   UnregisterPALMImage(void),
   UnregisterPCDImage(void),
   UnregisterPCDSImage(void),

@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="image">
+<main id="image">
 <h1 class="title">image</h1>
 <p class="subtitle" id="miscellaneous-image-methods">Miscellaneous image methods</p>
 <div class="contents topic" id="contents">
@@ -80,14 +80,14 @@
 <li><p><a class="reference internal" href="#syncimage" id="id107">SyncImage</a></p></li>
 </ul>
 </div>
-<div class="section" id="accessdefinition">
+<section id="accessdefinition">
 <h1><a class="toc-backref" href="#id72">AccessDefinition</a></h1>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis</h2>
 <pre class="literal-block">const char *AccessDefinition( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *magick,
                               const char *key );</pre>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description</h2>
 <p>AccessDefinition() searches the definitions for an entry matching the
 specified magick and key. NULL is returned if no matching entry is found.</p>
@@ -105,16 +105,16 @@ specified magick and key. NULL is returned if no matching entry is found.</p>
 <dd><p>Key to search for.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="adddefinition">
+</section>
+</section>
+<section id="adddefinition">
 <h1><a class="toc-backref" href="#id73">AddDefinition</a></h1>
-<div class="section" id="id2">
+<section id="id2">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail AddDefinition( <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *magick, const char *key,
                               const char *value, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id3">
+</section>
+<section id="id3">
 <h2>Description</h2>
 <p>AddDefinition() adds a key/value definition to the current map of
 definitions in ImageInfo. Definitions may be used by coders/decoders
@@ -139,15 +139,15 @@ that read and write images.</p>
 <dd><p>Errors result in updates to this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="adddefinitions">
+</section>
+</section>
+<section id="adddefinitions">
 <h1><a class="toc-backref" href="#id74">AddDefinitions</a></h1>
-<div class="section" id="id4">
+<section id="id4">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail AddDefinitions( <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *options );</pre>
-</div>
-<div class="section" id="id5">
+</section>
+<section id="id5">
 <h2>Description</h2>
 <p>AddDefinitions() adds definitions from a key/value based string to the current
 map of definitions in ImageInfo. Definitions may be used by coders/decoders
@@ -169,15 +169,15 @@ length string as value for a key.</p>
 <dd><p>Errors result in updates to this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="allocateimage">
+</section>
+</section>
+<section id="allocateimage">
 <h1><a class="toc-backref" href="#id75">AllocateImage</a></h1>
-<div class="section" id="id6">
+<section id="id6">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *AllocateImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info );</pre>
-</div>
-<div class="section" id="id7">
+</section>
+<section id="id7">
 <h2>Description</h2>
 <p>AllocateImage() returns a pointer to an image structure initialized to
 default values.  Currently a failure in this function results in a fatal
@@ -192,15 +192,15 @@ structure.  For example, filename, compression, depth, background color,
 and others.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="allocatenextimage">
+</section>
+</section>
+<section id="allocatenextimage">
 <h1><a class="toc-backref" href="#id76">AllocateNextImage</a></h1>
-<div class="section" id="id8">
+<section id="id8">
 <h2>Synopsis</h2>
 <pre class="literal-block">void AllocateNextImage( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id9">
+</section>
+<section id="id9">
 <h2>Description</h2>
 <p>Use AllocateNextImage() to initialize the next image in a sequence to
 default values.  The next member of image points to the newly allocated
@@ -220,15 +220,15 @@ and others.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="animateimages">
+</section>
+</section>
+<section id="animateimages">
 <h1><a class="toc-backref" href="#id77">AnimateImages</a></h1>
-<div class="section" id="id10">
+<section id="id10">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int AnimateImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id11">
+</section>
+<section id="id11">
 <h2>Description</h2>
 <p>AnimateImages() repeatedly displays an image sequence to any X window
 screen.  It returns a value other than 0 if successful.  Check the
@@ -244,16 +244,16 @@ exception member of image to determine the reason for any failure.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="appendimages">
+</section>
+</section>
+<section id="appendimages">
 <h1><a class="toc-backref" href="#id78">AppendImages</a></h1>
-<div class="section" id="id12">
+<section id="id12">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *AppendImages( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int stack,
                      <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id13">
+</section>
+<section id="id13">
 <h2>Description</h2>
 <p>The AppendImages() method takes a set of images and appends them to each
 other top-to-bottom if the stack parameter is true, otherwise left-to-right.</p>
@@ -271,15 +271,15 @@ other top-to-bottom if the stack parameter is true, otherwise left-to-right.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="catchimageexception">
+</section>
+</section>
+<section id="catchimageexception">
 <h1><a class="toc-backref" href="#id79">CatchImageException</a></h1>
-<div class="section" id="id14">
+<section id="id14">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#exceptiontype">ExceptionType</a> CatchImageException( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id15">
+</section>
+<section id="id15">
 <h2>Description</h2>
 <p>CatchImageException() returns if no exceptions are found in the image
 sequence, otherwise it determines the most severe exception and reports
@@ -292,16 +292,16 @@ it as a warning or error depending on the severity.</p>
 <dd><p>An image sequence.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="clippathimage">
+</section>
+</section>
+<section id="clippathimage">
 <h1><a class="toc-backref" href="#id80">ClipPathImage</a></h1>
-<div class="section" id="id16">
+<section id="id16">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int ClipPathImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *pathname,
                             const unsigned int inside );</pre>
-</div>
-<div class="section" id="id17">
+</section>
+<section id="id17">
 <h2>Description</h2>
 <p>ClipPathImage() sets the image clip mask based any clipping path information
 if it exists.</p>
@@ -321,16 +321,16 @@ clipping path numbered by name.</p>
 Otherwise later operations take effect outside clipping path.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="compositepathimage">
+</section>
+</section>
+<section id="compositepathimage">
 <h1><a class="toc-backref" href="#id81">CompositePathImage</a></h1>
-<div class="section" id="id18">
+<section id="id18">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int CompositePathImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *pathname,
                                  const unsigned int inside );</pre>
-</div>
-<div class="section" id="id19">
+</section>
+<section id="id19">
 <h2>Description</h2>
 <p>CompositePathImage() sets the image composite mask based any compositing path information
 if it exists.</p>
@@ -350,17 +350,17 @@ compositing path numbered by name.</p>
 Otherwise later operations take effect outside compositing path.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="cloneimage">
+</section>
+</section>
+<section id="cloneimage">
 <h1><a class="toc-backref" href="#id82">CloneImage</a></h1>
-<div class="section" id="id20">
+<section id="id20">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *CloneImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long columns,
                    const unsigned long rows, const unsigned int orphan,
                    <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id21">
+</section>
+<section id="id21">
 <h2>Description</h2>
 <p>CloneImage() copies an image and returns the copy as a new image object.
 If the specified columns and rows is 0, an exact copy of the image is
@@ -392,15 +392,15 @@ NULL.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="cloneimageinfo">
+</section>
+</section>
+<section id="cloneimageinfo">
 <h1><a class="toc-backref" href="#id83">CloneImageInfo</a></h1>
-<div class="section" id="id22">
+<section id="id22">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *CloneImageInfo( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info );</pre>
-</div>
-<div class="section" id="id23">
+</section>
+<section id="id23">
 <h2>Description</h2>
 <p>CloneImageInfo() makes a copy of the given image info structure.  If
 NULL is specified, a new image info structure is created initialized to
@@ -413,15 +413,15 @@ default values.</p>
 <dd><p>The image info.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="destroyimage">
+</section>
+</section>
+<section id="destroyimage">
 <h1><a class="toc-backref" href="#id84">DestroyImage</a></h1>
-<div class="section" id="id24">
+<section id="id24">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DestroyImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id25">
+</section>
+<section id="id25">
 <h2>Description</h2>
 <p>DestroyImage() dereferences an image, deallocating memory associated with
 the image if the reference count becomes zero.  There is no effect if the
@@ -437,15 +437,15 @@ and no other image should refer to it.  In the future this may be enforced.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="destroyimageinfo">
+</section>
+</section>
+<section id="destroyimageinfo">
 <h1><a class="toc-backref" href="#id85">DestroyImageInfo</a></h1>
-<div class="section" id="id26">
+<section id="id26">
 <h2>Synopsis</h2>
 <pre class="literal-block">void DestroyImageInfo( <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info );</pre>
-</div>
-<div class="section" id="id27">
+</section>
+<section id="id27">
 <h2>Description</h2>
 <p>DestroyImageInfo() deallocates memory associated with a ImageInfo
 structure.</p>
@@ -457,15 +457,15 @@ structure.</p>
 <dd><p>The image info.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="displayimages">
+</section>
+</section>
+<section id="displayimages">
 <h1><a class="toc-backref" href="#id86">DisplayImages</a></h1>
-<div class="section" id="id28">
+<section id="id28">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail DisplayImages( const <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id29">
+</section>
+<section id="id29">
 <h2>Description</h2>
 <p>DisplayImages() displays an image sequence to any X window screen.  It
 returns MagickPass if successful or MagickFail if not.  Check the
@@ -481,15 +481,15 @@ exception member of image to determine the reason for any failure.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="getimageclipmask">
+</section>
+</section>
+<section id="getimageclipmask">
 <h1><a class="toc-backref" href="#id87">GetImageClipMask</a></h1>
-<div class="section" id="id30">
+<section id="id30">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *GetImageClipMask( const <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id31">
+</section>
+<section id="id31">
 <h2>Description</h2>
 <p>GetImageClipMask returns a reference-counted copy of the current image
 clip mask. This copy must be deallocated using DestroyImage() once it is
@@ -516,15 +516,15 @@ the image colormap is globally shared by all pixels in a PseudoClass image.</p>
 <dd><p>Reason for failure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="getimagecompositemask">
+</section>
+</section>
+<section id="getimagecompositemask">
 <h1><a class="toc-backref" href="#id88">GetImageCompositeMask</a></h1>
-<div class="section" id="id32">
+<section id="id32">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *GetImageCompositeMask( const <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id33">
+</section>
+<section id="id33">
 <h2>Description</h2>
 <p>GetImageCompositeMask returns a reference-counted copy of the current image
 composite mask. This copy must be deallocated using DestroyImage() once it is
@@ -551,15 +551,15 @@ the image colormap is globally shared by all pixels in a PseudoClass image.</p>
 <dd><p>Reason for failure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="getimageexception">
+</section>
+</section>
+<section id="getimageexception">
 <h1><a class="toc-backref" href="#id89">GetImageException</a></h1>
-<div class="section" id="id34">
+<section id="id34">
 <h2>Synopsis</h2>
 <pre class="literal-block">void GetImageException( <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id35">
+</section>
+<section id="id35">
 <h2>Description</h2>
 <p>GetImageException() traverses an image sequence and returns any
 error more severe than noted by the exception parameter.</p>
@@ -574,16 +574,16 @@ error more severe than noted by the exception parameter.</p>
 <dd><p>return the highest severity exception.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="getimagegeometry">
+</section>
+</section>
+<section id="getimagegeometry">
 <h1><a class="toc-backref" href="#id90">GetImageGeometry</a></h1>
-<div class="section" id="id36">
+<section id="id36">
 <h2>Synopsis</h2>
 <pre class="literal-block">int GetImageGeometry( const <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *geometry,
                       const unsigned int size_to_fit, <a class="reference external" href="../api/types.html#rectangleinfo">RectangleInfo</a> *region_info );</pre>
-</div>
-<div class="section" id="id37">
+</section>
+<section id="id37">
 <h2>Description</h2>
 <p>GetImageGeometry() returns a region as defined by the geometry string with
 respect to the image and its gravity.</p>
@@ -607,15 +607,15 @@ fits within the specified width and height.</p>
 respect to the image and its gravity.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="getimageinfo">
+</section>
+</section>
+<section id="getimageinfo">
 <h1><a class="toc-backref" href="#id91">GetImageInfo</a></h1>
-<div class="section" id="id38">
+<section id="id38">
 <h2>Synopsis</h2>
 <pre class="literal-block">void GetImageInfo( <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info );</pre>
-</div>
-<div class="section" id="id39">
+</section>
+<section id="id39">
 <h2>Description</h2>
 <p>GetImageInfo() initializes image_info to default values.</p>
 <p>The format of the GetImageInfo method is:</p>
@@ -626,15 +626,15 @@ respect to the image and its gravity.</p>
 <dd><p>The image info.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="istaintimage">
+</section>
+</section>
+<section id="istaintimage">
 <h1><a class="toc-backref" href="#id92">IsTaintImage</a></h1>
-<div class="section" id="id40">
+<section id="id40">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int IsTaintImage( const <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id41">
+</section>
+<section id="id41">
 <h2>Description</h2>
 <p>IsTaintImage() returns a value other than 0 if any pixel in the image
 has been altered since it was first constituted.</p>
@@ -646,15 +646,15 @@ has been altered since it was first constituted.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="modifyimage">
+</section>
+</section>
+<section id="modifyimage">
 <h1><a class="toc-backref" href="#id93">ModifyImage</a></h1>
-<div class="section" id="id42">
+<section id="id42">
 <h2>Synopsis</h2>
 <pre class="literal-block">ModifyImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id43">
+</section>
+<section id="id43">
 <h2>Description</h2>
 <p>ModifyImage() ensures that there is only a single reference to the image
 to be modified, updating the provided image pointer to point to a clone of
@@ -670,15 +670,15 @@ the original image if necessary.</p>
 <dd><p>Return any errors or warnings in this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="referenceimage">
+</section>
+</section>
+<section id="referenceimage">
 <h1><a class="toc-backref" href="#id94">ReferenceImage</a></h1>
-<div class="section" id="id44">
+<section id="id44">
 <h2>Synopsis</h2>
 <pre class="literal-block"><a class="reference external" href="../api/types.html#image">Image</a> *ReferenceImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id45">
+</section>
+<section id="id45">
 <h2>Description</h2>
 <p>ReferenceImage() increments the reference count associated with an image
 returning a pointer to the image.</p>
@@ -690,22 +690,22 @@ returning a pointer to the image.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="removedefinitions">
+</section>
+</section>
+<section id="removedefinitions">
 <h1><a class="toc-backref" href="#id95">RemoveDefinitions</a></h1>
-<div class="section" id="id46">
+<section id="id46">
 <h2>Synopsis</h2>
-<pre class="literal-block">void RemoveDefinitions( <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *options );</pre>
-</div>
-<div class="section" id="id47">
+<pre class="literal-block">MagickPassFail RemoveDefinitions( <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *options );</pre>
+</section>
+<section id="id47">
 <h2>Description</h2>
 <p>RemoveDefinitions() removes definitions from the current map of definitions
 in ImageInfo. Definitions may be used by coders/decoders that read and
 write images. RemoveDefinitions() returns true only if the specified keys
 are present in the map and are actually removed.</p>
 <p>The format of the RemoveDefinitions method is:</p>
-<pre class="literal-block">void RemoveDefinitions( <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *options );</pre>
+<pre class="literal-block">MagickPassFail RemoveDefinitions( <a class="reference external" href="../api/types.html#imageinfo">ImageInfo</a> *image_info, const char *options );</pre>
 <p>A description of each parameter follows:</p>
 <dl class="simple">
 <dt>image_info:</dt>
@@ -721,15 +721,15 @@ succeeds.</p>
 <dd><p>Errors result in updates to this structure.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="resetimagepage">
+</section>
+</section>
+<section id="resetimagepage">
 <h1><a class="toc-backref" href="#id96">ResetImagePage</a></h1>
-<div class="section" id="id48">
+<section id="id48">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail ResetImagePage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const char *page );</pre>
-</div>
-<div class="section" id="id49">
+</section>
+<section id="id49">
 <h2>Description</h2>
 <p>ResetImagePage adjusts the current page canvas and position based on a
 relative page specification.</p>
@@ -744,15 +744,15 @@ relative page specification.</p>
 <dd><p>Relative page offset adjustment</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimageex">
+</section>
+</section>
+<section id="setimageex">
 <h1><a class="toc-backref" href="#id97">SetImageEx</a></h1>
-<div class="section" id="id50">
+<section id="id50">
 <h2>Synopsis</h2>
 <pre class="literal-block">void SetImageEx( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#quantum">Quantum</a> opacity, <a class="reference external" href="../api/types.html#exceptioninfo">ExceptionInfo</a> *exception );</pre>
-</div>
-<div class="section" id="id51">
+</section>
+<section id="id51">
 <h2>Description</h2>
 <p>SetImageEx() sets the red, green, and blue components of each pixel to
 the image background color and the opacity component to the specified
@@ -771,15 +771,15 @@ background_color member of the image.</p>
 <dd><p>Report any exception here.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimage">
+</section>
+</section>
+<section id="setimage">
 <h1><a class="toc-backref" href="#id98">SetImage</a></h1>
-<div class="section" id="id52">
+<section id="id52">
 <h2>Synopsis</h2>
 <pre class="literal-block">void SetImage( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#quantum">Quantum</a> opacity );</pre>
-</div>
-<div class="section" id="id53">
+</section>
+<section id="id53">
 <h2>Description</h2>
 <p>SetImage() sets the red, green, and blue components of each pixel to
 the image background color and the opacity component to the specified
@@ -797,15 +797,15 @@ the image.</p>
 <dd><p>Set each pixel to this level of transparency.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimagecolor">
+</section>
+</section>
+<section id="setimagecolor">
 <h1><a class="toc-backref" href="#id99">SetImageColor</a></h1>
-<div class="section" id="id54">
+<section id="id54">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail SetImageColor( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *pixel );</pre>
-</div>
-<div class="section" id="id55">
+</section>
+<section id="id55">
 <h2>Description</h2>
 <p>SetImageColor() sets the red, green, blue and opacity components of each
 pixel to those from a specified pixel value.</p>
@@ -820,16 +820,16 @@ pixel to those from a specified pixel value.</p>
 <dd><p>Set each pixel in the image to this pixel's color and transparency.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimagecolorregion">
+</section>
+</section>
+<section id="setimagecolorregion">
 <h1><a class="toc-backref" href="#id100">SetImageColorRegion</a></h1>
-<div class="section" id="id56">
+<section id="id56">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail SetImageColorRegion( <a class="reference external" href="../api/types.html#image">Image</a> *image, long x, long y, unsigned long width,
                                     unsigned long height, const <a class="reference external" href="../api/types.html#pixelpacket">PixelPacket</a> *pixel );</pre>
-</div>
-<div class="section" id="id57">
+</section>
+<section id="id57">
 <h2>Description</h2>
 <p>SetImageColorRegion() sets the red, green, blue and opacity components
 of each pixel in the specified region to those from a specified pixel
@@ -846,15 +846,15 @@ the same colorspace as the image.</p>
 <dd><p>Set each pixel in the image to this pixel's color and transparency.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimageclipmask">
+</section>
+</section>
+<section id="setimageclipmask">
 <h1><a class="toc-backref" href="#id101">SetImageClipMask</a></h1>
-<div class="section" id="id58">
+<section id="id58">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int SetImageClipMask( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#image">Image</a> *clip_mask );</pre>
-</div>
-<div class="section" id="id59">
+</section>
+<section id="id59">
 <h2>Description</h2>
 <p>SetImageClipMask() associates a clip mask with the image.  The clip mask
 must be the same dimensions as the image.</p>
@@ -878,15 +878,15 @@ the image colormap is globally shared by all pixels in a PseudoClass image.</p>
 <dd><p>The image clip mask.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimagecompositemask">
+</section>
+</section>
+<section id="setimagecompositemask">
 <h1><a class="toc-backref" href="#id102">SetImageCompositeMask</a></h1>
-<div class="section" id="id60">
+<section id="id60">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int SetImageCompositeMask( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#image">Image</a> *composite_mask );</pre>
-</div>
-<div class="section" id="id61">
+</section>
+<section id="id61">
 <h2>Description</h2>
 <p>SetImageCompositeMask() associates a composite mask with the image.  The mask
 must be the same dimensions as the image.</p>
@@ -910,15 +910,15 @@ the image colormap is globally shared by all pixels in a PseudoClass image.</p>
 <dd><p>The image composite mask.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimagedepth">
+</section>
+</section>
+<section id="setimagedepth">
 <h1><a class="toc-backref" href="#id103">SetImageDepth</a></h1>
-<div class="section" id="id62">
+<section id="id62">
 <h2>Synopsis</h2>
 <pre class="literal-block">unsigned int SetImageDepth( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned long depth );</pre>
-</div>
-<div class="section" id="id63">
+</section>
+<section id="id63">
 <h2>Description</h2>
 <p>SetImageDepth() translates the pixel quantums across all of the channels
 so that if they are later divided to fit within the specified bit
@@ -938,15 +938,15 @@ member of image to determine the cause for any failure.</p>
 <dd><p>Desired image depth (range 1 to QuantumDepth)</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimageopacity">
+</section>
+</section>
+<section id="setimageopacity">
 <h1><a class="toc-backref" href="#id104">SetImageOpacity</a></h1>
-<div class="section" id="id64">
+<section id="id64">
 <h2>Synopsis</h2>
 <pre class="literal-block">void SetImageOpacity( <a class="reference external" href="../api/types.html#image">Image</a> *image, const unsigned int opacity );</pre>
-</div>
-<div class="section" id="id65">
+</section>
+<section id="id65">
 <h2>Description</h2>
 <p>SetImageOpacity() attenuates the opacity channel of an image.  If the
 image pixels are opaque, they are set to the specified opacity level.
@@ -964,15 +964,15 @@ transparency value.</p>
 fully transparent.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="setimagetype">
+</section>
+</section>
+<section id="setimagetype">
 <h1><a class="toc-backref" href="#id105">SetImageType</a></h1>
-<div class="section" id="id66">
+<section id="id66">
 <h2>Synopsis</h2>
 <pre class="literal-block">( void )SetImageType( <a class="reference external" href="../api/types.html#image">Image</a> *image, const <a class="reference external" href="../api/types.html#imagetype">ImageType</a> image_type );</pre>
-</div>
-<div class="section" id="id67">
+</section>
+<section id="id67">
 <h2>Description</h2>
 <p>(void) SetImageType() sets the type of image.  Choose from these types:</p>
 <p>BilevelType, GrayscaleType, GrayscaleMatteType, PaletteType,
@@ -989,15 +989,15 @@ ColorSeparationType, ColorSeparationMatteType, OptimizeType</p>
 <dd><p>Image type.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="stripimage">
+</section>
+</section>
+<section id="stripimage">
 <h1><a class="toc-backref" href="#id106">StripImage</a></h1>
-<div class="section" id="id68">
+<section id="id68">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail StripImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id69">
+</section>
+<section id="id69">
 <h2>Description</h2>
 <p>StripImage removes all profiles and text attributes from the image.</p>
 <p>The format of the StripImage method is:</p>
@@ -1008,15 +1008,15 @@ ColorSeparationType, ColorSeparationMatteType, OptimizeType</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-<div class="section" id="syncimage">
+</section>
+</section>
+<section id="syncimage">
 <h1><a class="toc-backref" href="#id107">SyncImage</a></h1>
-<div class="section" id="id70">
+<section id="id70">
 <h2>Synopsis</h2>
 <pre class="literal-block">MagickPassFail SyncImage( <a class="reference external" href="../api/types.html#image">Image</a> *image );</pre>
-</div>
-<div class="section" id="id71">
+</section>
+<section id="id71">
 <h2>Description</h2>
 <p>Method SyncImage initializes the red, green, and blue intensities of each
 pixel as defined by the colormap index and the current image colormap.
@@ -1030,9 +1030,9 @@ the image pixels after the PseudoClass representation has been updated.</p>
 <dd><p>The image.</p>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -1040,6 +1040,6 @@ the image pixels after the PseudoClass representation has been updated.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

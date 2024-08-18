@@ -11,11 +11,6 @@
 # Where coder modules get installed
 codersdir = $(MagickCoderModulesPath)
 
-if HasDPS
-MAGICK_DPS_MODULES = coders/dps.la
-MAGICK_DPS_SRCS = coders/dps.c
-endif
-
 if HasFPX
 MAGICK_FPX_MODULES = coders/fpx.la
 MAGICK_FPX_SRCS = coders/fpx.c
@@ -71,6 +66,11 @@ MAGICK_WEBP_MODULES = coders/webp.la
 MAGICK_WEBP_SRCS = coders/webp.c
 endif
 
+if HasLIBZIP
+MAGICK_ORA_MODULES = coders/ora.la
+MAGICK_ORA_SRCS = coders/ora.c
+endif
+
 if ENABLE_BROKEN_CODERS
 MAGICK_BROKEN_MODULES = coders/psd.la
 MAGICK_BROKEN_SRCS = coders/psd.c
@@ -81,6 +81,7 @@ MAGICK_CODER_CPPFLAGS = \
 	$(MODULE_EXTRA_CPPFLAGS)
 
 MAGICK_CODER_SRCS = \
+	coders/aai.c \
 	coders/art.c \
 	coders/avs.c \
 	coders/bmp.c \
@@ -94,7 +95,6 @@ MAGICK_CODER_SRCS = \
 	coders/dcm.c \
 	coders/dcraw.c \
 	coders/dib.c \
-	$(MAGICK_DPS_SRCS) \
 	coders/dpx.c \
 	coders/fax.c \
 	coders/fits.c \
@@ -131,6 +131,7 @@ MAGICK_CODER_SRCS = \
 	coders/mtv.c \
 	coders/mvg.c \
 	coders/null.c \
+	$(MAGICK_ORA_SRCS) \
 	coders/otb.c \
 	coders/palm.c \
 	coders/pcd.c \
@@ -183,6 +184,7 @@ MAGICK_CODER_SRCS = \
 
 if WITH_MODULES
 coders_LTLIBRARIES = \
+	coders/aai.la \
 	coders/art.la \
 	coders/avs.la \
 	coders/bmp.la \
@@ -196,7 +198,6 @@ coders_LTLIBRARIES = \
 	coders/dcm.la \
 	coders/dcraw.la \
 	coders/dib.la \
-	$(MAGICK_DPS_MODULES) \
 	coders/dpx.la \
 	coders/fax.la \
 	coders/fits.la \
@@ -233,6 +234,7 @@ coders_LTLIBRARIES = \
 	coders/mtv.la \
 	coders/mvg.la \
 	coders/null.la \
+	$(MAGICK_ORA_MODULES) \
 	coders/otb.la \
 	coders/palm.la \
 	coders/pcd.la \
@@ -285,6 +287,12 @@ coders_LTLIBRARIES = \
 else
 coders_LTLIBRARIES =
 endif # WITH_MODULES
+
+# AAI coder module
+coders_aai_la_SOURCES      = coders/aai.c
+coders_aai_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
+coders_aai_la_LDFLAGS      = $(MODULECOMMONFLAGS)
+coders_aai_la_LIBADD       = $(LIBMAGICK)
 
 # ART coder module
 coders_art_la_SOURCES      = coders/art.c
@@ -363,12 +371,6 @@ coders_dib_la_SOURCES      = coders/dib.c
 coders_dib_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
 coders_dib_la_LDFLAGS      = $(MODULECOMMONFLAGS)
 coders_dib_la_LIBADD       = $(LIBMAGICK)
-
-# DPS coder module
-coders_dps_la_SOURCES      = coders/dps.c
-coders_dps_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
-coders_dps_la_LDFLAGS      = $(MODULECOMMONFLAGS)
-coders_dps_la_LIBADD       = $(LIBMAGICK) $(LIB_DPS) $(LIB_XEXT) $(LIB_X11)
 
 # DPX coder module
 coders_dpx_la_SOURCES      = coders/dpx.c
@@ -597,6 +599,12 @@ coders_null_la_SOURCES     = coders/null.c
 coders_null_la_CPPFLAGS    = $(MAGICK_CODER_CPPFLAGS)
 coders_null_la_LDFLAGS     = $(MODULECOMMONFLAGS)
 coders_null_la_LIBADD      = $(LIBMAGICK)
+
+# ORA coder module
+coders_ora_la_SOURCES      = coders/ora.c
+coders_ora_la_CPPFLAGS     = $(MAGICK_CODER_CPPFLAGS)
+coders_ora_la_LDFLAGS      = $(MODULECOMMONFLAGS)
+coders_ora_la_LIBADD       = $(LIBMAGICK) $(LIB_ZLIB) $(LIB_ZIP)
 
 # OTB coder module
 coders_otb_la_SOURCES      = coders/otb.c

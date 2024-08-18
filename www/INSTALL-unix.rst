@@ -295,10 +295,6 @@ Optional Packages/Options
 
     disable BZLIB support
 
---without-dps
-
-    disable Display Postscript support
-
 --with-fpx
 
     enable FlashPIX support
@@ -350,6 +346,10 @@ Optional Packages/Options
 --without-ttf
 
     disable TrueType support
+
+--without-libzip
+
+    disable libzip support
 
 --with-tcmalloc
 
@@ -882,8 +882,8 @@ GraphicsMagick itself::
 Building under Cygwin
 ---------------------
 
-GraphicsMagick may be built under the Windows '95-XP Cygwin
-Unix-emulation environment available for free from
+GraphicsMagick may be built under the Windows Cygwin Unix-emulation
+environment available for free from
 
     http://www.cygwin.com/
 
@@ -894,26 +894,26 @@ to support TrueType and Postscript Type 1 fonts. Make sure that
 /usr/X11R6/bin is in your PATH prior to running configure.
 
 If you are using Cygwin version 1.3.9 or later, you may specify the
-configure option '--enable-shared' to build Cygwin DLLs. Specifying
-'--enable-shared' is required if you want to build PerlMagick under
-Cygwin because Cygwin does not provide the libperl.a static library
-required to create a static PerlMagick.  Note that older Cygwin
-compilers may not generate code which supports reliably catching C++
-exceptions thrown by DLL code.  The Magick++ library requires that it
-be possible to catch C++ exceptions thrown from DLLs.  The test suite
-``make check`` includes several tests to verify that C++ exceptions
-are working properly.
+configure option '--enable-shared' to build Cygwin DLLs, and
+additionally '--with-modules' to enable use of loadable
+modules. Specifying '--enable-shared' is required if you want to build
+PerlMagick under Cygwin because Cygwin does not provide the libperl.a
+static library required to create a static PerlMagick.  Note that
+older Cygwin compilers may not generate code which supports reliably
+catching C++ exceptions thrown by DLL code.  The Magick++ library
+requires that it be possible to catch C++ exceptions thrown from DLLs.
+The test suite ``make check`` includes several tests to verify that
+C++ exceptions are working properly.
 
-Building under MinGW & MSYS2
-----------------------------
+Building under MinGW-W64 & MSYS2
+--------------------------------
 
 GraphicsMagick may easily be built using the free `MSYS2
 <https://www.msys2.org/>`_ distribution which provides GCC compilers,
 libraries, and headers, targeting native Windows along with a
-Unix-like command shell and a package manager ('Pacman') to install
-pre-compiled components.  Using the pre-compiled packages, it is
-almost as easy to compile GraphicsMagick under MSYS2 as it is under
-Linux!
+Unix-like command shell and a package manager ('pacman') to install
+pre-compiled components.  Using the pre-compiled packages, it is as
+easy to compile GraphicsMagick under MSYS2 as it is under Linux!
 
 When using MSYS2, requesting to install these packages using 'pacman
 -S' should result in getting up to speed very quicky with a featureful
@@ -923,80 +923,23 @@ mingw-w64-x86_64-toolchain, mingw-w64-x86_64-bzip2,
 mingw-w64-x86_64-freetype, mingw-w64-x86_64-ghostscript,
 mingw-w64-x86_64-jasper, mingw-w64-x86_64-jbigkit,
 mingw-w64-x86_64-lcms2, mingw-w64-x86_64-libheif,
-mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libpng,
-mingw-w64-x86_64-libtiff, mingw-w64-x86_64-libtool,
-mingw-w64-x86_64-libwebp, mingw-w64-x86_64-libwmf,
-mingw-w64-x86_64-libxml2, mingw-w64-x86_64-zlib
+mingw-w64-x86_64-libjpeg-turbo, mingw-w64-x86_64-libjxl,
+mingw-w64-x86_64-libpng, mingw-w64-x86_64-libtiff,
+mingw-w64-x86_64-libtool, mingw-w64-x86_64-libwebp,
+mingw-w64-x86_64-libwmf, mingw-w64-x86_64-libxml2,
+mingw-w64-x86_64-libzip, mingw-w64-x86_64-zlib,
 
 and/or use the following to add support for a 32-bit build:
 
 mingw-w64-i686-toolchain, mingw-w64-i686-bzip2,
 mingw-w64-i686-freetype, mingw-w64-i686-ghostscript,
-mingw-w64-i686-jasper, mingw-w64-i686-libheif,
-mingw-w64-i686-jbigkit, mingw-w64-i686-lcms2,
-mingw-w64-i686-libjpeg-turbo, mingw-w64-i686-libpng,
-mingw-w64-i686-libtiff, mingw-w64-i686-libtool,
-mingw-w64-i686-libwebp, mingw-w64-i686-libwmf,
-mingw-w64-i686-libxml2, mingw-w64-i686-zlib
-
-GraphicsMagick may also be built using the free MinGW
-("Minimalistic GNU for Windows") package, available from
-
-    http://www.mingw.org/
-
-or from
-
-    http://mingw-w64.sourceforge.net/
-
-which consist of GNU-based (GCC) compilation toolsets plus headers and
-libraries required to build programs which are entirely based on
-standard Microsoft Windows DLLs so that they may be used for
-proprietary applications. MSYS provides a Unix-style console shell
-window with sufficient functionality to run the GraphicsMagick
-configure script and execute 'make', 'make check', and 'make install'.
-GraphicsMagick may be executed from the MSYS shell, but since it is a
-normal Windows application, it will work just as well from the Windows
-command line.
-
-Unlike the Cygwin build which creates programs based on a
-Unix-emulation DLL, and which uses Unix-style paths to access Windows
-files, the MinGW build creates native Windows console applications
-similar to the Visual C++ build. Run-time performance is similar to the
-Microsoft compilers.
-
-The base MinGW (or MinGW-w64) package and the MSYS package should be
-installed. Other MinGW packages are entirely optional. Once MSYS is
-installed a MSYS icon (blue capital 'M') is added to the
-desktop. Double clicking on this icon starts an instance of the MSYS
-shell.
-
-Start the MSYS console and follow the Unix configure and build
-instructions. The configure and build for MinGW is the same as for
-Unix. Any additional delegate libraries (e.g. libpng) will need to be
-built under MinGW in order to be used. These libraries should be built
-and installed prior to configuring GraphicsMagick. While some delegate
-libraries are easy to configure and build under MinGW, others may be
-quite a challenge.
-
-Lucky for us, the most common delegate libraries are available
-pre-built, as part of the GnuWin32 project, from
-
-    http://gnuwin32.sourceforge.net/packages.html
-
-The relevant packages are bzip2, freetype, jbigkit, libintl, jpeg,
-libpng, libtiff, libwmf and zlib. However, note that for freetype
-to be detected by configure, you must move the ``freetype`` directory
-out of ``GnuWin32\include\freetype2`` and into ``GnuWin32\include``.
-
-Note that older MinGW compilers may not generate code which supports
-reliably catching C++ exceptions thrown by DLL code.  The Magick++
-library requires that it be possible to catch C++ exceptions thrown
-from DLLs.  The test suite (``make check``) includes several tests to
-verify that C++ exceptions are working properly.  If the MinGW you are
-using fails the C++ exception tests, then the solution is to either
-find a MinGW with working C++ exceptions, configure a static build
-with --disable-shared, or disable building Magick++ with
---without-magick-plus-plus.
+mingw-w64-i686-jasper, mingw-w64-i686-jbigkit,
+mingw-w64-i686-lcms2, mingw-w64-i686-libheif,
+mingw-w64-i686-libjpeg-turbo, mingw-w64-i686-libjxl,
+mingw-w64-i686-libpng, mingw-w64-i686-libtiff,
+mingw-w64-i686-libtool, mingw-w64-i686-libwebp,
+mingw-w64-i686-libwmf, mingw-w64-i686-libxml2,
+mingw-w64-i686-libzip, mingw-w64-i686-zlib,
 
 Note that the default installation prefix is MSYS's notion of
 ``/usr/local`` which installs the package into a MSYS directory. To

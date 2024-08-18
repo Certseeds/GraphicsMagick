@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="graphicsmagick-types">
+<main id="graphicsmagick-types">
 <h1 class="title">GraphicsMagick Types</h1>
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
@@ -104,7 +104,7 @@
 <li><p><a class="reference internal" href="#magickxresourceinfo" id="id59">MagickXResourceInfo</a></p></li>
 </ul>
 </div>
-<div class="section" id="affinematrix">
+<section id="affinematrix">
 <h1><a class="toc-backref" href="#id1">AffineMatrix</a></h1>
 <p>AffineMatrix defines a 2D affine matrix transform.</p>
 <pre class="literal-block">typedef struct _AffineMatrix
@@ -117,18 +117,18 @@
     tx,
     ty;
 } AffineMatrix;</pre>
-</div>
-<div class="section" id="blobinfo">
+</section>
+<section id="blobinfo">
 <h1><a class="toc-backref" href="#id2">BlobInfo</a></h1>
 <p>BlobInfo is an opaque pointer reference to the internal structure of an
 I/O blob handle.</p>
-</div>
-<div class="section" id="cache">
+</section>
+<section id="cache">
 <h1><a class="toc-backref" href="#id3">Cache</a></h1>
 <pre class="literal-block">typedef void
   *Cache;</pre>
-</div>
-<div class="section" id="channeltype">
+</section>
+<section id="channeltype">
 <h1><a class="toc-backref" href="#id4">ChannelType</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -145,8 +145,8 @@ I/O blob handle.</p>
   AllChannels,    /* Color channels */
   GrayChannel     /* Color channels represent an intensity. */
 } ChannelType;</pre>
-</div>
-<div class="section" id="chromaticityinfo">
+</section>
+<section id="chromaticityinfo">
 <h1><a class="toc-backref" href="#id5">ChromaticityInfo</a></h1>
 <p>The ChromaticityInfo structure is used to represent chromaticity
 (colorspace primary coordinates in xy space) values for images in
@@ -183,8 +183,8 @@ table:</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="classtype">
+</section>
+<section id="classtype">
 <h1><a class="toc-backref" href="#id6">ClassType</a></h1>
 <p>The ClassType enumeration specifies the image storage class.  A
 DirectClass representation of an image is based on an array of
@@ -228,8 +228,8 @@ colormap is not valid).</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="clippathunits">
+</section>
+<section id="clippathunits">
 <h1><a class="toc-backref" href="#id7">ClipPathUnits</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -237,8 +237,8 @@ colormap is not valid).</p>
   UserSpaceOnUse,
   ObjectBoundingBox
 } ClipPathUnits;</pre>
-</div>
-<div class="section" id="colorpacket">
+</section>
+<section id="colorpacket">
 <h1><a class="toc-backref" href="#id8">ColorPacket</a></h1>
 <pre class="literal-block">typedef struct _ColorPacket
 {
@@ -251,8 +251,8 @@ colormap is not valid).</p>
   unsigned long
     count;
 } ColorPacket;</pre>
-</div>
-<div class="section" id="colorspacetype">
+</section>
+<section id="colorspacetype">
 <h1><a class="toc-backref" href="#id9">ColorspaceType</a></h1>
 <p>The ColorspaceType enumeration is used to specify the colorspace that
 quantization (color reduction and mapping) is done under or to specify
@@ -342,8 +342,8 @@ bitmap (PSD) files.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="compliancetype">
+</section>
+<section id="compliancetype">
 <h1><a class="toc-backref" href="#id10">ComplianceType</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -354,8 +354,8 @@ bitmap (PSD) files.</p>
   XPMCompliance = 0x0004,
   AllCompliance = 0xffff
 } ComplianceType;</pre>
-</div>
-<div class="section" id="compositeoperator">
+</section>
+<section id="compositeoperator">
 <h1><a class="toc-backref" href="#id11">CompositeOperator</a></h1>
 <p>CompositeOperator is used to select the image composition algorithm used
 to compose a composite image with an image. By default, each of the
@@ -545,8 +545,8 @@ layer in composite image. The other layers are copied untouched.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="compressiontype">
+</section>
+<section id="compressiontype">
 <h1><a class="toc-backref" href="#id12">CompressionType</a></h1>
 <p>CompressionType is used to specify the desired compression type when
 encoding an image. Be aware that most image types only support a subset
@@ -614,8 +614,8 @@ Huffman coding)  as used by bzip2 utilities</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="decorationtype">
+</section>
+<section id="decorationtype">
 <h1><a class="toc-backref" href="#id13">DecorationType</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -624,12 +624,12 @@ Huffman coding)  as used by bzip2 utilities</p></td>
   OverlineDecoration,
   LineThroughDecoration
 } DecorationType;</pre>
-</div>
-<div class="section" id="drawcontext">
+</section>
+<section id="drawcontext">
 <h1><a class="toc-backref" href="#id14">DrawContext</a></h1>
 <pre class="literal-block">typedef struct _DrawContext *DrawContext;</pre>
-</div>
-<div class="section" id="drawinfo">
+</section>
+<section id="drawinfo">
 <h1><a class="toc-backref" href="#id15">DrawInfo</a></h1>
 <p>The DrawInfo structure is used to support annotating an image using
 drawing commands.</p>
@@ -927,8 +927,8 @@ subsequent drawing commands.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="endiantype">
+</section>
+<section id="endiantype">
 <h1><a class="toc-backref" href="#id16">EndianType</a></h1>
 <p>Some formats, such as TIFF and DPX, allow storing data in multiple
 &quot;endian&quot; orders and EndianType allows controlling that. With MSB
@@ -942,13 +942,13 @@ least significant byte is encountered first.</p>
   MSBEndian,            /* &quot;big&quot; endian */
   NativeEndian          /* native endian */
 } EndianType;</pre>
-</div>
-<div class="section" id="errorhandler">
+</section>
+<section id="errorhandler">
 <h1><a class="toc-backref" href="#id17">ErrorHandler</a></h1>
 <pre class="literal-block">typedef void
   (*ErrorHandler)(const ExceptionType,const char *,const char *);</pre>
-</div>
-<div class="section" id="exceptioninfo">
+</section>
+<section id="exceptioninfo">
 <h1><a class="toc-backref" href="#id18">ExceptionInfo</a></h1>
 <pre class="literal-block">typedef struct _ExceptionInfo
 {
@@ -962,8 +962,8 @@ least significant byte is encountered first.</p>
   unsigned long
     signature;
 } ExceptionInfo;</pre>
-</div>
-<div class="section" id="exceptiontype">
+</section>
+<section id="exceptiontype">
 <h1><a class="toc-backref" href="#id19">ExceptionType</a></h1>
 <p>Warnings and errors are represented by integer numbers (declared as an
 ExceptionType enumeration) with the range of warnings starting with
@@ -1030,8 +1030,8 @@ and the range of fatal errors starting with FatalErrorException.</p>
   RegistryFatalError = 790,
   ConfigureFatalError = 795
 } ExceptionType;</pre>
-</div>
-<div class="section" id="fillrule">
+</section>
+<section id="fillrule">
 <h1><a class="toc-backref" href="#id20">FillRule</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -1039,8 +1039,8 @@ and the range of fatal errors starting with FatalErrorException.</p>
   EvenOddRule,
   NonZeroRule
 } FillRule;</pre>
-</div>
-<div class="section" id="filtertypes">
+</section>
+<section id="filtertypes">
 <h1><a class="toc-backref" href="#id21">FilterTypes</a></h1>
 <p>FilterTypes is used to adjust the filter algorithm used when resizing
 images. Different filters experience varying degrees of success with
@@ -1110,8 +1110,8 @@ The only way to be sure is to test the filter with sample images.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="frameinfo">
+</section>
+<section id="frameinfo">
 <h1><a class="toc-backref" href="#id22">FrameInfo</a></h1>
 <pre class="literal-block">typedef struct _FrameInfo
 {
@@ -1125,8 +1125,8 @@ The only way to be sure is to test the filter with sample images.</p>
     inner_bevel,
     outer_bevel;
 } FrameInfo;</pre>
-</div>
-<div class="section" id="gravitytype">
+</section>
+<section id="gravitytype">
 <h1><a class="toc-backref" href="#id23">GravityType</a></h1>
 <p>GravityType specifies positioning of an object, such as text or an image,
 within a bounding region. Gravity provides a convenient way to
@@ -1175,8 +1175,8 @@ position an object. A common default for gravity is NorthWestGravity.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="logeventtype">
+</section>
+<section id="logeventtype">
 <h1><a class="toc-backref" href="#id24">LogEventType</a></h1>
 <p>LogEventType specifies the log event type to match one or more log
 areas.  Although defined as an enum type, the values are based on
@@ -1261,13 +1261,13 @@ ORed together to represent multiple event types.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="logmethod">
+</section>
+<section id="logmethod">
 <h1><a class="toc-backref" href="#id25">LogMethod</a></h1>
 <p>LogMethod is a call-back function type in the form:</p>
 <pre class="literal-block">typedef void (*LogMethod)(const ExceptionType type,const char *text)</pre>
-</div>
-<div class="section" id="logoutputtype">
+</section>
+<section id="logoutputtype">
 <h1><a class="toc-backref" href="#id26">LogOutputType</a></h1>
 <p>LogOutputType specifies how/where logging (&quot;tracing&quot;) output is to be directed.</p>
 <table>
@@ -1309,8 +1309,8 @@ ORed together to represent multiple event types.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="image">
+</section>
+<section id="image">
 <h1><a class="toc-backref" href="#id27">Image</a></h1>
 <p>The Image structure represents an GraphicsMagick image. It is initially
 allocated by AllocateImage() and deallocated by DestroyImage(). The
@@ -1616,8 +1616,8 @@ by GetNumberColors().</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="imageinfo">
+</section>
+<section id="imageinfo">
 <h1><a class="toc-backref" href="#id28">ImageInfo</a></h1>
 <p>The ImageInfo structure is used to supply option information to the
 functions AllocateImage(), AnimateImages(), BlobToImage(),
@@ -1800,8 +1800,8 @@ JBIG, or JPEG.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="imagetype">
+</section>
+<section id="imagetype">
 <h1><a class="toc-backref" href="#id29">ImageType</a></h1>
 <p>ImageType indicates the type classification of the image.</p>
 <table>
@@ -1846,8 +1846,8 @@ JBIG, or JPEG.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="indexpacket">
+</section>
+<section id="indexpacket">
 <h1><a class="toc-backref" href="#id30">IndexPacket</a></h1>
 <p>IndexPacket is the type used for a colormap index. An array of type
 IndexPacket is used to represent an image in PseudoClass type. Currently
@@ -1855,8 +1855,8 @@ supported IndexPacket underlying types are 'unsigned char', 'unsigned short',
 and 'unsigned int'. The type is selected at build time according to the
 QuantumDepth setting.</p>
 <pre class="literal-block">typedef Quantum IndexPacket;</pre>
-</div>
-<div class="section" id="interlacetype">
+</section>
+<section id="interlacetype">
 <h1><a class="toc-backref" href="#id31">InterlaceType</a></h1>
 <p>InterlaceType specifies the ordering of the red, green, and blue pixel
 information in the image. Interlacing is usually used to make image
@@ -1894,8 +1894,8 @@ individual files (e.g. image.R, image.G, and image.B)</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="layertype">
+</section>
+<section id="layertype">
 <h1><a class="toc-backref" href="#id32">LayerType</a></h1>
 <p>LayerType is used as an argument when doing color separations. Use
 LayerType when extracting a layer from an image. MatteLayer is useful for
@@ -1927,8 +1927,8 @@ extracting the opacity values from an image.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="magickinfo">
+</section>
+<section id="magickinfo">
 <h1><a class="toc-backref" href="#id33">MagickInfo</a></h1>
 <p>The MagickInfo structure is used by GraphicsMagick to register support
 for an image format. The MagickInfo structure is allocated with default
@@ -2112,8 +2112,8 @@ ImageInfo).</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="monitorhandler">
+</section>
+<section id="monitorhandler">
 <h1><a class="toc-backref" href="#id34">MonitorHandler</a></h1>
 <p>MonitorHandler is the function type to be used for the progress monitor
 callback. Its definition is as follows:</p>
@@ -2161,8 +2161,8 @@ the user.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="montageinfo">
+</section>
+<section id="montageinfo">
 <h1><a class="toc-backref" href="#id35">MontageInfo</a></h1>
 <pre class="literal-block">typedef struct _MontageInfo
 {
@@ -2199,8 +2199,8 @@ the user.</p></td>
   unsigned long
     signature;
 } MontageInfo;</pre>
-</div>
-<div class="section" id="noisetype">
+</section>
+<section id="noisetype">
 <h1><a class="toc-backref" href="#id36">NoiseType</a></h1>
 <p>NoiseType is used as an argument to select the type of noise to be added
 to the image.</p>
@@ -2240,8 +2240,8 @@ to the image.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="orientationtype">
+</section>
+<section id="orientationtype">
 <h1><a class="toc-backref" href="#id37">OrientationType</a></h1>
 <p>OrientationType specifies the orientation of the image. Useful for when
 the image is produced via a different ordinate system, the camera was
@@ -2296,8 +2296,8 @@ turned on its side, or the page was scanned sideways.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="paintmethod">
+</section>
+<section id="paintmethod">
 <h1><a class="toc-backref" href="#id38">PaintMethod</a></h1>
 <p>PaintMethod specifies how pixel colors are to be replaced in the image.
 It is used to select the pixel-filling algorithm employed.</p>
@@ -2330,8 +2330,8 @@ border color.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="pixelpacket">
+</section>
+<section id="pixelpacket">
 <h1><a class="toc-backref" href="#id39">PixelPacket</a></h1>
 <p>The PixelPacket structure is used to represent DirectClass color
 pixels in GraphicsMagick. If the image is indicated as a PseudoClass
@@ -2399,8 +2399,8 @@ to the current PseudoClass colormap.</p></li>
 RGBColorspace except for CMYKColorspace.</p></li>
 </ol>
 </blockquote>
-</div>
-<div class="section" id="pointinfo">
+</section>
+<section id="pointinfo">
 <h1><a class="toc-backref" href="#id40">PointInfo</a></h1>
 <p>The PointInfo structure is used by the ChromaticityInfo structure to
 specify chromaticity point values. This defines the boundaries and gammut
@@ -2428,8 +2428,8 @@ specify chromaticity point values. This defines the boundaries and gammut
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="profileinfo">
+</section>
+<section id="profileinfo">
 <h1><a class="toc-backref" href="#id41">ProfileInfo</a></h1>
 <p>The ProfileInfo structure is used to represent ICC or IPCT profiles in
 GraphicsMagick (stored as an opaque BLOB).</p>
@@ -2460,8 +2460,8 @@ GraphicsMagick (stored as an opaque BLOB).</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="quantizeinfo">
+</section>
+<section id="quantizeinfo">
 <h1><a class="toc-backref" href="#id42">QuantizeInfo</a></h1>
 <p>The QuantizeInfo structure is used to support passing parameters to
 GraphicsMagick's color quantization (reduction) functions. Color
@@ -2553,14 +2553,14 @@ determined through experimentation.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="quantum">
+</section>
+<section id="quantum">
 <h1><a class="toc-backref" href="#id43">Quantum</a></h1>
 <p>Quantum is the base type used to store a pixel component, such as the
 'R' in an RGB pixel.  It can be defined as either an 'unsigned char',
 'unsigned short', or an 'unsigned int'.</p>
-</div>
-<div class="section" id="quantumtype">
+</section>
+<section id="quantumtype">
 <h1><a class="toc-backref" href="#id44">QuantumType</a></h1>
 <p>QuantumType is used to indicate the source or destination format of
 entire pixels, or components of pixels (&quot;Quantums&quot;) while they are being
@@ -2658,8 +2658,8 @@ image depth, which can be eight, sixteen, or thirty-two bits.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="rectangleinfo">
+</section>
+<section id="rectangleinfo">
 <h1><a class="toc-backref" href="#id45">RectangleInfo</a></h1>
 <p>The RectangleInfo structure is used to represent positioning information
 in GraphicsMagick.</p>
@@ -2695,8 +2695,8 @@ table:</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="registrytype">
+</section>
+<section id="registrytype">
 <h1><a class="toc-backref" href="#id46">RegistryType</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -2704,8 +2704,8 @@ table:</p>
   ImageRegistryType,
   ImageInfoRegistryType
 } RegistryType;</pre>
-</div>
-<div class="section" id="renderingintent">
+</section>
+<section id="renderingintent">
 <h1><a class="toc-backref" href="#id47">RenderingIntent</a></h1>
 <p>Rendering intent is a concept defined by ICC Spec ICC.1:1998-09, &quot;File
 Format for Color Profiles&quot;. GraphicsMagick uses RenderingIntent in order
@@ -2746,8 +2746,8 @@ but colorimetric accuracy might not be preserved.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="resolutiontype">
+</section>
+<section id="resolutiontype">
 <h1><a class="toc-backref" href="#id48">ResolutionType</a></h1>
 <p>By default, GraphicsMagick defines resolutions in pixels per inch.
 ResolutionType provides a means to adjust this.</p>
@@ -2774,8 +2774,8 @@ centimeter (metric units).</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="resourcetype">
+</section>
+<section id="resourcetype">
 <h1><a class="toc-backref" href="#id49">ResourceType</a></h1>
 <p>Resource limits constrain the system resources that a GraphicsMagick
 process may consume, or that individual decode/encode and/or image
@@ -2839,8 +2839,8 @@ decoding</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="segmentinfo">
+</section>
+<section id="segmentinfo">
 <h1><a class="toc-backref" href="#id50">SegmentInfo</a></h1>
 <pre class="literal-block">typedef struct _SegmentInfo
 {
@@ -2850,8 +2850,8 @@ decoding</p></td>
     x2,
     y2;
 } SegmentInfo;</pre>
-</div>
-<div class="section" id="signatureinfo">
+</section>
+<section id="signatureinfo">
 <h1><a class="toc-backref" href="#id51">SignatureInfo</a></h1>
 <pre class="literal-block">typedef struct _SignatureInfo
 {
@@ -2866,8 +2866,8 @@ decoding</p></td>
   unsigned char
     message[SignatureSize];
 } SignatureInfo;</pre>
-</div>
-<div class="section" id="storagetype">
+</section>
+<section id="storagetype">
 <h1><a class="toc-backref" href="#id52">StorageType</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -2878,13 +2878,13 @@ decoding</p></td>
   FloatPixel,
   DoublePixel
 } StorageType;</pre>
-</div>
-<div class="section" id="streamhandler">
+</section>
+<section id="streamhandler">
 <h1><a class="toc-backref" href="#id53">StreamHandler</a></h1>
 <pre class="literal-block">typedef unsigned int
   (*StreamHandler)(const Image *,const void *,const size_t);</pre>
-</div>
-<div class="section" id="stretchtype">
+</section>
+<section id="stretchtype">
 <h1><a class="toc-backref" href="#id54">StretchType</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -2899,8 +2899,8 @@ decoding</p></td>
   UltraExpandedStretch,
   AnyStretch
 } StretchType;</pre>
-</div>
-<div class="section" id="styletype">
+</section>
+<section id="styletype">
 <h1><a class="toc-backref" href="#id55">StyleType</a></h1>
 <pre class="literal-block">typedef enum
 {
@@ -2909,8 +2909,8 @@ decoding</p></td>
   ObliqueStyle,
   AnyStyle
 } StyleType;</pre>
-</div>
-<div class="section" id="typemetric">
+</section>
+<section id="typemetric">
 <h1><a class="toc-backref" href="#id56">TypeMetric</a></h1>
 <pre class="literal-block">typedef struct _TypeMetric
 {
@@ -2931,8 +2931,8 @@ decoding</p></td>
     underline_position,
     underline_thickness;
 } TypeMetric;</pre>
-</div>
-<div class="section" id="viewinfo">
+</section>
+<section id="viewinfo">
 <h1><a class="toc-backref" href="#id57">ViewInfo</a></h1>
 <p>ViewInfo represents a handle to a pixel view, which represents a uniquely
 selectable rectangular region of pixels. The only limit on the number of
@@ -2940,8 +2940,8 @@ views is the amount of available memory. Each image contains a collection
 of default views (one view per thread) so that the image may be usefully
 accessed without needing to explicitly allocate pixel views.</p>
 <pre class="literal-block">typedef void *ViewInfo;</pre>
-</div>
-<div class="section" id="virtualpixelmethod">
+</section>
+<section id="virtualpixelmethod">
 <h1><a class="toc-backref" href="#id58">VirtualPixelMethod</a></h1>
 <p>The VirtualPixelMethod enumeration describes how the pixel cache APIs
 fill requested pixel regions which are outside of the image. Returned
@@ -2976,8 +2976,8 @@ computed edges of the image would be distorted.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="magickxresourceinfo">
+</section>
+<section id="magickxresourceinfo">
 <h1><a class="toc-backref" href="#id59">MagickXResourceInfo</a></h1>
 <pre class="literal-block">typedef struct _XResourceInfo
 {
@@ -3077,8 +3077,8 @@ computed edges of the image would be distorted.</p>
   char
     home_directory[MaxTextExtent];
 } XResourceInfo;</pre>
-</div>
-</div>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -3086,6 +3086,6 @@ computed edges of the image would be distorted.</p>
     <p><a href="../Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

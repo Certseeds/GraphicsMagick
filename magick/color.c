@@ -864,7 +864,7 @@ MagickExport MagickBool IsPaletteImage(const Image *image,
     i;
 
   unsigned long
-    index,
+    /* index, */
     level;
 
   unsigned int
@@ -901,7 +901,7 @@ MagickExport MagickBool IsPaletteImage(const Image *image,
         Start at the root and proceed level by level.
       */
       node_info=cube_info->root;
-      index=MaxTreeDepth-1;
+      /* index=MaxTreeDepth-1; */
       for (level=1; level < MaxTreeDepth; level++)
       {
         id=ColorToNodeId(p->red,p->green,p->blue,level);
@@ -918,7 +918,7 @@ MagickExport MagickBool IsPaletteImage(const Image *image,
               }
           }
         node_info=node_info->child[id];
-        index--;
+        /* index--; */
       }
       for (i=0; i < (long) node_info->number_unique; i++)
         if (ColorMatch(p,&node_info->list[i].pixel))

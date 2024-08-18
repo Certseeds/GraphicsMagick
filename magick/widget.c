@@ -8048,6 +8048,9 @@ void MagickXMonitorWidget(Display *display,MagickXWindows *windows,
       MagickXInfoWidget(display,windows,monitor_info.text);
   /*
     Draw progress monitor bar to represent percent completion of a task.
+
+    FIXME: Under Ubuntu 22.04 LTS this has become a thousand times
+    slower so that the progress monitor takes most of the time!
   */
   if (!windows->info.mapped || (task != monitor_info.text))
     MagickXInfoWidget(display,windows,task);

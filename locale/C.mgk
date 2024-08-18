@@ -883,9 +883,6 @@
   <Missing>
     <Delegate>
       <Error>
-        <Message name="DPSLibraryIsNotAvailable">
-          DPS library is not available
-        </Message>
         <Message name="FPXLibraryIsNotAvailable">
           FPX library is not available
         </Message>

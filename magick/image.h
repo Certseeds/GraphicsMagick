@@ -942,7 +942,7 @@ typedef struct _ImageInfo
   MagickBool
     dither,                  /* If true, dither image while writing */
     monochrome,              /* If true, use monochrome format */
-    progress;                /* If true, show progress indication */
+    progress;                /* If true, show progress indication (for X11 commands) */
 
   ColorspaceType
     colorspace;              /* Colorspace representations of image pixels */

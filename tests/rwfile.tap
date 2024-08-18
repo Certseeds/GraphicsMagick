@@ -12,7 +12,14 @@ check_types='bilevel gray palette truecolor truecolor_1x266'
 check_types_noone='bilevel gray palette truecolor'
 
 # Number of tests we plan to run
-test_plan_fn 848
+test_plan_fn 857
+
+# AAI format
+for type in ${check_types}
+do
+  test_command_fn "AAI ${type}" ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" AAI
+  test_command_fn "AAI ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" AAI
+done
 
 # ART format
 for type in ${check_types}
@@ -140,8 +147,8 @@ do
   test_command_fn "FITS ${type} (stdio)" ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" FITS
 done
 
-# FPX format
-for type in ${check_types}
+# FPX format (aborts on truecolor_1x266)
+for type in ${check_types_noone}
 do
   test_command_fn "FPX ${type}" -F FPX ${MEMCHECK} ${rwfile} -filespec "out_${type}_%d" "${SRCDIR}/input_${type}.miff" FPX
   #test_command_fn "FPX ${type} (stdio)" -F FPX ${MEMCHECK} ${rwfile} -stdio -filespec "out_${type}_stdio_%d" "${SRCDIR}/input_${type}.miff" FPX

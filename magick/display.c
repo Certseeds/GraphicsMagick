@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2022 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -10682,9 +10682,9 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
     handler;
 
   RectangleInfo
-    crop_info,
-    highlight_info,
-    roi_info;
+    crop_info = { 0, 0, 0, 0},
+    highlight_info = { 0, 0, 0, 0},
+    roi_info = { 0, 0, 0, 0};
 
   unsigned int
     height,
@@ -13858,8 +13858,11 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
       /*
         Set the progress monitor if progress monitoring is requested.
       */
-      if (resource_info->image_info->progress)
+#if defined(MAGICK_USE_XMAGICK_MONITOR) && MAGICK_USE_XMAGICK_MONITOR
+      if ((resource_info->image_info->progress) /* && */
+          /* (monitor_handler == (MonitorHandler) NULL) */)
         monitor_handler=SetMonitorHandler(MagickXMagickMonitor);
+#endif /* if defined(MAGICK_USE_XMAGICK_MONITOR) && MAGICK_USE_XMAGICK_MONITOR */
       /*
         Set the warning and signal handlers.
       */
@@ -14367,9 +14370,11 @@ MagickXDisplayImage(Display *display,MagickXResourceInfo *resource_info,
   /*
     Set progress monitor if progress monitoring requested.
   */
+#if defined(MAGICK_USE_XMAGICK_MONITOR)
   if ((resource_info->image_info->progress) &&
       (monitor_handler == (MonitorHandler) NULL))
     monitor_handler=SetMonitorHandler(MagickXMagickMonitor);
+#endif /* if defined(MAGICK_USE_XMAGICK_MONITOR) */
   /*
     Set warning and signal handlers.
   */

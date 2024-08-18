@@ -1613,12 +1613,6 @@ default warning
 .
 
 MessageId       = +1
-SymbolicName    = DelegateErrorDPSLibraryIsNotAvailable
-Language        = English
-DPS library is not available
-.
-
-MessageId       = +1
 SymbolicName    = DelegateErrorFPXLibraryIsNotAvailable
 Language        = English
 FPX library is not available

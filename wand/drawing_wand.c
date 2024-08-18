@@ -1,4 +1,4 @@
-/* Copyright (C) 2003-2015 GraphicsMagick Group */
+/* Copyright (C) 2003-2024 GraphicsMagick Group */
 /*
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             %
@@ -4480,28 +4480,32 @@ WandExport double *DrawGetStrokeDashArray(const DrawingWand *drawing_wand,
   double
     *dash_array;
 
-  unsigned int
+  unsigned long
     i,
-    n=0;
+    n = 0;
 
   assert(drawing_wand != (const DrawingWand *) NULL);
   assert(drawing_wand->signature == MagickSignature);
   assert(number_elements != (unsigned long *)NULL);
-  p=CurrentContext->dash_pattern;
+
+  p = CurrentContext->dash_pattern;
   if ( p != (const double *) NULL )
     while (*p++ != 0.0)
       n++;
-  *number_elements=n;
-  dash_array=(double *)NULL;
+
+  *number_elements = n;
+  dash_array = (double *) NULL;
   if (n != 0)
     {
-      dash_array=MagickAllocateArray(double *, (size_t) n+1, sizeof(double));
-      p=CurrentContext->dash_pattern;
-      q=dash_array;
-      i=n;
-      while (i--)
-        *q++=(*p++);
-      *q=0.0;
+      dash_array = MagickAllocateArray(double *, (size_t) n+1, sizeof(double));
+      if (dash_array != (double *) NULL)
+        {
+          p = CurrentContext->dash_pattern;
+          q = dash_array;
+          for (i=0; i < n; i++)
+            *q++ = (*p++);
+          *q=0.0;
+        }
     }
   return(dash_array);
 }

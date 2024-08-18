@@ -30,10 +30,10 @@ goto :_exit
 :_testall
 @rem call :_dorwtest both 8BIM
 @rem if not %COUNT% EQU 6 goto :_failed
+call :_dorwtest both AAI
+if not %COUNT% EQU 6 goto :_failed
 @rem call :_dorwtest both APP1
 @rem if not %COUNT% EQU 6 goto :_failed
-call :_dorwtest both AVS
-if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both ART
 if not %COUNT% EQU 6 goto :_failed
 call :_dorwtest both AVS

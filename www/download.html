@@ -36,7 +36,7 @@
 </ul>
 </div>
 
-<div class="document" id="graphicsmagick-download">
+<main id="graphicsmagick-download">
 <h1 class="title">GraphicsMagick Download</h1>
 <!-- -*- mode: rst -*- -->
 <!-- This text is in reStucturedText format, so it may look a bit odd. -->
@@ -62,62 +62,62 @@
 </li>
 </ul>
 </div>
-<div class="section" id="download-sites">
+<section id="download-sites">
 <h1><a class="toc-backref" href="#id1">Download Sites</a></h1>
 <p>The source distribution of GraphicsMagick as well as pre-compiled
 binaries may be downloaded from the <a class="reference external" href="https://sourceforge.net/projects/graphicsmagick/files/">SourceForge Download</a> page.
 This is also where 'snapshot' distribution archives may be found.</p>
-</div>
-<div class="section" id="download-formats">
+</section>
+<section id="download-formats">
 <h1><a class="toc-backref" href="#id2">Download Formats</a></h1>
 <p>The GraphicsMagick source files may be available in several different
 archive formats:</p>
-<div class="section" id="tar-gz">
+<section id="tar-gz">
 <h2><a class="toc-backref" href="#id3">tar.gz</a></h2>
 <p>This is a POSIX <a class="reference external" href="https://en.wikipedia.org/wiki/Tar_(computing)">tar</a> file compressed using the legacy GNU gzip format ('gz'
 extension) by Jean-loup Gailly and Mark Adler. Gzip is available from
 <a class="reference external" href="https://www.gzip.org/">https://www.gzip.org/</a>.  Gzip is the the most readily available
 compressor on the planet.</p>
-</div>
-<div class="section" id="tar-bz2">
+</section>
+<section id="tar-bz2">
 <h2><a class="toc-backref" href="#id4">tar.bz2</a></h2>
 <p>This is a POSIX <a class="reference external" href="https://en.wikipedia.org/wiki/Tar_(computing)">tar</a> file compressed using the legacy bzip2 format ('bz2'
 extension) by Julian Seward.  Bzip2 is available from <a class="reference external" href="http://sourceware.org/bzip2/">http://sourceware.org/bzip2/</a>.</p>
-</div>
-<div class="section" id="tar-xz">
+</section>
+<section id="tar-xz">
 <h2><a class="toc-backref" href="#id5">tar.xz</a></h2>
 <p>This is a POSIX <a class="reference external" href="https://en.wikipedia.org/wiki/Tar_(computing)">tar</a> file compressed using XZ Utils ('xz' extension) by
 Lasse Collin starting with Igor Pavlov's LZMA-SDK.  XZ Utils is
 available from <a class="reference external" href="https://tukaani.org/xz/">https://tukaani.org/xz/</a>.  XZ Utils is very popular and
 readily available.</p>
-</div>
-<div class="section" id="tar-zst">
+</section>
+<section id="tar-zst">
 <h2><a class="toc-backref" href="#id6">tar.zst</a></h2>
 <p>This is a POSIX <a class="reference external" href="https://en.wikipedia.org/wiki/Tar_(computing)">tar</a> file compressed using Facebook's Zstandard format
 ('zst' extension) by Yann Collet.  Zstd is available from
 <a class="reference external" href="https://facebook.github.io/zstd/">https://facebook.github.io/zstd/</a>.  While Zstd is not yet popular for
 source archive distribution, it is supported by Automake and GNU tar,
 and its compression ratio is very good.</p>
-</div>
-<div class="section" id="tar-lz">
+</section>
+<section id="tar-lz">
 <h2><a class="toc-backref" href="#id7">tar.lz</a></h2>
 <p>This is a POSIX <a class="reference external" href="https://en.wikipedia.org/wiki/Tar_(computing)">tar</a> file compressed using Lzip ('lz' extension).
 Lzip is available from <a class="reference external" href="https://lzip.nongnu.org/lzip.html">https://lzip.nongnu.org/lzip.html</a>.  In our
 experience, Lzip produces the smallest source archive files and uses a
 compact and portable implementation (as compared with 'xz', which is
 its primary competitor).</p>
-</div>
-<div class="section" id="z">
+</section>
+<section id="z">
 <h2><a class="toc-backref" href="#id8">7z</a></h2>
 <p>This is a 7-Zip archive file ('7z' extension) by Igor Pavlov.  7-Zip
 is available from <a class="reference external" href="https://www.7-zip.org/">https://www.7-zip.org/</a>.  This format is used for the
 Microsoft Windows sources since 7-Zip is much more widely available
 under Windows than 'tar' is.</p>
-</div>
-</div>
-<div class="section" id="verifying-the-download">
+</section>
+</section>
+<section id="verifying-the-download">
 <h1><a class="toc-backref" href="#id9">Verifying The Download</a></h1>
-<div class="section" id="using-a-pgp-key">
+<section id="using-a-pgp-key">
 <h2><a class="toc-backref" href="#id10">Using a PGP key</a></h2>
 <p>GraphicsMagick is software which runs on a computer, and if its code
 (source or binary code) was subtly modified (perhaps on the download
@@ -165,8 +165,8 @@ gpg:                 aka &quot;Bob Friesenhahn &lt;bfriesen&#64;simplesystems.or
 gpg:                 aka &quot;Bob Friesenhahn &lt;bfriesen&#64;graphicsmagick.org&gt;&quot; [ultimate]
 gpg:                 aka &quot;Bob Friesenhahn &lt;bobjfriesenhahn&#64;gmail.com&gt;&quot; [ultimate]
 gpg:                 aka &quot;[jpeg image of size 4917]&quot; [ultimate]</pre>
-</div>
-<div class="section" id="using-a-sha-256-or-sha-1-checksum">
+</section>
+<section id="using-a-sha-256-or-sha-1-checksum">
 <h2><a class="toc-backref" href="#id11">Using a SHA-256 or SHA-1 checksum</a></h2>
 <p>While verifying distribution files using GnuPG is by far the most
 secure way to validate a release file, you may find SHA-256 or SHA-1
@@ -183,9 +183,9 @@ provided in the release announcement.  While this is much more secure
 than doing nothing, it does not fully defend against forgery.  If
 someone is able to forge a modified release archive as well as a
 release announcement, then you could be duped!</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</main>
 
 
 <hr class="docutils">
@@ -193,6 +193,6 @@ release announcement, then you could be duped!</p>
     <p><a href="Copyright.html">Copyright</a> © GraphicsMagick Group 2002 - 2024<!--SPONSOR_LOGO--></p>
 </div>
 
-</div>
+</main>
 </body>
 </html>

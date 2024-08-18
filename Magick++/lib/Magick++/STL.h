@@ -45,13 +45,14 @@ namespace Magick
   //
   // Base class for all function objects used to manipulate images via
   // an Image reference.  (used to inherit from std::unary_function,
-  // but it was removed in C++'17).
+  // but it was deprecated in C++'11, __cplusplus=201103L and removed
+  // in C++'17, __cplusplus=201703L ).
   //
   // https://en.cppreference.com/w/cpp/utility/functional/unary_function
   // https://en.cppreference.com/w/cpp/utility/functional/function
   //
 
-#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201103L) || __cplusplus >= 201103L)
 #  define MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE
 #else
 #  define MAGICK_UNARY_FUNCTION_IMAGE_REF_BASE \

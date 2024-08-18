@@ -420,6 +420,15 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 17.6.5 Compilation
 
   Note #1:
 
+  If your Visual Studio is not a paid/professional version (prior than
+  perhaps Visual Studio 2019), then it might not include the
+  components required to build UTIL_IMDisplay.  A build failure will
+  therefore result if UTIL_IMDisplay is not removed from the project
+  file. If the Build step fails for UTIL_IMDisplay, then simply remove
+  it from the project file.
+
+  Note #2:
+
   The Visual C++ distribution of GraphicsMagick comes with the Magick++
   C++ wrapper by default. This add-on layer has a large number of demo
   and test files that can be found in ``GraphicsMagick\Magick++\demo``, and
@@ -495,7 +504,7 @@ Windows XP, Vista, 7 Visual C++ 6.0 through 17.6.5 Compilation
 
     ``GraphicsMagick\VisualMagick\win32\NtMagick`` (project - DSP)
 
-  Note #2:
+  Note #3:
 
   The GraphicsMagick distribution is very modular. The default
   configuration is there to get you rolling, but you need to make some

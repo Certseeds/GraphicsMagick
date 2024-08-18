@@ -238,6 +238,7 @@ static Image *ReadSCTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       if ((c = ReadBlobByte(image)) == EOF)
         break;
+      c &= 0xff;
       q->green=(Quantum) (MaxRGB-ScaleCharToQuantum(c));
       q++;
     }
@@ -251,6 +252,7 @@ static Image *ReadSCTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       if ((c = ReadBlobByte(image)) == EOF)
         break;
+      c &= 0xff;
       q->blue=(Quantum) (MaxRGB-ScaleCharToQuantum(c));
       q++;
     }
@@ -264,6 +266,7 @@ static Image *ReadSCTImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       if ((c = ReadBlobByte(image)) == EOF)
         break;
+      c &= 0xff;
       q->opacity=(Quantum) (MaxRGB-ScaleCharToQuantum(c));
       q++;
     }

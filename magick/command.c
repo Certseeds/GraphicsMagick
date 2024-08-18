@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003 - 2023 GraphicsMagick Group
+% Copyright (C) 2003 - 2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -188,63 +188,62 @@ static MagickPassFail
 #endif
   SetCommand(ImageInfo *image_info,int argc,char **argv,
                  char **metadata,ExceptionInfo *exception),
-  VersionCommand(ImageInfo *image_info,int argc,char **argv,
-                 char **metadata,ExceptionInfo *exception);
+  VersionCommand(ImageInfo *image_info_ignored,int argc,char **argv,
+                 char **metadata_ignored,ExceptionInfo *exception_ignored);
 
 static const struct
 {
   const char            command[10];
-  const char * const    description;
+  const char            description[58];
   CommandVectorHandler  command_vector;
   UsageVectorHandler    usage_vector;
   int                   pass_metadata;
   RunMode               support_mode;
-}
-  commands[] =
-    {
+} commands[] =
+  {
 #if defined(HasX11)
-      { "animate", "animate a sequence of images",
-        AnimateImageCommand, AnimateUsage, 0, SingleMode | BatchMode },
+   { "animate", "animate a sequence of images",
+     AnimateImageCommand, AnimateUsage, 0, SingleMode | BatchMode },
 #endif
-      { "batch", "issue multiple commands in interactive or batch mode",
-         0, BatchUsage, 1, SingleMode },
-      { "benchmark", "benchmark one of the other commands",
-         BenchmarkImageCommand, BenchmarkUsage, 1, SingleMode | BatchMode },
-      { "compare", "compare two images",
-         CompareImageCommand, CompareUsage, 0, SingleMode | BatchMode },
-      { "composite", "composite images together",
-         CompositeImageCommand, CompositeUsage, 0, SingleMode | BatchMode },
-      { "conjure", "execute a Magick Scripting Language (MSL) XML script",
-         ConjureImageCommand, ConjureUsage, 0, SingleMode | BatchMode },
-      { "convert", "convert an image or sequence of images",
-         ConvertImageCommand, ConvertUsage, 0, SingleMode | BatchMode },
+   { "batch", "issue multiple commands in interactive or batch mode",
+     0, BatchUsage, 1, SingleMode },
+   { "benchmark", "benchmark one of the other commands",
+     BenchmarkImageCommand, BenchmarkUsage, 1, SingleMode | BatchMode },
+   { "compare", "compare two images",
+     CompareImageCommand, CompareUsage, 0, SingleMode | BatchMode },
+   { "composite", "composite images together",
+     CompositeImageCommand, CompositeUsage, 0, SingleMode | BatchMode },
+   { "conjure", "execute a Magick Scripting Language (MSL) XML script",
+     ConjureImageCommand, ConjureUsage, 0, SingleMode | BatchMode },
+   { "convert", "convert an image or sequence of images",
+     ConvertImageCommand, ConvertUsage, 0, SingleMode | BatchMode },
 #if defined(HasX11)
-      { "display", "display an image on a workstation running X",
-         DisplayImageCommand, DisplayUsage, 0, SingleMode | BatchMode },
+   { "display", "display an image on a workstation running X",
+     DisplayImageCommand, DisplayUsage, 0, SingleMode | BatchMode },
 #endif
-      { "help", "obtain usage message for named command",
-         HelpCommand, GMUsage, 0, SingleMode | BatchMode },
-      { "identify", "describe an image or image sequence",
-         IdentifyImageCommand, IdentifyUsage, 1, SingleMode | BatchMode },
+   { "help", "obtain usage message for named command",
+     HelpCommand, GMUsage, 0, SingleMode | BatchMode },
+   { "identify", "describe an image or image sequence",
+     IdentifyImageCommand, IdentifyUsage, 1, SingleMode | BatchMode },
 #if defined(HasX11)
-      { "import", "capture an application or X server screen",
-         ImportImageCommand, ImportUsage, 0, SingleMode | BatchMode },
+   { "import", "capture an application or X server screen",
+     ImportImageCommand, ImportUsage, 0, SingleMode | BatchMode },
 #endif
-      { "mogrify", "transform an image or sequence of images",
-         MogrifyImageCommand, MogrifyUsage, 0, SingleMode | BatchMode },
-      { "montage", "create a composite image (in a grid) from separate images",
-         MontageImageCommand, MontageUsage, 0, SingleMode | BatchMode },
-      { "set", "change batch mode option",
-         SetCommand, SetUsage, 1, BatchMode },
-      { "time", "time one of the other commands",
-         TimeImageCommand, TimeUsage, 1, SingleMode | BatchMode },
-      { "version", "obtain release version",
-         VersionCommand, 0, 0, SingleMode | BatchMode }
+   { "mogrify", "transform an image or sequence of images",
+     MogrifyImageCommand, MogrifyUsage, 0, SingleMode | BatchMode },
+   { "montage", "create a composite image (in a grid) from separate images",
+     MontageImageCommand, MontageUsage, 0, SingleMode | BatchMode },
+   { "set", "change batch mode option",
+     SetCommand, SetUsage, 1, BatchMode },
+   { "time", "time one of the other commands",
+     TimeImageCommand, TimeUsage, 1, SingleMode | BatchMode },
+   { "version", "obtain release version",
+     VersionCommand, 0, 0, SingleMode | BatchMode }
 #if defined(MSWINDOWS)
-      ,{ "register", "register this application as the source of messages",
-         RegisterCommand, 0, 0, SingleMode | BatchMode }
+   ,{ "register", "register this application as the source of messages",
+      RegisterCommand, 0, 0, SingleMode | BatchMode }
 #endif
-    };
+  };
 
 static SemaphoreInfo
   *command_semaphore = (SemaphoreInfo *) NULL;
@@ -688,7 +687,7 @@ MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
         AnimateUsage();
         return MagickPass;
       }
-    if (LocaleCompare("version",option+1) == 0)
+    if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
       {
         (void) VersionCommand(image_info,argc,argv,metadata,exception);
         return MagickPass;
@@ -1399,7 +1398,7 @@ MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("version",option+1) == 0)
+        if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -1549,11 +1548,29 @@ MagickExport MagickPassFail AnimateImageCommand(ImageInfo *image_info,
 */
 static MagickPassFail BatchCommand(int argc, char **argv)
 {
-  int result;
-  MagickBool hasInputFile;
-  int ac;
-  char *av[MAX_PARAM+1];
-  unsigned int line_no = 0;
+  char
+    *av[MAX_PARAM+1];
+
+  unsigned int
+    line_no = 0;
+
+  int
+    ac,
+    result;
+
+  MagickBool
+    hasInputFile;
+
+  /*
+    Initialize locale from environment variables (LANG, LC_CTYPE,
+    LC_NUMERIC, LC_TIME, LC_COLLATE, LC_MONETARY, LC_MESSAGES,
+    LC_ALL), but require that LC_NUMERIC use common conventions.  The
+    LC_NUMERIC variable affects the decimal point character and
+    thousands separator character for the formatted input/output
+    functions and string conversion functions.
+  */
+  (void) setlocale(LC_ALL,"");
+  (void) setlocale(LC_NUMERIC,"C");
 
 #if defined(MSWINDOWS)
   InitializeMagick((char *) NULL);
@@ -1565,6 +1582,23 @@ static MagickPassFail BatchCommand(int argc, char **argv)
     FormatString(client_name,"%.1024s %s", argv[0], argv[1]);
     (void) SetClientName(client_name);
   }
+#if 1
+  if (argc > 2)
+    {
+      if ((LocaleCompare("-help",argv[2]) == 0 ||
+           LocaleCompare("-?",argv[2]) == 0))
+        {
+          BatchUsage();
+          return MagickFail;
+        }
+      if ((LocaleCompare("-version",argv[2]) == 0) || (LocaleCompare("--version",argv[2]) == 0))
+        {
+          (void) VersionCommand(0/* image_info */,argc-1,argv+1,0/* metadata */,0/*exception*/);
+          return MagickPass;
+        }
+    }
+
+#endif
 
   {
     BatchOptions dummy;
@@ -1914,7 +1948,7 @@ BenchmarkImageCommand(ImageInfo *image_info,
         }
       return MagickPass;
     }
-  if (LocaleCompare("-version",argv[1]) == 0)
+  if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
     {
       (void) VersionCommand(image_info,argc,argv,metadata,exception);
       return MagickPass;
@@ -2364,7 +2398,7 @@ CompareImageCommand(ImageInfo *image_info,
         }
       return MagickPass;
     }
-  if (LocaleCompare("-version",argv[1]) == 0)
+  if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
     {
       (void) VersionCommand(image_info,argc,argv,metadata,exception);
       return MagickPass;
@@ -2787,7 +2821,7 @@ CompareImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("version",option+1) == 0)
+        if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
           break;
         ThrowCompareException(OptionError,UnrecognizedOption,option)
       }
@@ -3268,7 +3302,7 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
         }
       return MagickPass;
     }
-  if (LocaleCompare("-version",argv[1]) == 0)
+  if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
     {
       (void) VersionCommand(image_info,argc,argv,metadata,exception);
       return MagickPass;
@@ -4124,7 +4158,7 @@ MagickExport MagickPassFail CompositeImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("version",option+1) == 0)
+        if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -4457,7 +4491,7 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
         }
       return MagickPass;
     }
-  if (LocaleCompare("-version",argv[1]) == 0)
+  if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
     {
       (void) VersionCommand(image_info,argc,argv,metadata,exception);
       return MagickPass;
@@ -6157,7 +6191,7 @@ MagickExport MagickPassFail ConvertImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("version",option+1) == 0)
+        if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
           break;
         if (LocaleCompare("view",option+1) == 0)
           {
@@ -6555,7 +6589,7 @@ MagickExport MagickPassFail ConjureImageCommand(ImageInfo *image_info,
         }
       return MagickPass;
     }
-  if (LocaleCompare("-version",argv[1]) == 0)
+  if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
     {
       (void) VersionCommand(image_info,argc,argv,metadata,exception);
       return MagickPass;
@@ -6835,7 +6869,7 @@ MagickExport MagickPassFail DisplayImageCommand(ImageInfo *image_info,
           DisplayUsage();
           return MagickPass;
         }
-      else if (LocaleCompare("-version",argv[1]) == 0)
+      else if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
         {
           (void) VersionCommand(image_info,argc,argv,metadata,exception);
           return MagickPass;
@@ -7989,7 +8023,7 @@ MagickExport MagickPassFail DisplayImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("version",option+1) == 0)
+        if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
           break;
         if (LocaleCompare("visual",option+1) == 0)
           {
@@ -8459,7 +8493,7 @@ MagickExport MagickPassFail IdentifyImageCommand(ImageInfo *image_info,
         }
       return MagickPass;
     }
-  if (LocaleCompare("-version",argv[1]) == 0)
+  if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
     {
       (void) VersionCommand(image_info,argc,argv,metadata,exception);
       return MagickPass;
@@ -8765,7 +8799,7 @@ MagickExport MagickPassFail IdentifyImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("version",option+1) == 0)
+        if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -8978,6 +9012,11 @@ MagickExport MagickPassFail MagickCommand(ImageInfo *image_info,
     i;
 
   option=argv[0];
+  if (LocaleCompare("--version",option) == 0)
+    {
+      PrintVersionAndCopyright();
+      return MagickPass;
+    }
   if (option[0] == '-')
     option++;
 
@@ -9659,8 +9698,9 @@ MagickExport MagickPassFail MogrifyImage(const ImageInfo *image_info,
           }
         if (LocaleCompare("depth",option+1) == 0)
           {
-            /* (*image)->depth = MagickAtoL(argv[++i]); */
-            (void) SetImageDepth(*image,MagickAtoL(argv[++i]));
+            (*image)->depth = MagickAtoL(argv[++i]);
+            /* Below is equivalent to '-operator All Depth [value]' */
+            /* (void) SetImageDepth(*image,MagickAtoL(argv[++i])); */
             continue;
           }
         if (LocaleCompare("despeckle",option+1) == 0)
@@ -12202,7 +12242,7 @@ MagickExport MagickPassFail MogrifyImageCommand(ImageInfo *image_info,
         }
       return MagickPass;
     }
-  if (LocaleCompare("-version",argv[1]) == 0)
+  if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
     {
       (void) VersionCommand(image_info,argc,argv,metadata,exception);
       return MagickPass;
@@ -14202,16 +14242,25 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
   /*
     Validate command line.
   */
-  if (argc < 2 || ((argc < 3) && (LocaleCompare("-help",argv[1]) == 0 ||
-      LocaleCompare("-?",argv[1]) == 0)))
+  if (argc < 2)
     {
       MontageUsage();
-      if (argc < 2)
+      ThrowException(exception,OptionError,UsageError,NULL);
+      return MagickFail;
+    }
+  else if (argc < 3)
+    {
+      if ((LocaleCompare("-help",argv[1]) == 0) ||
+          (LocaleCompare("-?",argv[1]) == 0))
         {
-          ThrowException(exception,OptionError,UsageError,NULL);
-          return MagickFail;
+          MontageUsage();
+          return MagickPass;
         }
-      return MagickPass;
+      else if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
+        {
+          (void) VersionCommand(image_info,argc,argv,metadata,exception);
+          return MagickPass;
+        }
     }
 
   /*
@@ -15222,7 +15271,7 @@ MagickExport MagickPassFail MontageImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("version",option+1) == 0)
+        if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
           break;
         if (LocaleCompare("virtual-pixel",option+1) == 0)
           {
@@ -15559,7 +15608,7 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
         ImportUsage();
         return MagickPass;
       }
-    if (LocaleCompare("version",option+1) == 0)
+    if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
       {
         (void) VersionCommand(image_info,argc,argv,metadata,exception);
         return MagickPass;
@@ -16253,7 +16302,7 @@ MagickExport MagickPassFail ImportImageCommand(ImageInfo *image_info,
             image_info->verbose+=(*option == '-');
             break;
           }
-        if (LocaleCompare("version",option+1) == 0)
+        if ((LocaleCompare("version",option+1) == 0) || (LocaleCompare("-version",option+1) == 0))
           break;
         MagickFatalError(OptionFatalError,UnrecognizedOption,option);
         break;
@@ -17002,7 +17051,7 @@ TimeImageCommand(ImageInfo *image_info,
         }
       return MagickPass;
     }
-  if (LocaleCompare("-version",argv[1]) == 0)
+  if ((LocaleCompare("-version",argv[1]) == 0) || (LocaleCompare("--version",argv[1]) == 0))
     {
       (void) VersionCommand(image_info,argc,argv,metadata,exception);
       return MagickPass;
@@ -17026,8 +17075,11 @@ TimeImageCommand(ImageInfo *image_info,
   (void) fflush(stdout);
 
   screen_width=0;
-  if (getenv("COLUMNS"))
-    screen_width=MagickAtoI(getenv("COLUMNS"))-1;
+  {
+    const char * const columns_env = getenv("COLUMNS");
+    if (columns_env)
+      screen_width=MagickAtoI(columns_env)-1;
+  }
   if (screen_width < 80)
     screen_width=80;
 
@@ -17099,23 +17151,30 @@ static void PrintFeature(const char* feature,MagickBool support)
 {
   PrintFeatureTextual(feature,support, NULL);
 }
-static MagickPassFail VersionCommand(ImageInfo *image_info,
-                                     int argc,char **argv,char **metadata,
-                                     ExceptionInfo *exception)
+static MagickPassFail VersionCommand(ImageInfo *image_info_ignored,
+                                     int argc,char **argv,
+                                     char **metadata_ignored,
+                                     ExceptionInfo *exception_ignored)
 {
   MagickBool
-    supported;
+    supported,
+    terse=MagickFalse;
 
   char
     text[MaxTextExtent];
 
-  ARG_NOT_USED(image_info);
-  ARG_NOT_USED(argc);
-  ARG_NOT_USED(argv);
-  ARG_NOT_USED(metadata);
-  ARG_NOT_USED(exception);
+  ARG_NOT_USED(image_info_ignored);
+  ARG_NOT_USED(metadata_ignored);
+  ARG_NOT_USED(exception_ignored);
+
+  /* If GNU-style --version, then provide terse output */
+  if ((argc >= 2) && (LocaleCompare(argv[1],"--version") == 0))
+    terse=MagickTrue;
 
   PrintVersionAndCopyright();
+
+  if (terse)
+    return MagickPass;
 
   (void) fprintf(stdout,"\nFeature Support:\n");
 
@@ -17156,13 +17215,6 @@ static MagickPassFail VersionCommand(ImageInfo *image_info,
   supported=MagickTrue;
 #endif /* defined(HasBZLIB) */
   PrintFeature("BZIP", supported);
-
-  /* DPS */
-  supported=MagickFalse;
-#if defined(HasDPS)
-  supported=MagickTrue;
-#endif /* defined(HasDPS) */
-  PrintFeature("DPS", supported);
 
   /* FlashPix */
   supported=MagickFalse;
@@ -17574,6 +17626,8 @@ static MagickPassFail GMCommandSingle(int argc,char **argv)
 
   MagickPassFail
     status=MagickTrue;
+
+  GetExceptionInfo(&exception);
 
   /*
     Initialize locale from environment variables (LANG, LC_CTYPE,

@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2003 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -1936,10 +1936,10 @@ MagickExport void GetImageInfo(ImageInfo *image_info)
   image_info->depth=QuantumDepth;
   image_info->interlace=UndefinedInterlace;
   image_info->quality=DefaultCompressionQuality;
-  image_info->antialias=True;
+  image_info->antialias=MagickTrue;
   image_info->pointsize=12;
-  image_info->dither=True;
-  image_info->progress=True;
+  image_info->dither=MagickTrue;
+  image_info->progress=MagickFalse;
   GetExceptionInfo(&exception);
   BackgroundColorInit(&image_info->background_color);
   BorderColorInit(&image_info->border_color);
@@ -2150,7 +2150,7 @@ MagickExport Image *ReferenceImage(Image *image)
 %
 %  The format of the RemoveDefinitions method is:
 %
-%      void RemoveDefinitions(ImageInfo *image_info,const char *options)
+%      MagickPassFail RemoveDefinitions(ImageInfo *image_info,const char *options)
 %
 %  A description of each parameter follows:
 %
@@ -2876,7 +2876,8 @@ MagickParseSubImageSpecification(const char *subimage_spec,
         }
       if (*q == '\0')
         {
-          subrange -= subimage-1;
+          if (subimage > 0)
+            subrange -= subimage-1;
           *subimage_ptr=subimage;
           *subrange_ptr=subrange;
           status=MagickPass;
