@@ -6,7 +6,7 @@
 GraphicsMagick News
 ===================
 
-This file was last updated to reflect changes up to March 23, 2024
+This file was last updated to reflect changes up to August 18, 2024.
 
 Please note that this file records news for the associated development
 branch and that each development branch has its own NEWS file. See the
@@ -19,27 +19,18 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
-1.3.44 (??? ??, 2024)
+1.3.44 (August 18, 2024)
 ===========================
 
 Special Issues:
 
-* Due to my Internet provider (which I have used since 2001) failing
-  to support the antiquated technology which hosts GraphicsMagick.org,
-  and the simple.dallas.tx.us domain I have used since 1994, these
-  services are now failing.  To make matters worse, due to dramatic
-  changes in US domain registration in recent years, I do not know how
-  to update the DNS registrations for simple.dallas.tx.us and my
-  historical email address may be lost.  As time permits,
-  GraphicsMagick.org will be re-hosted in the cloud at Linode.
-
-* GraphicsMagick really does need some additional productive
-  volunteers.  For several years now, the burden has entirely been on
-  me (Bob Friesenhahn).  I have been sheparding the project for 22
-  years already (and contributed to ImageMagick and GraphicsMagick
-  combined for 28 years already).  It is not reasonable to expect
-  someone with a full time job (and expecting to retire in a few
-  years) to do all of the work.
+* GraphicsMagick needs some additional productive volunteers.  For
+  several years now, the burden has entirely been on me (Bob
+  Friesenhahn).  I have been sheparding the project for 22 years
+  already (and contributed to ImageMagick and GraphicsMagick combined
+  for 28 years already).  Volunteers are needed to add/improve
+  new/existing file format support, and to assure correct operation on
+  all targets.
 
 Security Fixes:
 
@@ -163,7 +154,10 @@ Build Changes:
   still works) given that the project seems to be defunct and
   unusable.
 
-* FPX: Support building with libfpx ("FlashPIX") again.
+* FPX: Support building with libfpx ("FlashPIX") again. FlashPIX is
+  not recommended for any production work due to libfpx having a
+  defective API, bad behavior, and many implementation issues
+  (especially memory leaks).
 
 Behavior Changes:
 
