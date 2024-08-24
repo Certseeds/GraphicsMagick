@@ -2903,7 +2903,7 @@ MagickParseSubImageSpecification(const char *subimage_spec,
         }
       if ((status != MagickFail) && (*q == '\0'))
         {
-          subrange -= (long)subimage-1;
+          subrange -= subimage-1; /* Coverity 427451 Overflowed constant (when subimage=0) */
           *subimage_ptr=subimage;
           *subrange_ptr=subrange;
           status=MagickPass;

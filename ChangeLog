@@ -1,5 +1,8 @@
 2024-08-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/fpx.c: Coverity fixes for "dead code" and an integer
+	overflow issue.
+
 	* magick/image.c (MagickParseSubImageSpecification): Fix
 	SourceForge issue "#746 Off-by-one-error when converting PDF with
 	multiple pages". Also add additional sanity checking.
