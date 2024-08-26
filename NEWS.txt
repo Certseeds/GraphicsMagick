@@ -19,6 +19,47 @@ release and not attempt to patch older releases.
 .. contents::
   :local:
 
+
+1.3.45 (August ??, 2024)
+===========================
+
+Special Issues:
+
+* GraphicsMagick needs some additional productive volunteers.  For
+  several years now, the burden has entirely been on me (Bob
+  Friesenhahn).  I have been sheparding the project for 22 years
+  already (and contributed to ImageMagick and GraphicsMagick combined
+  for 28 years already).  Volunteers are needed to add/improve
+  new/existing file format support, and to assure correct operation on
+  all targets.
+
+Security Fixes:
+
+* None
+
+Bug fixes:
+
+* Fix off-by-one bug added by the 1.3.44 release to the sub-image
+  specification parser, and which resulted in one less page being
+  returned than expected (SourceForge bug #746 Off-by-one-error when
+  converting PDF with multiple pages).
+
+New Features:
+
+* None
+
+API Updates:
+
+* None
+
+Behavior Changes:
+
+* None
+
+Build Changes:
+
+* None
+
 1.3.44 (August 18, 2024)
 ===========================
 

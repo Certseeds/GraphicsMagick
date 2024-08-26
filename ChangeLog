@@ -1,3 +1,7 @@
+2024-08-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news.
+
 2024-08-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/fpx.c: Coverity fixes for "dead code" and an integer
