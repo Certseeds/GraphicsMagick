@@ -20,7 +20,7 @@ release and not attempt to patch older releases.
   :local:
 
 
-1.3.45 (August ??, 2024)
+1.3.45 (August 27, 2024)
 ===========================
 
 Special Issues:
