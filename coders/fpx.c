@@ -63,6 +63,7 @@
 #    include "Fpxlib.h"
 #  endif
 #endif
+#define DEAD_CODE 0
 
 /*
   Forward declarations.
@@ -446,7 +447,8 @@ static Image *ReadFPXImage(const ImageInfo *image_info,ExceptionInfo *exception)
     {
       width>>=1;
       height>>=1;
-      subimage--;
+      if (subimage != 0)
+        subimage--;
     }
   image->depth=8;
   image->columns=width;
@@ -693,6 +695,7 @@ ModuleExport void UnregisterFPXImage(void)
 %
 */
 
+#if DEAD_CODE
 static void ColorTwistMultiply(FPXColorTwistMatrix first,
   FPXColorTwistMatrix second,FPXColorTwistMatrix *color_twist)
 {
@@ -873,6 +876,7 @@ static void SetSaturation(double saturation,FPXColorTwistMatrix *color_twist)
   ColorTwistMultiply(*color_twist,effect,&result);
   *color_twist=result;
 }
+#endif /* if DEAD_CODE */
 
 static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
 {
@@ -1076,6 +1080,7 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
                                   image->columns,image->rows))
         break;
   }
+#if DEAD_CODE /* Obviously not finished with implementation since does nothing */
   if (image_info->view != (char *) NULL)
     {
       FPXAffineMatrix
@@ -1201,6 +1206,7 @@ static unsigned int WriteFPXImage(const ImageInfo *image_info,Image *image)
               image);
         }
     }
+#endif /* if DEAD_CODE */
   (void) FPX_CloseImage(flashpix);
   FPX_ClearSystem();
   MagickFreeResourceLimitedMemory(pixels);

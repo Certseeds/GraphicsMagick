@@ -1,3 +1,23 @@
+2024-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/index.rst, www/Changes.rst: 1.3.45 is released in 2024.
+
+	* version.sh: Updates in preparation for the 1.3.45 release.
+
+2024-08-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* NEWS.txt: Update the news.
+
+2024-08-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/fpx.c: Coverity fixes for "dead code" and an integer
+	overflow issue.
+
+	* magick/image.c (MagickParseSubImageSpecification): Fix
+	SourceForge issue "#746 Off-by-one-error when converting PDF with
+	multiple pages". Also add additional sanity checking.
+	Unfortunately, this is a regression added in the 1.3.44 release.
+
 2024-08-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/Changes.rst: 1.3.44 is released in 2024.
