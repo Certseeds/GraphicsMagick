@@ -13165,7 +13165,7 @@ printf "%s\n" "$as_me: configuring ${PACKAGE_NAME} ${PACKAGE_VERSION}" >&6;}
 
     # Configure the installer.
 
-    INSTALL='$(SHELL) $(srcdir)/tclconfig/install-sh -c'
+    INSTALL='$(SHELL) $(top_srcdir)/unix/config/install-sh -c'
     INSTALL_DATA_DIR='${INSTALL} -d -m 755'
     INSTALL_DATA='${INSTALL} -m 644'
     INSTALL_PROGRAM='${INSTALL} -m 755'
