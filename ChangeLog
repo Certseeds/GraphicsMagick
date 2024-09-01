@@ -1,3 +1,12 @@
+2024-09-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* TclMagick/unix/m4/tcl.m4: Update tcl.m4 to TEA_VERSION 3.10.
+
+	* TclMagick/generic/pkgIndex.tcl: Remove generated file.
+
+	* TclMagick/generic: Regenerate Autotool's generated files with
+	autoconf 2.71 and automake 1.16.5.
+
 2024-08-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/index.rst, www/Changes.rst: 1.3.45 is released in 2024.

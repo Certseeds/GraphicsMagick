@@ -1,5 +1,5 @@
-			      TclMagick
-			      =========
+                              TclMagick
+                              =========
 
 TclMagick install instructions.
 
@@ -12,16 +12,14 @@ GraphicsMagick.
 
 0) If there is no configure script (you are fetching from CVS, for
    instance), try running the genconf.sh script.  It runs aclocal,
-   autoconf, and automake --add-missing, in that order.  Be sure to
-   use recent versions of the autotools (1.8 works for me, 1.4
-   doesn't).
+   autoconf, and automake --add-missing, in that order.
 
 1) Run the ./configure script.  The following arguments are
    recommended:
 
 ./configure \
-  --with-tcl=/usr/lib/tcl8.4/ \
-  --with-tk=/usr/lib/tk8.4/ \
+  --with-tcl=/usr/lib/tcl8.6/ \
+  --with-tk=/usr/lib/tk8.6/ \
   --with-magick=/usr/local/bin/GraphicsMagickWand-config \
 
 Others that might very well be helpful are --enable-shared.
@@ -61,25 +59,24 @@ Windows platform:
 * Compile TclMagick using MS Visual C++ 6.0
   - Open the VC++ workspace in the TclMagick\win directory
   - Change the include path and library path to your IM/GM directory:
-  	Project settings - All configurations - C/C++ - preprocessor
-  	Project settings - All configurations - Linker - input
+        Project settings - All configurations - C/C++ - preprocessor
+        Project settings - All configurations - Linker - input
   - Compile the project, the compiled DLL's are in
-  	Debug\TclMagick.dll
-  	Release\TclMagick.dll
-  
+        Debug\TclMagick.dll
+        Release\TclMagick.dll
+
 * Run the test-suite
   - Change to the TclMagick\tests directory
   - By default the debug version is used: Debug\TclMagick.dll
   - Run the three test-*.tcl scripts
     Resulting images are written to the TclMagick\tmp directory
 
-* Use TclMagick 
+* Use TclMagick
   As a library package:
-      - Copy the pkgIndex.tcl and TclMagick.dll files to your Tcl-library    
+      - Copy the pkgIndex.tcl and TclMagick.dll files to your Tcl-library
       - Load the library with
-      		package require TclMagick
+                package require TclMagick
   By directly loadind the DLL:
       - Copy the TclMagick.dll to your desired destination
       - Load the library with
-      		load TclMagick.dll
- 
+                load TclMagick.dll
