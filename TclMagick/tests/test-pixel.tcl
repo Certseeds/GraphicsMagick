@@ -7,7 +7,7 @@
 
 
 ############################################
-# Load debugging version 
+# Load debugging version
 # or require TclMagick package from library
 #
 if { $tcl_platform(platform) == "unix" } {
@@ -16,7 +16,7 @@ if { $tcl_platform(platform) == "unix" } {
 } else {
     set dll [file join .. win debug tclMagick.dll]
     if {[file exists $dll]} {
-	load $dll
+        load $dll
     }
     package require TclMagick
 }
@@ -25,9 +25,9 @@ puts [info script]
 ############################################
 # Command debugging
 #
-catch { 
-    wm withdraw . 
-    console show 
+catch {
+    wm withdraw .
+    console show
     console eval {wm protocol . WM_DELETE_WINDOW exit}
 }
 proc debug {args} {
@@ -70,22 +70,22 @@ proc TestPixel {} {
 
     $pix SetColor rgb(10%)
     ShowPixel $pix
-    
+
     $pix SetColor rgb(20%,30%)
     ShowPixel $pix
-    
+
     $pix SetColor rgb(30%,40%,50%)
     ShowPixel $pix
-    
+
     $pix SetColor rgb(80%,,20%)
     ShowPixel $pix
-    
+
     $pix SetColor rgb(30,40,50)
     ShowPixel $pix
-    
+
     $pix color #99B2FF
     ShowPixel $pix
-    
+
     $pix set red 0.1 green 0.2 blue 0.3 opacity 0.4
     ShowPixel $pix
 
@@ -103,7 +103,7 @@ proc TestPixel {} {
     $pix SetBlue 0.7
     $pix SetOpacity 0.6
     ShowPixel $pix
-    
+
     $pix SetRedQuantum 12345
     $pix SetGreenQuantum 23456
     $pix SetBlueQuantum 34567
@@ -115,7 +115,7 @@ proc TestPixel {} {
     $pix SetYellow 0.7
     $pix SetBlack 0.6
     ShowPixel $pix
-    
+
     $pix SetCyanQuantum 12345
     $pix SetMagentaQuantum 23456
     $pix SetYellowQuantum 34567
@@ -124,7 +124,7 @@ proc TestPixel {} {
 
     $pix SetQuantumColor {100 150 200 250}
     ShowPixel $pix
-    
+
     magick delete $pix
 }
 

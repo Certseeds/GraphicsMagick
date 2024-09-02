@@ -12,8 +12,8 @@ package require TkMagick
 
 # magickimage --
 #
-#	Takes a file name, and returns the name of an image that can
-#	be used with Tk.
+#       Takes a file name, and returns the name of an image that can
+#       be used with Tk.
 
 proc magickimage {filename} {
     set magimg [magick create wand]

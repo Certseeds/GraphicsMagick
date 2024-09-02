@@ -17,7 +17,7 @@ if { $tcl_platform(platform) == "unix" } {
 } else {
     set dll [file join .. win debug tclMagick.dll]
     if {[file exists $dll]} {
-	load $dll
+        load $dll
     }
     package require TclMagick
 }
@@ -42,9 +42,9 @@ set TestFunctions {
 ############################################
 # Command debugging
 #
-catch { 
-    wm withdraw . 
-    console show 
+catch {
+    wm withdraw .
+    console show
     console eval {wm protocol . WM_DELETE_WINDOW exit}
 }
 proc debug {args} {
@@ -66,7 +66,7 @@ proc DrawTest {img} {
     set wand [$img clone imgX]
     set draw [magick create draw draw0]
     debug $draw $wand
-    
+
     [magick create pixel pix0] SetColor "lightblue"
     [magick create pixel pix1] SetColor "blue"
     [magick create pixel pix2] SetColor "red"
@@ -118,21 +118,21 @@ proc DrawTest {img} {
         $draw SetFillColor pix0
         $draw Color 0 0 replace
     $draw PopGraphicContext
-    
+
     $wand DrawImage $draw
     $wand WriteImage "$::TMP/y-Draw-%0d.bmp"
-    
-    magick delete pix0 pix1 pix2 pix3 pix4 pix5 pix6 pix7 pix8 
+
+    magick delete pix0 pix1 pix2 pix3 pix4 pix5 pix6 pix7 pix8
     magick delete $draw $wand
 }
 
 ##########################################
-# 
+#
 #
 proc DLR_logo {draw color x y scale} {
 
     $draw PushGraphicContext
-    
+
     $draw SetStrokeColor $color
     $draw SetFillColor $color
     $draw SetStrokeWidth 0.0
@@ -140,7 +140,7 @@ proc DLR_logo {draw color x y scale} {
     $draw Scale $scale
     $draw path start move [expr {$x+72.5}] [expr {$y+0.0}]
     $draw path {
-        # "Diagonal part of the DLR bird" 
+        # "Diagonal part of the DLR bird"
         -relative on
         line -45 +45 vertical +31 line +45 -45 vertical -31
         line -5 +12
@@ -204,16 +204,16 @@ proc DLR_logo {draw color x y scale} {
             horizontal -2
             line -2.5 +10.5
             close
-	    finish
+            finish
         }
     }
-    $draw PopGraphicContext    
+    $draw PopGraphicContext
 }
 proc PathTest {img} {
     set wand [$img clone imgX]
     set draw [magick create draw draw0]
     debug $draw $wand
-    
+
     [magick create pixel pix0] SetColor "gray"
     [magick create pixel pix1] SetColor "black"
 
@@ -222,7 +222,7 @@ proc PathTest {img} {
 
     $wand DrawImage $draw
     $wand WriteImage "$::TMP/y-Path-%0d.bmp"
-    
+
     magick delete $draw $wand
 }
 
@@ -262,4 +262,3 @@ puts "##### DRAW TEST READY #####"
 if {!$ERRORS} {
     after 3000 exit
 }
-

@@ -7,7 +7,7 @@
 
 
 ############################################
-# Load debugging version 
+# Load debugging version
 # or require TclMagick package from library
 #
 if { $tcl_platform(platform) == "unix" } {
@@ -170,7 +170,7 @@ set TestFunctions {
     StereoImage                 img     1
     StripImage                  img     1
     SwirlImage                  img     1
-    TextureImage                img     1    
+    TextureImage                img     1
     ThresholdImage              img     1
     ThresholdImageChannel       img     1
     TintImage                   img     0
@@ -185,9 +185,9 @@ set TestFunctions {
 ############################################
 # Command debugging
 #
-catch { 
-    wm withdraw . 
-    console show 
+catch {
+    wm withdraw .
+    console show
     console eval {wm protocol . WM_DELETE_WINDOW exit}
 }
 proc debug {args} {
@@ -237,7 +237,7 @@ proc AffineTransformImage {img} {
     set wand [$img clone imgX]
     set draw [magick create drawing]
     debug $wand $draw
-   
+
     $draw Rotate 10
     $draw Affine 1.0 3.0 3.0 2.0 2.0 2.0
     $wand AffineTransformImage $draw
@@ -249,7 +249,7 @@ proc AnnotateImage {img} {
     set wand [$img clone imgX]
     set draw [magick create drawing]
     debug $wand $draw
-   
+
     [magick create pixel pix] SetColor "blue"
     $draw push graph
         $draw SetStrokeWidth 1
@@ -257,7 +257,7 @@ proc AnnotateImage {img} {
         $draw SetFillColor pix
         $draw SetFontSize 18
     $draw pop graph
-    
+
     $wand AnnotateImage $draw 20 50 0 "Hello world"
     $wand WriteImage "$::TMP/x-Annotate.jpg"
 
@@ -281,7 +281,7 @@ proc BlackThresholdImage {img} {
     debug $wand $pix
 
     $pix set red 0.5 green 0.5 blue 0.5
-    $pix GetColor 
+    $pix GetColor
     $wand BlackThresholdImage $pix
     $wand WriteImage "$::TMP/x-BlackThreshold.jpg"
 
@@ -298,9 +298,9 @@ proc BorderImage {img} {
     set wand [$img clone imgX]
     set pix [magick create pixel]
     debug $wand $pix
-    
+
     $pix set red 1.0 green 1.0 blue 0.0
-    $pix GetColor 
+    $pix GetColor
     $wand BorderImage $pix 4 6
     $wand WriteImage "$::TMP/x-Border.jpg"
 
@@ -323,7 +323,7 @@ proc ChopImage {img} {
 proc ClipImage {img} {
     set wand [magick create wand]
     debug $wand
-    
+
     $wand ReadImage $::CLIP
     $wand ClipImage
     $wand GammaImage 5.0
@@ -334,7 +334,7 @@ proc ClipImage {img} {
 proc ClipPathImage {img} {
     set wand [magick create wand]
     debug $wand
-    
+
     $wand ReadImage $::CLIP
     $wand ClipPathImage "#1" 0
     $wand SolarizeImage 3
@@ -371,18 +371,18 @@ proc ColorizeImage {img} {
     set fill [magick create pixel]
     set opacity [magick create pixel]
     debug $wand $fill $opacity
-    
+
     $fill color rgb(70%,0,0)
     $opacity SetColor rgb(0,0,0)
     $wand ColorizeImage $fill $opacity
-    
+
     $wand WriteImage "$::TMP/x-Colorize.jpg"
     magick delete $fill $opacity $wand
 }
 proc CommentImage {img} {
     set wand [$img clone imgX]
     debug $wand
-    $wand CommentImage "This is a comment"    
+    $wand CommentImage "This is a comment"
     $wand WriteImage "$::TMP/x-Comment.jpg"
     magick delete $wand
 }
@@ -405,8 +405,8 @@ proc CompareImageChannels {img} {
 proc CompositeImage {img} {
     set wand [$img clone imgX]
     set bg [magick create pixel]
-    debug $wand $bg 
-    
+    debug $wand $bg
+
     $bg SetColor rgb(50%,50%,50%)
     $wand rotate $bg 90
     $wand CompositeImage $img add 0 0
@@ -465,13 +465,13 @@ proc DrawImage {img} {
     set wand [$img clone imgX]
     set draw [magick create draw drawX]
     debug $wand $draw
-   
+
     [magick create pixel whitePix] SetColor "white"
     [magick create pixel bluePix]  SetColor "blue"
     [magick create pixel redPix]   SetColor "red"
-    
+
     $draw push graph
-        $draw Rotate -45    
+        $draw Rotate -45
         $draw push graph
             $draw SetStrokeWidth 2
             $draw SetFillColor whitePix
@@ -495,7 +495,7 @@ proc DrawImage {img} {
         $draw SetFontSize 14
         $draw Annotation 10 400 "Image %wx%h (%xx%y dpi) format=%m size=%b"
     $draw pop graph
-    
+
     $wand DrawImage $draw
     $wand WriteImage "$::TMP/x-Draw.jpg"
 
@@ -555,11 +555,11 @@ proc FrameImage {img} {
     set wand [$img clone imgX]
     set frm [magick create pixel]
     debug $wand $frm
-    
+
     $frm set red 1.0 green 1.0 blue 0
-    $frm GetColor 
+    $frm GetColor
     $wand FrameImage $frm 8 8 3 3
-    
+
     $wand WriteImage "$::TMP/x-Frame.jpg"
     magick delete $frm $wand
 }
@@ -576,18 +576,18 @@ proc FxImageChannel {img} {
 proc GammaImage {img} {
     set wand [$img clone imgX]
     debug $wand
-    
+
     $wand GammaImage 2.0
-    
+
     $wand WriteImage "$::TMP/x-Gamma.jpg"
     magick delete $wand
 }
 proc GammaImageChannel {img} {
     set wand [$img clone imgX]
     debug $wand
-    
+
     $wand GammaImageChannel blue 2.0
-    
+
     $wand WriteImage "$::TMP/x-GammaChannel.jpg"
     magick delete $wand
 }
@@ -601,15 +601,15 @@ proc GetSetImage {seq} {
     while {[$wand HasNext]} {
         $wand SetImage $new
         $wand NextImage
-    }    
+    }
     $wand WriteImages "$::TMP/x-SetImage.gif" 1
-    
+
     magick delete $wand $new
 }
 proc GetSetFilename {img} {
     set wand [$img clone imgX]
     debug $wand
-    
+
     $img GetFilename
     $wand filename "foo.jpg"
     $wand filename
@@ -627,7 +627,7 @@ proc GetSetBackgroundColor {img} {
     $wand SetBackgroundColor $pix
     $pix set red 0 green 0 blue 0
     $wand GetBackgroundColor $pix
-    $pix GetColor 
+    $pix GetColor
 
     magick delete $pix $wand
 }
@@ -650,7 +650,7 @@ proc GetSetBorderColor {img} {
     $wand SetBorderColor $pix
     $pix set red 0 green 0 blue 0
     $wand GetBorderColor $pix
-    $pix GetColor 
+    $pix GetColor
 
     magick delete $pix $wand
 }
@@ -677,10 +677,10 @@ proc GetSetColormapColor {img} {
 
     $pix set red 0 green 0.5 blue 0.7
     $wand SetColormapColor 0 $pix
-    $pix GetColor 
+    $pix GetColor
     $pix set red 0 green 0 blue 0
     $wand GetColormapColor 0 $pix
-    $pix GetColor 
+    $pix GetColor
 
     magick delete $pix $wand
 }
@@ -813,10 +813,10 @@ proc GetSetMatteColor {img} {
 
     $pix set red 0 green 0.5 blue 0.7
     $wand SetMatteColor $pix
-    $pix GetColor 
+    $pix GetColor
     $pix set red 0 green 0 blue 0
     $wand GetMatteColor $pix
-    $pix GetColor 
+    $pix GetColor
 
     magick delete $pix $wand
 }
@@ -876,7 +876,7 @@ proc GetSetRemoveSetProfile {img} {
     debug $wand
     $wand SetProfile ICC HALLO
     $wand WriteImage "$::TMP/x-Profile.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc GetSetRedPrimary {img} {
     set wand [$img clone imgX]
@@ -974,7 +974,7 @@ proc GetSetSamplingFactors {img} {
 proc GetSetSize {img} {
     set wand [$img clone imgX]
     debug $wand
-    
+
     $img GetSize
     $wand size 100 200
     $wand size
@@ -995,35 +995,35 @@ proc GetSetWhitePoint {img} {
 }
 proc ImplodeImage {img} {
     set wand [$img clone imgX]
-    debug $wand  
+    debug $wand
     $wand ImplodeImage 1.0
     $wand WriteImage "$::TMP/x-Implode.jpg"
     magick delete $wand
 }
 proc LabelImage {img} {
     set wand [$img clone imgX]
-    debug $wand  
+    debug $wand
     $wand LabelImage "This is my label"
     $wand WriteImage "$::TMP/x-Label.jpg"
     magick delete $wand
 }
 proc LevelImage {img} {
     set wand [$img clone imgX]
-    debug $wand  
+    debug $wand
     $wand LevelImage 10000 2.0 50000
     $wand WriteImage "$::TMP/x-Level.jpg"
     magick delete $wand
 }
 proc LevelImageChannel {img} {
     set wand [$img clone imgX]
-    debug $wand  
+    debug $wand
     $wand LevelImageChannel blue 10000 2.0 50000
     $wand WriteImage "$::TMP/x-LevelChannel.jpg"
     magick delete $wand
 }
 proc MagnifyImage {img} {
     set wand [$img clone imgX]
-    debug $wand  
+    debug $wand
     $wand MagnifyImage
     $wand WriteImage "$::TMP/x-Magnify.jpg"
     magick delete $wand
@@ -1032,7 +1032,7 @@ proc MapImage {img} {
     set wand [$img clone imgX]
     set map [magick create wand]
     debug $wand $map
-    
+
     $map ReadImage $::MAP
     $wand MapImage $map
     $wand WriteImage "$::TMP/x-Map.jpg"
@@ -1042,10 +1042,10 @@ proc MatteFloodfillImage {img} {
     set wand [$img clone imgX]
     set pix [magick create pixel]
     debug $wand $pix
-    
+
     $pix color rgb(50%,50%,50%)
 #    $pix set red 0.5 green 0.5 blue 0.5
-    $pix GetColor 
+    $pix GetColor
     $wand MatteFloodfillImage 30000 10.0 $pix
     $wand WriteImage "$::TMP/x-MatteFlood.gif"
     magick delete $wand $pix
@@ -1055,27 +1055,27 @@ proc MedianFilterImage {img} {
     debug $wand
     $wand MedianFilterImage 3
     $wand WriteImage "$::TMP/x-Median.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc MinifyImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand MinifyImage
     $wand WriteImage "$::TMP/x-Minify.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc ModulateImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand ModulateImage +90 +50 -30
     $wand WriteImage "$::TMP/x-Modulate.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc MontageImage {seq} {
     set wand [$seq clone seqX]
     set draw [magick create drawing drawX]
     debug $wand $draw
-   
+
     set x [$wand MontageImage $draw "40x40" "400x400" frame "4x4" imgX]
     $x WriteImage "$::TMP/x-Montage.jpg"
 
@@ -1093,28 +1093,28 @@ proc MosaicImages {seq} {
     set wand [$seq MosaicImages imgX]
     debug $wand
     $wand WriteImage "$::TMP/x-Mosaic.gif"
-    magick delete $wand 
+    magick delete $wand
 }
 proc MotionBlurImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand MotionBlurImage 0 5 45
     $wand WriteImage "$::TMP/x-MotionBlur.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc NegateImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand NegateImage no
     $wand WriteImage "$::TMP/x-Negate.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc NormalizeImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand NormalizeImage
     $wand WriteImage "$::TMP/x-Normalize.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc NextPrevious {seq} {
     set wand [$seq clone seqX]
@@ -1125,10 +1125,10 @@ proc NextPrevious {seq} {
         $wand SetIndex $i
         $wand HasPrevious
         $wand HasNext
-    }    
+    }
     $wand ResetIterator
-    $wand GetIndex 
-    
+    $wand GetIndex
+
     magick delete $wand
 }
 proc OilPaintImage {img} {
@@ -1136,7 +1136,7 @@ proc OilPaintImage {img} {
     debug $wand
     $wand OilPaintImage 3
     $wand WriteImage "$::TMP/x-OilPaint.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc OpaqueImage {img} {
     set wand [$img clone imgX]
@@ -1148,19 +1148,19 @@ proc OpaqueImage {img} {
     $pix2 color rgb(0,100%,100%)
     $wand OpaqueImage $pix1 $pix2 10
     $wand WriteImage "$::TMP/x-Opaque.jpg"
-    
+
     magick delete $wand $pix1 $pix2
 }
 proc PingImage {filename} {
     set wand [magick create wand imgX]
     debug $wand
-    
+
     $wand PingImage $filename
     $wand GetFormat
     $wand GetHeight
     $wand GetWidth
     $wand GetImageSize
-    
+
     magick delete $wand
 }
 proc PreviewImages {img} {
@@ -1181,19 +1181,19 @@ proc QuantizeImage {img} {
     debug $wand
     $wand QuantizeImage 10 GRAY 1 no no
     $wand WriteImage "$::TMP/x-Quantize.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc RaiseImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand RaiseImage 100 100 100 100 yes
     $wand WriteImage "$::TMP/x-Raise.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc ReadImageBlob {filename} {
     set wand [magick create wand imgX]
     debug $wand
-    
+
     set f [open $filename r]
     fconfigure $f -translation binary
     set data [read $f]
@@ -1201,7 +1201,7 @@ proc ReadImageBlob {filename} {
 
     $wand ReadImageBlob $data
     $wand GetNumberImages
-    
+
     magick delete $wand
 }
 proc ReduceNoiseImage {img} {
@@ -1210,7 +1210,7 @@ proc ReduceNoiseImage {img} {
     $wand AddNoise impulse
     $wand ReduceNoiseImage 1
     $wand WriteImage "$::TMP/x-ReduceNoise.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc RemoveImage {seq} {
     set wand [$seq clone seqX]
@@ -1220,10 +1220,10 @@ proc RemoveImage {seq} {
     $wand SetIndex 1
     while {[$wand HasNext]} {
         $wand RemoveImage
-    }    
+    }
     $wand GetNumberImages
     $wand WriteImages "$::TMP/x-Remove.gif" 1
-    
+
     magick delete $wand
 }
 proc ResampleImage {img} {
@@ -1231,12 +1231,12 @@ proc ResampleImage {img} {
     debug $wand
     $wand ResampleImage 150 150 triangle 2.0
     $wand WriteImage "$::TMP/x-Resample.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc ResizeImage {img} {
     set wand [$img clone imgX]
     debug $wand
-    
+
     $wand ResizeImage 100 200 triangle
     $wand WriteImage "$::TMP/x-Resize.jpg"
     magick delete $wand
@@ -1247,13 +1247,13 @@ proc RollImage {img} {
     $wand TrimImage
     $wand RollImage -60 -30
     $wand WriteImage "$::TMP/x-Roll.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc RotateImage {img} {
     set wand [$img clone imgX]
     set bg [magick create pixel]
-    debug $wand $bg 
-    
+    debug $wand $bg
+
     $bg color rgb(50%,50%,50%)
     $wand RotateImage $bg -45
     $wand WriteImage "$::TMP/x-Rotate.jpg"
@@ -1265,20 +1265,20 @@ proc SampleImage {img} {
     debug $wand
     $wand SampleImage 200 300
     $wand WriteImage "$::TMP/x-Sample.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc ScaleImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand ScaleImage 300 200
     $wand WriteImage "$::TMP/x-Scale.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc SeparateImageChannel {img} {
     # Test RGB space
     foreach chan {red green blue} {
         set wand [$img clone imgX]
-        debug $wand    
+        debug $wand
         $wand SeparateImageChannel $chan
         $wand WriteImage "$::TMP/x-Separate-$chan.jpg"
         magick delete $wand
@@ -1286,8 +1286,8 @@ proc SeparateImageChannel {img} {
     # Test CMYK space
     foreach chan {cyan magenta yellow black} {
         set wand [$img clone imgX]
-	$wand SetColorspace "CMYK"
-        debug $wand    
+        $wand SetColorspace "CMYK"
+        debug $wand
         $wand SeparateImageChannel $chan
         $wand WriteImage "$::TMP/x-Separate-$chan.jpg"
         magick delete $wand
@@ -1296,36 +1296,36 @@ proc SeparateImageChannel {img} {
 proc SetOption {img} {
     set wand [$img clone imgX]
     debug $wand
-    $wand SetOption "jpeg" "perserve" "yes" 
+    $wand SetOption "jpeg" "perserve" "yes"
     $wand WriteImage "$::TMP/x-SetOption.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc SetPassphrase {img} {
     set wand [$img clone imgX]
     debug $wand
-    $wand SetPassphrase "foo" 
+    $wand SetPassphrase "foo"
     $wand WriteImage "$::TMP/x-Passphrase.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc SharpenImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand SharpenImage 4.0 2.0
     $wand WriteImage "$::TMP/x-Sharpen.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc ShaveImage {img} {
     set wand [$img clone imgX]
     debug $wand
     $wand ShaveImage 50 30
     $wand WriteImage "$::TMP/x-Shave.jpg"
-    magick delete $wand 
+    magick delete $wand
 }
 proc ShearImage {img} {
     set wand [$img clone imgX]
     set pix [magick create pixel pix1]
     debug $wand $pix
-    
+
     $pix color rgb(50%,50%,50%)
     $wand ShearImage $pix 30 20
     $wand WriteImage "$::TMP/x-Shear.jpg"
@@ -1353,7 +1353,7 @@ proc SteganoImage {img} {
     $water resize 50 50
     set new [$wand SteganoImage $water]
     $new WriteImage "$::TMP/x-Stegano.jpg"
-    
+
     magick delete $wand $water $new
 }
 proc StereoImage {img} {
@@ -1386,11 +1386,11 @@ proc TextureImage {img} {
     set wand [$img clone imgX]
     set text [magick create wand]
     debug $wand $text
-    
+
     $text ReadImage "xc:gray"
-    $text ResizeImage 500 500 
+    $text ResizeImage 500 500
     $wand ResizeImage 110 110 triangle
-    
+
     set new [$text TextureImage $wand]
     $new WriteImage "$::TMP/x-Texture.jpg"
 
@@ -1415,7 +1415,7 @@ proc TintImage {img} {
     set pix1 [magick create pixel pix1]
     set pix2 [magick create pixel pix2]
     debug $wand $pix1 $pix2
-    
+
     $pix1 color "blue"
     $pix2 color "black"
     $wand TintImage $pix1 $pix2
@@ -1425,7 +1425,7 @@ proc TintImage {img} {
 }
 proc TransformImage {img} {
     set wand [$img TransformImage "200x300+250+100" "600x600"]
-    debug $wand 
+    debug $wand
     $wand WriteImage "$::TMP/x-Transform.gif"
     magick delete $wand
 }
@@ -1433,7 +1433,7 @@ proc TransparentImage {img} {
     set wand [$img clone imgX]
     set pix [magick create pixel]
     debug $wand $pix
-    
+
     $pix color "blue"
     $wand TransparentImage $pix 40000 100
     $wand WriteImage "$::TMP/x-Transparent.gif"
@@ -1465,7 +1465,7 @@ proc WhiteThresholdImage {img} {
     set wand [$img clone imgX]
     set pix [magick create pixel]
     debug $wand $pix
-    
+
     $pix color "white"
     $wand WhiteThresholdImage $pix
     $wand WriteImage "$::TMP/x-WhiteThreshold.jpg"
@@ -1482,8 +1482,8 @@ if {! [file isdirectory $::TMP] } {
 }
 debug magick
 
-magick fonts 
-magick formats 
+magick fonts
+magick formats
 
 set img [magick create wand img0]
 set seq [magick create wand img1]
@@ -1515,7 +1515,7 @@ foreach {func var flag} $TestFunctions {
             incr ERRORS
             puts stderr $result
         }
-        # Check for unfree'd resources 
+        # Check for unfree'd resources
         #
         set num2 [llength [magick names]]
         if {! $err && ($num2 > $num1)} {

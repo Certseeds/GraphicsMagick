@@ -7,7 +7,7 @@
 
 
 ############################################
-# Load debugging version 
+# Load debugging version
 # or require TclMagick package from library
 #
 if { $tcl_platform(platform) == "unix" } {
@@ -60,11 +60,11 @@ proc compareImages {img1 img2} {
         magick delete $wand1
         magick delete $wand2
     }
-    
+
     if {[catch {eval $cmpCmd} err]} {
         # get stack trace
         set localinfo $::errorInfo
-        
+
         # free any left over wands
         foreach item [magick names] {
             magick delete $item
@@ -75,7 +75,7 @@ proc compareImages {img1 img2} {
 
         error $m $localinfo
     }
-    
+
     return $result
 }
 

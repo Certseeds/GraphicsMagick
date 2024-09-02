@@ -66,13 +66,13 @@ int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
     char *description;
 
     ExceptionType severity;
-    char msg[40];
+    /* char msg[40]; */
 
     description = MagickGetException(wandPtr, &severity);
     if( (description == NULL) || (strlen(description) == 0) ) {
         Tcl_AppendResult(interp, MagickGetPackageName(), ": Unknown error", NULL);
     } else {
-        sprintf(msg, "%s: #%d:", MagickGetPackageName(), severity); /* FIXME, not used! */
+        /* snprintf(msg, sizeof(msg), "%s: #%d:", MagickGetPackageName(), severity); */ /* FIXME, not used! */
         Tcl_AppendResult(interp, description, NULL);
     }
     if( description != NULL ) {
@@ -87,3 +87,10 @@ int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
 }
 
 /* vim: set ts=8 sts=8 sw=8 noet: */
+/*
+ * Local Variables:
+ * mode: c
+ * c-basic-offset: 4
+ * fill-column: 78
+ * End:
+ */

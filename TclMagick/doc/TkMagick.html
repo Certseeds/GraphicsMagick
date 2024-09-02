@@ -3,7 +3,7 @@
   <head>
     <title>TkMagick</title>
     <meta http-equiv="Content-Type" content="text/html;
-      charset=iso-8859-1">
+                                             charset=iso-8859-1">
     <link rel="stylesheet" href="style.css">
     <!-- $Id$ -->
   </head>
@@ -11,17 +11,17 @@
 
     <table>
       <tbody>
-	<tr>
-	  <td style="background-color: #ff6666; padding: 1ex; font-weight: bold;"><a href="index.html">Main</a></td>
-	  <td style="background-color: #66ff66; padding: 1ex; font-weight: bold;"><a href="TclMagick.html">TclMagick</a></td>
-	  <td style="background-color: #6666ff; padding: 1ex; font-weight: bold;"><a href="TkMagick.html">TkMagick</a></td>
-	  <td width="100%"></td>
-	  <td>
-		<a href="http://sourceforge.net/projects/tclmagick">
-		<img src="http://sourceforge.net/sflogo.php?group_id=96922&amp;type=2" width="125" height="37" border="0" 
-			alt="SourceForge.net Logo"></a>
-	  </td>
-	</tr>
+        <tr>
+          <td style="background-color: #ff6666; padding: 1ex; font-weight: bold;"><a href="index.html">Main</a></td>
+          <td style="background-color: #66ff66; padding: 1ex; font-weight: bold;"><a href="TclMagick.html">TclMagick</a></td>
+          <td style="background-color: #6666ff; padding: 1ex; font-weight: bold;"><a href="TkMagick.html">TkMagick</a></td>
+          <td width="100%"></td>
+          <td>
+            <a href="http://sourceforge.net/projects/tclmagick">
+              <img src="http://sourceforge.net/sflogo.php?group_id=96922&amp;type=2" width="125" height="37" border="0"
+                   alt="SourceForge.net Logo"></a>
+          </td>
+        </tr>
       </tbody>
     </table>
 
@@ -35,36 +35,36 @@
     </p>
     <ul>
       <li><b>magicktophoto</b> <i>magick_wand</i> <i>tk_image</i><br>
-	This command takes a pre-existing magick wand and tk photo
-	image and replaces the tk image's data with the magick wand's
-	data.
+        This command takes a pre-existing magick wand and tk photo
+        image and replaces the tk image's data with the magick wand's
+        data.
       </li>
       <li><b>phototomagick</b> <i>tk_image</i> <i>magick_wand</i><br>
-	This command takes a pre-existing tk photo image and magick
-	wand as arguments, and replaces the magick wand's image with
-	that contained in the tk image.
+        This command takes a pre-existing tk photo image and magick
+        wand as arguments, and replaces the magick wand's image with
+        that contained in the tk image.
       </li>
     </ul>
     <h3>Example:</h3>
     <pre>
-proc magickimage {filename} {
-    set magimg [magick create wand]
-    set tkimg [image create photo]
-    $magimg ReadImage $filename
-    magicktophoto $magimg $tkimg
-    magick delete $magimg
-    return $tkimg
-}
+      proc magickimage {filename} {
+        set magimg [magick create wand]
+        set tkimg [image create photo]
+        $magimg ReadImage $filename
+        magicktophoto $magimg $tkimg
+        magick delete $magimg
+        return $tkimg
+      }
 
-set poolphoto [magickimage [file join $dirname .. images pool.jpg]]
-label .im
-.im configure -image $poolphoto
-pack .im
-bind . &lt;q&gt; exit
+      set poolphoto [magickimage [file join $dirname .. images pool.jpg]]
+      label .im
+      .im configure -image $poolphoto
+      pack .im
+      bind . &lt;q&gt; exit
     </pre>
 
     <small>Copyright 2004 Rolf Schr&ouml;dter and David
-    N. Welton</small>
+      N. Welton</small>
 
   </body>
 </html>

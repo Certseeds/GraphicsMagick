@@ -22,7 +22,7 @@ typedef struct {
                                 * pointer */
     Tcl_Command     magickCmd; /* Token for magick command, used to
                                 * delete it */
-    Tcl_Interp      *interp;   /* Tcl interpreter owing the object */
+    Tcl_Interp      *interp;   /* Tcl interpreter owning the object */
     Tcl_HashEntry   *hashPtr;  /* Hash entry for this structure, used
                                 * to delete it */
 } TclMagickObj;
