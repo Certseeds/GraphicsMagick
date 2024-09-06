@@ -1,4 +1,4 @@
-.TH gm 1 "2024/08/04" "GraphicsMagick"
+.TH gm 1 "2024/09/06" "GraphicsMagick"
 .TP
 .in 15
 .in 15
@@ -2385,7 +2385,7 @@ before the changes are obvious.
 .B "-fill \fI<color>"\fP
 \fRcolor to use when filling a graphic primitive
 
-Colors are represented in GraphicsMagick in the same form used by SVG. Use "gm convert -list color" to list named colors:
+Colors are represented in GraphicsMagick in a form similar to SVG. Use "gm convert -list color" to list named colors:
 
 .nf
     name               (named color)
@@ -2396,9 +2396,8 @@ Colors are represented in GraphicsMagick in the same form used by SVG. Use "gm c
     #RGBA              (4 bits each)
     #RRGGBBAA          (8 bits each)
     #RRRGGGBBBAAA      (12 bits each)
-    #RRRRGGGGBBBBAAAA  (16 bits each)
-    rgb(r,g,b)         (r,g,b are decimal numbers)
-    rgba(r,g,b,a)      (r,g,b,a are decimal numbers)
+    rgb(r,g,b)         (r,g,b are decimal numbers, range 0 to 255)
+    rgba(r,g,b,a)      (r,g,b,a are decimal numbers, range 0 to 255)
 .fi
 
 Enclose the color specification in quotation marks to prevent the "#"
@@ -2412,8 +2411,8 @@ For example,
     gm convert -fill "rgb(65000,65000,65535)" ...
 .fi
 
-The shorter forms are scaled up, if necessary by replication.  For example, 
-#3af, #33aaff, and #3333aaaaffff are all equivalent.
+The shorter forms are scaled up, if necessary by replication.  For example,
+ #3af, #33aaff, and #3333aaaaffff are all equivalent.
 
 See \fB-draw\fP for further details.
 .TP

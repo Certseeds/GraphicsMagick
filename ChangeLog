@@ -1,3 +1,9 @@
+2024-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* doc/options.imdoc: Remove mention of RRRRGGGGBBBBAAAA, due to an
+	interpretation conflict.  Addresses SourceForge issue #747
+	"#RRRGGGBBBAAA and #RRRRGGGGBBBB color names conflict".
+
 2024-09-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* TclMagick/: White-space clean-up and consistent indentation.

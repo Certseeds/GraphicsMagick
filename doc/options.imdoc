@@ -2231,7 +2231,7 @@ before the changes are obvious.</pp>
 <abs>color to use when filling a graphic primitive</abs>
 
 <pp>
-Colors are represented in GraphicsMagick in the same form used by SVG. Use "gm convert -list color" to list named colors:</pp>
+Colors are represented in GraphicsMagick in a form similar to SVG. Use "gm convert -list color" to list named colors:</pp>
 
 <pp><pre>
     name               (named color)
@@ -2242,9 +2242,8 @@ Colors are represented in GraphicsMagick in the same form used by SVG. Use "gm c
     #RGBA              (4 bits each)
     #RRGGBBAA          (8 bits each)
     #RRRGGGBBBAAA      (12 bits each)
-    #RRRRGGGGBBBBAAAA  (16 bits each)
-    rgb(r,g,b)         (r,g,b are decimal numbers)
-    rgba(r,g,b,a)      (r,g,b,a are decimal numbers)
+    rgb(r,g,b)         (r,g,b are decimal numbers, range 0 to 255)
+    rgba(r,g,b,a)      (r,g,b,a are decimal numbers, range 0 to 255)
 </pre></pp>
 <pp>
 Enclose the color specification in quotation marks to prevent the "#"
@@ -2258,8 +2257,8 @@ For example,</pp>
 </pre></pp>
 
 <pp>
-The shorter forms are scaled up, if necessary by replication.  For example, 
-#3af, #33aaff, and #3333aaaaffff are all equivalent.</pp>
+The shorter forms are scaled up, if necessary by replication.  For example,
+ #3af, #33aaff, and #3333aaaaffff are all equivalent.</pp>
 
 <pp>
 See <s>-draw</s> for further details.</pp>
