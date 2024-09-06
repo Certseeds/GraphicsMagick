@@ -2420,16 +2420,18 @@ width=15><b><font face="Helvetica, Arial"
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Colors are represented in GraphicsMagick in a form similar to SVG. Use "gm convert -list color" to list named colors:</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
-    name               (named color)
-    #RGB               (hex numbers, 4 bits each)
-    #RRGGBB            (8 bits each)
-    #RRRGGGBBB         (12 bits each)
-    #RRRRGGGGBBBB      (16 bits each)
-    #RGBA              (4 bits each)
-    #RRGGBBAA          (8 bits each)
-    #RRRGGGBBBAAA      (12 bits each)
-    rgb(r,g,b)         (r,g,b are decimal numbers, range 0 to 255)
-    rgba(r,g,b,a)      (r,g,b,a are decimal numbers, range 0 to 255)
+    name                              (named color)
+    #RGB                              (hex numbers, 4 bits each)
+    #RRGGBB                           (8 bits each)
+    #RRRGGGBBB                        (12 bits each)
+    #RRRRGGGGBBBB                     (16 bits each)
+    #RRRRRRRRGGGGGGGGBBBBBBBB         (32 bits each)
+    #RGBA                             (4 bits each)
+    #RRGGBBAA                         (8 bits each)
+    #RRRRRRGGGGGGBBBBBB               (12 bits each)
+    #RRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA (32 bits each)
+    rgb(r,g,b)                        (r,g,b are decimal numbers, range 0 to 255)
+    rgba(r,g,b,a)                     (r,g,b,a are decimal numbers, range 0 to 255)
 </pre></font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Enclose the color specification in quotation marks to prevent the "#"

@@ -2234,16 +2234,18 @@ before the changes are obvious.</pp>
 Colors are represented in GraphicsMagick in a form similar to SVG. Use "gm convert -list color" to list named colors:</pp>
 
 <pp><pre>
-    name               (named color)
-    #RGB               (hex numbers, 4 bits each)
-    #RRGGBB            (8 bits each)
-    #RRRGGGBBB         (12 bits each)
-    #RRRRGGGGBBBB      (16 bits each)
-    #RGBA              (4 bits each)
-    #RRGGBBAA          (8 bits each)
-    #RRRGGGBBBAAA      (12 bits each)
-    rgb(r,g,b)         (r,g,b are decimal numbers, range 0 to 255)
-    rgba(r,g,b,a)      (r,g,b,a are decimal numbers, range 0 to 255)
+    name                              (named color)
+    #RGB                              (hex numbers, 4 bits each)
+    #RRGGBB                           (8 bits each)
+    #RRRGGGBBB                        (12 bits each)
+    #RRRRGGGGBBBB                     (16 bits each)
+    #RRRRRRRRGGGGGGGGBBBBBBBB         (32 bits each)
+    #RGBA                             (4 bits each)
+    #RRGGBBAA                         (8 bits each)
+    #RRRRRRGGGGGGBBBBBB               (12 bits each)
+    #RRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA (32 bits each)
+    rgb(r,g,b)                        (r,g,b are decimal numbers, range 0 to 255)
+    rgba(r,g,b,a)                     (r,g,b,a are decimal numbers, range 0 to 255)
 </pre></pp>
 <pp>
 Enclose the color specification in quotation marks to prevent the "#"
