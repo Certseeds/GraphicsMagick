@@ -41,6 +41,9 @@ printf "WORK=${WORK}\n"
 printf "OUT=${OUT}\n"
 printf "SRC=${SRC}\n"
 
+# Libtiff build now requires autoconf-archive
+apt install autoconf-archive
+
 enable_aom=true
 enable_bzip2=true
 enable_de265=true

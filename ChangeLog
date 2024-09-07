@@ -1,3 +1,8 @@
+2024-09-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Libtiff build now requires
+	autoconf-archive
+
 2024-09-06  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* doc/options.imdoc: Remove mention of RRRRGGGGBBBBAAAA due to an
