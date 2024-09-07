@@ -2454,8 +2454,10 @@ width=15><b><font face="Helvetica, Arial"
     <a name="details-fill"></a>-fill <i>&lt;color&gt;</i>
 </font></font></font></b></td></tr></table>
 <table width="90%" border="0" cellspacing="0"              cellpadding="8">              <tr><td width="6%"><br></td><td>color to use when filling a graphic primitive</td></tr></table>
-<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
-Colors are represented in GraphicsMagick in a form similar to SVG. Use "gm convert -list color" to list named colors:</font></td></tr></table>
+<table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"> Numeric colors specifications in GraphicsMagick are similar to
+RGB and RGBA color values as used by SVG and CSS Color Module Level 3
+(https://www.w3.org/TR/css-color-3/#numerical). Use "gm convert -list
+color" to list named colors:</font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1"><pre>
     name                              (named color)
     #RGB                              (hex numbers, 4 bits each)
@@ -2467,8 +2469,10 @@ Colors are represented in GraphicsMagick in a form similar to SVG. Use "gm conve
     #RRGGBBAA                         (8 bits each)
     #RRRRRRGGGGGGBBBBBB               (12 bits each)
     #RRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA (32 bits each)
-    rgb(r,g,b)                        (r,g,b are decimal numbers, range 0 to 255)
-    rgba(r,g,b,a)                     (r,g,b,a are decimal numbers, range 0 to 255)
+    rgb(r,g,b)                        (r,g,b are decimal numbers, range 0 to QuantumDepth)
+    rgb(r%,g%,b%)                     (r,g,b are decimal numbers, range 0 to 100%)
+    rgba(r,g,b,a)                     (r,g,b,a are decimal numbers, range 0 to QuantumDepth)
+    rgba(r%,g%,b%,a%)                 (r,g,b,a are decimal numbers, range 0 to 100%)
 </pre></font></td></tr></table>
 <table width="90%" border="0" cellspacing="0"             cellpadding="8">             <tr><td width="6%"><br></td><td><font size="-1">
 Enclose the color specification in quotation marks to prevent the "#"

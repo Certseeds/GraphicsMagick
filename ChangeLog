@@ -1,5 +1,10 @@
 2024-09-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* doc/options.imdoc: Further updates to color specification
+	documentation, based on what the current code is
+	doing. Unfortunately, current behavior deviates from CSS3 in some
+	aspects.
+
 	* fuzzing/oss-fuzz-build.sh: Libtiff build now requires
 	autoconf-archive
 

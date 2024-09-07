@@ -1107,7 +1107,10 @@ InitializeColorInfo(void)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  QueryColorDatabase() returns the red, green, blue, and opacity intensities
-%  for a given color name.
+%  for a given color name.  The color specification syntax is a superset of
+%  what is specified in the CSS Color Module Level 3
+% (https://www.w3.org/TR/css-color-3/#rgb-color), which uses the same syntax
+%  as SVG2.
 %
 %  The format of the QueryColorDatabase method is:
 %
@@ -1262,6 +1265,12 @@ QueryColorDatabase(const char *name,PixelPacket *color,
       int
         count;
 
+      /*
+        FIXME: Deviates from CSS-3 specification
+
+        CSS-3 uses RGB integer range 0-255, if not percentage.
+      */
+
       scale=strchr(name,'%') == (char *) NULL ? 1.0 :
         ScaleQuantumToChar(MaxRGB)/100.0;
       pixel.red=pixel.green=pixel.blue=0.0;
@@ -1283,6 +1292,14 @@ QueryColorDatabase(const char *name,PixelPacket *color,
 
       int
         count;
+
+      /*
+        FIXME: Deviates from CSS-3 specification
+
+        CSS-3 uses RGB integer range 0-255, if not percentage.
+        CSS-3 uses non-percent decimal values for Alpha.
+        CSS-3 uses a value 0 to mean totally transparent.
+      */
 
       scale=strchr(name,'%') == (char *) NULL ? 1.0 :
         ScaleQuantumToChar(MaxRGB)/100.0;
