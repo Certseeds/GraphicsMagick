@@ -571,6 +571,7 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
                                       basic_info.alpha_bits, basic_info.num_color_channels,
                                       basic_info.have_animation == JXL_FALSE ? "False" : "True");
               }
+
             if (basic_info.num_extra_channels)
               {
                 size_t index;
@@ -636,6 +637,9 @@ static Image *ReadJXLImage(const ImageInfo *image_info,
               image->matte=MagickTrue;
 
             image->orientation=convert_orientation(basic_info.orientation);
+
+            if (CheckImagePixelLimits(image, exception) != MagickPass)
+              ThrowJXLReaderException(ResourceLimitError,ImagePixelLimitExceeded,image);
 
             pixel_format.endianness=JXL_NATIVE_ENDIAN;
             pixel_format.align=0;

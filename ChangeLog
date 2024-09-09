@@ -1,3 +1,10 @@
+2024-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/jxl.c (ReadJXLImage): Apply image dimension resource
+	limits. Addresses oss-fuzz Issue 69728:
+	"graphicsmagick:coder_TIFF_any_fuzzer: Out-of-memory in
+	coder_TIFF_any_fuzzer".
+
 2024-09-07  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* doc/options.imdoc: Further updates to color specification
