@@ -33648,12 +33648,17 @@ else
       fi
     done
 
+    # Look for Ghostscript fonts relative to Ghostscript install directory
     if test "${ghostscript_font_dir}x" = 'x'
     then
       if test "$with_gs" = 'yes' ; then
         if test "$PSDelegate" != "${PSDelegateDefault}"
         then
-          ghostscript_font_dir=`echo "$PSDelegate" | sed -e 's:/bin/gs:/share/ghostscript/fonts:'`"/"
+          font_dir=`echo "$PSDelegate" | sed -e 's:/bin/gs:/share/ghostscript/fonts:'`"/"
+          if test -f "${font_dir}a010013l.pfb"
+          then
+            ghostscript_font_dir="${font_dir}"
+          fi
         fi
       fi
     fi

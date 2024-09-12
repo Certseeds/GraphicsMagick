@@ -1,3 +1,9 @@
+2024-09-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* configure.ac: Validate legacy Ghostscript font file in
+	Ghostscript install directory before deciding to use it as the
+	Ghostscript font directory.
+
 2024-09-09  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jxl.c (ReadJXLImage): Apply image dimension resource
