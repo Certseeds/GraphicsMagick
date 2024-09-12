@@ -3676,7 +3676,11 @@ else
     if test "$with_gs" = 'yes' ; then
       if test "${PSDelegate}" != "${PSDelegateDefault}"
       then
-        ghostscript_font_dir=`echo "${PSDelegate}" | sed -e 's:/gs/.*:/gs:;s:^/::;s/./&:/;s:/:\\\\:g'`"\\fonts\\"
+        font_dir=`echo "${PSDelegate}" | sed -e 's:/gs/.*:/gs:;s:^/::;s/./&:/;s:/:\\\\:g'`"\\fonts\\"
+        if test -f "${font_dir}a010013l.pfb"
+        then
+          ghostscript_font_dir="${font_dir}"
+        fi
       fi
     fi
 
