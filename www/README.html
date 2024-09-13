@@ -124,7 +124,7 @@ building under Microsoft Windows:</p>
 <p><a class="reference external" href="http://www.agocg.ac.uk/train/cgm/ralcgm.htm">http://www.agocg.ac.uk/train/cgm/ralcgm.htm</a></p>
 </blockquote>
 <p>to read the Computer Graphics Metafile (CGM) image format. You also
-need Ghostscript and Ghostscript Fonts (see below).</p>
+need Ghostscript and Ghostscript/URW Fonts (see below).</p>
 </li>
 <li><p>GraphicsMagick requires 'dcraw' (version 8.95 or later) from</p>
 <blockquote>
@@ -139,7 +139,7 @@ from</p>
 <blockquote>
 <p><a class="reference external" href="http://mcj.sourceforge.net/">http://mcj.sourceforge.net/</a></p>
 </blockquote>
-<p>to read the Fig image format. Ghostscript and Ghostscript Fonts (see
+<p>to read the Fig image format. Ghostscript and Ghostscript/URW Fonts (see
 below) are also required.</p>
 </li>
 <li><p>GraphicsMagick requires the FreeType software, version 2.0 or above,
@@ -147,7 +147,7 @@ available as</p>
 <blockquote>
 <p><a class="reference external" href="http://www.freetype.org/">http://www.freetype.org/</a></p>
 </blockquote>
-<p>to annotate with TrueType and Postscript Type 1 fonts.</p>
+<p>to annotate with TrueType, OpenType, and Postscript Type 1 fonts.</p>
 </li>
 <li><p>GraphicsMagick requires Ghostscript software available from</p>
 <blockquote>
@@ -335,7 +335,8 @@ of freed data, and many other common programming errors.</p>
 (16-bit WMF files only, not 32-bit &quot;EMF&quot;). This is the format
 commonly used for Windows clipart (available on CD at your local
 computer or technical book store). WMF support requires the FreeType
-2 library in order to render TrueType and Postscript fonts.</p>
+2 library in order to render TrueType, OpenType, and Postscript
+fonts.</p>
 <p>While GraphicsMagick uses the libwmflite (parser) component of the
 libwmf package which does not depend on any special libraries, the
 libwmf package as a whole depends on FreeType 2 and either the

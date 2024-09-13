@@ -1,3 +1,13 @@
+2024-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* config/type-urw-base35-otf.mgk.in: Changes for the newer Artifex
+	urw-base35-fonts, which now support OpenType fonts, and use long
+	file names.  Specifically configure the location using the
+	--with-urwbase35otf-font-dir configure option.  This is in
+	response to Debian bug 1019717 "Display of an SVG file broken due
+	to gsfonts transition",
+	https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1019717.
+
 2024-09-12  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* configure.ac: Validate legacy Ghostscript font file in

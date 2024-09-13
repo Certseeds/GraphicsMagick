@@ -376,6 +376,10 @@ Optional Packages/Options
 
     directory containing Ghostscript fonts
 
+--with-gs-font-dir
+
+   directory containing Artifex URW Base35 OTF fonts
+
 --with-windows-font-dir
 
     directory containing MS-Windows fonts
@@ -781,6 +785,26 @@ Several configure options require special note:
     Red Hat Linux   urw-fonts-2.0          /usr/share/fonts/default/Type1
     Ubuntu Linux    fonts-urw-base35       /usr/share/fonts/type1/gsfonts
     ==============  =====================  =============================
+
+--with-urwbase35otf-font-dir
+
+  Specify the directory containing the Artifex OpenType font files
+  (e.g. 'URWGothic-Book.otf') from the urw-base35-fonts package
+  available from https://github.com/ArtifexSoftware/urw-base35-fonts.
+  These fonts are a modern replacement for the older 'psfonts' and
+  older 'urw-base35-fonts' (which use short file names).  If Artifex
+  urw-base35-fonts are available, they are used (by default) rather
+  than the legacy 'psfonts'/'urw-base35-fonts' package described above
+  (i.e. --with-gs-font-dir).
+
+  .. table:: URW Font Packages
+
+    ==============  =====================  ====================================
+    Distribution    Package Name           Fonts Installation Path
+    ==============  =====================  ====================================
+    Debian Linux    fonts-urw-base35       /usr/share/fonts/opentype/urw-base35
+    Ubuntu Linux    fonts-urw-base35       /usr/share/fonts/opentype/urw-base35
+    ==============  =====================  ====================================
 
 --with-windows-font-dir
 

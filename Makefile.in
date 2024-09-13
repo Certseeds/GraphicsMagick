@@ -24,7 +24,7 @@
 #
 #
 
-# Copyright (C) 2004 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -245,9 +245,10 @@ CONFIG_CLEAN_FILES = GraphicsMagick.spec \
 	PerlMagick/Makefile.PL PerlMagick/PerlMagickCheck.sh \
 	PerlMagick/t/features.pl config/delegates.mgk \
 	config/type-ghostscript.mgk config/type-solaris.mgk \
-	config/type-windows.mgk config/type.mgk \
-	magick/GraphicsMagick-config magick/GraphicsMagick.pc \
-	magick/magick_types.h magick/version.h common.shi rungm.sh \
+	config/type-urw-base35-otf.mgk config/type-windows.mgk \
+	config/type.mgk magick/GraphicsMagick-config \
+	magick/GraphicsMagick.pc magick/magick_types.h \
+	magick/version.h common.shi rungm.sh \
 	wand/GraphicsMagickWand-config wand/GraphicsMagickWand.pc
 CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = utilities/gm$(EXEEXT)
@@ -2391,6 +2392,7 @@ am__DIST_COMMON = $(srcdir)/GraphicsMagick.spec.in \
 	$(top_srcdir)/config/test-driver \
 	$(top_srcdir)/config/type-ghostscript.mgk.in \
 	$(top_srcdir)/config/type-solaris.mgk.in \
+	$(top_srcdir)/config/type-urw-base35-otf.mgk.in \
 	$(top_srcdir)/config/type-windows.mgk.in \
 	$(top_srcdir)/config/type.mgk.in \
 	$(top_srcdir)/magick/GraphicsMagick-config.in \
@@ -2772,6 +2774,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 top_srcdir_native = @top_srcdir_native@
 type_include_files = @type_include_files@
+urwbase35otf_font_dir = @urwbase35otf_font_dir@
 windows_font_dir = @windows_font_dir@
 
 # Don't require all the GNU mandated files
@@ -2924,6 +2927,7 @@ configlib_DATA = \
 	config/type-ghostscript.mgk \
 	config/type.mgk \
 	config/type-solaris.mgk \
+	config/type-urw-base35-otf.mgk \
 	config/type-windows.mgk
 
 CONFIG_EXTRA_DIST = \
@@ -2933,6 +2937,7 @@ CONFIG_EXTRA_DIST = \
 	config/modules.mgk \
 	config/type-ghostscript.mgk.in \
 	config/type-solaris.mgk.in \
+	config/type-urw-base35-otf.mgk.in \
 	config/type-windows.mgk.in \
 	config/type.mgk.in
 
@@ -5102,6 +5107,8 @@ config/delegates.mgk: $(top_builddir)/config.status $(top_srcdir)/config/delegat
 config/type-ghostscript.mgk: $(top_builddir)/config.status $(top_srcdir)/config/type-ghostscript.mgk.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 config/type-solaris.mgk: $(top_builddir)/config.status $(top_srcdir)/config/type-solaris.mgk.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+config/type-urw-base35-otf.mgk: $(top_builddir)/config.status $(top_srcdir)/config/type-urw-base35-otf.mgk.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 config/type-windows.mgk: $(top_builddir)/config.status $(top_srcdir)/config/type-windows.mgk.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

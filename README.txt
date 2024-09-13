@@ -87,7 +87,7 @@ building under Microsoft Windows:
     http://www.agocg.ac.uk/train/cgm/ralcgm.htm
 
   to read the Computer Graphics Metafile (CGM) image format. You also
-  need Ghostscript and Ghostscript Fonts (see below).
+  need Ghostscript and Ghostscript/URW Fonts (see below).
 
 * GraphicsMagick requires 'dcraw' (version 8.95 or later) from
 
@@ -102,7 +102,7 @@ building under Microsoft Windows:
 
     http://mcj.sourceforge.net/
 
-  to read the Fig image format. Ghostscript and Ghostscript Fonts (see
+  to read the Fig image format. Ghostscript and Ghostscript/URW Fonts (see
   below) are also required.
 
 * GraphicsMagick requires the FreeType software, version 2.0 or above,
@@ -110,7 +110,7 @@ building under Microsoft Windows:
 
     http://www.freetype.org/
 
-  to annotate with TrueType and Postscript Type 1 fonts.
+  to annotate with TrueType, OpenType, and Postscript Type 1 fonts.
 
 * GraphicsMagick requires Ghostscript software available from
 
@@ -304,7 +304,8 @@ building under Microsoft Windows:
   (16-bit WMF files only, not 32-bit "EMF"). This is the format
   commonly used for Windows clipart (available on CD at your local
   computer or technical book store). WMF support requires the FreeType
-  2 library in order to render TrueType and Postscript fonts.
+  2 library in order to render TrueType, OpenType, and Postscript
+  fonts.
 
   While GraphicsMagick uses the libwmflite (parser) component of the
   libwmf package which does not depend on any special libraries, the

@@ -704,6 +704,7 @@ MogrifyDelegate
 ConvertDelegate
 type_include_files
 ghostscript_font_dir
+urwbase35otf_font_dir
 windows_font_dir
 HasGPG_FALSE
 HasGPG_TRUE
@@ -1152,6 +1153,7 @@ with_umem
 with_wmf
 with_fontpath
 with_gs_font_dir
+with_urwbase35otf_font_dir
 with_windows_font_dir
 with_xml
 with_zlib
@@ -1919,6 +1921,8 @@ Optional Packages:
   --without-wmf           disable WMF support
   --with-fontpath=DIR     prepend to default font search path
   --with-gs-font-dir=DIR  directory containing Ghostscript fonts
+  --with-urwbase35otf-font-dir=DIR
+                          directory containing Artifex URW Base35 OTF fonts
   --with-windows-font-dir=DIR
                           directory containing MS-Windows fonts
   --without-xml           disable XML support
@@ -21385,6 +21389,20 @@ if test "$with_gs_font_dir" != 'default' ; then
     DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-gs-font-dir=$with_gs_font_dir "
 fi
 
+# Set Artifex URW Base35 OTF font directory
+
+# Check whether --with-urwbase35otf-font-dir was given.
+if test ${with_urwbase35otf_font_dir+y}
+then :
+  withval=$with_urwbase35otf_font_dir; with_urwbase35otf_font_dir=$withval
+else $as_nop
+  with_urwbase35otf_font_dir='default'
+fi
+
+if test "$with_urwbase35otf_font_dir" != 'default' ; then
+    DISTCHECK_CONFIG_FLAGS="${DISTCHECK_CONFIG_FLAGS} --with-urwbase35otf-font-dir=$with_urwbase35otf_font_dir "
+fi
+
 # Set Windows font directory
 
 # Check whether --with-windows-font-dir was given.
@@ -33589,6 +33607,45 @@ else
 printf "%s\n" "not found!" >&6; };
 fi
 
+# Check for modern Artifex urw-base35-fonts in OpenType format
+# (https://github.com/ArtifexSoftware/urw-base35-fonts), which are
+# similar to older 'gsfonts' but use descriptive file names and are
+# also available in OpenType format.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Artifex urw-base35 OTF fonts directory (location of URWGothic-Book.otf)" >&5
+printf %s "checking for Artifex urw-base35 OTF fonts directory (location of URWGothic-Book.otf)... " >&6; }
+urwbase35otf_font_dir=''
+if test "${with_urwbase35otf_font_dir}" != 'default'
+then
+  urwbase35otf_font_dir="${with_urwbase35otf_font_dir}/"
+
+else
+
+    # On Debian/Ubuntu systems, these are installed under
+    # /usr/share/fonts/opentype/urw-base35 and
+    # /usr/share/fonts/type1/urw-base35
+    #
+    # Debian/Ubuntu provide a font map at /etc/ghostscript/fontmap.d/10fonts-urw-base35.conf
+    for font_dir in "${prefix}/share/fonts/opentype/urw-base35/" /usr/share/fonts/opentype/urw-base35/
+    do
+      if test -f "${font_dir}URWGothic-Book.otf"
+        then
+          urwbase35otf_font_dir="${font_dir}"
+          break 1
+        fi
+    done
+fi
+
+if test "${urwbase35otf_font_dir}x" != 'x'
+then
+  type_include_files="${type_include_files} "'<include file="type-urw-base35-otf.mgk" />'
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $urwbase35otf_font_dir" >&5
+printf "%s\n" "$urwbase35otf_font_dir" >&6; }
+else
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: not found!" >&5
+printf "%s\n" "not found!" >&6; };
+fi
+
+
 # Ghostscript
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for Ghostscript fonts directory (location of a010013l.pfb)" >&5
 printf %s "checking for Ghostscript fonts directory (location of a010013l.pfb)... " >&6; }
@@ -33643,6 +33700,8 @@ else
     # Recent Cygwin puts Ghostscript fonts in /usr/share/ghostscript/fonts
     # Recent Gentoo Linux puts Ghostscript fonts in /usr/share/fonts/ghostscript
     # Debian puts Ghostscript fonts in /usr/share/fonts/type1/gsfonts
+    #
+    # Debian/Ubuntu provide a font map at /etc/ghostscript/fontmap.d/10gsfonts.conf
     for font_dir in "${prefix}/share/ghostscript/fonts/" '/usr/share/fonts/default/Type1/' '/usr/share/ghostscript/fonts/' '/usr/share/fonts/ghostscript/' '/usr/share/fonts/type1/gsfonts/'
     do
       if test -f "${font_dir}a010013l.pfb"
@@ -33669,9 +33728,14 @@ else
 
   fi
 fi
+
 if test "${ghostscript_font_dir}x" != 'x'
 then
-  type_include_files="${type_include_files} "'<include file="type-ghostscript.mgk" />'
+  # Only include type-ghostscript.mgk when urwbase35otf_font_dir not found
+  if test "${urwbase35otf_font_dir}x" = 'x'
+  then
+    type_include_files="${type_include_files} "'<include file="type-ghostscript.mgk" />'
+  fi
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ghostscript_font_dir" >&5
 printf "%s\n" "$ghostscript_font_dir" >&6; }
 else
@@ -34563,7 +34627,7 @@ LIBS=$LIBS_USER
 
 
 
-ac_config_files="$ac_config_files GraphicsMagick.spec Magick++/bin/GraphicsMagick++-config Magick++/lib/GraphicsMagick++.pc Makefile PerlMagick/Magick.pm PerlMagick/Makefile.PL PerlMagick/PerlMagickCheck.sh PerlMagick/t/features.pl config/delegates.mgk config/type-ghostscript.mgk config/type-solaris.mgk config/type-windows.mgk config/type.mgk magick/GraphicsMagick-config magick/GraphicsMagick.pc magick/magick_types.h magick/version.h common.shi rungm.sh wand/GraphicsMagickWand-config wand/GraphicsMagickWand.pc"
+ac_config_files="$ac_config_files GraphicsMagick.spec Magick++/bin/GraphicsMagick++-config Magick++/lib/GraphicsMagick++.pc Makefile PerlMagick/Magick.pm PerlMagick/Makefile.PL PerlMagick/PerlMagickCheck.sh PerlMagick/t/features.pl config/delegates.mgk config/type-ghostscript.mgk config/type-solaris.mgk config/type-urw-base35-otf.mgk config/type-windows.mgk config/type.mgk magick/GraphicsMagick-config magick/GraphicsMagick.pc magick/magick_types.h magick/version.h common.shi rungm.sh wand/GraphicsMagickWand-config wand/GraphicsMagickWand.pc"
 
 
 # Set configured scripts to executable.
@@ -35889,6 +35953,7 @@ do
     "config/delegates.mgk") CONFIG_FILES="$CONFIG_FILES config/delegates.mgk" ;;
     "config/type-ghostscript.mgk") CONFIG_FILES="$CONFIG_FILES config/type-ghostscript.mgk" ;;
     "config/type-solaris.mgk") CONFIG_FILES="$CONFIG_FILES config/type-solaris.mgk" ;;
+    "config/type-urw-base35-otf.mgk") CONFIG_FILES="$CONFIG_FILES config/type-urw-base35-otf.mgk" ;;
     "config/type-windows.mgk") CONFIG_FILES="$CONFIG_FILES config/type-windows.mgk" ;;
     "config/type.mgk") CONFIG_FILES="$CONFIG_FILES config/type.mgk" ;;
     "magick/GraphicsMagick-config") CONFIG_FILES="$CONFIG_FILES magick/GraphicsMagick-config" ;;
@@ -37384,12 +37449,21 @@ printf "BZLIB             --with-bzlib=$with_bzlib         \t$have_bzlib\n"
 printf "FlashPIX          --with-fpx=$with_fpx          \t$have_fpx\n"
 printf "FreeType 2.0      --with-ttf=$with_ttf          \t$have_ttf\n"
 printf "Ghostscript       --with-gs=$with_gs            \t$PSDelegate ($GSVersion)\n"
+
 result_ghostscript_font_dir='none'
 if test "${ghostscript_font_dir}x" != 'x'
 then
   result_ghostscript_font_dir="$ghostscript_font_dir"
 fi
 printf "Ghostscript fonts --with-gs-font-dir=$with_gs_font_dir\t$result_ghostscript_font_dir\n"
+
+result_urwbase35otf_font_dir='none'
+if test "${urwbase35otf_font_dir}x" != 'x'
+then
+  result_urwbase35otf_font_dir="$urwbase35otf_font_dir"
+fi
+printf "URW Base35 fonts  --with-base35otf-font-dir=$with_gs_font_dir\t$result_urwbase35otf_font_dir\n"
+
 printf "Windows GDI32     --with-gdi32=$with_gdi32      \t$have_gdi32\n"
 printf "JBIG              --with-jbig=$with_jbig        \t$have_jbig\n"
 printf "JPEG v1           --with-jpeg=$with_jpeg        \t$have_jpeg\n"

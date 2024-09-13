@@ -1,4 +1,4 @@
-# Copyright (C) 2004 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -24,6 +24,7 @@ configlib_DATA = \
 	config/type-ghostscript.mgk \
 	config/type.mgk \
 	config/type-solaris.mgk \
+	config/type-urw-base35-otf.mgk \
 	config/type-windows.mgk
 
 CONFIG_EXTRA_DIST = \
@@ -33,6 +34,6 @@ CONFIG_EXTRA_DIST = \
 	config/modules.mgk \
 	config/type-ghostscript.mgk.in \
 	config/type-solaris.mgk.in \
+	config/type-urw-base35-otf.mgk.in \
 	config/type-windows.mgk.in \
 	config/type.mgk.in
-
