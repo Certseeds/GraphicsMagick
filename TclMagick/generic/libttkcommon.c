@@ -59,6 +59,9 @@ PixelWand *findPixelWand(Tcl_Interp *interp, char *name)
 /*----------------------------------------------------------------------
  * Return Magick error description as a TCL result
  * Used by both TclMagick and TkMagick.
+ * Modern Functions used in code are Tcl_SetObjResult(), Tcl_SetResult(,,TCL_VOLATILE)
+ *   Tcl_AppendResult(), Tcl_AppendElement()
+ * Old Functions used in code are Tcl_AppendElement(),
  *----------------------------------------------------------------------
  */
 int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
@@ -70,15 +73,16 @@ int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
 
     description = MagickGetException(wandPtr, &severity);
     if( (description == NULL) || (strlen(description) == 0) ) {
-        Tcl_AppendResult(interp, MagickGetPackageName(), ": Unknown error", NULL);
+        Tcl_AppendResult(interp, MagickGetPackageName(), ": Unknown error", (char *) NULL);
     } else {
         /* snprintf(msg, sizeof(msg), "%s: #%d:", MagickGetPackageName(), severity); */ /* FIXME, not used! */
-        Tcl_AppendResult(interp, description, NULL);
+        Tcl_AppendResult(interp, description, (char *) NULL);
     }
     if( description != NULL ) {
         MagickRelinquishMemory(description);
     }
-    MagickClearException(wandPtr);
+    if (wandPtr != (MagickWand *) NULL)
+        MagickClearException(wandPtr);
     /*
      * if(severity < ErrorException) --> warning
      * return TCL_OK ???

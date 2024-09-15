@@ -599,7 +599,7 @@ static int magickCmd(
                 Tcl_SetObjResult(interp, Tcl_NewStringObj(str, -1));
                 break;
             case 5: /* -version */
-                MagickGetVersion(&version);
+                (void) MagickGetVersion(&version);
                 sprintf( buf, "%ld.%ld.%ld", version >> 8, (version >> 4) & 0x0F, version & 0x0F);
                 Tcl_SetObjResult(interp, Tcl_NewStringObj(buf, -1));
                 break;
@@ -974,7 +974,7 @@ static int wandObjCmd(
         "peaksignaltonoiseratio",  "rootmeansquarederror",
         (char *) NULL
     };
-    static ChannelType metricTypes[] = {
+    static MetricType metricTypes[] = {
         MeanAbsoluteErrorMetric, MeanSquaredErrorMetric,  PeakAbsoluteErrorMetric,
         PeakSignalToNoiseRatioMetric, RootMeanSquaredErrorMetric
     };
@@ -2585,7 +2585,7 @@ static int wandObjCmd(
             if (Tcl_GetIndexFromObj(interp, objv[2], opNames, "opType", 0, &opIdx) != TCL_OK) {
                 return TCL_ERROR;
             }
-            result = MagickSetImageColorspace(wandPtr, opTypes[opIdx]);
+            result = MagickSetImageCompose(wandPtr, /* CompositeOperator */ opTypes[opIdx]);
             if (!result) {
                 return myMagickError(interp, wandPtr);
             }
@@ -2593,7 +2593,7 @@ static int wandObjCmd(
             /*
              * Get compose operator
              */
-            op = MagickGetImageColorspace(wandPtr);
+            op = MagickGetImageCompose(wandPtr);
             for (opIdx = 0; (size_t) opIdx < sizeof(opTypes)/sizeof(opTypes[0]); opIdx++) {
                 if( opTypes[opIdx] == op ) {
                     Tcl_SetResult(interp, (char *)opNames[opIdx], TCL_VOLATILE);
@@ -4160,7 +4160,7 @@ static int wandObjCmd(
             "frame", "unframe", "concatenate",
             (char *) NULL
         };
-        static CompositeOperator modeTypes[] = {
+        static MontageMode modeTypes[] = {
             FrameMode, UnframeMode, ConcatenateMode
         };
         char        *name, *newName=NULL;
@@ -5543,6 +5543,7 @@ static int pixelObjCmd(
                 case 5:  quantVal = PixelGetOpacityQuantum(wandPtr);  break;
                 case 6:  quantVal = PixelGetRedQuantum(wandPtr);      break;
                 case 7:  quantVal = PixelGetYellowQuantum(wandPtr);   break;
+                default: { quantVal = 0; } /* FIXME: Should be error report */
                 }
                 Tcl_ListObjAppendElement(interp, listPtr, Tcl_NewIntObj(quantVal));
             } else {
@@ -5555,6 +5556,7 @@ static int pixelObjCmd(
                 case 5:  normVal = PixelGetOpacity(wandPtr);  break;
                 case 6:  normVal = PixelGetRed(wandPtr);      break;
                 case 7:  normVal = PixelGetYellow(wandPtr);   break;
+                default: { normVal = 0; }; /* FIXME: Should be error report */
                 }
                 Tcl_ListObjAppendElement(interp, listPtr, Tcl_NewDoubleObj(normVal));
             }
@@ -5604,6 +5606,9 @@ static int pixelObjCmd(
     case TM_SET_BLACK_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_SET_BLACK:
     {
@@ -5628,6 +5633,9 @@ static int pixelObjCmd(
     case TM_SET_BLUE_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_SET_BLUE:
     {
@@ -5652,6 +5660,9 @@ static int pixelObjCmd(
     case TM_SET_CYAN_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_SET_CYAN:
     {
@@ -5676,6 +5687,9 @@ static int pixelObjCmd(
     case TM_SET_GREEN_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_SET_GREEN:
     {
@@ -5700,6 +5714,9 @@ static int pixelObjCmd(
     case TM_SET_MAGENTA_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_SET_MAGENTA:
     {
@@ -5724,6 +5741,9 @@ static int pixelObjCmd(
     case TM_SET_OPACITY_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_SET_OPACITY:
     {
@@ -5748,6 +5768,9 @@ static int pixelObjCmd(
     case TM_SET_RED_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_SET_RED:
     {
@@ -5772,6 +5795,9 @@ static int pixelObjCmd(
     case TM_SET_YELLOW_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_SET_YELLOW:
     {
@@ -5796,6 +5822,9 @@ static int pixelObjCmd(
     case TM_GET_BLACK_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_GET_BLACK:
     {
@@ -5816,6 +5845,9 @@ static int pixelObjCmd(
     case TM_GET_BLUE_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_GET_BLUE:
     {
@@ -5836,6 +5868,9 @@ static int pixelObjCmd(
     case TM_GET_CYAN_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_GET_CYAN:
     {
@@ -5856,6 +5891,9 @@ static int pixelObjCmd(
     case TM_GET_GREEN_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_GET_GREEN:
     {
@@ -5876,6 +5914,9 @@ static int pixelObjCmd(
     case TM_GET_MAGENTA_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_GET_MAGENTA:
     {
@@ -5896,6 +5937,9 @@ static int pixelObjCmd(
     case TM_GET_OPACITY_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_GET_OPACITY:
     {
@@ -5916,6 +5960,9 @@ static int pixelObjCmd(
     case TM_GET_RED_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_GET_RED:
     {
@@ -5936,6 +5983,9 @@ static int pixelObjCmd(
     case TM_GET_YELLOW_QUANTUM:
     {
         quantFlag = 1; /* and continue ... */
+#if defined(MAGICK_FALLTHROUGH)
+        MAGICK_FALLTHROUGH;
+#endif /* if defined(MAGICK_FALLTHROUGH) */
     }
     case TM_GET_YELLOW:
     {
@@ -7084,7 +7134,9 @@ static int drawObjCmd(
             return TCL_ERROR;
         }
         /*
-          FIXME: DrawRender() is deprecated.  Use MagickDrawImage() instead.
+          FIXME: DrawRender() is deprecated.  Use MagickDrawImage(wand,drawing_wand) instead.
+          unsigned int DrawRender(const DrawingWand *drawing_wand);
+          unsigned int MagickDrawImage(MagickWand *wand, const DrawingWand *drawing_wand);
           Note that TM_DRAW or TM_DRAW_IMAGE already draw on the image. so "render" is not needed.
         */
         DrawRender(wandPtr);
@@ -7364,9 +7416,9 @@ static int drawObjCmd(
             if (Tcl_GetIndexFromObj(interp, objv[2], joinNames, "linejoinType", 0, &joinIdx) != TCL_OK) {
                 return TCL_ERROR;
             }
-            DrawSetStrokeLineCap(wandPtr, joinTypes[joinIdx]);
+            DrawSetStrokeLineJoin(wandPtr, joinTypes[joinIdx]);
         } else {    /* Get font style */
-            join = DrawGetStrokeLineCap(wandPtr);
+            join = DrawGetStrokeLineJoin(wandPtr);
             for (joinIdx = 0; (size_t) joinIdx < sizeof(joinTypes)/sizeof(joinTypes[0]); joinIdx++) {
                 if( joinTypes[joinIdx] == join ) {
                     Tcl_SetResult(interp, (char *)joinNames[joinIdx], TCL_VOLATILE);
@@ -7725,6 +7777,7 @@ static int drawObjCmd(
                 return TCL_ERROR;
             }
             DrawPushDefs(wandPtr);
+            break;
         }
         case TM_PUSH_CMD_GRAPH: /* graphiccontext */
         {
