@@ -1,3 +1,10 @@
+2024-09-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* config/type-urw-base35-t1.mgk.in: Add a template file for the
+	newer Artifex urw-base35-fonts, but for the Postscript Type 1
+	fonts.  This is not integrated into the build and no substitutions
+	are performed on it.
+
 2024-09-13  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* config/type-urw-base35-otf.mgk.in: Changes for the newer Artifex

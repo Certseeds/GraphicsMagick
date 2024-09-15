@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!--
-Mapping for Artifex urw-base35-fonts OpenType fonts available from
+Mapping for Artifex urw-base35-fonts Postscript Type 1 fonts available from
 https://github.com/ArtifexSoftware/urw-base35-fonts and typically installed
-under /usr/share/fonts/opentype/urw-base35 on a Debian/Ubuntu system as
+under /usr/share/fonts/type1/urw-base35 on a Debian/Ubuntu system as
 part of the fonts-urw-base35 package.  Starting with Ubuntu 22.04 LTS.
 
 Font mapping comes from /etc/ghostscript/fontmap.d/10fonts-urw-base35.conf
@@ -17,8 +17,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@URWGothic-Book.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@URWGothic-Book.afm"
+    glyphs="@urwbase35t1_font_dir@URWGothic-Book.t1"
     />
   <type
     name="AvantGarde-BookOblique"
@@ -28,8 +29,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="oblique"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@URWGothic-BookOblique.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@URWGothic-BookOblique.afm"
+    glyphs="@urwbase35t1_font_dir@URWGothic-BookOblique.t1"
     />
   <type
     name="AvantGarde-Demi"
@@ -39,8 +41,9 @@ on a Debian/Ubuntu system.
     weight="600"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@URWGothic-Demi.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@URWGothic-Demi.afm"
+    glyphs="@urwbase35t1_font_dir@URWGothic-Demi.t1"
     />
   <type
     name="AvantGarde-DemiOblique"
@@ -50,8 +53,9 @@ on a Debian/Ubuntu system.
     weight="600"
     style="oblique"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@URWGothic-DemiOblique.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@URWGothic-DemiOblique.afm"
+    glyphs="@urwbase35t1_font_dir@URWGothic-DemiOblique.t1"
     />
   <type
     name="Bookman-Demi"
@@ -61,8 +65,9 @@ on a Debian/Ubuntu system.
     weight="600"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@URWBookman-Demi.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@URWBookman-Demi.afm"
+    glyphs="@urwbase35t1_font_dir@URWBookman-Demi.t1"
     />
   <type
     name="Bookman-DemiItalic"
@@ -72,8 +77,9 @@ on a Debian/Ubuntu system.
     weight="600"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@URWBookman-DemiItalic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@URWBookman-DemiItalic.afm"
+    glyphs="@urwbase35t1_font_dir@URWBookman-DemiItalic.t1"
     />
   <type
     name="Bookman-Light"
@@ -83,8 +89,9 @@ on a Debian/Ubuntu system.
     weight="300"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@URWBookman-Light.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@URWBookman-Light.afm"
+    glyphs="@urwbase35t1_font_dir@URWBookman-Light.t1"
     />
   <type
     name="Bookman-LightItalic"
@@ -94,8 +101,9 @@ on a Debian/Ubuntu system.
     weight="300"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@URWBookman-LightItalic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@URWBookman-LightItalic.afm"
+    glyphs="@urwbase35t1_font_dir@URWBookman-LightItalic.t1"
     />
   <type
     name="Courier"
@@ -105,8 +113,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusMonoPS-Regular.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusMonoPS-Regular.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusMonoPS-Regular.t1"
     />
   <type
     name="Courier-Bold"
@@ -116,8 +125,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusMonoPS-Bold.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusMonoPS-Bold.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusMonoPS-Bold.t1"
     />
   <type
     name="Courier-Oblique"
@@ -127,8 +137,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="oblique"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusMonoPS-Italic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusMonoPS-Italic.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusMonoPS-Italic.t1"
     />
   <type
     name="Courier-BoldOblique"
@@ -138,8 +149,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="oblique"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusMonoPS-BoldItalic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusMonoPS-BoldItalic.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusMonoPS-BoldItalic.t1"
     />
   <type
     name="Helvetica"
@@ -149,8 +161,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusSans-Regular.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusSans-Regular.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusSans-Regular.t1"
     />
   <type
     name="Helvetica-Bold"
@@ -160,8 +173,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusSans-Bold.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusSans-Bold.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusSans-Bold.t1"
     />
   <type
     name="Helvetica-Oblique"
@@ -171,8 +185,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusSans-Italic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusSans-Italic.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusSans-Italic.t1"
     />
   <type
     name="Helvetica-BoldOblique"
@@ -182,8 +197,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusSans-BoldItalic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusSans-BoldItalic.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusSans-BoldItalic.t1"
     />
   <type
     name="Helvetica-Narrow"
@@ -193,8 +209,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="normal"
     stretch="condensed"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusSansNarrow-Regular.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusSansNarrow-Regular.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusSansNarrow-Regular.t1"
     />
   <type
     name="Helvetica-Narrow-Oblique"
@@ -204,8 +221,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="oblique"
     stretch="condensed"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusSansNarrow-Oblique.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusSansNarrow-Oblique.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusSansNarrow-Oblique.t1"
     />
   <type
     name="Helvetica-Narrow-Bold"
@@ -215,8 +233,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="normal"
     stretch="condensed"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusSansNarrow-Bold.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusSansNarrow-Bold.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusSansNarrow-Bold.t1"
     />
   <type
     name="Helvetica-Narrow-BoldOblique"
@@ -226,8 +245,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="oblique"
     stretch="condensed"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusSansNarrow-BoldOblique.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusSansNarrow-BoldOblique.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusSansNarrow-BoldOblique.t1"
     />
   <type
     name="NewCenturySchlbk-Roman"
@@ -237,8 +257,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@C059-Roman.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@C059-Roman.afm"
+    glyphs="@urwbase35t1_font_dir@C059-Roman.t1"
     />
   <type
     name="NewCenturySchlbk-Italic"
@@ -248,8 +269,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@C059-Italic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@C059-Italic.afm"
+    glyphs="@urwbase35t1_font_dir@C059-Italic.t1"
     />
   <type
     name="NewCenturySchlbk-Bold"
@@ -259,8 +281,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@C059-Bold.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@C059-Bold.afm"
+    glyphs="@urwbase35t1_font_dir@C059-Bold.t1"
     />
   <type
     name="NewCenturySchlbk-BoldItalic"
@@ -270,8 +293,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@C059-BdIta.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@C059-BdIta.afm"
+    glyphs="@urwbase35t1_font_dir@C059-BdIta.t1"
     />
   <type
     name="Palatino-Roman"
@@ -281,8 +305,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@P052-Roman.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@P052-Roman.afm"
+    glyphs="@urwbase35t1_font_dir@P052-Roman.t1"
     />
   <type
     name="Palatino-Italic"
@@ -292,8 +317,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@P052-Italic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@P052-Italic.afm"
+    glyphs="@urwbase35t1_font_dir@P052-Italic.t1"
     />
   <type
     name="Palatino-Bold"
@@ -303,8 +329,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@P052-Bold.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@P052-Bold.afm"
+    glyphs="@urwbase35t1_font_dir@P052-Bold.t1"
     />
   <type
     name="Palatino-BoldItalic"
@@ -314,8 +341,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@P052-BoldItalic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@P052-BoldItalic.afm"
+    glyphs="@urwbase35t1_font_dir@P052-BoldItalic.t1"
     />
   <type
     name="Times-Roman"
@@ -325,8 +353,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusRoman-Regular.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusRoman-Regular.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusRoman-Regular.t1"
     />
   <type
     name="Times-Bold"
@@ -336,8 +365,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusRoman-Bold.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusRoman-Bold.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusRoman-Bold.t1"
     />
   <type
     name="Times-Italic"
@@ -347,8 +377,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusRoman-Italic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusRoman-Italic.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusRoman-Italic.t1"
     />
   <type
     name="Times-BoldItalic"
@@ -358,8 +389,9 @@ on a Debian/Ubuntu system.
     weight="700"
     style="italic"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@NimbusRoman-BoldItalic.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@NimbusRoman-BoldItalic.afm"
+    glyphs="@urwbase35t1_font_dir@NimbusRoman-BoldItalic.t1"
     />
   <type
     name="Symbol"
@@ -369,8 +401,9 @@ on a Debian/Ubuntu system.
     weight="400"
     style="normal"
     stretch="normal"
-    format="opentype"
-    glyphs="@urwbase35otf_font_dir@StandardSymbolsPS.otf"
+    format="type1"
+    metrics="@urwbase35t1_font_dir@StandardSymbolsPS.afm"
+    glyphs="@urwbase35t1_font_dir@StandardSymbolsPS.t1"
     version="0.1"
     encoding="AdobeCustom"
     />
