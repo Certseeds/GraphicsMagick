@@ -10615,6 +10615,7 @@ static unsigned int MagickXROIImage(Display *display,MagickXResourceInfo *resour
       AddNoiseCommand,
       SharpenCommand,
       BlurCommand,
+      ThresholdCommand,
       EdgeDetectCommand,
       SpreadCommand,
       ShadeCommand,

@@ -1,5 +1,12 @@
 2024-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* magick/display.c (MagickXROIImage): ThresholdCommand was missing
+	from EffectsCommands list. In the Region of Interest mode the
+	button command array is missing a command corresponding to
+	"Threshold...", and that is also messing up all buttons further
+	below.  SourceForge patch #82 "Add missing Threshold to command
+	array of Region of Interest mode" by Alex Barsky.
+
 	* TclMagick/generic/config.h.in, TclMagick/generic/libttkcommon.h:
 	Support a configuration header.
 
