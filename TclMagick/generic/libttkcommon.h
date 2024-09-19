@@ -2,6 +2,11 @@
 #ifndef _ttkcommon_h_
 #define _ttkcommon_h_
 
+/* Support an optional configuration header */
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif /* if defined(HAVE_CONFIG_H) */
+
 #include "TclMagick.h"
 
 struct TMHT {

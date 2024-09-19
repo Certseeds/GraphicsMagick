@@ -1,9 +1,9 @@
 #!/bin/bash -norc
-dnl	This file is an input file used by the GNU "autoconf" program to
-dnl	generate the file "configure", which is run during Tcl installation
-dnl	to configure the system for the local environment.
+dnl This file is an input file used by the GNU "autoconf" program to
+dnl generate the file "configure", which is run during Tcl installation
+dnl to configure the system for the local environment.
 #
-AC_INIT(TclMagick, 0.46)
+AC_INIT([TclMagick],[0.46])
 
 # Specify directory where m4 macros may be found.
 AC_CONFIG_MACRO_DIR([unix/m4])
@@ -11,6 +11,10 @@ AC_CONFIG_MACRO_DIR([unix/m4])
 # Directory where autotools helper scripts lives.
 AC_CONFIG_AUX_DIR([unix/config])
 
+# Generate configure header.
+AC_CONFIG_HEADERS([generic/config.h])
+
+# Initalize Automake
 AM_INIT_AUTOMAKE
 
 # Add configure option --enable-maintainer-mode which enables dependency
@@ -21,15 +25,20 @@ AM_MAINTAINER_MODE
 # Enable support for silent build rules
 AM_SILENT_RULES
 
+# Configure for the compiler
 AC_PROG_CC
-AC_PROG_LIBTOOL
-AC_ISC_POSIX
-AC_HEADER_STDC([])
 
+# Initialize libtool
+LT_INIT
+AC_SEARCH_LIBS([strerror],[cposix])
 
-dnl Allow the user to specify the GraphicsMagick or ImageMagick config
-dnl script to use.
-AC_ARG_WITH(magick, [  --with-magick              location of Graphics/MagickWand-config script], with_magick=${withval})
+dnl Allow the user to specify the GraphicsMagick config script to use.
+dnl Note that TclMagick no longer works with ImageMagick
+dnl since it changed its enum lists (and many other things).
+AC_ARG_WITH([magick],
+            AS_HELP_STRING([--with-magick],
+                           [location of GraphicsMagick-config script]),
+            [with_magick=${withval}])
 
 dnl First check to see if --with-magick-config was specified.
 GM_CPPFLAGS=''
@@ -47,17 +56,17 @@ then
 fi
 if test x"${wand_config}" = x
 then
-  AC_PATH_PROGS(wand_config,[GraphicsMagickWand-config MagickWand-config],,)
+  AC_PATH_PROGS(wand_config,[GraphicsMagickWand-config],,)
 fi
 if test x"${wand_config}" = x
 then
-  AC_MSG_ERROR([Please specify the Graphics/ImageMagick-config script with --with-magick!])
+  AC_MSG_ERROR([Please specify the GraphicsMagickWand-config script with --with-magick!])
 fi
 
 dnl It actually calls another script, so the PATH needs to be set.
 PATH=$PATH:`dirname ${wand_config}`
 export PATH
-AC_MSG_CHECKING([for Graphics/ImageMagick Wand configuration script])
+AC_MSG_CHECKING([for GraphicsMagick Wand configuration script])
 AC_MSG_RESULT(${wand_config})
 GM_CPPFLAGS=`${wand_config} --cppflags`
 AC_SUBST(GM_CPPFLAGS)
@@ -113,9 +122,9 @@ TEA_MAKE_LIB
 TEA_PROG_TCLSH
 TEA_PROG_WISH
 
+AC_CONFIG_FILES(\
+Makefile \
+generic/Makefile \
+generic/pkgIndex.tcl)
 
-AC_OUTPUT([
-Makefile
-generic/Makefile
-generic/pkgIndex.tcl
-])
+AC_OUTPUT

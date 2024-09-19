@@ -101,6 +101,7 @@ www/Magick\+\+/ChangeLog.rst
 ^TclMagick/Makefile
 ^TclMagick/autom4te.cache
 ^TclMagick/generic/Makefile
+^TclMagick/generic/pkgIndex.tcl
 ^TclMagick/libtool
 ^TclMagick/tmp/
 ^Makefile

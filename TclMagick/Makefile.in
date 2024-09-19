@@ -102,6 +102,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
+CONFIG_HEADER = $(top_builddir)/generic/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -166,8 +167,8 @@ am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/unix/config/missing AUTHORS COPYING ChangeLog \
 	INSTALL NEWS README unix/config/compile \
 	unix/config/config.guess unix/config/config.sub \
-	unix/config/install-sh unix/config/ltmain.sh \
-	unix/config/missing
+	unix/config/depcomp unix/config/install-sh \
+	unix/config/ltmain.sh unix/config/missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -408,6 +409,12 @@ ACLOCAL_AMFLAGS = -I unix/m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --with-tcl=${TCL_BIN_DIR} --with-tk=${TK_BIN_DIR} --with-magick=${wand_config} --exec-prefix=${prefix}
 EXTRA_DIST = LICENSE tests images doc pkgIndex.tcl
 SUBDIRS = generic
+TCLSH_ENV = TCL_LIBRARY=`@CYGPATH@ $(TCL_SRC_DIR)/library`
+PKG_ENV = @LD_LIBRARY_PATH_VAR@="$(EXTRA_PATH):$(@LD_LIBRARY_PATH_VAR@)" \
+		  PATH="$(EXTRA_PATH):$(PATH)" \
+		  TCLLIBPATH="$(TCLLIBPATH)"
+
+TCLSH = $(TCLSH_ENV) $(PKG_ENV) $(TCLSH_PROG)
 all: all-recursive
 
 .SUFFIXES:
@@ -888,6 +895,11 @@ install-data-local:
 
 uninstall-local:
 	rm -v $(DESTDIR)@libdir@/TclMagick@VERSION@/pkgIndex.tcl
+
+test:
+	cd generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-wand.tcl` $(TESTFLAGS) \
+		-load "package ifneeded $(PACKAGE_NAME)3 $(PACKAGE_VERSION) \
+			[list load `@CYGPATH@ $(PKG_LIB_FILE)` [string totitle $(PACKAGE_NAME)3]]"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
