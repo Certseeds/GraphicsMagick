@@ -5,7 +5,7 @@
 
 AUTOMAKE_OPTIONS = 1.12 subdir-objects dist-zip dist-xz no-dist-gzip foreign
 ACLOCAL_AMFLAGS = -I unix/m4
-AM_DISTCHECK_CONFIGURE_FLAGS = --with-tcl=${TCL_BIN_DIR} --with-tk=${TK_BIN_DIR} --with-magick=${wand_config} --exec-prefix=${prefix}
+AM_DISTCHECK_CONFIGURE_FLAGS = --with-tcl=${TCL_BIN_DIR} --with-tk=${TK_BIN_DIR} --with-magick=${wand_config} --exec-prefix="$$dc_install_base"
 
 EXTRA_DIST=LICENSE tests images doc pkgIndex.tcl
 

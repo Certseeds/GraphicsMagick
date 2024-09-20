@@ -3,6 +3,8 @@
 	* TclMagick/Makefile.am: Now uses non-recursive build and produces
 	xz tarball.  The make 'distcheck' target is not working properly
 	yet.
+	(AM_DISTCHECK_CONFIGURE_FLAGS): Change the argument to
+	--exec-prefix so that 'make distcheck' now passes.
 
 2024-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
