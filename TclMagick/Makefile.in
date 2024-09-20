@@ -13,6 +13,12 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+# Makefile for creating libTclMagick and libTkMagick
+
+# Copyright David N. Welton <davidw@dedasys.com>, 2004, with many
+# thanks to Bob Friesenhahn for all the help.
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -103,8 +109,65 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/generic/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = generic/pkgIndex.tcl
 CONFIG_CLEAN_VPATH_FILES =
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+am__installdirs = "$(DESTDIR)$(generic_lib_magickdir)"
+LTLIBRARIES = $(generic_lib_magick_LTLIBRARIES)
+generic_TclMagick_la_DEPENDENCIES = generic/libttkcommon.la
+am__dirstamp = $(am__leading_dot)dirstamp
+am_generic_TclMagick_la_OBJECTS = generic/TclMagick_la-TclMagick.lo
+generic_TclMagick_la_OBJECTS = $(am_generic_TclMagick_la_OBJECTS)
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+generic_TclMagick_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(generic_TclMagick_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
+generic_TkMagick_la_DEPENDENCIES = generic/libttkcommon.la
+am_generic_TkMagick_la_OBJECTS = generic/TkMagick_la-TkMagick.lo
+generic_TkMagick_la_OBJECTS = $(am_generic_TkMagick_la_OBJECTS)
+generic_TkMagick_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(generic_TkMagick_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
+generic_libttkcommon_la_DEPENDENCIES =
+am_generic_libttkcommon_la_OBJECTS =  \
+	generic/libttkcommon_la-libttkcommon.lo
+generic_libttkcommon_la_OBJECTS =  \
+	$(am_generic_libttkcommon_la_OBJECTS)
+generic_libttkcommon_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(generic_libttkcommon_la_LDFLAGS) \
+	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -117,29 +180,42 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-SOURCES =
-DIST_SOURCES =
-RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
-	ctags-recursive dvi-recursive html-recursive info-recursive \
-	install-data-recursive install-dvi-recursive \
-	install-exec-recursive install-html-recursive \
-	install-info-recursive install-pdf-recursive \
-	install-ps-recursive install-recursive installcheck-recursive \
-	installdirs-recursive pdf-recursive ps-recursive \
-	tags-recursive uninstall-recursive
+DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/generic
+depcomp = $(SHELL) $(top_srcdir)/unix/config/depcomp
+am__maybe_remake_depfiles = depfiles
+am__depfiles_remade = generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo \
+	generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo \
+	generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo
+am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) \
+	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
+	$(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
+SOURCES = $(generic_TclMagick_la_SOURCES) \
+	$(generic_TkMagick_la_SOURCES) \
+	$(generic_libttkcommon_la_SOURCES)
+DIST_SOURCES = $(generic_TclMagick_la_SOURCES) \
+	$(generic_TkMagick_la_SOURCES) \
+	$(generic_libttkcommon_la_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
-  distclean-recursive maintainer-clean-recursive
-am__recursive_targets = \
-  $(RECURSIVE_TARGETS) \
-  $(RECURSIVE_CLEAN_TARGETS) \
-  $(am__extra_recursive_targets)
-AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
-	cscope distdir distdir-am dist dist-all distcheck
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -157,11 +233,14 @@ am__define_uniq_tagged_files = \
   unique=`for i in $$list; do \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
-DIST_SUBDIRS = $(SUBDIRS)
+AM_RECURSIVE_TARGETS = cscope
 am__DIST_COMMON = $(srcdir)/Makefile.in \
+	$(top_srcdir)/generic/config.h.in \
+	$(top_srcdir)/generic/pkgIndex.tcl.in \
 	$(top_srcdir)/unix/config/compile \
 	$(top_srcdir)/unix/config/config.guess \
 	$(top_srcdir)/unix/config/config.sub \
+	$(top_srcdir)/unix/config/depcomp \
 	$(top_srcdir)/unix/config/install-sh \
 	$(top_srcdir)/unix/config/ltmain.sh \
 	$(top_srcdir)/unix/config/missing AUTHORS COPYING ChangeLog \
@@ -179,34 +258,9 @@ am__remove_distdir = \
       || { sleep 5 && rm -rf "$(distdir)"; }; \
   else :; fi
 am__post_remove_distdir = $(am__remove_distdir)
-am__relativize = \
-  dir0=`pwd`; \
-  sed_first='s,^\([^/]*\)/.*$$,\1,'; \
-  sed_rest='s,^[^/]*/*,,'; \
-  sed_last='s,^.*/\([^/]*\)$$,\1,'; \
-  sed_butlast='s,/*[^/]*$$,,'; \
-  while test -n "$$dir1"; do \
-    first=`echo "$$dir1" | sed -e "$$sed_first"`; \
-    if test "$$first" != "."; then \
-      if test "$$first" = ".."; then \
-        dir2=`echo "$$dir0" | sed -e "$$sed_last"`/"$$dir2"; \
-        dir0=`echo "$$dir0" | sed -e "$$sed_butlast"`; \
-      else \
-        first2=`echo "$$dir2" | sed -e "$$sed_first"`; \
-        if test "$$first2" = "$$first"; then \
-          dir2=`echo "$$dir2" | sed -e "$$sed_rest"`; \
-        else \
-          dir2="../$$dir2"; \
-        fi; \
-        dir0="$$dir0"/"$$first"; \
-      fi; \
-    fi; \
-    dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
-  done; \
-  reldir="$$dir2"
-DIST_ARCHIVES = $(distdir).tar.gz $(distdir).tar.bz2 $(distdir).zip
 GZIP_ENV = --best
-DIST_TARGETS = dist-bzip2 dist-gzip dist-zip
+DIST_ARCHIVES = $(distdir).tar.xz $(distdir).zip
+DIST_TARGETS = dist-xz dist-zip
 # Exists only to be overridden by the user if desired.
 AM_DISTCHECK_DVI_TARGET = dvi
 distuninstallcheck_listfiles = find . -type f -print
@@ -227,7 +281,7 @@ CFLAGS = @CFLAGS@
 CFLAGS_DEBUG = @CFLAGS_DEBUG@
 CFLAGS_OPTIMIZE = @CFLAGS_OPTIMIZE@
 CFLAGS_WARNING = @CFLAGS_WARNING@
-CLEANFILES = @CLEANFILES@
+CLEANFILES = generic/pkgIndex.tcl
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CSCOPE = @CSCOPE@
@@ -404,20 +458,36 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 wand_config = @wand_config@
-AUTOMAKE_OPTIONS = 1.11 dist-zip dist-bzip2 foreign
+AUTOMAKE_OPTIONS = 1.12 subdir-objects dist-zip dist-xz no-dist-gzip foreign
 ACLOCAL_AMFLAGS = -I unix/m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --with-tcl=${TCL_BIN_DIR} --with-tk=${TK_BIN_DIR} --with-magick=${wand_config} --exec-prefix=${prefix}
 EXTRA_DIST = LICENSE tests images doc pkgIndex.tcl
-SUBDIRS = generic
 TCLSH_ENV = TCL_LIBRARY=`@CYGPATH@ $(TCL_SRC_DIR)/library`
 PKG_ENV = @LD_LIBRARY_PATH_VAR@="$(EXTRA_PATH):$(@LD_LIBRARY_PATH_VAR@)" \
 		  PATH="$(EXTRA_PATH):$(PATH)" \
 		  TCLLIBPATH="$(TCLLIBPATH)"
 
 TCLSH = $(TCLSH_ENV) $(PKG_ENV) $(TCLSH_PROG)
-all: all-recursive
+
+# Put this in its own package directory.
+generic_lib_magickdir = @libdir@/TclMagick@VERSION@
+generic_lib_magick_LTLIBRARIES = generic/libttkcommon.la generic/TclMagick.la generic/TkMagick.la
+generic_libttkcommon_la_SOURCES = generic/libttkcommon.c generic/libttkcommon.h
+generic_libttkcommon_la_LDFLAGS = @GM_LDFLAGS@ -no-undefined
+generic_libttkcommon_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@
+generic_libttkcommon_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
+generic_TclMagick_la_SOURCES = generic/TclMagick.c generic/TclMagick.h generic/libttkcommon.h
+generic_TclMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module
+generic_TclMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@ generic/libttkcommon.la
+generic_TclMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
+generic_TkMagick_la_SOURCES = generic/TkMagick.c generic/TclMagick.h generic/libttkcommon.h
+generic_TkMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module
+generic_TkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIBS@ @TK_LIBS@ @GM_LIBS@ generic/libttkcommon.la
+generic_TkMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@ @TK_INCLUDES@ @TK_XINCLUDES@
+all: all-am
 
 .SUFFIXES:
+.SUFFIXES: .c .lo .o .obj
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -452,70 +522,160 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
 
+generic/config.h: generic/stamp-h1
+	@test -f $@ || rm -f generic/stamp-h1
+	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) generic/stamp-h1
+
+generic/stamp-h1: $(top_srcdir)/generic/config.h.in $(top_builddir)/config.status
+	@rm -f generic/stamp-h1
+	cd $(top_builddir) && $(SHELL) ./config.status generic/config.h
+$(top_srcdir)/generic/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
+	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
+	rm -f generic/stamp-h1
+	touch $@
+
+distclean-hdr:
+	-rm -f generic/config.h generic/stamp-h1
+generic/pkgIndex.tcl: $(top_builddir)/config.status $(top_srcdir)/generic/pkgIndex.tcl.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+
+install-generic_lib_magickLTLIBRARIES: $(generic_lib_magick_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	@list='$(generic_lib_magick_LTLIBRARIES)'; test -n "$(generic_lib_magickdir)" || list=; \
+	list2=; for p in $$list; do \
+	  if test -f $$p; then \
+	    list2="$$list2 $$p"; \
+	  else :; fi; \
+	done; \
+	test -z "$$list2" || { \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(generic_lib_magickdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(generic_lib_magickdir)" || exit 1; \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 '$(DESTDIR)$(generic_lib_magickdir)'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL) $(INSTALL_STRIP_FLAG) $$list2 "$(DESTDIR)$(generic_lib_magickdir)"; \
+	}
+
+uninstall-generic_lib_magickLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@list='$(generic_lib_magick_LTLIBRARIES)'; test -n "$(generic_lib_magickdir)" || list=; \
+	for p in $$list; do \
+	  $(am__strip_dir) \
+	  echo " $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f '$(DESTDIR)$(generic_lib_magickdir)/$$f'"; \
+	  $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=uninstall rm -f "$(DESTDIR)$(generic_lib_magickdir)/$$f"; \
+	done
+
+clean-generic_lib_magickLTLIBRARIES:
+	-test -z "$(generic_lib_magick_LTLIBRARIES)" || rm -f $(generic_lib_magick_LTLIBRARIES)
+	@list='$(generic_lib_magick_LTLIBRARIES)'; \
+	locs=`for p in $$list; do echo $$p; done | \
+	      sed 's|^[^/]*$$|.|; s|/[^/]*$$||; s|$$|/so_locations|' | \
+	      sort -u`; \
+	test -z "$$locs" || { \
+	  echo rm -f $${locs}; \
+	  rm -f $${locs}; \
+	}
+generic/$(am__dirstamp):
+	@$(MKDIR_P) generic
+	@: > generic/$(am__dirstamp)
+generic/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) generic/$(DEPDIR)
+	@: > generic/$(DEPDIR)/$(am__dirstamp)
+generic/TclMagick_la-TclMagick.lo: generic/$(am__dirstamp) \
+	generic/$(DEPDIR)/$(am__dirstamp)
+
+generic/TclMagick.la: $(generic_TclMagick_la_OBJECTS) $(generic_TclMagick_la_DEPENDENCIES) $(EXTRA_generic_TclMagick_la_DEPENDENCIES) generic/$(am__dirstamp)
+	$(AM_V_CCLD)$(generic_TclMagick_la_LINK) -rpath $(generic_lib_magickdir) $(generic_TclMagick_la_OBJECTS) $(generic_TclMagick_la_LIBADD) $(LIBS)
+generic/TkMagick_la-TkMagick.lo: generic/$(am__dirstamp) \
+	generic/$(DEPDIR)/$(am__dirstamp)
+
+generic/TkMagick.la: $(generic_TkMagick_la_OBJECTS) $(generic_TkMagick_la_DEPENDENCIES) $(EXTRA_generic_TkMagick_la_DEPENDENCIES) generic/$(am__dirstamp)
+	$(AM_V_CCLD)$(generic_TkMagick_la_LINK) -rpath $(generic_lib_magickdir) $(generic_TkMagick_la_OBJECTS) $(generic_TkMagick_la_LIBADD) $(LIBS)
+generic/libttkcommon_la-libttkcommon.lo: generic/$(am__dirstamp) \
+	generic/$(DEPDIR)/$(am__dirstamp)
+
+generic/libttkcommon.la: $(generic_libttkcommon_la_OBJECTS) $(generic_libttkcommon_la_DEPENDENCIES) $(EXTRA_generic_libttkcommon_la_DEPENDENCIES) generic/$(am__dirstamp)
+	$(AM_V_CCLD)$(generic_libttkcommon_la_LINK) -rpath $(generic_lib_magickdir) $(generic_libttkcommon_la_OBJECTS) $(generic_libttkcommon_la_LIBADD) $(LIBS)
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT)
+	-rm -f generic/*.$(OBJEXT)
+	-rm -f generic/*.lo
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo@am__quote@ # am--include-marker
+
+$(am__depfiles_remade):
+	@$(MKDIR_P) $(@D)
+	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
+
+am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+.c.lo:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
+
+generic/TclMagick_la-TclMagick.lo: generic/TclMagick.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_TclMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generic/TclMagick_la-TclMagick.lo -MD -MP -MF generic/$(DEPDIR)/TclMagick_la-TclMagick.Tpo -c -o generic/TclMagick_la-TclMagick.lo `test -f 'generic/TclMagick.c' || echo '$(srcdir)/'`generic/TclMagick.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) generic/$(DEPDIR)/TclMagick_la-TclMagick.Tpo generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='generic/TclMagick.c' object='generic/TclMagick_la-TclMagick.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_TclMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generic/TclMagick_la-TclMagick.lo `test -f 'generic/TclMagick.c' || echo '$(srcdir)/'`generic/TclMagick.c
+
+generic/TkMagick_la-TkMagick.lo: generic/TkMagick.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_TkMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generic/TkMagick_la-TkMagick.lo -MD -MP -MF generic/$(DEPDIR)/TkMagick_la-TkMagick.Tpo -c -o generic/TkMagick_la-TkMagick.lo `test -f 'generic/TkMagick.c' || echo '$(srcdir)/'`generic/TkMagick.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) generic/$(DEPDIR)/TkMagick_la-TkMagick.Tpo generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='generic/TkMagick.c' object='generic/TkMagick_la-TkMagick.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_TkMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generic/TkMagick_la-TkMagick.lo `test -f 'generic/TkMagick.c' || echo '$(srcdir)/'`generic/TkMagick.c
+
+generic/libttkcommon_la-libttkcommon.lo: generic/libttkcommon.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_libttkcommon_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generic/libttkcommon_la-libttkcommon.lo -MD -MP -MF generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Tpo -c -o generic/libttkcommon_la-libttkcommon.lo `test -f 'generic/libttkcommon.c' || echo '$(srcdir)/'`generic/libttkcommon.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Tpo generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='generic/libttkcommon.c' object='generic/libttkcommon_la-libttkcommon.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_libttkcommon_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generic/libttkcommon_la-libttkcommon.lo `test -f 'generic/libttkcommon.c' || echo '$(srcdir)/'`generic/libttkcommon.c
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf generic/.libs generic/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
 
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run 'make' without going through this Makefile.
-# To change the values of 'make' variables: instead of editing Makefiles,
-# (1) if the variable is set in 'config.status', edit 'config.status'
-#     (which will cause the Makefiles to be regenerated when you run 'make');
-# (2) otherwise, pass the desired values on the 'make' command line.
-$(am__recursive_targets):
-	@fail=; \
-	if $(am__make_keepgoing); then \
-	  failcom='fail=yes'; \
-	else \
-	  failcom='exit 1'; \
-	fi; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
-
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
-tags: tags-recursive
+tags: tags-am
 TAGS: tags
 
 tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
 	set x; \
 	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      set "$$@" "$$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
 	$(am__define_uniq_tagged_files); \
 	shift; \
 	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
@@ -528,7 +688,7 @@ tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
 	      $$unique; \
 	  fi; \
 	fi
-ctags: ctags-recursive
+ctags: ctags-am
 
 CTAGS: ctags
 ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
@@ -547,7 +707,7 @@ cscope: cscope.files
 clean-cscope:
 	-rm -f cscope.files
 cscope.files: clean-cscope cscopelist
-cscopelist: cscopelist-recursive
+cscopelist: cscopelist-am
 
 cscopelist-am: $(am__tagged_files)
 	list='$(am__tagged_files)'; \
@@ -601,31 +761,6 @@ distdir-am: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	@list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    $(am__make_dryrun) \
-	      || test -d "$(distdir)/$$subdir" \
-	      || $(MKDIR_P) "$(distdir)/$$subdir" \
-	      || exit 1; \
-	    dir1=$$subdir; dir2="$(distdir)/$$subdir"; \
-	    $(am__relativize); \
-	    new_distdir=$$reldir; \
-	    dir1=$$subdir; dir2="$(top_distdir)"; \
-	    $(am__relativize); \
-	    new_top_distdir=$$reldir; \
-	    echo " (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) top_distdir="$$new_top_distdir" distdir="$$new_distdir" \\"; \
-	    echo "     am__remove_distdir=: am__skip_length_check=: am__skip_mode_fix=: distdir)"; \
-	    ($(am__cd) $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$new_top_distdir" \
-	        distdir="$$new_distdir" \
-		am__remove_distdir=: \
-		am__skip_length_check=: \
-		am__skip_mode_fix=: \
-	        distdir) \
-	      || exit 1; \
-	  fi; \
-	done
 	-test -n "$(am__skip_mode_fix)" \
 	|| find "$(distdir)" -type d ! -perm -755 \
 		-exec chmod u+rwx,go+rx {} \; -o \
@@ -636,6 +771,7 @@ distdir-am: $(DISTFILES)
 dist-gzip: distdir
 	tardir=$(distdir) && $(am__tar) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).tar.gz
 	$(am__post_remove_distdir)
+
 dist-bzip2: distdir
 	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
 	$(am__post_remove_distdir)
@@ -643,7 +779,6 @@ dist-bzip2: distdir
 dist-lzip: distdir
 	tardir=$(distdir) && $(am__tar) | lzip -c $${LZIP_OPT--9} >$(distdir).tar.lz
 	$(am__post_remove_distdir)
-
 dist-xz: distdir
 	tardir=$(distdir) && $(am__tar) | XZ_OPT=$${XZ_OPT--e} xz -c >$(distdir).tar.xz
 	$(am__post_remove_distdir)
@@ -762,19 +897,21 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-check: check-recursive
-all-am: Makefile
-installdirs: installdirs-recursive
-installdirs-am:
-install: install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+check: check-am
+all-am: Makefile $(LTLIBRARIES)
+installdirs:
+	for dir in "$(DESTDIR)$(generic_lib_magickdir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	if test -z '$(STRIP)'; then \
 	  $(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
@@ -793,98 +930,112 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f generic/$(DEPDIR)/$(am__dirstamp)
+	-rm -f generic/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-recursive
+clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-generic_lib_magickLTLIBRARIES \
+	clean-libtool mostlyclean-am
 
-distclean: distclean-recursive
+distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
+		-rm -f generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo
+	-rm -f generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo
+	-rm -f generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-libtool \
-	distclean-tags
+distclean-am: clean-am distclean-compile distclean-generic \
+	distclean-hdr distclean-libtool distclean-tags
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-html: html-recursive
+html: html-am
 
 html-am:
 
-info: info-recursive
+info: info-am
 
 info-am:
 
-install-data-am: install-data-local
+install-data-am: install-data-local \
+	install-generic_lib_magickLTLIBRARIES
 
-install-dvi: install-dvi-recursive
+install-dvi: install-dvi-am
 
 install-dvi-am:
 
 install-exec-am:
 
-install-html: install-html-recursive
+install-html: install-html-am
 
 install-html-am:
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-info-am:
 
 install-man:
 
-install-pdf: install-pdf-recursive
+install-pdf: install-pdf-am
 
 install-pdf-am:
 
-install-ps: install-ps-recursive
+install-ps: install-ps-am
 
 install-ps-am:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
+maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
+		-rm -f generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo
+	-rm -f generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo
+	-rm -f generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic mostlyclean-libtool
+mostlyclean-am: mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool
 
-pdf: pdf-recursive
+pdf: pdf-am
 
 pdf-am:
 
-ps: ps-recursive
+ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-local
+uninstall-am: uninstall-generic_lib_magickLTLIBRARIES uninstall-local
 
-.MAKE: $(am__recursive_targets) install-am install-strip
+.MAKE: install-am install-strip
 
-.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--refresh check check-am clean clean-cscope clean-generic \
-	clean-libtool cscope cscopelist-am ctags ctags-am dist \
-	dist-all dist-bzip2 dist-gzip dist-lzip dist-shar dist-tarZ \
-	dist-xz dist-zip dist-zstd distcheck distclean \
-	distclean-generic distclean-libtool distclean-tags \
-	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-data-local install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
+.PHONY: CTAGS GTAGS TAGS all all-am am--depfiles am--refresh check \
+	check-am clean clean-cscope clean-generic \
+	clean-generic_lib_magickLTLIBRARIES clean-libtool cscope \
+	cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	dist-gzip dist-lzip dist-shar dist-tarZ dist-xz dist-zip \
+	dist-zstd distcheck distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-data-local install-dvi \
+	install-dvi-am install-exec install-exec-am \
+	install-generic_lib_magickLTLIBRARIES install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-local
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-generic_lib_magickLTLIBRARIES uninstall-local
 
 .PRECIOUS: Makefile
 
@@ -900,6 +1051,24 @@ test:
 	cd generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-wand.tcl` $(TESTFLAGS) \
 		-load "package ifneeded $(PACKAGE_NAME)3 $(PACKAGE_VERSION) \
 			[list load `@CYGPATH@ $(PKG_LIB_FILE)` [string totitle $(PACKAGE_NAME)3]]"
+
+# Run Clang analyzer on the project.
+# In order for this to work, you must have first installed the 'clang'
+# and 'clang-tools' packages on your system.
+# The project should have been configured to use clang.
+#	-enable-checker security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+scan-build:
+	scan-build-15 -k --html-title='TclMagick@VERSION@' \
+	-maxloop 10000 \
+	-disable-checker deadcode.DeadStores \
+	-enable-checker security.insecureAPI.bcmp \
+	-enable-checker security.insecureAPI.bcopy \
+	-enable-checker security.insecureAPI.bzero \
+	-enable-checker security.insecureAPI.strcpy \
+	-enable-checker valist.CopyToSelf \
+	-enable-checker valist.Uninitialized \
+	-enable-checker valist.Unterminated \
+	--use-cc $(CC) $(MAKE)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

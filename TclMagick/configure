@@ -18636,7 +18636,7 @@ printf "%s\n" "${WISH_PROG}" >&6; }
 
 
 
-ac_config_files="$ac_config_files Makefile generic/Makefile generic/pkgIndex.tcl"
+ac_config_files="$ac_config_files Makefile generic/pkgIndex.tcl"
 
 
 cat >confcache <<\_ACEOF
@@ -19658,7 +19658,6 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "generic/Makefile") CONFIG_FILES="$CONFIG_FILES generic/Makefile" ;;
     "generic/pkgIndex.tcl") CONFIG_FILES="$CONFIG_FILES generic/pkgIndex.tcl" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

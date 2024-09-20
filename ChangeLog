@@ -1,3 +1,9 @@
+2024-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* TclMagick/Makefile.am: Now uses non-recursive build and produces
+	xz tarball.  The make 'distcheck' target is not working properly
+	yet.
+
 2024-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/display.c (MagickXROIImage): ThresholdCommand was missing
