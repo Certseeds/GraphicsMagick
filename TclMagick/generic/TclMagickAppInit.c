@@ -36,6 +36,8 @@ extern int              TclThread_Init _ANSI_ARGS_((Tcl_Interp *interp));
 extern void             XtToolkitInitialize _ANSI_ARGS_((void));
 extern int              Tclxttest_Init _ANSI_ARGS_((Tcl_Interp *interp));
 #endif
+
+#include "TclMagick.h"
 
 /*
  *----------------------------------------------------------------------

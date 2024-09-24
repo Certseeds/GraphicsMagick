@@ -258,6 +258,8 @@ foreach {func var flag} $TestFunctions {
     }
 }
 
+magick delete $img
+
 puts "##### DRAW TEST READY #####"
 if {!$ERRORS} {
     after 3000 exit

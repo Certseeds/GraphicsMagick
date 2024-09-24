@@ -207,7 +207,7 @@ static int noWandObj(const char *name)
     return (strlen(name) == 0);
 }
 
-
+#if 0
  /*----------------------------------------------------------------------
  * Find TclMagick objects
  *----------------------------------------------------------------------
@@ -229,6 +229,7 @@ TclMagickObj *findMagickObj(Tcl_Interp *interp, int type, char *name)
         return mPtr;
     }
 }
+#endif
 
 /*----------------------------------------------------------------------
  * encoding functions
@@ -461,11 +462,12 @@ static int magickCmd(
             for( i=0; i < listLen; i++ ) {
                 Tcl_ListObjAppendElement(interp, listPtr,
                                          Tcl_NewStringObj(fonts[i], (int)strlen(fonts[i])) );
+                MagickRelinquishMemory(fonts[i]); /* Free individual font entry */
             }
             Tcl_SetObjResult(interp, listPtr);
         }
         if (fonts != NULL)
-            MagickRelinquishMemory(fonts); /* Free TclMagick resource */
+            MagickRelinquishMemory(fonts); /* Free fonts list */
 
         break;
     }
@@ -476,7 +478,7 @@ static int magickCmd(
         unsigned long   listLen = 0;
         Tcl_Obj        *listPtr;
         char           *pattern = "*";
-        char          **fonts;
+        char          **formats;
 
         if( objc > 3 ) {
             Tcl_WrongNumArgs(interp, 2, objv, "?pattern?");
@@ -486,17 +488,18 @@ static int magickCmd(
             pattern = Tcl_GetString(objv[2]);
         }
 
-        fonts = MagickQueryFormats(pattern, &listLen);
-        if( (fonts != NULL) && (listLen > 0) ) {
+        formats = MagickQueryFormats(pattern, &listLen);
+        if( (formats != NULL) && (listLen > 0) ) {
             listPtr = Tcl_NewListObj(0, NULL);
             for( i=0; i < listLen; i++ ) {
                 Tcl_ListObjAppendElement(interp, listPtr,
-                                         Tcl_NewStringObj(fonts[i], (int)strlen(fonts[i])) );
+                                         Tcl_NewStringObj(formats[i], (int)strlen(formats[i])) );
+                MagickRelinquishMemory(formats[i]);
             }
             Tcl_SetObjResult(interp, listPtr);
         }
-        if (fonts != NULL)
-            MagickRelinquishMemory(fonts); /* Free TclMagick resource */
+        if (formats != NULL)
+            MagickRelinquishMemory(formats); /* Free TclMagick resource */
 
         break;
     }

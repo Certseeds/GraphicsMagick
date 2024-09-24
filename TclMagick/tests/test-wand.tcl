@@ -1530,6 +1530,8 @@ foreach {func var flag} $TestFunctions {
     }
 }
 
+magick delete $img $seq
+
 puts "*********** READY **************"
 if {$SKIPPED} {
     puts [format "tested=%d errors=%d skipped=%d" $TESTED $ERRORS $SKIPPED]

@@ -51,8 +51,14 @@ typedef struct {
 #   define EXPORT(a,b) a b
 #endif
 
-
 #endif
+
+/* Export Tclmagick_Init() for static linkage */
+extern int Tclmagick_Init(Tcl_Interp *interp);
+
+/* Export Tclmagick_SafeInit for static linkage */
+extern int Tclmagick_SafeInit(Tcl_Interp *interp);
+
 /* vim: set ts=8 sts=8 sw=8 noet: */
 /*
  * Local Variables:

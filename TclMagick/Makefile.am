@@ -35,6 +35,15 @@ generic_TkMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefi
 generic_TkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIBS@ @TK_LIBS@ @GM_LIBS@ generic/libttkcommon.la
 generic_TkMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@ @TK_INCLUDES@ @TK_XINCLUDES@
 
+# A TclMagick executable (not installed)
+generic_PGMS = generic/TclMagick
+generic_TclMagick_SOURCES = generic/TclMagickAppInit.c
+generic_TclMagick_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
+generic_TclMagick_LDADD = $(generic_lib_magick_LTLIBRARIES) @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TK_LIB_SPEC@ @TCL_LIB_FLAG@ @TK_LIB_FLAG@ @TCL_LIBS@ @TK_LIBS@ @GM_LIBS@
+
+noinst_PROGRAMS = \
+	$(generic_PGMS)
+
 CLEANFILES = generic/pkgIndex.tcl
 
 
@@ -46,9 +55,12 @@ uninstall-local:
 	rm -v $(DESTDIR)@libdir@/TclMagick@VERSION@/pkgIndex.tcl
 
 test:
-	cd generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-wand.tcl` $(TESTFLAGS) \
-		-load "package ifneeded $(PACKAGE_NAME)3 $(PACKAGE_VERSION) \
-			[list load `@CYGPATH@ $(PKG_LIB_FILE)` [string totitle $(PACKAGE_NAME)3]]"
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-wand.tcl
+
+#test:
+#	cd generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-wand.tcl` $(TESTFLAGS) \
+#		-load "package ifneeded $(PACKAGE_NAME) $(PACKAGE_VERSION) \
+#			[list load `@CYGPATH@ $(PKG_LIB_FILE)` [string totitle $(PACKAGE_NAME)]]"
 
 # Run Clang analyzer on the project.
 # In order for this to work, you must have first installed the 'clang'

@@ -1,3 +1,17 @@
+2024-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* TclMagick/Makefile.am: 'make test' does something.  Not yet what
+	it should be.
+
+	* TclMagick/tests/test-wand.tcl: Fix memork leak of $img and $seq.
+
+	* TclMagick/tests/test-draw.tcl: Fix memory leak of $img.
+
+	* generic/TclMagickAppInit.c: Add a TclMagick test program.
+
+	* TclMagick/generic/TkMagick.c: Fix memory leak of 'fonts' and
+	'formats' lists members.
+
 2024-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* TclMagick/Makefile.am: Now uses non-recursive build and produces

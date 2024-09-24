@@ -1,7 +1,6 @@
 /*
  * tcltkcommon.c: data and functions shared by TclMagick.c TkMagick.c
  */
-
 #include "libttkcommon.h"
 #include "TclMagick.h"
 
