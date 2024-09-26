@@ -1,3 +1,7 @@
+2024-09-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* m4, TclMagick/unix/m4: Update to libtool 2.5.3.
+
 2024-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* TclMagick/Makefile.am: 'make test' does something.  Not yet what

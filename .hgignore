@@ -104,6 +104,7 @@ www/Magick\+\+/ChangeLog.rst
 ^TclMagick/generic/pkgIndex.tcl
 ^TclMagick/libtool
 ^TclMagick/tmp/
+^TclMagick/cscope.files
 ^Makefile
 ^PerlMagick/PerlMagickCheck\.sh
 

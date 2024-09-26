@@ -22,7 +22,7 @@ generic_lib_magick_LTLIBRARIES =  generic/libttkcommon.la generic/TclMagick.la g
 
 generic_libttkcommon_la_SOURCES = generic/libttkcommon.c generic/libttkcommon.h
 generic_libttkcommon_la_LDFLAGS = @GM_LDFLAGS@ -no-undefined
-generic_libttkcommon_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@
+generic_libttkcommon_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TCL_LIBS@ @GM_LIBS@
 generic_libttkcommon_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
 
 generic_TclMagick_la_SOURCES = generic/TclMagick.c generic/TclMagick.h generic/libttkcommon.h
@@ -39,6 +39,29 @@ generic_TkMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@ @TK_INCLU
 generic_PGMS = generic/TclMagick
 generic_TclMagick_SOURCES = generic/TclMagickAppInit.c
 generic_TclMagick_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
+#
+# These sort of definitions come from the TEA tcl.m4 module:
+#
+# TCL_STUB_LIB_SPEC = -L/usr/lib/x86_64-linux-gnu -ltclstub8.6
+# TK_STUB_LIB_SPEC = -L/usr/lib/x86_64-linux-gnu -ltkstub8.6
+# TCL_LIB_SPEC = -L/usr/lib/x86_64-linux-gnu -ltcl8.6
+# TK_LIB_SPEC = -L/usr/lib/x86_64-linux-gnu -ltk8.6
+# TCL_LIB_FLAG = -ltcl8.6
+# TK_LIB_FLAG = -ltk8.6
+# TCL_LIBS = -ldl -lz  -lpthread -lm
+# TK_LIBS = -lX11 -lXss -lXext -lXft -lfontconfig -lfreetype -lfontconfig  -lpthread -ldl -lz  -lpthread -lm
+# GM_LIBS = -lGraphicsMagickWand -lGraphicsMagick -ljasper -lheif -lwmflite -ljxl -ljxl_threads -ltiff -ljbig -lzip -lzip -lwebpmux -lwebp -lfreetype -ljpeg -lturbojpeg -lpng16 -llcms2 -lXext -lSM -lICE -lX11 -lxml2 -lzstd -llzma -lbz2 -lz -lm -lpthread -lgomp
+# PKG_LIB_FILE = libTclMagick0.46.so
+# PKG_LIB_FILE8 = libTclMagick0.46.so
+# PKG_LIB_FILE9 = libtcl9TclMagick0.46.so
+# PKG_STUB_LIB_FILE = libTclMagickstub0.46.a
+# TCL_STUB_LIB_FILE = libtclstub8.6.a
+# TCL_STUB_LIB_FLAG = -ltclstub8.6
+# TCL_STUB_LIB_SPEC = -L/usr/lib/x86_64-linux-gnu -ltclstub8.6
+# TK_STUB_LIB_FILE = libtkstub8.6.a
+# TK_STUB_LIB_FLAG = -ltkstub8.6
+# TK_STUB_LIB_SPEC = -L/usr/lib/x86_64-linux-gnu -ltkstub8.6
+
 generic_TclMagick_LDADD = $(generic_lib_magick_LTLIBRARIES) @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TK_LIB_SPEC@ @TCL_LIB_FLAG@ @TK_LIB_FLAG@ @TCL_LIBS@ @TK_LIBS@ @GM_LIBS@
 
 noinst_PROGRAMS = \
@@ -55,7 +78,11 @@ uninstall-local:
 	rm -v $(DESTDIR)@libdir@/TclMagick@VERSION@/pkgIndex.tcl
 
 test:
-	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-wand.tcl
+	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-wand.tcl`
+	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-pixel.tcl`
+	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-draw.tcl`
+	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-bmp-compare.tcl`
+#	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-wand.tcl
 
 #test:
 #	cd generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-wand.tcl` $(TESTFLAGS) \
