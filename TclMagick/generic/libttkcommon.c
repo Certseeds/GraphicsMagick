@@ -63,6 +63,7 @@ PixelWand *findPixelWand(Tcl_Interp *interp, char *name)
  * Old Functions used in code are Tcl_AppendElement(),
  *----------------------------------------------------------------------
  */
+#if 0
 int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
 {
     char *description;
@@ -88,6 +89,7 @@ int myMagickError(Tcl_Interp  *interp, MagickWand *wandPtr )
      */
     return TCL_ERROR;
 }
+#endif
 
 /* vim: set ts=8 sts=8 sw=8 noet: */
 /*
