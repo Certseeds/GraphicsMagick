@@ -670,9 +670,15 @@ MagickExport void Hull(const long x_offset,const long y_offset,
 
   assert(f != (Quantum *) NULL);
   assert(g != (Quantum *) NULL);
-  p=f+((size_t) columns+2);
-  q=g+((size_t) columns+2);
-  r=p+(y_offset*((size_t) columns+2)+x_offset);
+  assert(!((size_t)columns > (size_t)columns+2));
+
+  p=f+((size_t)columns+2);
+  q=g+((size_t)columns+2);
+
+  assert(!((p < f) || (q < g)));
+
+  r=p+((ptrdiff_t)y_offset*((ptrdiff_t)columns+2)+(ptrdiff_t)x_offset);
+
 #if defined(HAVE_OPENMP)
 #  if defined(TUNE_OPENMP)
 #    pragma omp parallel for schedule(runtime)

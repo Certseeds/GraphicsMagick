@@ -41,6 +41,9 @@
 <p>2024-09-26  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>magick/gem.c (Hull): Fix regression created by Mercurial
+changeset 16913:78aa63677935 &quot;Add casts to prevent unnecessary
+value truncation in WIN64 build&quot; on Saturday, October 21, 2023.</p></li>
 <li><p>m4, TclMagick/unix/m4: Update to libtool 2.5.3.</p></li>
 </ul>
 </blockquote>
@@ -49,7 +52,7 @@
 <ul class="simple">
 <li><p>TclMagick/Makefile.am: 'make test' does something.  Not yet what
 it should be.</p></li>
-<li><p>TclMagick/tests/test-wand.tcl: Fix memork leak of $img and $seq.</p></li>
+<li><p>TclMagick/tests/test-wand.tcl: Fix memory leak of $img and $seq.</p></li>
 <li><p>TclMagick/tests/test-draw.tcl: Fix memory leak of $img.</p></li>
 <li><p>generic/TclMagickAppInit.c: Add a TclMagick test program.</p></li>
 <li><p>TclMagick/generic/TkMagick.c: Fix memory leak of 'fonts' and
