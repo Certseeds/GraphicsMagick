@@ -54,7 +54,7 @@ __ Debian_GraphicsMagick_
 
 Oss-fuzz issues pertaining to `GraphicsMagick`__.
 
-.. _oss_fuzz_reports : https://bugs.chromium.org/p/oss-fuzz/issues/list?q=graphicsmagick
+.. _oss_fuzz_reports : https://issues.oss-fuzz.com/savedsearches/6886197
 
 __ oss_fuzz_reports_
 

@@ -1,3 +1,7 @@
+2024-09-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* www/links.rst: Update oss-fuzz bug tracker URL.
+
 2024-09-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/gem.c (Hull): Fix regression created by Mercurial
@@ -8,8 +12,8 @@
 
 2024-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* TclMagick/Makefile.am: 'make test' does something.  Not yet what
-	it should be.
+	* TclMagick/Makefile.am: 'make test' does something.  Not sure yet
+	what it should be.
 
 	* TclMagick/tests/test-wand.tcl: Fix memory leak of $img and $seq.
 
