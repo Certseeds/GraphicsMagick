@@ -4,10 +4,14 @@
 
 /* $Id$ */
 
+#include <string.h>
+
 #include <tk.h>
+
+#define NEED_STATIC_FUNCS 1
+
 #include "libttkcommon.h"
 #include "TclMagick.h"
-#include <string.h>
 #include <wand/magick_wand.h>
 
 /*
@@ -228,6 +232,21 @@ static int PhotoToMagick(
 
 EXPORT(int, Tkmagick_Init)(Tcl_Interp *interp)
 {
+    const char * TM_P_AddrHex;
+
+    TM_P_AddrHex = Tcl_GetVar(interp, TCL_MAGICK_OBJ_VAR, TCL_GLOBAL_ONLY);
+    if (TM_P_AddrHex) {
+        /* fprintf(stderr, "TkMagick TM_P_AddrHex=%s\n", TM_P_AddrHex); */
+        TM_P = (TMHT*) strtoll(TM_P_AddrHex, NULL, 16);
+    } else {
+        /* fprintf(stderr, "TkMagick TM_P_AddrHex not set!\n"); */
+        Tcl_AppendResult(interp, "TclMagick handle not set!", (char *) NULL);
+        return TCL_ERROR;
+    }
+
+    assert(TM_P->signature1 == TCL_MAGICK_SIGNATURE);
+    assert(TM_P->signature2 == TCL_MAGICK_SIGNATURE);
+
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, "8", 0) == NULL) {
         return TCL_ERROR;

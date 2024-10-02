@@ -10,9 +10,13 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define NEED_STATIC_FUNCS 1
+
 #include "libttkcommon.h"
 #include "TclMagick.h"
 #include <wand/magick_wand.h>
+
+static TMHT TM = {0};
 
 static char *getMagickObjName(TclMagickObj *mPtr);
 static TclMagickObj *newMagickObj(Tcl_Interp  *interp, int type, void *wandPtr, char *name);
@@ -29,13 +33,41 @@ static TclMagickObj *newMagickObj(Tcl_Interp  *interp, int type, void *wandPtr, 
 #define MAGICK_DEBUG
 /**********************************************************************/
 
-extern TMHT TM;
-extern CONST char* objTypeNames[];
 static Tcl_ObjCmdProc    magickCmd;
 static Tcl_CmdDeleteProc magickObjDeleteCmd;
 static Tcl_ObjCmdProc    wandObjCmd;
 static Tcl_ObjCmdProc    pixelObjCmd;
 static Tcl_ObjCmdProc    drawObjCmd;
+
+static MagickWand *findMagickWand(Tcl_Interp *interp, char *name)
+{
+    MagickWand *wandPtr = (MagickWand *)NULL;
+    TclMagickObj *mPtr = findMagickObj(interp, TM_TYPE_WAND, name);
+    if( mPtr != NULL ) {
+        wandPtr = (MagickWand *)mPtr->wandPtr;
+    }
+    return wandPtr;
+}
+
+static DrawingWand *findDrawingWand(Tcl_Interp *interp, char *name)
+{
+    DrawingWand *wandPtr = (DrawingWand *)NULL;
+    TclMagickObj *mPtr = findMagickObj(interp, TM_TYPE_DRAWING, name);
+    if( mPtr != NULL ) {
+        wandPtr = (DrawingWand *)mPtr->wandPtr;
+    }
+    return wandPtr;
+}
+
+static PixelWand *findPixelWand(Tcl_Interp *interp, char *name)
+{
+    PixelWand *wandPtr = (PixelWand *) NULL;
+    TclMagickObj *mPtr = findMagickObj(interp, TM_TYPE_PIXEL, name);
+    if( mPtr != NULL ) {
+        wandPtr = (PixelWand *)mPtr->wandPtr;
+    }
+    return wandPtr;
+}
 
 /*----------------------------------------------------------------------
  * Return the name of a TclMagickObj
@@ -43,11 +75,14 @@ static Tcl_ObjCmdProc    drawObjCmd;
  */
 static char *getMagickObjName(TclMagickObj *mPtr)
 {
-    if( mPtr == NULL ) {
-        return (char *)NULL;
-    } else {
-        return (char *)Tcl_GetHashKey(&TM.hashTable, mPtr->hashPtr);
+    char *ObjName = (char *)NULL;
+    if( mPtr != (TclMagickObj *) NULL) {
+        assert(TM_P->signature1 == TCL_MAGICK_SIGNATURE);
+        assert(TM_P->signature2 == TCL_MAGICK_SIGNATURE);
+
+        ObjName = (char *)Tcl_GetHashKey(&TM_P->hashTable, mPtr->hashPtr);
     }
+    return ObjName;
 }
 
 /*----------------------------------------------------------------------
@@ -147,10 +182,13 @@ static TclMagickObj *newMagickObj(Tcl_Interp  *interp, int type, void *wandPtr, 
      * Create the hash table entry
      * Delete already existing object
      */
-    hPtr = Tcl_CreateHashEntry( &TM.hashTable, name, &isNew );
+    assert(TM_P->signature1 == TCL_MAGICK_SIGNATURE);
+    assert(TM_P->signature2 == TCL_MAGICK_SIGNATURE);
+
+    hPtr = Tcl_CreateHashEntry( &TM_P->hashTable, name, &isNew );
     if( ! isNew ) {
         deleteMagickObj(Tcl_GetHashValue(hPtr));
-        hPtr = Tcl_CreateHashEntry( &TM.hashTable, name, &isNew );
+        hPtr = Tcl_CreateHashEntry( &TM_P->hashTable, name, &isNew );
     }
     Tcl_SetHashValue(hPtr, mPtr);
 
@@ -214,7 +252,7 @@ static int noWandObj(const char *name)
  */
 TclMagickObj *findMagickObj(Tcl_Interp *interp, int type, char *name)
 {
-    Tcl_HashEntry *hPtr = Tcl_FindHashEntry( &TM.hashTable, name );
+    Tcl_HashEntry *hPtr = Tcl_FindHashEntry( &TM_P->hashTable, name );
     TclMagickObj  *mPtr;
 
     if( hPtr == NULL ) {
@@ -363,7 +401,7 @@ static int magickCmd(
                 return TCL_ERROR;
             }
         }
-        hPtr = Tcl_FirstHashEntry(&TM.hashTable, &search);
+        hPtr = Tcl_FirstHashEntry(&TM_P->hashTable, &search);
         for ( ; hPtr != NULL; hPtr = Tcl_NextHashEntry(&search)) {
             mPtr = Tcl_GetHashValue(hPtr);
             if( (type == TM_TYPE_ANY) || (type == mPtr->type) ) {
@@ -1129,6 +1167,9 @@ static int wandObjCmd(
     int index, stat, result=TCL_OK;
     TclMagickObj *magickPtr = (TclMagickObj *) clientData;
     MagickWand   *wandPtr   = (MagickWand *) magickPtr->wandPtr;
+
+    assert(TM_P->signature1 == TCL_MAGICK_SIGNATURE);
+    assert(TM_P->signature2 == TCL_MAGICK_SIGNATURE);
 
 #ifdef MAGICK_DEBUG
     /*
@@ -6241,6 +6282,9 @@ static int drawObjCmd(
     TclMagickObj *magickPtr = (TclMagickObj *) clientData;
     DrawingWand  *wandPtr   = (DrawingWand *) magickPtr->wandPtr;
 
+    assert(TM_P->signature1 == TCL_MAGICK_SIGNATURE);
+    assert(TM_P->signature2 == TCL_MAGICK_SIGNATURE);
+
 #ifdef MAGICK_DEBUG
     /*
      * Verify subCmds table size
@@ -8189,14 +8233,21 @@ static void tmExitHandler(
     ClientData  data )      // Tcl Interpreter which is exiting
 {
     (void) data;
-    if ( TM.initialized ) {
+    if ( TM_P->initialized ) {
         DestroyMagick();
-        TM.initialized = 0;
+        TM_P->initialized = 0;
+        memset(TM_P, 0, sizeof(*TM_P));
+        /*
+         * De-register TM_P address for use by the TkMagick module
+         *
+         */
+        Tcl_UnsetVar(data, TCL_MAGICK_OBJ_VAR, TCL_GLOBAL_ONLY);
     }
 }
 
 EXPORT(int, Tclmagick_Init)(Tcl_Interp *interp)
 {
+    char TM_P_AddrHex[24];
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, "8", 0) == NULL) {
         return TCL_ERROR;
@@ -8205,17 +8256,20 @@ EXPORT(int, Tclmagick_Init)(Tcl_Interp *interp)
     /*
      * Initialize global variables
      */
-    if ( ! TM.initialized ) {
-        memset(&TM, 0, sizeof(TM));
+    TM_P = &TM;
+    if ( ! TM_P->initialized ) {
+        /* memset(TM_P, 0, sizeof(*TM_P)); */
 
         /*
          * Create Exit handler, hash table
          */
         Tcl_CreateExitHandler(tmExitHandler,(int *) interp);
-        Tcl_InitHashTable(&TM.hashTable, TCL_STRING_KEYS);
+        Tcl_InitHashTable(&TM_P->hashTable, TCL_STRING_KEYS);
         InitializeMagick(Tcl_GetString(Tcl_FSGetCwd(interp)));
 
-        TM.initialized = 1;
+        TM_P->initialized = 1;
+        TM_P->signature1 = TCL_MAGICK_SIGNATURE;
+        TM_P->signature2 = TCL_MAGICK_SIGNATURE;
     }
     /*
      * Create commands per interpreter
@@ -8225,6 +8279,13 @@ EXPORT(int, Tclmagick_Init)(Tcl_Interp *interp)
     if ( Tcl_PkgProvide(interp,"TclMagick", VERSION) != TCL_OK ) {
         return TCL_ERROR;
     }
+    /*
+     * Register TM_P address for use by the TkMagick module
+     *
+     */
+    (void) snprintf(TM_P_AddrHex, sizeof(TM_P_AddrHex), "%p", TM_P);
+    /* fprintf(stderr,"TclMagick TM_P_AddrHex=%s\n", TM_P_AddrHex); */
+    Tcl_SetVar(interp, TCL_MAGICK_OBJ_VAR, TM_P_AddrHex, TCL_GLOBAL_ONLY);
 
     return TCL_OK;
 }

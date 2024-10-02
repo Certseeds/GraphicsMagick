@@ -1,3 +1,10 @@
+2024-10-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* TclMagick/Makefile.am: Eliminate the libttkcommon "shim" library
+	which allowed TkMagick to work and use a different approach.
+	TclMagick is not dependent on libtk.  Only TkMagick is dependent
+	on libtk.
+
 2024-09-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* www/links.rst: Update oss-fuzz bug tracker URL.

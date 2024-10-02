@@ -144,7 +144,7 @@ am__uninstall_files_from_dir = { \
   }
 am__installdirs = "$(DESTDIR)$(generic_lib_magickdir)"
 LTLIBRARIES = $(generic_lib_magick_LTLIBRARIES)
-generic_TclMagick_la_DEPENDENCIES = generic/libttkcommon.la
+generic_TclMagick_la_DEPENDENCIES =
 am__dirstamp = $(am__leading_dot)dirstamp
 am_generic_TclMagick_la_OBJECTS = generic/TclMagick_la-TclMagick.lo
 generic_TclMagick_la_OBJECTS = $(am_generic_TclMagick_la_OBJECTS)
@@ -156,21 +156,12 @@ generic_TclMagick_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(AM_CFLAGS) $(CFLAGS) $(generic_TclMagick_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-generic_TkMagick_la_DEPENDENCIES = generic/libttkcommon.la
+generic_TkMagick_la_DEPENDENCIES =
 am_generic_TkMagick_la_OBJECTS = generic/TkMagick_la-TkMagick.lo
 generic_TkMagick_la_OBJECTS = $(am_generic_TkMagick_la_OBJECTS)
 generic_TkMagick_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(AM_CFLAGS) $(CFLAGS) $(generic_TkMagick_la_LDFLAGS) \
-	$(LDFLAGS) -o $@
-generic_libttkcommon_la_DEPENDENCIES =
-am_generic_libttkcommon_la_OBJECTS =  \
-	generic/libttkcommon_la-libttkcommon.lo
-generic_libttkcommon_la_OBJECTS =  \
-	$(am_generic_libttkcommon_la_OBJECTS)
-generic_libttkcommon_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
-	$(AM_CFLAGS) $(CFLAGS) $(generic_libttkcommon_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_generic_TclMagick_OBJECTS =  \
 	generic/TclMagick-TclMagickAppInit.$(OBJEXT)
@@ -193,8 +184,7 @@ depcomp = $(SHELL) $(top_srcdir)/unix/config/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = generic/$(DEPDIR)/TclMagick-TclMagickAppInit.Po \
 	generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo \
-	generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo \
-	generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo
+	generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -215,13 +205,9 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(generic_TclMagick_la_SOURCES) \
-	$(generic_TkMagick_la_SOURCES) \
-	$(generic_libttkcommon_la_SOURCES) \
-	$(generic_TclMagick_SOURCES)
+	$(generic_TkMagick_la_SOURCES) $(generic_TclMagick_SOURCES)
 DIST_SOURCES = $(generic_TclMagick_la_SOURCES) \
-	$(generic_TkMagick_la_SOURCES) \
-	$(generic_libttkcommon_la_SOURCES) \
-	$(generic_TclMagick_SOURCES)
+	$(generic_TkMagick_la_SOURCES) $(generic_TclMagick_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -482,18 +468,14 @@ TCLSH = $(TCLSH_ENV) $(PKG_ENV) $(TCLSH_PROG)
 
 # Put this in its own package directory.
 generic_lib_magickdir = @libdir@/TclMagick@VERSION@
-generic_lib_magick_LTLIBRARIES = generic/libttkcommon.la generic/TclMagick.la generic/TkMagick.la
-generic_libttkcommon_la_SOURCES = generic/libttkcommon.c generic/libttkcommon.h
-generic_libttkcommon_la_LDFLAGS = @GM_LDFLAGS@ -no-undefined
-generic_libttkcommon_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TCL_LIBS@ @GM_LIBS@
-generic_libttkcommon_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
+generic_lib_magick_LTLIBRARIES = generic/TclMagick.la generic/TkMagick.la
 generic_TclMagick_la_SOURCES = generic/TclMagick.c generic/TclMagick.h generic/libttkcommon.h
 generic_TclMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module
-generic_TclMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@ generic/libttkcommon.la
+generic_TclMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@
 generic_TclMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
 generic_TkMagick_la_SOURCES = generic/TkMagick.c generic/TclMagick.h generic/libttkcommon.h
 generic_TkMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module
-generic_TkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIBS@ @TK_LIBS@ @GM_LIBS@ generic/libttkcommon.la
+generic_TkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TCL_LIBS@ @TK_LIB_SPEC@ @TK_LIBS@ @GM_LIBS@
 generic_TkMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@ @TK_INCLUDES@ @TK_XINCLUDES@
 
 # A TclMagick executable (not installed)
@@ -637,11 +619,6 @@ generic/TkMagick_la-TkMagick.lo: generic/$(am__dirstamp) \
 
 generic/TkMagick.la: $(generic_TkMagick_la_OBJECTS) $(generic_TkMagick_la_DEPENDENCIES) $(EXTRA_generic_TkMagick_la_DEPENDENCIES) generic/$(am__dirstamp)
 	$(AM_V_CCLD)$(generic_TkMagick_la_LINK) -rpath $(generic_lib_magickdir) $(generic_TkMagick_la_OBJECTS) $(generic_TkMagick_la_LIBADD) $(LIBS)
-generic/libttkcommon_la-libttkcommon.lo: generic/$(am__dirstamp) \
-	generic/$(DEPDIR)/$(am__dirstamp)
-
-generic/libttkcommon.la: $(generic_libttkcommon_la_OBJECTS) $(generic_libttkcommon_la_DEPENDENCIES) $(EXTRA_generic_libttkcommon_la_DEPENDENCIES) generic/$(am__dirstamp)
-	$(AM_V_CCLD)$(generic_libttkcommon_la_LINK) -rpath $(generic_lib_magickdir) $(generic_libttkcommon_la_OBJECTS) $(generic_libttkcommon_la_LIBADD) $(LIBS)
 generic/TclMagick-TclMagickAppInit.$(OBJEXT): generic/$(am__dirstamp) \
 	generic/$(DEPDIR)/$(am__dirstamp)
 
@@ -660,7 +637,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@generic/$(DEPDIR)/TclMagick-TclMagickAppInit.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -705,13 +681,6 @@ generic/TkMagick_la-TkMagick.lo: generic/TkMagick.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='generic/TkMagick.c' object='generic/TkMagick_la-TkMagick.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_TkMagick_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generic/TkMagick_la-TkMagick.lo `test -f 'generic/TkMagick.c' || echo '$(srcdir)/'`generic/TkMagick.c
-
-generic/libttkcommon_la-libttkcommon.lo: generic/libttkcommon.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_libttkcommon_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generic/libttkcommon_la-libttkcommon.lo -MD -MP -MF generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Tpo -c -o generic/libttkcommon_la-libttkcommon.lo `test -f 'generic/libttkcommon.c' || echo '$(srcdir)/'`generic/libttkcommon.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Tpo generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='generic/libttkcommon.c' object='generic/libttkcommon_la-libttkcommon.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_libttkcommon_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o generic/libttkcommon_la-libttkcommon.lo `test -f 'generic/libttkcommon.c' || echo '$(srcdir)/'`generic/libttkcommon.c
 
 generic/TclMagick-TclMagickAppInit.o: generic/TclMagickAppInit.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generic_TclMagick_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT generic/TclMagick-TclMagickAppInit.o -MD -MP -MF generic/$(DEPDIR)/TclMagick-TclMagickAppInit.Tpo -c -o generic/TclMagick-TclMagickAppInit.o `test -f 'generic/TclMagickAppInit.c' || echo '$(srcdir)/'`generic/TclMagickAppInit.c
@@ -1015,7 +984,6 @@ distclean: distclean-am
 		-rm -f generic/$(DEPDIR)/TclMagick-TclMagickAppInit.Po
 	-rm -f generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo
 	-rm -f generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo
-	-rm -f generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -1067,7 +1035,6 @@ maintainer-clean: maintainer-clean-am
 		-rm -f generic/$(DEPDIR)/TclMagick-TclMagickAppInit.Po
 	-rm -f generic/$(DEPDIR)/TclMagick_la-TclMagick.Plo
 	-rm -f generic/$(DEPDIR)/TkMagick_la-TkMagick.Plo
-	-rm -f generic/$(DEPDIR)/libttkcommon_la-libttkcommon.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1124,7 +1091,12 @@ test:
 	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-pixel.tcl`
 	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-draw.tcl`
 	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-bmp-compare.tcl`
-#	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-wand.tcl
+
+check:
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-wand.tcl
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-pixel.tcl
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-draw.tcl
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-bmp-compare.tcl
 
 #test:
 #	cd generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-wand.tcl` $(TESTFLAGS) \

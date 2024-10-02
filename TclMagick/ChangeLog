@@ -1,3 +1,66 @@
+2024-10-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am: Eliminate the libttkcommon "shim" library which
+	allowed TkMagick to work and use a different approach.  TclMagick
+	is not dependent on libtk.  Only TkMagick is dependent on libtk.
+
+2024-09-26  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* unix/m4: Update to libtool 2.5.3.
+
+2024-09-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am: 'make test' does something.  Not sure yet
+	what it should be.
+
+	* tests/test-wand.tcl: Fix memory leak of $img and $seq.
+
+	* tests/test-draw.tcl: Fix memory leak of $img.
+
+	* generic/TclMagickAppInit.c: Add a TclMagick test program.
+
+	* generic/TkMagick.c: Fix memory leak of 'fonts' and
+	'formats' lists members.
+
+2024-09-20  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Makefile.am: Now uses non-recursive build and produces
+	xz tarball.  The make 'distcheck' target is not working properly
+	yet.
+	(AM_DISTCHECK_CONFIGURE_FLAGS): Change the argument to
+	--exec-prefix so that 'make distcheck' now passes.
+
+2024-09-19  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* generic/config.h.in, generic/libttkcommon.h:
+	Support a configuration header.
+
+	* configure.ac: Modernize Autoconf files.
+
+	* Makefile.am: Modernize Automake files.
+
+2024-09-15  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* generic/TclMagick.c: Fix several typos which will
+	produce wrong results, as well as quieting fallthrough warnings.
+
+2024-09-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* : White-space clean-up and consistent indentation.
+
+2024-09-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* unix/m4/tcl.m4: Update tcl.m4 to TEA_VERSION 3.10.
+	The TEA_INSTALLER Autoconf macro oddly does not use the settings
+	set by AC_CONFIG_AUX_DIR to find install-sh.  Instead it
+	hard-codes $(srcdir)/tclconfig/install-sh.  Change that hard-coded
+	path to $(top_srcdir)/unix/config/install-sh.
+
+	* generic/pkgIndex.tcl: Remove generated file.
+
+	* generic: Regenerate Autotool's generated files with
+	autoconf 2.71 and automake 1.16.5.
+
 2019-11-10  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* pkgIndex.tcl: Incorporate recommendations from third problem
@@ -45,7 +108,7 @@
 
 	* generic/Makefile.am: Applied patch by Massimo Manghi (plus some
 	fixes by me) to add a 'libttkcommon' shared library to contain
-	codde common to the TclMagick/TkMagick loadable modules, and
+	code common to the TclMagick/TkMagick loadable modules, and
 	particularly to allow TkMagick to access TclMagick functions
 	without depending on dlopen() with RTLD_GLOBAL behavior.
 

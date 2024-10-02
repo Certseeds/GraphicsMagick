@@ -18,21 +18,16 @@ TCLSH		= $(TCLSH_ENV) $(PKG_ENV) $(TCLSH_PROG)
 
 # Put this in its own package directory.
 generic_lib_magickdir = @libdir@/TclMagick@VERSION@
-generic_lib_magick_LTLIBRARIES =  generic/libttkcommon.la generic/TclMagick.la generic/TkMagick.la
-
-generic_libttkcommon_la_SOURCES = generic/libttkcommon.c generic/libttkcommon.h
-generic_libttkcommon_la_LDFLAGS = @GM_LDFLAGS@ -no-undefined
-generic_libttkcommon_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TCL_LIBS@ @GM_LIBS@
-generic_libttkcommon_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
+generic_lib_magick_LTLIBRARIES =  generic/TclMagick.la generic/TkMagick.la
 
 generic_TclMagick_la_SOURCES = generic/TclMagick.c generic/TclMagick.h generic/libttkcommon.h
 generic_TclMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module
-generic_TclMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@ generic/libttkcommon.la
+generic_TclMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@
 generic_TclMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
 
 generic_TkMagick_la_SOURCES = generic/TkMagick.c generic/TclMagick.h generic/libttkcommon.h
 generic_TkMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module
-generic_TkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIBS@ @TK_LIBS@ @GM_LIBS@ generic/libttkcommon.la
+generic_TkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TCL_LIBS@ @TK_LIB_SPEC@ @TK_LIBS@ @GM_LIBS@
 generic_TkMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@ @TK_INCLUDES@ @TK_XINCLUDES@
 
 # A TclMagick executable (not installed)
@@ -82,7 +77,12 @@ test:
 	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-pixel.tcl`
 	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-draw.tcl`
 	cd $(abs_srcdir)/generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-bmp-compare.tcl`
-#	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-wand.tcl
+
+check:
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-wand.tcl
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-pixel.tcl
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-draw.tcl
+	cd $(abs_srcdir)/generic && $(abs_builddir)/generic/TclMagick $(abs_srcdir)/tests/test-bmp-compare.tcl
 
 #test:
 #	cd generic && $(TCLSH) `@CYGPATH@ $(srcdir)/tests/test-wand.tcl` $(TESTFLAGS) \
