@@ -1,3 +1,8 @@
+2024-10-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* generic/TclMagickAppInit.c: Refresh implementation based on
+	latest code from reference tcl/unix/tclAppInit.c.
+
 2024-10-02  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Makefile.am: Eliminate the libttkcommon "shim" library which
