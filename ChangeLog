@@ -1,3 +1,9 @@
+2024-10-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Set libheif
+	ENABLE_MULTITHREADING_SUPPORT to off to see if it causes an abort
+	in std::terminate to go away.
+
 2024-10-03  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/gem.c (Hull): More fixes for regression created by
