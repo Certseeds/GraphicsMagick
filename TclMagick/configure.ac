@@ -86,7 +86,9 @@ CPPFLAGS=$CPPFLAGS_SAVE
 LDFLAGS=$LDFLAGS_SAVE
 LIBS=$LIBS_SAVE
 
-TEA_INIT([3.10])
+# Specify the expected TEA_INIT version (matching TEA_VERSION in the tcl.m4 used).
+# See https://core.tcl-lang.org/tcl/tktview/1703170fffffffffffff
+TEA_INIT([3.13])
 
 TEA_PATH_TCLCONFIG
 TEA_LOAD_TCLCONFIG
