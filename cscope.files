@@ -2,7 +2,6 @@ TclMagick/generic/TclMagick.c
 TclMagick/generic/TclMagick.h
 TclMagick/generic/TclMagickAppInit.c
 TclMagick/generic/TkMagick.c
-TclMagick/generic/libttkcommon.c
 TclMagick/generic/libttkcommon.h
 coders/art.c
 coders/avs.c

@@ -101,13 +101,15 @@ allocation (not the case for objects allocated via new ).</p>
 program which reads an image, crops it, and writes it to a new file
 (the exception handling is optional but strongly recommended):</p>
 <pre class="literal-block">#include &lt;Magick++.h&gt;
+#include &lt;cstdlib&gt;
 #include &lt;iostream&gt;
 using namespace std;
 using namespace Magick;
 int main(int argc,char **argv)
 {
-  // Initialize the API.  Can pass NULL if argv is not available.
-  InitializeMagick(*argv);
+  // Initialize/Deinitialize GraphicsMagick (scope based).
+  // Can pass NULL if argv is not available.
+  InitializeMagickSentinel sentinel(*argv);
 
   // Construct the image object. Seperating image construction from the
   // the read operation ensures that a failure to read the image file
@@ -131,10 +133,15 @@ int main(int argc,char **argv)
   catch( Exception &amp;error_ )
     {
       cout &lt;&lt; &quot;Caught exception: &quot; &lt;&lt; error_.what() &lt;&lt; endl;
-      return 1;
+      return EXIT_FAILURE;
     }
-  return 0;
+  return EXIT_SUCCESS;
 }</pre>
+<p>Note that if InitializeMagickSentinel() is used, then the
+implementation is automatically de-initialized (avoiding the
+appearance of possible &quot;leaks&quot;) due to a return from main(), or if an
+uncaught exception causes the program to exit.  If mechanisms such as
+exit() are used, then use InitializeMagick(*argv) and DestroyMagick().</p>
 <p>The following is the source to a program which illustrates the use of
 Magick++'s efficient reference-counted assignment and copy-constructor
 operations which minimize use of memory and eliminate unncessary copy
@@ -150,12 +157,14 @@ copied into containers).  The program accomplishes the following:</p>
 <li><p>Write the third image to a file.</p></li>
 </ol>
 <pre class="literal-block">#include &lt;Magick++.h&gt;
+#include &lt;cstdlib&gt;
 #include &lt;iostream&gt;
 using namespace std;
 using namespace Magick;
 int main(int argc,char **argv)
 {
-    InitializeMagick(*argv);
+    // Initialize/Deinitialize GraphicsMagick (scope based).
+    InitializeMagickSentinel sentinel(*argv);
     Image master(&quot;horse.jpg&quot;);
     Image second = master;
     second.zoom(&quot;640x480&quot;);
@@ -163,7 +172,7 @@ int main(int argc,char **argv)
     third.zoom(&quot;800x600&quot;);
     second.write(&quot;horse640x480.jpg&quot;);
     third.write(&quot;horse800x600.jpg&quot;);
-    return 0;
+    return EXIT_SUCCESS;
 }</pre>
 <p>During the entire operation, a maximum of three images exist in memory
 and the image data is never copied.</p>
@@ -171,6 +180,7 @@ and the image data is never copied.</p>
 100 by 100 pixel white image with a red pixel in the center and writes
 it to a file:</p>
 <pre class="literal-block">#include &lt;Magick++.h&gt;
+#include &lt;cstdlib&gt;
 using namespace std;
 using namespace Magick;
 int main(int argc,char **argv)
@@ -179,7 +189,8 @@ int main(int argc,char **argv)
     Image image( &quot;100x100&quot;, &quot;white&quot; );
     image.pixelColor( 49, 49, &quot;red&quot; );
     image.write( &quot;red_pixel.png&quot; );
-    return 0;
+    DestroyMagick();
+    return EXIT_SUCCESS;
 }</pre>
 <p>If you wanted to change the color image to grayscale, you could add
 the lines:</p>
@@ -204,10 +215,13 @@ Image via a constructor or read() . Likewise, a Magick++ image may be
 written to a <a class="reference external" href="Blob.html">Blob</a> via write().</p>
 <p>An example of using Image to write to a <a class="reference external" href="Blob.html">Blob</a> follows:</p>
 <pre class="literal-block">#include &lt;Magick++.h&gt;
+#include &lt;cstdlib&gt;
 using namespace std;
 using namespace Magick;
 int main(int argc,char **argv)
 {
+    InitializeMagickSentinel sentinel(*argv);
+
     // Read GIF file from disk
     Image image( &quot;giraffe.gif&quot; );
 
@@ -218,7 +232,7 @@ int main(int argc,char **argv)
 
     [ Use BLOB data (in JPEG format) here ]
 
-    return 0;
+    return EXIT_SUCCESS;
 }</pre>
 <p>likewise, to read an image from a <a class="reference external" href="Blob.html">Blob</a>, you could use one of the
 following examples:</p>
@@ -2596,7 +2610,7 @@ purpose since they will not be used.</p>
 UndefinedOutput, StdoutOutput, StderrOutput, XMLFileOutput,
 TXTFileOutput, Win32DebugOutput, Win32EventlogOutput, and
 MethodOutput.</p>
-<p>Copyright © <a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">Bob Friesenhahn</a> 1999 - 2022</p>
+<p>Copyright © <a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">Bob Friesenhahn</a> 1999 - 2024</p>
 </section>
 </section>
 </main>

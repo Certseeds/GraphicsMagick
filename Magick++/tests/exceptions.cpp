@@ -1,11 +1,12 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999-2010
+// Copyright Bob Friesenhahn, 1999-2024
 //
 // Tests for throwing exceptions
 //
 
 #include <Magick++.h>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 
@@ -18,8 +19,8 @@ int main( int /*argc*/, char ** argv)
   // Trace exception events to help diagnose issues.
   SetLogDefaultEventType("exception");
 
-  // Initialize GraphicsMagick
-  InitializeMagick(*argv);
+  // Initialize/Deinitialize GraphicsMagick (scope based)
+  InitializeMagickSentinel sentinel(*argv);
 
   volatile int failures=0;
 
@@ -86,23 +87,24 @@ int main( int /*argc*/, char ** argv)
       {
         cout << "Bogus catch: Caught exception: " << error_.what() << endl;
         cout.flush();
-        return 1;
+        return EXIT_FAILURE;
       }
     catch( exception &error_ )
       {
         cout << "Bogus catch: Caught exception: " << error_.what() << endl;
         cout.flush();
-        return 1;
+        return EXIT_FAILURE;
       }
 
     if ( failures )
       {
         cout << failures << " failures" << endl;
         cout.flush();
-        return 1;
+        return EXIT_FAILURE;
       }
+
     cout << "Exception testing passed!" << endl;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999-2022
+// Copyright Bob Friesenhahn, 1999-2024
 //
 // Implementation of Image
 //
@@ -4240,9 +4240,21 @@ void MagickDLLDecl Magick::InitializeMagick(const char *path_)
   if (!magick_initialized)
     {
       magick_initialized=true;
-//       atexit(MagickPlusPlusDestroyMagick);
     }
 }
+
+// C library destruction routine
+void MagickDLLDecl Magick::DestroyMagick(void)
+{
+  if (magick_initialized)
+    {
+      magick_initialized=false;
+      fprintf(stderr, "Destroying Magick...\n");
+      MagickLib::DestroyMagick();
+    }
+}
+
+#if defined(SUPPORT_MAGICK_CLEANUP)
 
 //
 // Cleanup class to ensure that ImageMagick singletons are destroyed
@@ -4273,3 +4285,5 @@ Magick::MagickCleanUp::~MagickCleanUp ( void )
 {
   MagickPlusPlusDestroyMagick();
 }
+
+#endif // if defined(SUPPORT_MAGICK_CLEANUP)

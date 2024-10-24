@@ -1,3 +1,20 @@
+2024-10-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* Magick++/tests/*: Updated to use InitializeMagickSentinel.
+
+	* Magick++/demo/*: Updated to use InitializeMagickSentinel.
+
+	* Magick++/lib/Magick++/Image.h (InitializeMagickSentinel): Added
+	InitializeMagickSentinel class, which performs the function of
+	InitializeMagick() and invokes DestroyMagick() when an object
+	created based on it goes out of scope.
+
+	* Magick++/lib/Image.cpp: Disable use of 'MagickCleanUp' static
+	object by default because it may cause race conditions
+
+	* fuzzing/oss-fuzz-build.sh: Set libheif
+	ENABLE_MULTITHREADING_SUPPORT back to on.
+
 2024-10-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Set libheif

@@ -1,11 +1,12 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999, 2000, 2003
+// Copyright Bob Friesenhahn, 1999-2024
 //
 // Test reading/writing BLOBs using Magick++
 //
 
 #include <Magick++.h>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -42,7 +43,7 @@ public:
       if ((!stream_.eof()) || (blobLen == 0))
         {
           cout << "Failed to stream into blob!" << endl;
-          exit(1);
+          exit(EXIT_FAILURE);
         }
 
       // Insert data into blob
@@ -54,9 +55,8 @@ public:
 
 int main( int /*argc*/, char ** argv)
 {
-
-  // Initialize ImageMagick install location for Windows
-  InitializeMagick(*argv);
+  // Initialize/Deinitialize GraphicsMagick (scope based)
+  InitializeMagickSentinel sentinel(*argv);
 
   int failures=0;
 
@@ -95,7 +95,7 @@ int main( int /*argc*/, char ** argv)
         if (!in.good())
           {
             cout << "Failed to read file " << testimage << " for input!" << endl;
-            exit(1);
+            return EXIT_FAILURE;
           }
         in.close();
 
@@ -214,7 +214,7 @@ int main( int /*argc*/, char ** argv)
         if( !in )
           {
             cout << "Failed to open file for input!" << endl;
-            exit(1);
+            return EXIT_FAILURE;
           }
 
         myBlob blob( in );
@@ -236,19 +236,19 @@ int main( int /*argc*/, char ** argv)
   catch( Exception &error_ )
     {
       cout << "Caught exception: " << error_.what() << endl;
-      return 1;
+      return EXIT_FAILURE;
     }
   catch( exception &error_ )
     {
       cout << "Caught exception: " << error_.what() << endl;
-      return 1;
+      return EXIT_FAILURE;
     }
 
   if ( failures )
     {
       cout << failures << " failures" << endl;
-      return 1;
+      return EXIT_FAILURE;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

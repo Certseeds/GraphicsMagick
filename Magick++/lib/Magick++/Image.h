@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2022
+// Copyright Bob Friesenhahn, 1999-2024
 //
 // Definition of Image, the representation of a single image in Magick++
 //
@@ -77,6 +77,40 @@ namespace Magick
 
   // C library initialization routine
   void MagickDLLDecl InitializeMagick(const char *path_);
+
+  // C library destruction routine
+  void MagickDLLDecl DestroyMagick(void);
+
+  // Helper class to manage initialization/destruction of
+  // GraphicsMagick based on scope.  Automatic destruction will work
+  // if execution returns from main(), or due to an uncaught
+  // exception.  It will not work if the program quits in some other
+  // way such as via exit().
+  //
+  // InitializeMagickSentinel is added as of GraphicsMagick 1.3.46, or
+  // after October 24, 2024.
+  //
+  class MagickDLLDecl InitializeMagickSentinel
+  {
+  public:
+
+    // Constructor to initialize GraphicsMagick, given path
+    InitializeMagickSentinel(const char *path_)
+    {
+      _path = (path_ == NULL ? "(null)" : path_);
+      InitializeMagick( path_ );
+    }
+
+    // Destructor to de-initialize GraphicsMagick
+    ~InitializeMagickSentinel()
+    {
+      DestroyMagick();
+    }
+
+  private:
+
+    std::string _path;
+  };
 
   //
   // Image is the representation of an image.  In reality, it actually

@@ -1,10 +1,11 @@
 //
 // Magick++ demo to generate a simple text button
 //
-// Copyright Bob Friesenhahn, 1999, 2000, 2001, 2003
+// Copyright Bob Friesenhahn, 1999-2024
 //
 
 #include <Magick++.h>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 
@@ -14,9 +15,8 @@ using namespace Magick;
 
 int main( int /*argc*/, char ** argv)
 {
-
-  // Initialize ImageMagick install location for Windows
-  InitializeMagick(*argv);
+  // Initialize/Deinitialize GraphicsMagick (scope based)
+  InitializeMagickSentinel sentinel(*argv);
 
   try {
 
@@ -102,8 +102,8 @@ int main( int /*argc*/, char ** argv)
   catch( exception &error_ )
     {
       cout << "Caught exception: " << error_.what() << endl;
-      return 1;
+      return EXIT_FAILURE;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

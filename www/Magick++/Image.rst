@@ -77,13 +77,15 @@ program which reads an image, crops it, and writes it to a new file
 (the exception handling is optional but strongly recommended)::
 
     #include <Magick++.h>
+    #include <cstdlib>
     #include <iostream>
     using namespace std;
     using namespace Magick;
     int main(int argc,char **argv)
     {
-      // Initialize the API.  Can pass NULL if argv is not available.
-      InitializeMagick(*argv);
+      // Initialize/Deinitialize GraphicsMagick (scope based).
+      // Can pass NULL if argv is not available.
+      InitializeMagickSentinel sentinel(*argv);
 
       // Construct the image object. Seperating image construction from the
       // the read operation ensures that a failure to read the image file
@@ -107,10 +109,16 @@ program which reads an image, crops it, and writes it to a new file
       catch( Exception &error_ )
         {
           cout << "Caught exception: " << error_.what() << endl;
-          return 1;
+          return EXIT_FAILURE;
         }
-      return 0;
+      return EXIT_SUCCESS;
     }
+
+Note that if InitializeMagickSentinel() is used, then the
+implementation is automatically de-initialized (avoiding the
+appearance of possible "leaks") due to a return from main(), or if an
+uncaught exception causes the program to exit.  If mechanisms such as
+exit() are used, then use InitializeMagick(\*argv) and DestroyMagick().
 
 The following is the source to a program which illustrates the use of
 Magick++'s efficient reference-counted assignment and copy-constructor
@@ -129,12 +137,14 @@ copied into containers).  The program accomplishes the following:
 ::
 
     #include <Magick++.h>
+    #include <cstdlib>
     #include <iostream>
     using namespace std;
     using namespace Magick;
     int main(int argc,char **argv)
     {
-        InitializeMagick(*argv);
+        // Initialize/Deinitialize GraphicsMagick (scope based).
+        InitializeMagickSentinel sentinel(*argv);
         Image master("horse.jpg");
         Image second = master;
         second.zoom("640x480");
@@ -142,7 +152,7 @@ copied into containers).  The program accomplishes the following:
         third.zoom("800x600");
         second.write("horse640x480.jpg");
         third.write("horse800x600.jpg");
-        return 0;
+        return EXIT_SUCCESS;
     }
 
 During the entire operation, a maximum of three images exist in memory
@@ -153,6 +163,7 @@ The following is the source for another simple program which creates a
 it to a file::
 
     #include <Magick++.h>
+    #include <cstdlib>
     using namespace std;
     using namespace Magick;
     int main(int argc,char **argv)
@@ -161,7 +172,8 @@ it to a file::
         Image image( "100x100", "white" );
         image.pixelColor( 49, 49, "red" );
         image.write( "red_pixel.png" );
-        return 0;
+        DestroyMagick();
+        return EXIT_SUCCESS;
     }
 
 If you wanted to change the color image to grayscale, you could add
@@ -194,10 +206,13 @@ written to a `Blob`_ via write().
 An example of using Image to write to a `Blob`_ follows::
 
     #include <Magick++.h>
+    #include <cstdlib>
     using namespace std;
     using namespace Magick;
     int main(int argc,char **argv)
     {
+        InitializeMagickSentinel sentinel(*argv);
+
         // Read GIF file from disk
         Image image( "giraffe.gif" );
 
@@ -208,7 +223,7 @@ An example of using Image to write to a `Blob`_ follows::
 
         [ Use BLOB data (in JPEG format) here ]
 
-        return 0;
+        return EXIT_SUCCESS;
     }
 
 likewise, to read an image from a `Blob`_, you could use one of the
@@ -2901,4 +2916,4 @@ MethodOutput.
 
 .. |copy|   unicode:: U+000A9 .. COPYRIGHT SIGN
 
-Copyright |copy| `Bob Friesenhahn`_ 1999 - 2022
+Copyright |copy| `Bob Friesenhahn`_ 1999 - 2024

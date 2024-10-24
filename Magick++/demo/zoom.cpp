@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 2001, 2002, 2003
+// Copyright Bob Friesenhahn, 2001-2024
 //
 // Resize image using specified resize algorithm with Magick++ API
 //
@@ -9,6 +9,7 @@
 //
 
 #include <Magick++.h>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -25,30 +26,31 @@ using namespace Magick;
 #  define IOS_IN_BINARY ios::in | ios::binary
 #endif
 
-static void Usage ( char **argv )
+static int Usage ( char **argv )
 {
   cout << "Usage: " << argv[0]
        << " [-density resolution] [-filter algorithm] [-geometry geometry]"
        << " [-resample resolution] [-read-blob] input_file output_file" << endl
        << "   algorithm - bessel blackman box catrom cubic gaussian hamming hanning" << endl
        << "     hermite lanczos mitchell point quadratic sample scale sinc triangle" << endl;
-  exit(1);
+
+  return EXIT_FAILURE;
 }
 
-static void ParseError (int position, char **argv)
+static int ParseError (int position, char **argv)
 {
   cout << "Argument \"" <<  argv[position] << "\" at position" << position
        << "incorrect" << endl;
-  Usage(argv);
+  return Usage(argv);
 }
 
 int main(int argc,char **argv)
 {
-  // Initialize ImageMagick install location for Windows
-  InitializeMagick(*argv);
+  // Initialize/Deinitialize GraphicsMagick (scope based)
+  InitializeMagickSentinel sentinel(*argv);
 
   if ( argc < 2 )
-    Usage(argv);
+    return Usage(argv);
 
   enum ResizeAlgorithm
   {
@@ -83,7 +85,7 @@ int main(int argc,char **argv)
             }
             catch( exception &/* error_ */)
               {
-                ParseError(argv_index,argv);
+                return ParseError(argv_index,argv);
               }
             argv_index++;
             continue;
@@ -127,7 +129,7 @@ int main(int argc,char **argv)
             else if (algorithm.compare("scale") == 0)
               resize_algorithm=Scale;
             else
-              ParseError(argv_index,argv);
+              return ParseError(argv_index,argv);
             argv_index++;
             continue;
           }
@@ -139,7 +141,7 @@ int main(int argc,char **argv)
             }
             catch( exception &/* error_ */)
               {
-                ParseError(argv_index,argv);
+                return ParseError(argv_index,argv);
               }
             argv_index++;
             continue;
@@ -152,20 +154,20 @@ int main(int argc,char **argv)
             }
             catch( exception &/* error_ */)
               {
-                ParseError(argv_index,argv);
+                return ParseError(argv_index,argv);
               }
             argv_index++;
             continue;
           }
-        ParseError(argv_index,argv);
+        return ParseError(argv_index,argv);
       }
 
     if (argv_index>argc-1)
-      ParseError(argv_index,argv);
+      return ParseError(argv_index,argv);
     std::string input_file(argv[argv_index]);
     argv_index++;
     if (argv_index>argc)
-      ParseError(argv_index,argv);
+      return ParseError(argv_index,argv);
     std::string output_file(argv[argv_index]);
 
     try {
@@ -189,7 +191,7 @@ int main(int argc,char **argv)
           if( !in )
           {
             cout << "Failed to open file " << input_file << " for input!" << endl;
-            exit(1);
+            return EXIT_FAILURE;
           }
           in.seekg(0,ios::end);
           streampos file_size = in.tellg();
@@ -200,7 +202,7 @@ int main(int argc,char **argv)
           if (!in.good())
             {
               cout << "Failed to read file " << input_file << " for input!" << endl;
-              exit(1);
+              return EXIT_FAILURE;
             }
           in.close();
           cout << "Read " << file_size << " bytes from file \""
@@ -258,9 +260,9 @@ int main(int argc,char **argv)
     catch( exception &error_ )
       {
         cout << "Caught exception: " << error_.what() << endl;
-        return 1;
+        return EXIT_FAILURE;
       }
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

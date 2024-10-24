@@ -5,12 +5,13 @@
 // background color, or to create a similar looking effect without
 // transparency.
 //
-// Copyright Bob Friesenhahn, 2000 - 2018
+// Copyright Bob Friesenhahn, 2000-2024
 //
 // Usage: detrans color file...
 //
 
 #include <Magick++.h>
+#include <cstdlib>
 #include <iostream>
 using namespace std;
 using namespace Magick;
@@ -19,11 +20,11 @@ int main(int argc,char **argv)
   if ( argc < 3 )
     {
       cout << "Usage: " << argv[0] << " background_color file..." << endl;
-      exit( 1 );
+      exit(EXIT_FAILURE);
     }
 
-  // Initialize ImageMagick install location for Windows
-  InitializeMagick(*argv);
+  // Initialize/Deinitialize GraphicsMagick (scope based)
+  InitializeMagickSentinel sentinel(*argv);
 
   {
     Color color;
@@ -34,7 +35,7 @@ int main(int argc,char **argv)
       {
         cout << error_.what() << endl;
         cout.flush();
-        exit(1);
+        return EXIT_FAILURE;
       }
 
     char **arg = &argv[2];
@@ -51,10 +52,11 @@ int main(int argc,char **argv)
         catch( Exception &error_ )
           {
             cout << error_.what() << endl;
+            return EXIT_FAILURE;
           }
         ++arg;
       }
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

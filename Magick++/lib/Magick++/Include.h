@@ -819,7 +819,7 @@ namespace Magick
   using MagickLib::DestroyExceptionInfo;
   using MagickLib::DestroyImageInfo;
   using MagickLib::DestroyImageList;
-  using MagickLib::DestroyMagick;
+  // using MagickLib::DestroyMagick;
   using MagickLib::DestroyQuantizeInfo;
   using MagickLib::DispatchImage;
   using MagickLib::DisplayImages;

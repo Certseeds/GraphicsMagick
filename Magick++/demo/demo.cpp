@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright (C) Copyright 1999 - 2010 Bob Friesenhahn
+// Copyright Bob Friesenhahn, 1999-2024
 //
 // Simple demo program for Magick++
 //
@@ -11,6 +11,7 @@
 //
 
 #include <Magick++.h>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 #include <list>
@@ -21,9 +22,8 @@ using namespace Magick;
 
 int main( int /*argc*/, char ** argv)
 {
-
-  // Initialize Magick
-  InitializeMagick(*argv);
+  // Initialize/Deinitialize GraphicsMagick (scope based)
+  InitializeMagickSentinel sentinel(*argv);
 
   try {
 
@@ -538,8 +538,8 @@ int main( int /*argc*/, char ** argv)
   catch( exception &error_ )
     {
       cout << "Caught exception: " << error_.what() << endl;
-      return 1;
+      return EXIT_FAILURE;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

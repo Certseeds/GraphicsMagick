@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 2003
+// Copyright Bob Friesenhahn, 2003-2024
 //
 // Test STL colorHistogram function
 //
@@ -9,6 +9,7 @@
 #define USE_MAP
 
 #include <Magick++.h>
+#include <cstdlib>
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -26,9 +27,8 @@ using namespace Magick;
 
 int main( int /*argc*/, char ** argv)
 {
-
-  // Initialize GraphicsMagick install location for Windows
-  InitializeMagick(*argv);
+  // Initialize/Deinitialize GraphicsMagick (scope based)
+  InitializeMagickSentinel sentinel(*argv);
 
   int failures=0;
 
@@ -82,19 +82,19 @@ int main( int /*argc*/, char ** argv)
   catch( Exception &error_ )
     {
       cout << "Caught exception: " << error_.what() << endl;
-      return 1;
+      return EXIT_FAILURE;
     }
   catch( exception &error_ )
     {
       cout << "Caught exception: " << error_.what() << endl;
-      return 1;
+      return EXIT_FAILURE;
     }
 
   if ( failures )
     {
       cout << failures << " failures" << endl;
-      return 1;
+      return EXIT_FAILURE;
     }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
