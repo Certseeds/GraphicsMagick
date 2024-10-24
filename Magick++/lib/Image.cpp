@@ -4249,7 +4249,6 @@ void MagickDLLDecl Magick::DestroyMagick(void)
   if (magick_initialized)
     {
       magick_initialized=false;
-      fprintf(stderr, "Destroying Magick...\n");
       MagickLib::DestroyMagick();
     }
 }
