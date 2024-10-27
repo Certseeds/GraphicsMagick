@@ -1053,7 +1053,10 @@ namespace Magick
     // Format the specified expression similar to command line '-format'.
     // For example "%wx%h" is converted to a string containing image
     // WIDTHxHEIGHT like "640x480".
-    std::string     formatExpression( const std::string expression );
+    //
+    // The original interface definition "formatExpression" failed to pass by value!
+    std::string     formatExpressionRef( const std::string &expression );
+    std::string     formatExpression( const std::string expression ); // deprecated
 
     // Gamma level of the image
     double          gamma ( void ) const;

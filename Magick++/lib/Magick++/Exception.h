@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999, 2000, 2001, 2002, 2003
+// Copyright Bob Friesenhahn, 1999-2024
 //
 // Definition of Magick::Exception and derived classes
 // Magick::Warning* and Magick::Error*.  Derived from C++ STD
@@ -322,13 +322,27 @@ namespace Magick
   //
   // No user-serviceable components beyond this point.
   //
+  // Format and throw C++ exception (always) based on parameterized info.
+  // Suitable for handling hard errors.
+#if __cplusplus >= 201103L
+[[ noreturn ]]
+#endif
+  MagickDLLDeclExtern void throwExceptionAlways( const ExceptionType severity_,
+                                                 const char* reason_,
+                                                 const char* description_ = 0);
 
-  // Throw exception based on raw data
+  // Format and throw C++ exception based on parameterized info if
+  // severity_ is not UndefinedException.
   MagickDLLDeclExtern void throwExceptionExplicit( const MagickLib::ExceptionType severity_,
                                                    const char* reason_,
                                                    const char* description_ = 0 );
 
-  // Throw exception based on ImageMagick's ExceptionInfo
+  // Throw C++ exception based on ExceptionInfo unless
+  // exception_.severity is not UndefinedException or if quiet_ ==
+  // true and exception_.severity < ErrorException
+  //
+  // The exception_ argument is restored to the default state prior to
+  // throwing C++ exception.
   MagickDLLDeclExtern void throwException( MagickLib::ExceptionInfo &exception_,
                                            const bool quiet_ = false );
 

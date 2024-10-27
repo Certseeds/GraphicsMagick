@@ -1,4 +1,4 @@
-# Copyright (C) 2004-2023 GraphicsMagick Group
+# Copyright (C) 2004-2024 GraphicsMagick Group
 #
 # This program is covered by multiple licenses, which are described in
 # Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -445,7 +445,7 @@ endif # HasGRAPHICSMAGICK_SNAPSHOT_COPY
 coverity:
 	$(MAKE) clean
 	$(RM) -rf $(COVERITY_COV_INT)
-	cov-build --dir $(COVERITY_COV_INT) $(MAKE)
+	cov-build --dir $(COVERITY_COV_INT) $(MAKE) $(all) $(check_PROGRAMS)
 	tar caf $(COVERITY_TARBALL) $(COVERITY_COV_INT)
 	curl \
 	--form token=`cat $$HOME/.coverity_key_gm` \
@@ -501,4 +501,4 @@ scan-build:
 	-enable-checker valist.CopyToSelf \
 	-enable-checker valist.Uninitialized \
 	-enable-checker valist.Unterminated \
-	--use-cc $(CC) $(MAKE)
+	--use-cc $(CC) $(MAKE) $(all) $(check_PROGRAMS)

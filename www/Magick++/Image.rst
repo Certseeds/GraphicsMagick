@@ -2076,6 +2076,23 @@ Please note that this method is not a const method (may modify the
 Image object and will assure a reference count of one) and it *may*
 throw an exception if there is an internal error.
 
+The formatExpressionRef() method is preferred given that the argument
+is passed by reference, but formatExpression() is in all editions of
+Magick++.
+
+formatExpressionRef
++++++++++++++++++++
+
+Format a string based on image properties similar to `identify`
+`-format`.  For example, the format expression "%wx%h" is converted to
+a string containing image WIDTHxHEIGHT like "640x480"::
+
+    std::string     formatExpression( const std::string &expression )
+
+Please note that this method is not a const method (may modify the
+Image object and will assure a reference count of one) and it *may*
+throw an exception if there is an internal error.
+
 gamma
 +++++
 

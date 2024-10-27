@@ -2970,7 +2970,9 @@ std::string Magick::Image::format ( void ) const
 // Format the specified expression similar to command line '-format'.
 // For example "%wx%h" is converted to a string containing image
 // WIDTHxHEIGHT like "640x480".
-std::string Magick::Image::formatExpression ( const std::string expression )
+//
+// The original interface definition "formatExpression" failed to pass by value!
+std::string Magick::Image::formatExpressionRef ( const std::string &expression )
 {
   // TranslateText throws exceptions into Image.
   modifyImage();
@@ -2986,6 +2988,10 @@ std::string Magick::Image::formatExpression ( const std::string expression )
     }
   throwImageException( image( )->exception );
   return translated_str;
+}
+std::string Magick::Image::formatExpression ( const std::string expression ) // deprecated
+{
+  return Magick::Image::formatExpressionRef( expression );
 }
 
 // Gamma adjustment

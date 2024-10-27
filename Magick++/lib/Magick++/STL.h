@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999 - 2018
+// Copyright Bob Friesenhahn, 1999-2024
 //
 // Definition and implementation of template functions for using
 // Magick::Image with STL containers.
@@ -2004,8 +2004,8 @@ namespace Magick
     if( !coder_list )
       {
         throwException( exceptionInfo );
-        throwExceptionExplicit(MagickLib::MissingDelegateError,
-                               "Coder array not returned!", 0 );
+        throwExceptionAlways(MagickLib::MissingDelegateError,
+                             "Coder array not returned!", 0 );
       }
 
     // Clear out container

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 - 2023 GraphicsMagick Group
+ * Copyright (C) 2003-2024 GraphicsMagick Group
  * Copyright (C) 2003 ImageMagick Studio
  * Copyright 1991-1999 E. I. du Pont de Nemours and Company
  *
@@ -168,7 +168,7 @@ int main ( int argc, char **argv )
             }
           else if (LocaleCompare("filespec",option+1) == 0)
             {
-              (void) strcpy(basefilespec,argv[++arg]);
+              (void) snprintf(basefilespec, sizeof(basefilespec), "%s", argv[++arg]);
             }
           else if (LocaleCompare("log",option+1) == 0)
             {
@@ -268,10 +268,10 @@ int main ( int argc, char **argv )
     }
   else
     {
-      (void) strncpy( imageInfo->filename, infile, MaxTextExtent );
-      imageInfo->filename[MaxTextExtent-1]='\0';
       if (!magick_info->adjoin || !check_for_added_frames)
-        (void) strcat( imageInfo->filename, "[0]" );
+        (void) snprintf(imageInfo->filename, sizeof(imageInfo->filename), "%s%s", infile, "[0]");
+      else
+        (void) snprintf(imageInfo->filename, sizeof(imageInfo->filename), "%s", infile);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                             "Reading image %s", imageInfo->filename);
     }
@@ -308,6 +308,12 @@ int main ( int argc, char **argv )
   */
   size[0] = '\0';
   magick_info=GetMagickInfo(format,&exception);
+  if (magick_info == (MagickInfo *) NULL)
+    {
+      fprintf(stderr, "No support for \"%s\" format.\n",format);
+      exit_status = 1;
+      goto program_exit;
+    }
 
   if (magick_info->raw)
     {
@@ -321,17 +327,14 @@ int main ( int argc, char **argv )
       /*
         Prepend magic specifier if extension will be ignored.
       */
-      (void) strcpy(filespec,format);
-      (void) strcat(filespec,":");
-      (void) strcat(filespec,basefilespec);
+      (void) snprintf(filespec, sizeof(filespec), "%s:%s.%%s", format, basefilespec);
     }
   else
     {
-      strcpy(filespec,basefilespec);
+      (void) snprintf(filespec, sizeof(filespec), "%s.%%s", basefilespec);
     }
 
-  (void) strcat(filespec,".%s");
-  (void) sprintf( filename, filespec, 1, format );
+  (void) snprintf( filename, sizeof(filename), filespec, 1, format );
   (void) remove(filename);
 
   /*

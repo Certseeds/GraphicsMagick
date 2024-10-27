@@ -1,3 +1,46 @@
+2024-10-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/bitstream.c: Fixes so that 'test' mode allocates the
+	correct amount of memory for 31 and 32 bit depth.
+
+	* Makefile.am (coverity): Added tests programs to Coverity
+	analysis.
+	(scan-build): Added tests programs to Clang scan-build.
+
+	* Magick++/lib/Image.cpp (Magick::Image::formatExpressionRef): New
+	method which works the same as formatExpression, except that it
+	passes the argument by reference.
+
+	* wand/wandtest.c: Use secure buffer management.
+
+	* tests/constitute.c: Use secure buffer management.
+
+	* tests/rwfile.c: Use secure buffer management.
+
+	* tests/rwblob.c: Use secure buffer management.
+
+	* Magick++/lib/Magick++/STL.h (coderInfoList): Assure that
+	exception is always thrown when 'coder_list' is NULL.  Coverity
+	446809 "Dereference after null check".
+
+	* Magick++/lib/Exception.cpp (Magick::throwExceptionAlways): New
+	exception throwing helper function which always throws an
+	exception.
+
+	* tests/bitstream.c: Check range of arguments. Coverity 446805
+	"Untrusted loop bound".
+
+	* Magick++/tests/readWriteImages.cpp (main): Report columns()
+	rather than rows(). Coverity 446803 "Copy-paste error.
+
+	* Magick++/tests/attributes.cpp: Use new
+	formatExpressionRef(). Coverity 446808.
+
+	* Magick++/lib/Image.cpp (Magick::Image::formatExpressionRef): New
+	method to replace use of formatExpression(). The declaration of
+	formatExpression() should have passed the argument by reference.
+	Coverity 446808.
+
 2024-10-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* Magick++/tests/*: Updated to use InitializeMagickSentinel.

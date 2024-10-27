@@ -1,6 +1,6 @@
 // This may look like C code, but it is really -*- C++ -*-
 //
-// Copyright Bob Friesenhahn, 1999, 2000, 2001, 2002, 2003
+// Copyright Bob Friesenhahn, 1999-2024
 //
 // Implementation of Exception and derived classes
 //
@@ -420,31 +420,133 @@ Magick::ErrorXServer::ErrorXServer ( const std::string& what_ )
 {
 }
 
-// Format and throw exception
-MagickDLLDecl void Magick::throwExceptionExplicit( const ExceptionType severity_,
-                                                   const char* reason_,
-                                                   const char* description_)
+namespace Magick
 {
-  // Just return if there is no reported error
-  if ( severity_ == UndefinedException )
-    return;
+  //
 
-  ExceptionInfo exception;
+  // Throw appropriate C++ exception with type matching 'severity_' using pre-formatted 'message_'
+#if __cplusplus >= 201103L
+[[ noreturn ]]
+#endif
+  static void throwExceptionWithMessage( const ExceptionType severity_,
+                                         const std::string &message_ );
 
-  GetExceptionInfo( &exception );
-  ThrowException2( &exception, severity_, reason_, description_ );
-  throwException( exception );
+  // Format ExceptionInfo into a message string
+  static std::string FormatExceptionInfoToMessage( const ExceptionInfo &exception_ );
+
+} // namespace Magick
+
+// Throw appropriate C++ exception with type matching 'severity_' using pre-formatted 'message_'
+#if __cplusplus >= 201103L
+[[ noreturn ]]
+#endif
+static void Magick::throwExceptionWithMessage( const ExceptionType severity_,
+                                               const std::string &message_ )
+{
+  switch ( severity_ )
+    {
+      // Warnings
+    case ResourceLimitWarning :
+      throw WarningResourceLimit( message_ );
+    case TypeWarning :
+      throw WarningType( message_ );
+    case OptionWarning :
+      throw WarningOption( message_ );
+    case DelegateWarning :
+      throw WarningDelegate( message_ );
+    case MissingDelegateWarning :
+      throw WarningMissingDelegate( message_ );
+    case CorruptImageWarning :
+      throw WarningCorruptImage( message_ );
+    case FileOpenWarning :
+      throw WarningFileOpen( message_ );
+    case BlobWarning :
+      throw WarningBlob ( message_ );
+    case StreamWarning :
+      throw WarningStream ( message_ );
+    case CacheWarning :
+      throw WarningCache ( message_ );
+    case CoderWarning :
+      throw WarningCoder ( message_ );
+    case ModuleWarning :
+      throw WarningModule( message_ );
+    case DrawWarning :
+      throw WarningDraw( message_ );
+    case ImageWarning :
+      throw WarningImage( message_ );
+    case XServerWarning :
+      throw WarningXServer( message_ );
+    case MonitorWarning :
+      throw WarningMonitor( message_ );
+    case RegistryWarning :
+      throw WarningRegistry( message_ );
+    case ConfigureWarning :
+      throw WarningConfigure( message_ );
+      // Errors
+    case ResourceLimitError :
+    case ResourceLimitFatalError :
+      throw ErrorResourceLimit( message_ );
+    case TypeError :
+    case TypeFatalError :
+      throw ErrorType( message_ );
+    case OptionError :
+    case OptionFatalError :
+      throw ErrorOption( message_ );
+    case DelegateError :
+    case DelegateFatalError :
+      throw ErrorDelegate( message_ );
+    case MissingDelegateError :
+    case MissingDelegateFatalError :
+      throw ErrorMissingDelegate( message_ );
+    case CorruptImageError :
+    case CorruptImageFatalError :
+      throw ErrorCorruptImage( message_ );
+    case FileOpenError :
+    case FileOpenFatalError :
+      throw ErrorFileOpen( message_ );
+    case BlobError :
+    case BlobFatalError :
+      throw ErrorBlob ( message_ );
+    case StreamError :
+    case StreamFatalError :
+      throw ErrorStream ( message_ );
+    case CacheError :
+    case CacheFatalError :
+      throw ErrorCache ( message_ );
+    case CoderError :
+    case CoderFatalError :
+      throw ErrorCoder ( message_ );
+    case ModuleError :
+    case ModuleFatalError :
+      throw ErrorModule ( message_ );
+    case DrawError :
+    case DrawFatalError :
+      throw ErrorDraw ( message_ );
+    case ImageError :
+    case ImageFatalError :
+      throw ErrorImage ( message_ );
+    case XServerError :
+    case XServerFatalError :
+      throw ErrorXServer ( message_ );
+    case MonitorError :
+    case MonitorFatalError :
+      throw ErrorMonitor ( message_ );
+    case RegistryError :
+    case RegistryFatalError :
+      throw ErrorRegistry ( message_ );
+    case ConfigureError :
+    case ConfigureFatalError :
+      throw ErrorConfigure ( message_ );
+    case UndefinedException :
+    default :
+      throw ErrorUndefined( message_ );
+    }
 }
 
-// Throw C++ exception, resetting exception argument to default state
-MagickDLLDecl void Magick::throwException( ExceptionInfo &exception_,
-                                           const bool quiet_)
+// Format ExceptionInfo into a message string for human consumption
+static std::string Magick::FormatExceptionInfoToMessage( const Magick::ExceptionInfo &exception_ )
 {
-  // Just return if there is no reported error
-  if ( exception_.severity == UndefinedException )
-    return;
-
-  // Format error message GraphicsMagick-style
+    // Format error message GraphicsMagick-style
   std::string message = SetClientName(0);
   if ( exception_.reason != 0 )
     {
@@ -465,109 +567,83 @@ MagickDLLDecl void Magick::throwException( ExceptionInfo &exception_,
           message += " (" + std::string(exception_.function) + ")";
     }
 
+  return message;
+}
+
+// Format and throw C++ exception (always) based on parameterized info.
+// Suitable for handling hard errors.
+#if __cplusplus >= 201103L
+[[ noreturn ]]
+#endif
+MagickDLLDecl void Magick::throwExceptionAlways( const ExceptionType severity_,
+                                                 const char* reason_,
+                                                 const char* description_)
+{
+  Magick::ExceptionInfo exception;
+
+  // Initialize the ExceptionInfo structure
+  GetExceptionInfo( &exception );
+
+  // Populate the ExceptionInfo structure
+  ThrowException2( &exception, severity_, reason_, description_ );
+
+  // Throw a C++ exception
+  // Format error message GraphicsMagick-style
+  std::string message = FormatExceptionInfoToMessage( exception );
+
+  // Release ExceptionInfo resources
+  DestroyExceptionInfo( &exception );
+
+  // Throw appropriate C++ exception with type matching 'severity_'
+  // using pre-formatted 'message_'
+  throwExceptionWithMessage(severity_, message );
+}
+
+// Format and throw C++ exception based on parameterized info if
+// severity_ is not UndefinedException.  This is used for both Warning
+// and Error cases.
+MagickDLLDecl void Magick::throwExceptionExplicit( const ExceptionType severity_,
+                                                   const char* reason_,
+                                                   const char* description_)
+{
+  // Just return if there is no reported error
+  if ( severity_ == UndefinedException )
+    return;
+
+  // Throw appropriate C++ exception with type matching 'severity_'
+  // using pre-formatted 'message_'
+  throwExceptionAlways(severity_, reason_, description_ );
+}
+
+// Throw C++ exception based on ExceptionInfo unless
+// exception_.severity is not UndefinedException or if quiet_ == true
+// and exception_.severity < ErrorException
+//
+// The exception_ argument is restored to the default state prior to
+// throwing C++ exception.
+MagickDLLDecl void Magick::throwException( ExceptionInfo &exception_,
+                                           const bool quiet_)
+{
+  // Just return if there is no reported error
+  if ( exception_.severity == UndefinedException )
+    return;
+
+  // Format error message GraphicsMagick-style
+  std::string message = FormatExceptionInfoToMessage( exception_ );
+
+  // Save severity
   ExceptionType severity = exception_.severity;
+
+  // Release ExceptionInfo resources
   DestroyExceptionInfo( &exception_ );
+
+  // Restore ExceptionInfo to defaults
   GetExceptionInfo( &exception_ );
 
   if ((quiet_) && (severity < ErrorException))
       return;
 
-  switch ( severity )
-    {
-      // Warnings
-    case ResourceLimitWarning :
-      throw WarningResourceLimit( message );
-    case TypeWarning :
-      throw WarningType( message );
-    case OptionWarning :
-      throw WarningOption( message );
-    case DelegateWarning :
-      throw WarningDelegate( message );
-    case MissingDelegateWarning :
-      throw WarningMissingDelegate( message );
-    case CorruptImageWarning :
-      throw WarningCorruptImage( message );
-    case FileOpenWarning :
-      throw WarningFileOpen( message );
-    case BlobWarning :
-      throw WarningBlob ( message );
-    case StreamWarning :
-      throw WarningStream ( message );
-    case CacheWarning :
-      throw WarningCache ( message );
-    case CoderWarning :
-      throw WarningCoder ( message );
-    case ModuleWarning :
-      throw WarningModule( message );
-    case DrawWarning :
-      throw WarningDraw( message );
-    case ImageWarning :
-      throw WarningImage( message );
-    case XServerWarning :
-      throw WarningXServer( message );
-    case MonitorWarning :
-      throw WarningMonitor( message );
-    case RegistryWarning :
-      throw WarningRegistry( message );
-    case ConfigureWarning :
-      throw WarningConfigure( message );
-      // Errors
-    case ResourceLimitError :
-    case ResourceLimitFatalError :
-      throw ErrorResourceLimit( message );
-    case TypeError :
-    case TypeFatalError :
-      throw ErrorType( message );
-    case OptionError :
-    case OptionFatalError :
-      throw ErrorOption( message );
-    case DelegateError :
-    case DelegateFatalError :
-      throw ErrorDelegate( message );
-    case MissingDelegateError :
-    case MissingDelegateFatalError :
-      throw ErrorMissingDelegate( message );
-    case CorruptImageError :
-    case CorruptImageFatalError :
-      throw ErrorCorruptImage( message );
-    case FileOpenError :
-    case FileOpenFatalError :
-      throw ErrorFileOpen( message );
-    case BlobError :
-    case BlobFatalError :
-      throw ErrorBlob ( message );
-    case StreamError :
-    case StreamFatalError :
-      throw ErrorStream ( message );
-    case CacheError :
-    case CacheFatalError :
-      throw ErrorCache ( message );
-    case CoderError :
-    case CoderFatalError :
-      throw ErrorCoder ( message );
-    case ModuleError :
-    case ModuleFatalError :
-      throw ErrorModule ( message );
-    case DrawError :
-    case DrawFatalError :
-      throw ErrorDraw ( message );
-    case ImageError :
-    case ImageFatalError :
-      throw ErrorImage ( message );
-    case XServerError :
-    case XServerFatalError :
-      throw ErrorXServer ( message );
-    case MonitorError :
-    case MonitorFatalError :
-      throw ErrorMonitor ( message );
-    case RegistryError :
-    case RegistryFatalError :
-      throw ErrorRegistry ( message );
-    case ConfigureError :
-    case ConfigureFatalError :
-      throw ErrorConfigure ( message );
-    case UndefinedException :
-    default :
-      throw ErrorUndefined( message );
-    }
+  // Throw appropriate C++ exception with type matching 'severity_'
+  // using pre-formatted 'message_'
+  throwExceptionWithMessage(severity, message );
 }

@@ -38,6 +38,39 @@
 
 <main id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-10-27  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>tests/bitstream.c: Fixes so that 'test' mode allocates the
+correct amount of memory for 31 and 32 bit depth.</p></li>
+<li><p>Makefile.am (coverity): Added tests programs to Coverity
+analysis.
+(scan-build): Added tests programs to Clang scan-build.</p></li>
+<li><p>Magick++/lib/Image.cpp (Magick::Image::formatExpressionRef): New
+method which works the same as formatExpression, except that it
+passes the argument by reference.</p></li>
+<li><p>wand/wandtest.c: Use secure buffer management.</p></li>
+<li><p>tests/constitute.c: Use secure buffer management.</p></li>
+<li><p>tests/rwfile.c: Use secure buffer management.</p></li>
+<li><p>tests/rwblob.c: Use secure buffer management.</p></li>
+<li><p>Magick++/lib/Magick++/STL.h (coderInfoList): Assure that
+exception is always thrown when 'coder_list' is NULL.  Coverity
+446809 &quot;Dereference after null check&quot;.</p></li>
+<li><p>Magick++/lib/Exception.cpp (Magick::throwExceptionAlways): New
+exception throwing helper function which always throws an
+exception.</p></li>
+<li><p>tests/bitstream.c: Check range of arguments. Coverity 446805
+&quot;Untrusted loop bound&quot;.</p></li>
+<li><p>Magick++/tests/readWriteImages.cpp (main): Report columns()
+rather than rows(). Coverity 446803 &quot;Copy-paste error.</p></li>
+<li><p>Magick++/tests/attributes.cpp: Use new
+formatExpressionRef(). Coverity 446808.</p></li>
+<li><p>Magick++/lib/Image.cpp (Magick::Image::formatExpressionRef): New
+method to replace use of formatExpression(). The declaration of
+formatExpression() should have passed the argument by reference.
+Coverity 446808.</p></li>
+</ul>
+</blockquote>
 <p>2024-10-24  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">

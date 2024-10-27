@@ -793,16 +793,16 @@ int main( int /*argc*/, char ** argv)
       }
 
     //
-    // formatExpression
+    // formatExpressionRef
     //
     {
-      std::string formatSpec("%wx%h");
-      std::string expected("640x480");
-      if ( image.formatExpression(formatSpec) != expected )
+      const std::string formatSpec("%wx%h");
+      const std::string expected("640x480");
+      if ( image.formatExpressionRef(formatSpec) != expected )
         {
           ++failures;
           cout << "Line: " << __LINE__
-               << ", formatExpression (" << image.formatExpression(formatSpec)
+               << ", formatExpression (" << image.formatExpressionRef(formatSpec)
                << ") is not expected value" << endl;
         }
     }

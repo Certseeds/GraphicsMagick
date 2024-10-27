@@ -88,7 +88,7 @@ int main( int /*argc*/, char ** argv)
             cout << "Line: " << __LINE__
                  << "  Image columns " << secondIter->columns()
                  << " are not equal to original "
-                 << firstIter->rows()
+                 << firstIter->columns()
                  << endl;
           }
 
