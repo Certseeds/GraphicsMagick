@@ -1,5 +1,8 @@
 2024-10-27  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* tests/{constitute.c, rwblob.c, rwfile.c}: Eliminate ugly
+	"directive output may be truncated" warnings from GCC.
+
 	* tests/bitstream.c: Fixes so that 'test' mode allocates the
 	correct amount of memory for 31 and 32 bit depth.
 

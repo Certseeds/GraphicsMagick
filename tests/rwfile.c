@@ -269,7 +269,8 @@ int main ( int argc, char **argv )
   else
     {
       if (!magick_info->adjoin || !check_for_added_frames)
-        (void) snprintf(imageInfo->filename, sizeof(imageInfo->filename), "%s%s", infile, "[0]");
+        (void) snprintf( imageInfo->filename, sizeof(imageInfo->filename), "%.*s%s",
+                         (int)(sizeof(imageInfo->filename)-sizeof("[0]")-1), infile, "[0]");
       else
         (void) snprintf(imageInfo->filename, sizeof(imageInfo->filename), "%s", infile);
       (void) LogMagickEvent(CoderEvent,GetMagickModule(),

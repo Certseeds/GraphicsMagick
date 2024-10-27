@@ -194,7 +194,8 @@ int main ( int argc, char **argv )
    */
   GetExceptionInfo( &exception );
   imageInfo->dither = 0;
-  (void) snprintf( imageInfo->filename, sizeof(imageInfo->filename), "%s%s", infile, "[0]");
+  (void) snprintf( imageInfo->filename, sizeof(imageInfo->filename), "%.*s%s",
+                   (int)(sizeof(imageInfo->filename)-sizeof("[0]")-1), infile, "[0]");
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),
                         "Reading image %s", imageInfo->filename);
   original = ReadImage ( imageInfo, &exception );
