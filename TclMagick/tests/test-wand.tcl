@@ -18,7 +18,7 @@ if { $tcl_platform(platform) == "unix" } {
     if {[file exists $dll]} {
         load $dll
     }
-    package require TclMagick
+    package require TclMagick0.46
 }
 puts [info script]
 

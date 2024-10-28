@@ -13031,6 +13031,8 @@ CPPFLAGS=$CPPFLAGS_SAVE
 LDFLAGS=$LDFLAGS_SAVE
 LIBS=$LIBS_SAVE
 
+# Specify the expected TEA_INIT version (matching TEA_VERSION in the tcl.m4 used).
+# See https://core.tcl-lang.org/tcl/tktview/1703170fffffffffffff
 
     TEA_VERSION="3.13"
 
@@ -13201,7 +13203,7 @@ printf "%s\n" "$tcl_cv_sys_version" >&6; }
 
 
 
- # Was 3.10
+
 
 
 

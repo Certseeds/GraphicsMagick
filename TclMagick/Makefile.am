@@ -17,18 +17,22 @@ PKG_ENV		= @LD_LIBRARY_PATH_VAR@="$(EXTRA_PATH):$(@LD_LIBRARY_PATH_VAR@)" \
 TCLSH		= $(TCLSH_ENV) $(PKG_ENV) $(TCLSH_PROG)
 
 # Put this in its own package directory.
+#
+# See https://autotools.info/libtool/version.html "4.3. Multiple
+# libraries versions" for how library version in name works with
+# Automake
 generic_lib_magickdir = @libdir@/TclMagick@VERSION@
-generic_lib_magick_LTLIBRARIES =  generic/TclMagick.la generic/TkMagick.la
+generic_lib_magick_LTLIBRARIES =  generic/TclMagick0.46.la generic/TkMagick0.46.la
 
-generic_TclMagick_la_SOURCES = generic/TclMagick.c generic/TclMagick.h generic/libttkcommon.h
-generic_TclMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module
-generic_TclMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@
-generic_TclMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
+generic_TclMagick0_46_la_SOURCES = generic/TclMagick.c generic/TclMagick.h generic/libttkcommon.h
+generic_TclMagick0_46_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module -avoid-version
+generic_TclMagick0_46_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TCL_LIBS@ @TCL_LIBS@ @GM_LIBS@
+generic_TclMagick0_46_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@
 
-generic_TkMagick_la_SOURCES = generic/TkMagick.c generic/TclMagick.h generic/libttkcommon.h
-generic_TkMagick_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module
-generic_TkMagick_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TCL_LIBS@ @TK_LIB_SPEC@ @TK_LIBS@ @GM_LIBS@
-generic_TkMagick_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@ @TK_INCLUDES@ @TK_XINCLUDES@
+generic_TkMagick0_46_la_SOURCES = generic/TkMagick.c generic/TclMagick.h generic/libttkcommon.h
+generic_TkMagick0_46_la_LDFLAGS = @GM_LDFLAGS@ -L$(generic_lib_magickdir) -no-undefined -module -avoid-version
+generic_TkMagick0_46_la_LIBADD = @TCL_STUB_LIB_SPEC@ @TK_STUB_LIB_SPEC@ @TCL_LIB_SPEC@ @TCL_LIBS@ @TK_LIB_SPEC@ @TK_LIBS@ @GM_LIBS@
+generic_TkMagick0_46_la_CPPFLAGS = -Igeneric/ @TCL_INCLUDES@ @GM_CPPFLAGS@ @TK_INCLUDES@ @TK_XINCLUDES@
 
 # A TclMagick executable (not installed)
 generic_PGMS = generic/TclMagick
