@@ -1,0 +1,17 @@
+TclMagick News
+==============
+
+2024-10-28
+----------
+
+* The Autotools configuration is modernized.
+
+* TclMagick is updated to eliminate the libttkcommon "shim" library.
+
+* TclMagick/TkMagick library names match the names produced by the TEA tcl.m4 module.
+
+* Known crashes are rectified.
+
+* Many bugs (mostly typos) are fixed.
+
+* Test suite tests all pass.
