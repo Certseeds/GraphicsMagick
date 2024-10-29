@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2023 GraphicsMagick Group
+% Copyright (C) 2023-2024 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -240,10 +240,10 @@ static Image *ReadMetadata(struct heif_image_handle *heif_image_handle,
               magick_uint32_t offset;
 
               /* Big-endian offset decoding */
-              offset = p[exif_pad+0] << 24 |
-                       p[exif_pad+1] << 16 |
-                       p[exif_pad+2] << 8 |
-                       p[exif_pad+3];
+              offset = (magick_uint32_t) p[exif_pad+0] << 24 |
+                       (magick_uint32_t) p[exif_pad+1] << 16 |
+                       (magick_uint32_t) p[exif_pad+2] << 8 |
+                       (magick_uint32_t) p[exif_pad+3];
 
               /*
                 If the TIFF header offset is not zero, then need to

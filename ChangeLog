@@ -1,5 +1,10 @@
 2024-10-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/heif.c (ReadMetadata): Address oss-fuzz issue 376100386
+	"graphicsmagick:coder_AVIF_fuzzer: Undefined-shift in
+	ReadMetadata", which is due to an unsigned char being promoted to
+	a signed int prior to shifting.  The sample input file is valid.
+
 	* TclMagick/Makefile.am (EXTRA_DIST): Assure that all source files
 	are included by 'make dist'.
 
