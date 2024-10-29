@@ -1,3 +1,8 @@
+2024-10-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* TclMagick/Makefile.am (EXTRA_DIST): Assure that all source files
+	are included by 'make dist'.
+
 2024-10-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* TclMagick/Makefile.am: Name installed TclMagick/TkMagick

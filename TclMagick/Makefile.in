@@ -464,7 +464,7 @@ wand_config = @wand_config@
 AUTOMAKE_OPTIONS = 1.12 subdir-objects dist-zip dist-xz no-dist-gzip foreign
 ACLOCAL_AMFLAGS = -I unix/m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --with-tcl=${TCL_BIN_DIR} --with-tk=${TK_BIN_DIR} --with-magick=${wand_config} --exec-prefix="$$dc_install_base"
-EXTRA_DIST = LICENSE tests images doc pkgIndex.tcl
+EXTRA_DIST = LICENSE tests images doc pkgIndex.tcl win genconf.sh
 TCLSH_ENV = TCL_LIBRARY=`@CYGPATH@ $(TCL_SRC_DIR)/library`
 PKG_ENV = @LD_LIBRARY_PATH_VAR@="$(EXTRA_PATH):$(@LD_LIBRARY_PATH_VAR@)" \
 		  PATH="$(EXTRA_PATH):$(PATH)" \
@@ -473,6 +473,10 @@ PKG_ENV = @LD_LIBRARY_PATH_VAR@="$(EXTRA_PATH):$(@LD_LIBRARY_PATH_VAR@)" \
 TCLSH = $(TCLSH_ENV) $(PKG_ENV) $(TCLSH_PROG)
 
 # Put this in its own package directory.
+#
+# See https://autotools.info/libtool/version.html "4.3. Multiple
+# libraries versions" for how library version in name works with
+# Automake
 generic_lib_magickdir = @libdir@/TclMagick@VERSION@
 generic_lib_magick_LTLIBRARIES = generic/TclMagick0.46.la generic/TkMagick0.46.la
 generic_TclMagick0_46_la_SOURCES = generic/TclMagick.c generic/TclMagick.h generic/libttkcommon.h
