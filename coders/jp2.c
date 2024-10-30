@@ -246,7 +246,9 @@ static unsigned int IsJPC(const unsigned char *magick,const size_t length)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %  Method IsPGX returns True if the image format type, identified by the
-%  magick string, is PGX.
+%  magick string, is PGX. PGX is an uncompressed raster image file format
+%  used in JPEG 2000 conformance testing. PGX file stores only a single
+%  component, so it is limited to grayscale.
 %
 %  The format of the IsPGX method is:
 %
@@ -967,19 +969,51 @@ static Image *ReadJP2Image(const ImageInfo *image_info,
     }
   image->columns=jas_image_width(jp2_image);
   image->rows=jas_image_height(jp2_image);
-  (void) LogMagickEvent(CoderEvent,GetMagickModule(),
-                        "columns=%lu rows=%lu components=%d",image->columns,image->rows,
-                        number_components);
+  if (image->logging)
+    {
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "columns=%lu rows=%lu components=%d",image->columns,image->rows,
+                            number_components);
+      for (component=0; component < number_components; component++)
+        {
+          (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                                "Component %u:\n"
+                                "    width                         = %ld\n" /* width */
+                                "    height                        = %ld\n" /* height */
+                                "    tl x,y coordinate             = %ld,%ld\n" /* x,y-coordinates of the top-left corner */
+                                "    br x,y coordinate             = %ld,%ld\n" /* x,y-coordinates of the bottom-right corner */
+                                "    horizontal subsampling factor = %ld\n" /* horizontal subsampling factor */
+                                "    vertical subsampling factor   = %ld\n" /* vertical subsampling factor */
+                                "    depth                         = %u\n"  /* depth */
+                                "    signed sample data            = %d",   /* signedness of the sample data (true == signed) */
+                                component,
+                                jas_image_cmptwidth(jp2_image,components[component]),
+                                jas_image_cmptheight(jp2_image,components[component]),
+                                jas_image_cmpttlx(jp2_image, components[component]),
+                                jas_image_cmpttly(jp2_image, components[component]),
+                                jas_image_cmptbrx(jp2_image, components[component]),
+                                jas_image_cmptbry(jp2_image, components[component]),
+                                jas_image_cmpthstep(jp2_image, components[component]),
+                                jas_image_cmptvstep(jp2_image, components[component]),
+                                jas_image_cmptprec(jp2_image,components[component]),
+                                jas_image_cmptsgnd(jp2_image, components[component]));
+        }
+    }
   for (component=0; component < number_components; component++)
     {
-      if(((unsigned long) jas_image_cmptwidth(jp2_image,components[component]) != image->columns) ||
-         ((unsigned long) jas_image_cmptheight(jp2_image,components[component]) != image->rows) ||
-         (jas_image_cmpttlx(jp2_image, components[component]) != 0) ||
-         (jas_image_cmpttly(jp2_image, components[component]) != 0) ||
-         (jas_image_cmpthstep(jp2_image, components[component]) != 1) ||
-         (jas_image_cmptvstep(jp2_image, components[component]) != 1) ||
-         (jas_image_cmptsgnd(jp2_image, components[component]) != false))
+      if (((unsigned long) jas_image_cmptwidth(jp2_image,components[component]) != image->columns) ||
+          ((unsigned long) jas_image_cmptheight(jp2_image,components[component]) != image->rows) ||
+          (jas_image_cmpttlx(jp2_image, components[component]) != 0) ||
+          (jas_image_cmpttly(jp2_image, components[component]) != 0) ||
+          (jas_image_cmpthstep(jp2_image, components[component]) != 1) ||
+          (jas_image_cmptvstep(jp2_image, components[component]) != 1))
         ThrowJP2ReaderException(CoderError,IrregularChannelGeometryNotSupported,image);
+    }
+  /* FIXME: It would be good to support signed data! */
+  for (component=0; component < number_components; component++)
+    {
+      if ((jas_image_cmptsgnd(jp2_image, components[component]) != false))
+        ThrowJP2ReaderException(CoderError,DataStorageTypeIsNotSupported,image);
     }
 
   image->matte=number_components > 3;

@@ -1,5 +1,8 @@
 2024-10-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* coders/jp2.c (ReadJP2Image): Trace JPEG 2000 component
+	parameters.
+
 	* fuzzing/oss-fuzz-build.sh: Skip re-bootstrap of GraphicsMagick
 	since it sometimes fails due to network issues.
 	(enable_x265): Enable x265 in oss-fuzz build (and re-enable de265,
