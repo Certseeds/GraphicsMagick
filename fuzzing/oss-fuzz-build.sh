@@ -1,8 +1,27 @@
 #!/bin/bash -eu
 
-# This is intended to be run from OSS-Fuzz's build environment. We intend to
-# eventually refactor it to be easy to run locally.
+# This shell script is intended to be run from OSS-Fuzz's build
+# environment. We intend to eventually refactor it to be easy to run
+# locally.
 
+# Useful OSS-Fuzz URLs:
+#
+# GM build status:
+#
+#   https://oss-fuzz-build-logs.storage.googleapis.com/index.html#graphicsmagick
+#
+# GM open issues:
+#
+#   https://issues.oss-fuzz.com/savedsearches/6886196
+#
+# OSS-Fuzz usage documentation:
+#
+#   https://google.github.io/oss-fuzz/
+#
+# OSS-Fuzz code master source tree:
+#
+#   https://github.com/google/oss-fuzz/tree/master
+#
 # For local testing of fuzzing/oss-fuzz-build.sh in 'compile' mode do:
 #
 # Check 'compile' prompt for docker container id
@@ -16,7 +35,7 @@
 # ~/src/GM% docker cp fuzzing/oss-fuzz-build.sh $(docker ps -lq):/src/graphicsmagick/fuzzing/oss-fuzz-build.sh
 # ~/src/GM% docker cp fuzzing/coder_fuzzer.cc $(docker ps -lq):/src/graphicsmagick/fuzzing/
 #
-# Execute in the oss-fuzz shell environment like "/src/build.sh" while
+# Execute in the oss-fuzz shell environment like "/src/build.sh 2>&1 | tee build.sh" while
 # in the initial "/src/graphicsmagick" directory.
 #
 #
@@ -46,7 +65,7 @@ apt install autoconf-archive
 
 enable_aom=true
 enable_bzip2=true
-enable_de265=false
+enable_de265=true
 enable_freetype=true
 enable_heif=true
 enable_jasper=true
