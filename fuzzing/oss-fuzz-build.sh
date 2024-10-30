@@ -46,7 +46,7 @@ apt install autoconf-archive
 
 enable_aom=true
 enable_bzip2=true
-enable_de265=true
+enable_de265=false
 enable_freetype=true
 enable_heif=true
 enable_jasper=true
@@ -57,7 +57,7 @@ enable_lcms=true
 enable_png=true
 enable_tiff=true
 enable_webp=true
-enable_x265=false
+enable_x265=true
 enable_xml=false
 enable_xz=true
 enable_zstd=true
@@ -658,7 +658,16 @@ case "${SANITIZER}" in
         EXTRA_LIBS='-lubsan -lc++'
     ;;
 esac
-./bootstrap
+
+# Re-bootstrap the GraphicsMagick Autotools and scripts. The
+# GraphicsMagick repository is already bootstrapped so
+# re-bootstrapping is not really necessary.  Sometimes this fails due
+# to issues with network access while updating config.guess and
+# config.sub.
+#
+#./bootstrap || printf "Failed to re-bootstrap GraphicsMagick!\n"
+
+# Configure GraphicsMagick
 PATH=$WORK/bin:$PATH PKG_CONFIG_PATH="$WORK/lib/pkgconfig" PKG_CONFIG='pkg-config --static' ./configure \
     CPPFLAGS="-I$WORK/include/libpng16 -I$WORK/include/freetype2 -I$WORK/include/libxml2 -I$WORK/include" \
     CFLAGS="${CFLAGS}" \
