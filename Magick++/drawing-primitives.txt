@@ -71,6 +71,15 @@ Clip-path syntax
   pop defs
   clip-path url(#%s)
 
+use syntax
+----------
+
+The "use" command (based on SVG's "use")implements a macro capability,
+in which the referenced object and its contents are deep-cloned into
+the generated tree.
+
+ use url
+
 Using 'image' primitive with inlined image
 ------------------------------------------
 
@@ -87,15 +96,18 @@ Individual Drawing Primitives
 =============================
 
 affine sx,rx,ry,sy,tx,ty
+angle %g (%g is an angle value)
 arc x0,y0 x1,y1 a0,a1
 bezier x0,y0  ...  xn,yn
 circle originX,originY perimX,perimY
+class %s (class is a string value)
 clip-path url(#%s)  (%s is the name of the clip path)
 clip-rule (evenodd|nonzero)
 clip-units (userSpace|userSpaceOnUse|objectBoundingBox)
 color x,y (point|replace|floodfill|filltoborder|reset)
 decorate (none|underline|overline|line-through)
 ellipse centerX,centerY radiusX,radiusY arcStart,arcEnd
+encoding %s (%s is document encoding string)
 fill colorspec
 fill-opacity opacity[%]
 fill-rule (evenodd|nonzero)
@@ -115,7 +127,8 @@ image (Add|Atop|Bumpmap|Clear|CopyBlue|CopyGreen|CopyOpacity|CopyRed|
        dest_x,dest_y dest_width,dest_height 'filename'
 line startX,startY endX,endY
 matte x,y (point|replace|floodfill|filltoborder|reset)
-offset  ???
+mask %s (%s is a mask value)
+offset %g (%g is an offset value)
 opacity value[%]
 path 'SVG-compatible path arguments'
 point x,y
@@ -125,12 +138,16 @@ pop clip-path
 pop defs
 pop gradient
 pop graphic-context
+pop id
+pop mask
 pop pattern
 push clip-path %s  (%s is the name of the clip path)
 push defs
 push gradient id linear x1,y1 x2,y2
 push gradient id radial cx,cy fx,fy r
 push graphic-context
+push id %s (%s is the id string)
+push mask %s (%s is the mask id)
 push pattern id x,y width,height
 rectangle upperLeftX,upperLeftY lowerRightX,lowerRightY
 rotate angle
@@ -148,9 +165,19 @@ stroke-linejoin (bevel|miter|round)
 stroke-miterlimit limit
 stroke-opacity opacity[%]
 stroke-width linewidth
+svg-compliant 1
+textc %s (%s is some text)
+textdx %g (%s is an 'em' or 'ex' float value)
+textdx %s (%s is a text value)
+textdy %g (%s is an 'em' or 'ex' float value)
+textdy %s (%s is a text value)
+textr %g (%g is rotation angle)
+textx X
+texty Y
 text x,y "some text"
+text-align %s (%s is text align argument)
+text-anchor %s (%s is text anchor argument)
 text-antialias (0|1)
 text-undercolor colorspec
 translate x,y
 viewbox x1 y1 x2 y2 (e.g. "viewbox 0 0 640 480")
-

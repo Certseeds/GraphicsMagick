@@ -1,3 +1,8 @@
+2024-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/render.c (DrawImage): Add more validity checks for color
+	database lookup requests.
+
 2024-10-30  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* coders/jp2.c (ReadJP2Image): Trace JPEG 2000 component
