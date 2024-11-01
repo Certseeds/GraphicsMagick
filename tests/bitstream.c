@@ -10,9 +10,9 @@
 
 */
 
-#include "magick/studio.h"
-#include "magick/image.h" /* For MaxValueGivenBits() */
-#include "magick/bit_stream.h"
+#include <magick/studio.h>
+#include <magick/image.h> /* For MaxValueGivenBits() */
+#include <magick/bit_stream.h>
 
 #include <stdio.h>
 #include <stdlib.h>
