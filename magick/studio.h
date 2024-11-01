@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2003 - 2022 GraphicsMagick Group
+  Copyright (C) 2003 - 2024 GraphicsMagick Group
   Copyright (C) 2002 ImageMagick Studio
 
   This program is covered by multiple licenses, which are described in
@@ -320,6 +320,7 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
 #  define ReadCommandlLine(argc,argv)
 #  define SetNotifyHandlers
 #  define MagickSleep(seconds) sleep(seconds)
+#  define MAGICK_DEVNULL "/dev/null"
 #endif
 
 #if defined(MSWINDOWS)
@@ -336,6 +337,7 @@ extern int vsnprintf(char *s, size_t n, const char *format, va_list ap);
     SetErrorHandler(NTErrorHandler); \
     SetWarningHandler(NTWarningHandler)
 #  define MagickSleep(seconds)  Sleep(seconds*1000)
+#  define MAGICK_DEVNULL "NUL"
 #  if !defined(HAVE_TIFFCONF_H)
 #    define HAVE_TIFFCONF_H
 #  endif

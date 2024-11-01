@@ -1,6 +1,6 @@
 /*
   Copyright (C) 2003 GraphicsMagick Group
- 
+
   This program is covered by multiple licenses, which are described in
   Copyright.txt. You should have received a copy of Copyright.txt with this
   package; otherwise see http://www.graphicsmagick.org/www/Copyright.html.
@@ -8,7 +8,7 @@
  Test MagickMap key,value map functionality
 
  Written by Bob Friesenhahn <bfriesen@simple.dallas.tx.us>
- 
+
 */
 
 #include <magick/api.h>
@@ -28,7 +28,7 @@ typedef struct _KeyValMap
 int main ( int argc, char **argv )
 {
   int
-    exit_status = 0,
+    exit_status = EXIT_SUCCESS,
     i;
 
   ExceptionInfo
@@ -116,7 +116,7 @@ int main ( int argc, char **argv )
   (void) printf("Add entry for key \"%s\" and then iterate forward ...\n",
                 KeyVal[i].key);
 
-  iterator=MagickMapAllocateIterator(map);  
+  iterator=MagickMapAllocateIterator(map);
   while(MagickMapIterateNext(iterator,&key))
     (void) printf("key=%s value=%s\n",key,
                   (char *)MagickMapDereferenceIterator(iterator,0));

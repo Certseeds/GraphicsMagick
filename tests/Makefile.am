@@ -43,6 +43,7 @@ tests_drawtest_LDADD = $(LIBMAGICK)
 TESTS_XFAIL_TESTS =
 
 TESTS_TESTS = \
+	tests/bitstream.tap \
 	tests/constitute.tap \
 	tests/drawtests.tap \
 	tests/rwblob.tap \

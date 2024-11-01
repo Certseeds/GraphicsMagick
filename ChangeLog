@@ -1,3 +1,9 @@
+2024-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* tests/bitstream.c: Tidy printfs and exit status.
+
+	* tests/bitstream.tap: Add a simple bitstream test to test suite.
+
 2024-10-31  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/render.c (DrawImage): Add more validity checks for color

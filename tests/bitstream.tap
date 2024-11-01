@@ -1,0 +1,12 @@
+#!/bin/sh
+# -*- shell-script -*-
+# Copyright (C) 2024 GraphicsMagick Group
+# Test bitstream algorithm
+. ./common.shi
+. ${top_srcdir}/tests/common.shi
+
+num_tests=1
+max_bits=16 # up to 32 bits supported, but test takes a lot of memory!
+test_plan_fn ${num_tests}
+test_command_fn "bitstream 1-${max_bits} bits" ${MEMCHECK} ./bitstream test ${max_bits}
+:
