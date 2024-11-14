@@ -1,5 +1,7 @@
 2024-11-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
+	* tests/rwfile.c: Fix appending file name.
+
 	* coders/bmp.c (ReadBMPImage): Assure that opacity channel is
 	initialized, even if matte is not true.  May help regarding
 	GraphicsMagick discussion thread "Opacity of whole Magick::image

@@ -319,7 +319,7 @@ int main ( int argc, char **argv )
   if (magick_info->raw)
     {
       /*
-       * Specify original image size if format requires it
+       * Specify original image size (WIDTHxHEIGHT) if format requires it
        */
       FormatString( size, "%lux%lu", original->columns, original->rows );
     }
@@ -328,12 +328,12 @@ int main ( int argc, char **argv )
       /*
         Prepend magic specifier if extension will be ignored.
       */
-      (void) snprintf(filespec, sizeof(filespec), "%.*s:%.*s", 32, format,
-                      (int) sizeof(filespec)-34 , basefilespec);
+      (void) snprintf(filespec, sizeof(filespec), "%.*s:%.*s%s", 32, format,
+                      (int) sizeof(filespec)-37 , basefilespec, ".%s");
     }
   else
     {
-      (void) snprintf(filespec, sizeof(filespec), "%s", basefilespec);
+      (void) snprintf(filespec, sizeof(filespec), "%s%s", basefilespec, ".%s");
     }
 
   (void) snprintf( filename, sizeof(filename), filespec, 1, format );
