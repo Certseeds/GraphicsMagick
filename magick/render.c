@@ -2439,6 +2439,10 @@ char *  ExtractTokensBetweenPushPop (
   Added to support new elements "use" and "class".
 
   FIXME: Need to add anti-recursion measures.
+
+  See if DrawImageGetCurrentRecurseLevel(),
+  DrawImageSetCurrentRecurseLevel(), DrawImageRecurseIn(),
+  DrawImageRecurseOut() can be used.
 */
 static
 char * InsertAttributeIntoInputStream (
@@ -2461,7 +2465,7 @@ char * InsertAttributeIntoInputStream (
   size_t NeededLength;
 
   if (*pStatus == MagickFail)
-    return MagickFail;
+    return (char *) NULL;
 
   /* get attribute name, then get attribute value */
   if (MagickGetToken(q,&q,*ptoken,*ptoken_max_length) < 1)
@@ -2938,6 +2942,7 @@ DrawImage(Image *image,const DrawInfo *draw_info)
       {
         if (LocaleCompare("class",keyword) == 0)
           {/*class*/
+            /* FIXME: Deal with possible recursion */
             q = InsertAttributeIntoInputStream(keyword,q,&primitive,&primitive_extent,
                                                &token,&token_max_length,image,
                                                &status,MagickFalse/*UndefAttrIsError*/);

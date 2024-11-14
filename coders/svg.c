@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2023 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -4073,19 +4073,19 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
   (void) LogMagickEvent(CoderEvent,GetMagickModule(),"begin SAX");
   /*
     xmlSubstituteEntitiesDefault(1) enables external ENTITY support
-    (e.g. SVGResolveEntity() which allows XML to be downloaded from an
-    external source.  This may be a security hazard if the input is
-    not trustworthy or if connecting to the correct source is not
-    assured. If the XML is parsed on the backside of a firewall then
-    it may be able to access unintended resources.
+    (e.g. SVGResolveEntity() which allows XML to be loaded from an
+    external source (url or local file).  This may be a security
+    hazard if the input is not trustworthy or if connecting to the
+    correct source is not assured. If the XML is parsed on the
+    backside of a firewall then it may be able to access unintended
+    resources.
 
-    See "https://www.w3.org/TR/SVG11/svgdtd.html#DTD.1.16" and
-    "https://hdivsecurity.com/owasp-xml-external-entities-xxe".
+    See "https://www.w3.org/TR/SVG11/svgdtd.html#DTD.1.16".
 
     FIXME: Do we need a way for the user to enable this?  Does
     retrieval of external entities work at all?
   */
-  (void) xmlSubstituteEntitiesDefault(0);
+  (void) xmlSubstituteEntitiesDefault(0); /* deprecated */
 
   (void) memset(&SAXModules,0,sizeof(SAXModules));
 #if defined(ENABLE_XML_INTERNAL_SUBSET) && ENABLE_XML_INTERNAL_SUBSET
@@ -4130,6 +4130,29 @@ ReadSVGImage(const ImageInfo *image_info,ExceptionInfo *exception)
     }
   if (svg_info.parser != (xmlParserCtxtPtr) NULL)
     {
+      /*
+        Enable substituting entity values in the output.
+
+        xmlCtxtUseOptions(svg_info.parser,XML_PARSE_NOENT) enables external ENTITY support
+        (e.g. SVGResolveEntity() which allows XML to be loaded from an
+        external source (url or local file).  This may be a security
+        hazard if the input is not trustworthy or if connecting to the
+        correct source is not assured. If the XML is parsed on the
+        backside of a firewall then it may be able to access unintended
+        resources.
+
+         See "https://www.w3.org/TR/SVG11/svgdtd.html#DTD.1.16".
+
+         https://gnome.pages.gitlab.gnome.org/libxml2/devhelp/libxml2-parser.html#xmlParserOption
+         https://gnome.pages.gitlab.gnome.org/libxml2/devhelp/libxml2-parser.html#XML_PARSE_NOENT
+
+         (void) xmlCtxtUseOptions(svg_info.parser,XML_PARSE_NOENT);
+      */
+      /*
+        Disable network access via XML_PARSE_NONET
+        (void) xmlCtxtUseOptions(svg_info.parser,XML_PARSE_NONET);
+      */
+
       while ((n=ReadBlob(image,MaxTextExtent-1,message)) != 0)
         {
           message[n]='\0';

@@ -1,3 +1,16 @@
+2024-11-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* coders/bmp.c (ReadBMPImage): Assure that opacity channel is
+	initialized, even if matte is not true.  May help regarding
+	GraphicsMagick discussion thread "Opacity of whole Magick::image
+	is set to the value 205 after reading a 24-bit-bmp".
+
+	* coders/svg.c (ReadSVGImage): Added comments.
+
+	* magick/render.c (DrawImage): Added comments.
+
+	* tests/rwfile.c: More fixes for GCC warnings.
+
 2024-11-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* tests/bitstream.c: Tidy printfs and exit status.

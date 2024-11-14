@@ -497,7 +497,7 @@ static size_t EncodeImage(Image *image,const size_t bytes_per_line,
 %                                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%  Method IsBMP returns True if the image format type, identified by the
+%  Method IsBMP returns MagickTrue if the image format type, identified by the
 %  magick string, is BMP.
 %
 %  The format of the IsBMP method is:
@@ -506,7 +506,7 @@ static size_t EncodeImage(Image *image,const size_t bytes_per_line,
 %
 %  A description of each parameter follows:
 %
-%    o status:  Method IsBMP returns True if the image format type is BMP.
+%    o status:  Method IsBMP returns MagickTrue if the image format type is BMP.
 %
 %    o magick: This string is generally the first few bytes of an image file
 %      or blob.
@@ -518,15 +518,15 @@ static size_t EncodeImage(Image *image,const size_t bytes_per_line,
 static unsigned int IsBMP(const unsigned char *magick,const size_t length)
 {
   if (length < 2)
-    return(False);
+    return(MagickFalse);
   if ((LocaleNCompare((char *) magick,"BA",2) == 0) ||
       (LocaleNCompare((char *) magick,"BM",2) == 0) ||
       (LocaleNCompare((char *) magick,"IC",2) == 0) ||
       (LocaleNCompare((char *) magick,"PI",2) == 0) ||
       (LocaleNCompare((char *) magick,"CI",2) == 0) ||
       (LocaleNCompare((char *) magick,"CP",2) == 0))
-    return(True);
-  return(False);
+    return(MagickTrue);
+  return(MagickFalse);
 }
 
 
@@ -726,7 +726,7 @@ static Image *ReadBMPImage(const ImageInfo *image_info,ExceptionInfo *exception)
   image->rows=0;
   image->columns=0;
   status=OpenBlob(image_info,image,ReadBinaryBlobMode,exception);
-  if (status == False)
+  if (status == MagickFalse)
     ThrowBMPReaderException(FileOpenError,UnableToOpenFile,image);
   file_size=GetBlobSize(image);
   /*
@@ -1484,7 +1484,7 @@ CheckBitSize:
                 {
                   if(bmp_info.compression==BI_ALPHABITFIELDS)
                   {                                   /* USE ARGB 1555 */
-                    image->matte = True;
+                    image->matte = MagickTrue;
                     bmp_info.alpha_mask=0x00008000U;
                     bmp_info.red_mask=0x00007c00U;
                     bmp_info.green_mask=0x000003e0U;
@@ -1501,7 +1501,7 @@ CheckBitSize:
                 {
                   if(bmp_info.compression==BI_RGB || bmp_info.compression==BI_ALPHABITFIELDS)
                   {
-                    image->matte = True;
+                    image->matte = MagickTrue;
                     bmp_info.alpha_mask=0xff000000U;
                   }
                   bmp_info.red_mask=0x00ff0000U;
@@ -1569,7 +1569,7 @@ CheckBitSize:
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
-                      if (status == False)
+                      if (status == MagickFalse)
                         break;
                     }
               }
@@ -1601,7 +1601,7 @@ CheckBitSize:
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
-                      if (status == False)
+                      if (status == MagickFalse)
                         break;
                     }
               }
@@ -1645,7 +1645,7 @@ CheckBitSize:
                     blue=((pixel & bmp_info.blue_mask) << shift.blue) >> 16;
                     if (quantum_bits.blue <= 8)
                       blue|=(blue >> 8);
-                    if (image->matte != False)
+                    if (image->matte != MagickFalse)
                       {
                         opacity=((pixel & bmp_info.alpha_mask) << shift.opacity) >> 16;
                         if (quantum_bits.opacity <= 8)
@@ -1655,6 +1655,7 @@ CheckBitSize:
                     q->red=ScaleShortToQuantum(red);
                     q->green=ScaleShortToQuantum(green);
                     q->blue=ScaleShortToQuantum(blue);
+                    q->opacity=OpaqueOpacity;
                     q++;
                   }
                 if (!SyncImagePixels(image))
@@ -1666,7 +1667,7 @@ CheckBitSize:
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
-                      if (status == False)
+                      if (status == MagickFalse)
                         break;
                     }
               }
@@ -1689,6 +1690,7 @@ CheckBitSize:
                     q->blue=ScaleCharToQuantum(*p++);
                     q->green=ScaleCharToQuantum(*p++);
                     q->red=ScaleCharToQuantum(*p++);
+                    q->opacity=OpaqueOpacity;
                     q++;
                   }
                 if (!SyncImagePixels(image))
@@ -1700,7 +1702,7 @@ CheckBitSize:
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
-                      if (status == False)
+                      if (status == MagickFalse)
                         break;
                     }
               }
@@ -1746,13 +1748,17 @@ CheckBitSize:
                     blue=((pixel & bmp_info.blue_mask) << shift.blue) >> 16;
                     if (quantum_bits.blue <= 8)
                       blue|=(blue >> 8);
-                    if (image->matte != False)
+                    if (image->matte != MagickFalse)
                       {
                         opacity=((pixel & bmp_info.alpha_mask) << shift.opacity) >> 16;
                         /* if(opacity!=0) ZeroOpacity=0; */
                         if (quantum_bits.opacity <= 8)
                           opacity|=(opacity >> 8);
                         q->opacity=MaxRGB-ScaleShortToQuantum(opacity);
+                      }
+                    else
+                      {
+                        q->opacity = OpaqueOpacity;
                       }
                     q->red=ScaleShortToQuantum(red);
                     q->green=ScaleShortToQuantum(green);
@@ -1768,11 +1774,11 @@ CheckBitSize:
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
-                      if (status == False)
+                      if (status == MagickFalse)
                         break;
                     }
               }
-            /* if(ZeroOpacity) image->matte = False; */
+            /* if(ZeroOpacity) image->matte = MagickFalse; */
             break;
           }
 
@@ -1796,6 +1802,7 @@ CheckBitSize:
                     q->green = MS_VAL16_TO_QUANTUM(val_16);
                     LD_UINT16_LSB(val_16,p);
                     q->red = MS_VAL16_TO_QUANTUM(val_16);
+                    q->opacity = OpaqueOpacity;
                     q++;
                   }
                 if(!SyncImagePixels(image))
@@ -1807,7 +1814,7 @@ CheckBitSize:
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
-                      if(status == False)
+                      if(status == MagickFalse)
                         break;
                     }
               }
@@ -1834,7 +1841,9 @@ CheckBitSize:
                     q->green = MS_VAL16_TO_QUANTUM(val_16);
                     LD_UINT16_LSB(val_16,p);
                     q->red = MS_VAL16_TO_QUANTUM(val_16);
-                    p+=2;               /* TODO: add alpha*/
+                    /* FIXME: support alpha */
+                    q->opacity = OpaqueOpacity;
+                    p+=2;
                     q++;
                   }
                 if(!SyncImagePixels(image))
@@ -1846,15 +1855,15 @@ CheckBitSize:
                                                     exception,LoadImageText,
                                                     image->filename,
                                                     image->columns,image->rows);
-                      if(status == False)
+                      if(status == MagickFalse)
                         break;
                     }
               }
             break;
           }
         default:
-          ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image)
-            }
+          ThrowBMPReaderException(CorruptImageError,ImproperImageHeader,image);
+        }
       MagickFreeResourceLimitedMemory(pixels);
       if (EOFBlob(image))
         {
@@ -1917,7 +1926,7 @@ CheckBitSize:
           status=MagickMonitorFormatted(TellBlob(image),GetBlobSize(image),
                                         exception,LoadImagesText,
                                         image->filename);
-          if (status == False)
+          if (status == MagickFalse)
             break;
         }
     } while (IsBMP(magick,2));
@@ -2004,8 +2013,8 @@ ModuleExport void RegisterBMPImage(void)
   entry->magick=(MagickHandler) IsBMP;
   entry->description="Microsoft Windows bitmap image";
   entry->module="BMP";
-  entry->adjoin=False;
-  entry->seekable_stream=True;
+  entry->adjoin=MagickFalse;
+  entry->seekable_stream=MagickTrue;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 
@@ -2014,9 +2023,9 @@ ModuleExport void RegisterBMPImage(void)
   entry->magick=(MagickHandler) IsBMP;
   entry->description="Microsoft Windows bitmap image v2";
   entry->module="BMP";
-  entry->adjoin=False;
+  entry->adjoin=MagickFalse;
   entry->coder_class=PrimaryCoderClass;
-  entry->seekable_stream=True;
+  entry->seekable_stream=MagickTrue;
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("BMP3");
@@ -2024,8 +2033,8 @@ ModuleExport void RegisterBMPImage(void)
   entry->magick=(MagickHandler) IsBMP;
   entry->description="Microsoft Windows bitmap image v3";
   entry->module="BMP";
-  entry->adjoin=False;
-  entry->seekable_stream=True;
+  entry->adjoin=MagickFalse;
+  entry->seekable_stream=MagickTrue;
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
 }
@@ -2124,8 +2133,8 @@ return 0;
 %
 %  A description of each parameter follows.
 %
-%    o status: Method WriteBMPImage return True if the image is written.
-%      False is returned is there is a memory shortage or if the image file
+%    o status: Method WriteBMPImage return MagickTrue if the image is written.
+%      MagickFalse is returned is there is a memory shortage or if the image file
 %      fails to write.
 %
 %    o image_info: Specifies a pointer to a ImageInfo structure.
