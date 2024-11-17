@@ -1,6 +1,13 @@
+2024-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/README.txt: Add more fuzzing notes.
+
+	* fuzzing/oss-fuzz-build.sh: Add a hack so that libx265 installs
+	x265.pc.
+
 2024-11-14  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
-	* tests/rwfile.c: Fix appending file name.
+	* tests/rwfile.c: Fix appending file extension.
 
 	* coders/bmp.c (ReadBMPImage): Assure that opacity channel is
 	initialized, even if matte is not true.  May help regarding

@@ -38,10 +38,18 @@
 
 <main id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-11-17  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>fuzzing/README.txt: Add more fuzzing notes.</p></li>
+<li><p>fuzzing/oss-fuzz-build.sh: Add a hack so that libx265 installs
+x265.pc.</p></li>
+</ul>
+</blockquote>
 <p>2024-11-14  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
-<li><p>tests/rwfile.c: Fix appending file name.</p></li>
+<li><p>tests/rwfile.c: Fix appending file extension.</p></li>
 <li><p>coders/bmp.c (ReadBMPImage): Assure that opacity channel is
 initialized, even if matte is not true.  May help regarding
 GraphicsMagick discussion thread &quot;Opacity of whole Magick::image

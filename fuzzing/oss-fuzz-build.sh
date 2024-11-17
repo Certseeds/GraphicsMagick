@@ -3,24 +3,6 @@
 # This shell script is intended to be run from OSS-Fuzz's build
 # environment. We intend to eventually refactor it to be easy to run
 # locally.
-
-# Useful OSS-Fuzz URLs:
-#
-# GM build status:
-#
-#   https://oss-fuzz-build-logs.storage.googleapis.com/index.html#graphicsmagick
-#
-# GM open issues:
-#
-#   https://issues.oss-fuzz.com/savedsearches/6886196
-#
-# OSS-Fuzz usage documentation:
-#
-#   https://google.github.io/oss-fuzz/
-#
-# OSS-Fuzz code master source tree:
-#
-#   https://github.com/google/oss-fuzz/tree/master
 #
 # For local testing of fuzzing/oss-fuzz-build.sh in 'compile' mode do:
 #
@@ -28,6 +10,7 @@
 # (e.g. '04a46e46f7af'). Can also check the output of 'docker ps -lq'.
 #
 # Then do:
+#
 # ~/src/GM% docker cp fuzzing/oss-fuzz-build.sh 04a46e46f7af:/src/graphicsmagick/fuzzing/oss-fuzz-build.sh
 #
 # or maybe"
@@ -388,10 +371,21 @@ then
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static x265 --libs
     #    -L/work/lib -lx265 -lc++ -lm -lrt -lm -ldl -lgcc_s -lgcc -lgcc_s -lgcc -lrt -ldl
     # include(Version) # determine X265_VERSION and X265_LATEST_TAG
+    #
+
+    # The source for this is in source/x265.pc.in
     if $enable_x265
        then
            libx265="$SRC/x265"
            libx265_build="${libx265}/build/linux"
+
+           # If source/cmake/Version.cmake detects that the source
+           # code is managed by git, it fails to build or install the
+           # x265.pc file that libheif demands!
+           if [ -d "${libx265}/.git" ]
+           then
+               mv -f "${libx265}/.git" "${libx265}/.git-moved"
+           fi
            if [ -d "${libx265_build}" ]
            then
                pushd "${libx265_build}"
@@ -407,6 +401,7 @@ then
                      -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
                      -DENABLE_ASSEMBLY:BOOL=OFF \
                      -DENABLE_SHARED:STRING=off \
+                     -DX265_LATEST_TAG=TRUE \
                      ../../source
                make clean
                make -j$(nproc) x265-static
@@ -414,6 +409,11 @@ then
                popd
            else
                printf "=== Skipping missing ${libx265_build}! ===\n"
+           fi
+           # Restore original git directory
+           if [ -d "${libx265}/.git-moved" ]
+           then
+               mv -f "${libx265}/.git-moved" "${libx265}/.git"
            fi
     fi
 
