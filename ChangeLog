@@ -1,3 +1,8 @@
+2024-11-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Move libheif build towards the end
+	since it keeps adding more dependencies.
+
 2024-11-17  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/README.txt: Add more fuzzing notes.
