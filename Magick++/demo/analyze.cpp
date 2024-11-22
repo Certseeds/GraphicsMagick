@@ -46,7 +46,7 @@ int main(int argc,char **argv)
           Image image( fname );
 
           /* Analyze module does not require an argument list */
-          image.process("analyze",0,0);
+          image.process("Analyze",0,0);
 
           list<std::string>::iterator pos = attributes.begin();
           while(pos != attributes.end())
