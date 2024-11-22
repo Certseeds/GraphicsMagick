@@ -1,3 +1,13 @@
+2024-11-22  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* config/ltmain.sh, m4/libtool.m4, m4/ltversion.m4: Update to
+	libtool 2.5.4.
+
+	* Magick++/demo/analyze.cpp: Analyze module identifies as
+	"Analyze", not "analyze". It seems that symbol resolution must
+	have allowed mixed-case, but this is not supported any more under
+	Ubuntu 22.04 LTS.
+
 2024-11-18  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Move libheif build towards the end
