@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2009-2020 GraphicsMagick Group
+% Copyright (C) 2009-2024 GraphicsMagick Group
 %
 % This program is covered by multiple licenses, which are described in
 % Copyright.txt. You should have received a copy of Copyright.txt with this
@@ -590,7 +590,7 @@ ModuleExport void RegisterCALSImage(void)
   entry->description=description;
   entry->note=note;
   entry->module=module;
-  entry->stealth=MagickTrue;
+  entry->stealth=MagickTrue; /* Don't list in '-list format' output */
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("CALS");

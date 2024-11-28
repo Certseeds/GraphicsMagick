@@ -1,3 +1,14 @@
+2024-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/static.c (StaticModules): Skip registration of static
+	modules which are not useful for oss-fuzz build when
+	FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION is defined.
+
+	* coders/dib.c (RegisterDIBImage): Admit to supporting a "DIB"
+	format in oss-fuzz build so it will be tested by oss-fuzz.  DIB is
+	normally hidden from the user given that it is normally an
+	embedded blob in legacy formats like WMF.
+
 2024-11-24  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* NEWS.txt: Update the news.

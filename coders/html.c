@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -122,7 +122,7 @@ ModuleExport void RegisterHTMLImage(void)
   entry->magick=(MagickHandler) IsHTML;
   entry->adjoin=False;
   entry->description="Hypertext Markup Language and a client-side image map";
-  entry->stealth=MagickTrue;
+  entry->stealth=MagickTrue; /* Don't list in '-list format' output */
   entry->module="HTML";
   entry->coder_class=StableCoderClass;
   (void) RegisterMagickInfo(entry);

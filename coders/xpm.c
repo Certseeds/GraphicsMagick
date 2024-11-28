@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -705,7 +705,7 @@ ModuleExport void RegisterXPMImage(void)
   entry->decoder=(DecoderHandler) ReadXPMImage;
   entry->encoder=(EncoderHandler) WriteXPMImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="X Windows system pixmap (color)";
   entry->module="XPM";
   (void) RegisterMagickInfo(entry);

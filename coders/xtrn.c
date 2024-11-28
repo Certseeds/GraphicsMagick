@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2023 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -261,7 +261,7 @@ ModuleExport void RegisterXTRNImage(void)
   entry->decoder=ReadXTRNImage;
   entry->encoder=WriteXTRNImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="External transfer of a file";
   entry->module="XTRN";
   RegisterMagickInfo(entry);
@@ -270,7 +270,7 @@ ModuleExport void RegisterXTRNImage(void)
   entry->decoder=ReadXTRNImage;
   entry->encoder=WriteXTRNImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="External transfer of a image in memory";
   entry->module="XTRN";
   RegisterMagickInfo(entry);
@@ -279,7 +279,7 @@ ModuleExport void RegisterXTRNImage(void)
   entry->decoder=ReadXTRNImage;
   entry->encoder=WriteXTRNImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="IExternal transfer of a blob in memory";
   entry->module="XTRN";
   RegisterMagickInfo(entry);
@@ -288,7 +288,7 @@ ModuleExport void RegisterXTRNImage(void)
   entry->decoder=ReadXTRNImage;
   entry->encoder=WriteXTRNImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="External transfer via a smart array interface";
   entry->module="XTRN";
   RegisterMagickInfo(entry);

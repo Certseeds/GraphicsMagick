@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -378,7 +378,7 @@ ModuleExport void RegisterLOCALEImage(void)
   entry->decoder=(DecoderHandler) ReadLOCALEImage;
   entry->encoder=(EncoderHandler) WriteLOCALEImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="Locale Message File";
   entry->module="LOCALE";
   (void) RegisterMagickInfo(entry);
@@ -386,7 +386,7 @@ ModuleExport void RegisterLOCALEImage(void)
   entry=SetMagickInfo("LOCALEMC");
   entry->encoder=(EncoderHandler) WriteLOCALEImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="Microsoft Message File";
   entry->module="LOCALE";
   (void) RegisterMagickInfo(entry);
@@ -394,7 +394,7 @@ ModuleExport void RegisterLOCALEImage(void)
   entry=SetMagickInfo("LOCALEC");
   entry->encoder=(EncoderHandler) WriteLOCALEImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="Locale Message File - C code";
   entry->module="LOCALE";
   (void) RegisterMagickInfo(entry);
@@ -402,7 +402,7 @@ ModuleExport void RegisterLOCALEImage(void)
   entry=SetMagickInfo("LOCALEH");
   entry->encoder=(EncoderHandler) WriteLOCALEImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="Locale Message File - C header file";
   entry->module="LOCALE";
   (void) RegisterMagickInfo(entry);

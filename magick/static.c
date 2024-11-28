@@ -66,20 +66,28 @@ static const struct
   STATICM("BMP",RegisterBMPImage,UnregisterBMPImage),
   STATICM("BRAILLE",RegisterBRAILLEImage,UnregisterBRAILLEImage),
   STATICM("CALS",RegisterCALSImage,UnregisterCALSImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("CAPTION",RegisterCAPTIONImage,UnregisterCAPTIONImage),
-  STATICM("CINEON",RegisterCINEONImage,UnregisterCINEONImage),
-#if defined(HasWINGDI32)
-  STATICM("CLIPBOARD",RegisterCLIPBOARDImage,UnregisterCLIPBOARDImage),
 #endif
+  STATICM("CINEON",RegisterCINEONImage,UnregisterCINEONImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+#  if defined(HasWINGDI32)
+  STATICM("CLIPBOARD",RegisterCLIPBOARDImage,UnregisterCLIPBOARDImage),
+#  endif
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("CMYK",RegisterCMYKImage,UnregisterCMYKImage),
   STATICM("CUT",RegisterCUTImage,UnregisterCUTImage),
   STATICM("DCM",RegisterDCMImage,UnregisterDCMImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("DCRAW",RegisterDCRAWImage,UnregisterDCRAWImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("DIB",RegisterDIBImage,UnregisterDIBImage),
   STATICM("DPX",RegisterDPXImage,UnregisterDPXImage),
-#if defined(HasWINGDI32)
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+#  if defined(HasWINGDI32)
   STATICM("EMF",RegisterEMFImage,UnregisterEMFImage),
-#endif
+#  endif
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
 #if defined(HasTIFF)
   STATICM("EPT",RegisterEPTImage,UnregisterEPTImage),
 #endif
@@ -90,16 +98,22 @@ static const struct
 #endif
   STATICM("GIF",RegisterGIFImage,UnregisterGIFImage),
   STATICM("GRAY",RegisterGRAYImage,UnregisterGRAYImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("GRADIENT",RegisterGRADIENTImage,UnregisterGRADIENTImage),
   STATICM("HISTOGRAM",RegisterHISTOGRAMImage,UnregisterHISTOGRAMImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("HRZ",RegisterHRZImage,UnregisterHRZImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("HTML",RegisterHTMLImage,UnregisterHTMLImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
 #if defined(HasHEIF)
   STATICM("HEIF",RegisterHEIFImage,UnregisterHEIFImage),
 #endif
   STATICM("ICON",RegisterICONImage,UnregisterICONImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("IDENTITY",RegisterIDENTITYImage,UnregisterIDENTITYImage),
   STATICM("INFO",RegisterINFOImage,UnregisterINFOImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
 #if defined(HasJBIG)
   STATICM("JBIG",RegisterJBIGImage,UnregisterJBIGImage),
 #endif
@@ -115,8 +129,10 @@ static const struct
 #if defined(HasJXL)
   STATICM("JXL",RegisterJXLImage,UnregisterJXLImage),
 #endif
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("LABEL",RegisterLABELImage,UnregisterLABELImage),
   STATICM("LOCALE",RegisterLOCALEImage,UnregisterLOCALEImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("LOGO",RegisterLOGOImage,UnregisterLOGOImage),
   STATICM("MAC",RegisterMACImage,UnregisterMACImage),
   STATICM("MAP",RegisterMAPImage,UnregisterMAPImage),
@@ -126,9 +142,11 @@ static const struct
   STATICM("MIFF",RegisterMIFFImage,UnregisterMIFFImage),
   STATICM("MONO",RegisterMONOImage,UnregisterMONOImage),
   STATICM("MPC",RegisterMPCImage,UnregisterMPCImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("MPEG",RegisterMPEGImage,UnregisterMPEGImage),
   STATICM("MPR",RegisterMPRImage,UnregisterMPRImage),
   STATICM("MSL",RegisterMSLImage,UnregisterMSLImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("MTV",RegisterMTVImage,UnregisterMTVImage),
   STATICM("MVG",RegisterMVGImage,UnregisterMVGImage),
   STATICM("NULL",RegisterNULLImage,UnregisterNULLImage),
@@ -144,12 +162,16 @@ static const struct
   STATICM("PDF",RegisterPDFImage,UnregisterPDFImage),
   STATICM("PICT",RegisterPICTImage,UnregisterPICTImage),
   STATICM("PIX",RegisterPIXImage,UnregisterPIXImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("PLASMA",RegisterPLASMAImage,UnregisterPLASMAImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
 #if defined(HasPNG)
   STATICM("PNG",RegisterPNGImage,UnregisterPNGImage),
 #endif
   STATICM("PNM",RegisterPNMImage,UnregisterPNMImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("PREVIEW",RegisterPREVIEWImage,UnregisterPREVIEWImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("PS",RegisterPSImage,UnregisterPSImage),
   STATICM("PS2",RegisterPS2Image,UnregisterPS2Image),
   STATICM("PS3",RegisterPS3Image,UnregisterPS3Image),
@@ -163,14 +185,18 @@ static const struct
   STATICM("SCT",RegisterSCTImage,UnregisterSCTImage),
   STATICM("SFW",RegisterSFWImage,UnregisterSFWImage),
   STATICM("SGI",RegisterSGIImage,UnregisterSGIImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("STEGANO",RegisterSTEGANOImage,UnregisterSTEGANOImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("SUN",RegisterSUNImage,UnregisterSUNImage),
   STATICM("SVG",RegisterSVGImage,UnregisterSVGImage),
   STATICM("TGA",RegisterTGAImage,UnregisterTGAImage),
 #if defined(HasTIFF)
   STATICM("TIFF",RegisterTIFFImage,UnregisterTIFFImage),
 #endif
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("TILE",RegisterTILEImage,UnregisterTILEImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("TIM",RegisterTIMImage,UnregisterTIMImage),
   STATICM("TOPOL",RegisterTOPOLImage,UnregisterTOPOLImage),
   STATICM("TTF",RegisterTTFImage,UnregisterTTFImage),
@@ -191,7 +217,9 @@ static const struct
   STATICM("X",RegisterXImage,UnregisterXImage),
 #endif /* defined(HasX11) */
   STATICM("XBM",RegisterXBMImage,UnregisterXBMImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("XC",RegisterXCImage,UnregisterXCImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("XCF",RegisterXCFImage,UnregisterXCFImage),
   STATICM("XPM",RegisterXPMImage,UnregisterXPMImage),
 #if defined(_VISUALC_)

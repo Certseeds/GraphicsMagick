@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2010 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 %
 % This program is covered by multiple licenses, which are described in
@@ -135,7 +135,7 @@ ModuleExport void RegisterMPRImage(void)
   entry->decoder=(DecoderHandler) ReadMPRImage;
   entry->encoder=(EncoderHandler) WriteMPRImage;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="Magick Persistent Registry";
   entry->module="MPR";
   entry->coder_class=PrimaryCoderClass;
@@ -147,7 +147,7 @@ ModuleExport void RegisterMPRImage(void)
   entry->encoder=(EncoderHandler) WriteMPRImage;
   entry->stealth=True;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->description="Magick Persistent Registry";
   entry->module="MPRI";
   entry->coder_class=PrimaryCoderClass;

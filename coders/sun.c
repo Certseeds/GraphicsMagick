@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -855,7 +855,7 @@ ModuleExport void RegisterSUNImage(void)
   entry->magick=(MagickHandler) IsSUN;
   entry->description="SUN Rasterfile (1 bit)";
   entry->module="SUN";
-  entry->stealth=MagickTrue;
+  entry->stealth=MagickTrue; /* Don't list in '-list format' output */
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("IM8");
@@ -864,7 +864,7 @@ ModuleExport void RegisterSUNImage(void)
   entry->magick=(MagickHandler) IsSUN;
   entry->description="SUN Rasterfile (8 bit)";
   entry->module="SUN";
-  entry->stealth=MagickTrue;
+  entry->stealth=MagickTrue; /* Don't list in '-list format' output */
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("IM24");
@@ -873,7 +873,7 @@ ModuleExport void RegisterSUNImage(void)
   entry->magick=(MagickHandler) IsSUN;
   entry->description="SUN Rasterfile (24 bit)";
   entry->module="SUN";
-  entry->stealth=MagickTrue;
+  entry->stealth=MagickTrue; /* Don't list in '-list format' output */
   (void) RegisterMagickInfo(entry);
 
   entry=SetMagickInfo("RAS");

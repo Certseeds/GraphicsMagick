@@ -1183,7 +1183,9 @@ ModuleExport void RegisterDIBImage(void)
   entry->encoder=(EncoderHandler) WriteDIBImage;
   entry->magick=(MagickHandler) IsDIB;
   entry->adjoin=False;
-  entry->stealth=True;
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  entry->stealth=True; /* Don't list in '-list format' output */
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   entry->description="Microsoft Windows 3.X Packed Device-Independent Bitmap";
   entry->module="DIB";
   (void) RegisterMagickInfo(entry);
@@ -1193,7 +1195,7 @@ ModuleExport void RegisterDIBImage(void)
   /* entry->encoder=(EncoderHandler) WriteDIBImage; */
   entry->magick=(MagickHandler) IsDIB;
   entry->adjoin=False;
-  entry->stealth=True;
+  entry->stealth=True; /* Don't list in '-list format' output */
   entry->raw=True; /* Requires size to work correctly. */
   entry->description="Microsoft Windows 3.X Packed Device-Independent Bitmap + Mask";
   entry->module="DIB";

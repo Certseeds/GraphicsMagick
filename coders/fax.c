@@ -1,5 +1,5 @@
 /*
-% Copyright (C) 2003-2022 GraphicsMagick Group
+% Copyright (C) 2003-2024 GraphicsMagick Group
 % Copyright (C) 2002 ImageMagick Studio
 % Copyright 1991-1999 E. I. du Pont de Nemours and Company
 %
@@ -222,7 +222,7 @@ ModuleExport void RegisterFAXImage(void)
   entry->magick=(MagickHandler) IsFAX;
   entry->adjoin=False;
   entry->description="Group 3 FAX (same as \"FAX\")";
-  entry->stealth=MagickTrue;
+  entry->stealth=MagickTrue; /* Don't list in '-list format' output */
   entry->module="FAX";
   entry->coder_class=PrimaryCoderClass;
   (void) RegisterMagickInfo(entry);
