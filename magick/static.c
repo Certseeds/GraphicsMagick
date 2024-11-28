@@ -97,8 +97,8 @@ static const struct
   STATICM("FPX",RegisterFPXImage,UnregisterFPXImage),
 #endif
   STATICM("GIF",RegisterGIFImage,UnregisterGIFImage),
-  STATICM("GRAY",RegisterGRAYImage,UnregisterGRAYImage),
 #if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+  STATICM("GRAY",RegisterGRAYImage,UnregisterGRAYImage),
   STATICM("GRADIENT",RegisterGRADIENTImage,UnregisterGRADIENTImage),
   STATICM("HISTOGRAM",RegisterHISTOGRAMImage,UnregisterHISTOGRAMImage),
 #endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
@@ -179,7 +179,9 @@ static const struct
   STATICM("PSD",RegisterPSDImage,UnregisterPSDImage),
 #endif /* defined(EnableBrokenCoders) && EnableBrokenCoders */
   STATICM("PWP",RegisterPWPImage,UnregisterPWPImage),
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
   STATICM("RGB",RegisterRGBImage,UnregisterRGBImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("RLA",RegisterRLAImage,UnregisterRLAImage),
   STATICM("RLE",RegisterRLEImage,UnregisterRLEImage),
   STATICM("SCT",RegisterSCTImage,UnregisterSCTImage),
