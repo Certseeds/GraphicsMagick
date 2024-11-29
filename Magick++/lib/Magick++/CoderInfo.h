@@ -52,6 +52,12 @@ namespace Magick
     // Format supports multiple frames
     bool isMultiFrame( void ) const;
 
+    // FIXME: For future API/ABI, add support for "isRaw", which means
+    // that size+depth must be specified when reading/writing this
+    // format.
+    //
+    // bool isRaw( void ) const;
+
     // Assignment operator
     CoderInfo& operator= (const CoderInfo &coder_ );
 
@@ -67,6 +73,11 @@ namespace Magick
     bool                _isReadable;
     bool                _isWritable;
     bool                _isMultiFrame;
+    // FIXME: For future API/ABI, add support for "isRaw", which means
+    // that size+depth must be specified when reading/writing this
+    // format.
+    //
+    //bool                _isRaw;
 
   };
 } // namespace Magick
