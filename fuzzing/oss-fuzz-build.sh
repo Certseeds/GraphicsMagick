@@ -56,6 +56,9 @@ enable_jbig=true
 enable_jpeg=true
 enable_jxl=true
 enable_lcms=true
+enable_libzip=true
+enable_openh264=true
+enable_openjpeg=true
 enable_png=true
 enable_tiff=true
 enable_webp=true
@@ -63,7 +66,6 @@ enable_x265=true
 enable_xml=false
 enable_xz=true
 enable_zstd=true
-enable_libzip=true
 
 export PKG_CONFIG_PATH="$WORK/lib/pkgconfig"
 export PKG_CONFIG='pkg-config --static'
@@ -207,7 +209,6 @@ then
     pushd "$SRC/libjpeg-turbo"
     CFLAGS="$CFLAGS -fPIC" cmake . \
           -DCMAKE_BUILD_TYPE=Debug \
-          -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
           -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
           -DCMAKE_INSTALL_PREFIX="$WORK" \
           -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
@@ -258,8 +259,6 @@ then
     pushd "${BZIP2_BUILD}"
     cmake -G "Unix Makefiles" \
           -DCMAKE_BUILD_TYPE=Debug \
-          -DCMAKE_CXX_COMPILER=$CXX \
-          -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
           -DCMAKE_C_COMPILER=$CC \
           -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
           -DCMAKE_INSTALL_PREFIX="$WORK" \
@@ -291,6 +290,30 @@ then
 fi
 
 # FXIME: Add libdeflate, and libdeflate build here
+
+# Build OpenJPEG
+if $enable_openjpeg
+then
+    printf "=== Building ${SRC}/openjpeg...\n"
+    OPENJPEG_BUILD="${SRC}/openjpeg_build"
+    rm -rf "${OPENJPEG_BUILD}"
+    mkdir -p "${OPENJPEG_BUILD}"
+    pushd "${OPENJPEG_BUILD}"
+    cmake -G "Unix Makefiles" \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_C_COMPILER=$CC \
+          -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+          -DCMAKE_INSTALL_PREFIX="$WORK" \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+          -DBUILD_CODEC=OFF \
+          -DBUILD_SHARED_LIBS=OFF \
+          -DBUILD_STATIC_LIBS=ON \
+          ${SRC}/openjpeg
+    make clean
+    make -j$(nproc)
+    make install
+    popd
+fi
 
 # Build libtiff
 # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static libtiff-4 --libs
@@ -373,7 +396,7 @@ then
     #    -L/work/lib -L -ljxl -lm -lhwy -lbrotlienc -lbrotlidec -lbrotlicommon -ljxl_cms -lm
     #
     # Removed -DJPEGXL_FORCE_SYSTEM_LCMS2=true
-    # Added -DJPEGXL_ENABLE_SKCMS=true, -DJPEGXL_BUNDLE_SKCMS=true
+    # Added -DJPEGXL_ENABLE_SKCMS=true
     printf "=== Building ${SRC}/libjxl...\n"
     LIBJXL_BUILD="${SRC}/libjxl_build"
     rm -rf "${LIBJXL_BUILD}"
@@ -387,7 +410,6 @@ then
         -DCMAKE_C_FLAGS="-DHWY_DISABLED_TARGETS=HWY_SSSE3 ${CFLAGS} -fPIC" \
         -DCMAKE_INSTALL_PREFIX=$WORK \
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
-        -DJPEGXL_BUNDLE_SKCMS=false \
         -DJPEGXL_ENABLE_BENCHMARK=false \
         -DJPEGXL_ENABLE_EXAMPLES=false \
         -DJPEGXL_ENABLE_FUZZERS=false \
@@ -410,41 +432,6 @@ then
     printf "JXL version info\n"
     ${WORK}/bin/cjxl --version
     printf "==================\n"
-    popd
-fi
-
-if $enable_jasper
-then
-    printf "=== Building ${SRC}/jasper...\n"
-    # With all extras removed from libjasper
-    # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static jasper --libs
-    # -L/work/lib -ljasper
-
-    JASPER_BUILD="${SRC}/jasper_build"
-    rm -rf "${JASPER_BUILD}"
-    mkdir -p "${JASPER_BUILD}"
-    pushd "${JASPER_BUILD}"
-    cmake -G "Unix Makefiles" -H"$SRC/jasper" \
-      -DCMAKE_BUILD_TYPE=Debug \
-      -DCMAKE_CXX_COMPILER=$CXX \
-      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
-      -DCMAKE_C_COMPILER=$CC \
-      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
-      -DCMAKE_INSTALL_PREFIX=$WORK \
-      -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
-      -DJAS_ENABLE_LIBHEIF=false \
-      -DJAS_ENABLE_LIBJPEG=false \
-      -DJAS_ENABLE_OPENGL=false \
-      -DJAS_ENABLE_OPENGL=false \
-      -DJAS_ENABLE_SHARED=false \
-      -DJAS_INCLUDE_BMP_CODEC=false \
-      -DJAS_INCLUDE_JPG_CODEC=false \
-      -DJAS_INCLUDE_MIF_CODEC=false \
-      -DJAS_INCLUDE_PNM_CODEC=false \
-      -DJAS_INCLUDE_RAS_CODEC=false \
-      "$SRC/jasper"
-    make -j$(nproc)
-    make install
     popd
 fi
 
@@ -533,6 +520,29 @@ then
        fi
     fi
 
+    # Build openh264
+    openh264="$SRC/openh264"
+    if $enable_openh264
+    then
+        if [ -d "${openh264}" ]
+        then
+            printf "=== Building ${openh264}...\n"
+            pushd "${openh264}"
+            # Build using 'make', which is a GNU Makefile
+            if [[ $CXXFLAGS = *sanitize=memory* ]]; then
+                ASM_BUILD=No
+            else
+                ASM_BUILD=Yes
+            fi
+            make -j$(nproc) ARCH=$ARCHITECTURE USE_ASM=$ASM_BUILD BUILDTYPE=Debug clean
+            make -j$(nproc) ARCH=$ARCHITECTURE USE_ASM=$ASM_BUILD BUILDTYPE=Debug libopenh264.a
+            make -j$(nproc) ARCH=$ARCHITECTURE USE_ASM=$ASM_BUILD BUILDTYPE=Debug PREFIX="$WORK" install-static
+            popd
+        else
+            printf "=== Skipping missing ${openh264}! ===\n"
+       fi
+    fi
+
     # Build libaom (a mixed C/C++ library)
     # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static aom --libs
     #    -L/work/lib -laom -lm -lpthread
@@ -609,9 +619,46 @@ then
         -DENABLE_PLUGIN_LOADING=off \
         -DENABLE_MULTITHREADING_SUPPORT=on \
         -DWITH_EXAMPLES=off \
-        -DWITH_JPEG_DECODER=off \
-        -DWITH_JPEG_ENCODER=off \
+        -DWITH_JPEG_DECODER=on \
+        -DWITH_JPEG_ENCODER=on \
+        -DWITH_OpenJPEG_ENCODER=on \
+        -DWITH_OpenJPEG_DECODER=on \
         "${SRC}/libheif"
+    make -j$(nproc)
+    make install
+    popd
+fi
+
+if $enable_jasper
+then
+    printf "=== Building ${SRC}/jasper...\n"
+    # With all extras removed from libjasper
+    # PKG_CONFIG_PATH=/work/lib/pkgconfig:/usr/lib/pkgconfig pkg-config --static jasper --libs
+    # -L/work/lib -ljasper
+
+    JASPER_BUILD="${SRC}/jasper_build"
+    rm -rf "${JASPER_BUILD}"
+    mkdir -p "${JASPER_BUILD}"
+    pushd "${JASPER_BUILD}"
+    cmake -G "Unix Makefiles" -H"$SRC/jasper" \
+      -DCMAKE_BUILD_TYPE=Debug \
+      -DCMAKE_CXX_COMPILER=$CXX \
+      -DCMAKE_CXX_FLAGS="$CXXFLAGS" \
+      -DCMAKE_C_COMPILER=$CC \
+      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
+      -DCMAKE_INSTALL_PREFIX=$WORK \
+      -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
+      -DJAS_ENABLE_LIBHEIF=false \
+      -DJAS_ENABLE_LIBJPEG=false \
+      -DJAS_ENABLE_OPENGL=false \
+      -DJAS_ENABLE_OPENGL=false \
+      -DJAS_ENABLE_SHARED=false \
+      -DJAS_INCLUDE_BMP_CODEC=false \
+      -DJAS_INCLUDE_JPG_CODEC=false \
+      -DJAS_INCLUDE_MIF_CODEC=false \
+      -DJAS_INCLUDE_PNM_CODEC=false \
+      -DJAS_INCLUDE_RAS_CODEC=false \
+      "$SRC/jasper"
     make -j$(nproc)
     make install
     popd

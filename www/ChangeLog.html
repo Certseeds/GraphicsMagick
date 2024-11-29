@@ -41,6 +41,8 @@
 <p>2024-11-29  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
+<li><p>fuzzing/oss-fuzz-build.sh: Add openh264 and openjpeg for use by
+libheif.</p></li>
 <li><p>magick/static.c (StaticModules): Skip registration of CMYK
 static module, which is not not useful for oss-fuzz build when
 FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION is defined.  CMYK, RGB,
