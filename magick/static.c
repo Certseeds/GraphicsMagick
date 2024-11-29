@@ -74,8 +74,8 @@ static const struct
 #  if defined(HasWINGDI32)
   STATICM("CLIPBOARD",RegisterCLIPBOARDImage,UnregisterCLIPBOARDImage),
 #  endif
-#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("CMYK",RegisterCMYKImage,UnregisterCMYKImage),
+#endif /* if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION) */
   STATICM("CUT",RegisterCUTImage,UnregisterCUTImage),
   STATICM("DCM",RegisterDCMImage,UnregisterDCMImage),
 #if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)

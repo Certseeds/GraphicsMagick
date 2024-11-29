@@ -1,3 +1,12 @@
+2024-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* magick/static.c (StaticModules): Skip registration of CMYK
+	static module, which is not not useful for oss-fuzz build when
+	FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION is defined.  CMYK, RGB,
+	and GRAY raw format coders require that image dimensions+depth are
+	specified, or else they immediately return an error.  This defeats
+	fuzzing given the current fuzzing driver.
+
 2024-11-28  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* magick/static.c (StaticModules): Skip registration of static
