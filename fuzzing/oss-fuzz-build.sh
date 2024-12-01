@@ -623,6 +623,7 @@ then
         -DWITH_JPEG_ENCODER=on \
         -DWITH_OpenJPEG_ENCODER=on \
         -DWITH_OpenJPEG_DECODER=on \
+        -DWITH_UNCOMPRESSED_CODEC=on \
         "${SRC}/libheif"
     make -j$(nproc)
     make install
@@ -811,7 +812,10 @@ for item in $("$WORK/coder_list"); do
         set +x
     fi
 
+    # Copy over any fuzzing dictionaries
     if [ -f "fuzzing/dictionaries/${coder}.dict" ]; then
+        set -x
         cp "fuzzing/dictionaries/${coder}.dict" "${OUT}/coder_${coder}_fuzzer.dict"
+        set +x
     fi
 done

@@ -39,7 +39,11 @@ Pull the latest Docker images::
 
   $ python infra/helper.py pull_images
 
-Remove the existing project image::
+Optionally remove the existing build directory (in git checkout):
+
+  sudo rm -rf build
+
+Optionally remove the existing project image::
 
   docker image rm gcr.io/oss-fuzz/graphicsmagick
 

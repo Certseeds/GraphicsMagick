@@ -1,3 +1,11 @@
+2024-12-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Enable 'uncompressed' in libheif
+	build.
+
+	* fuzzing/dictionaries/HEIF.dict: Add HEIF dictionary.  From
+	libheif fuzzing/data/dictionary.txt.
+
 2024-11-29  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Add openh264 and openjpeg for use by
