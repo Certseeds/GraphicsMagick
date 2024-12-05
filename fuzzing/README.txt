@@ -91,3 +91,63 @@ Copy fuzzing build script into running container (given simultaneous shell sessi
   Then use 'compile 2>&1 | tee build.log'.  This executes
   /src/build.sh while in the initial "/src/graphicsmagick" directory
   but does some other things as well.
+
+
+Building libheif (and dependencies) for development
+---------------------------------------------------
+
+de265
++++++
+
+With sources under /home/bfriesen/src/libde265::
+
+  /home/bfriesen/src/libde265/configure --prefix=/usr/local CC=gcc CXX=g++ CFLAGS='-O -g' CXXFLAGS='-O -g'
+
+x265
+++++
+
+With sources under /home/bfriesen/src/x265-stable::
+
+  cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS='-O -g' -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS='-O -g' -DCMAKE_INSTALL_RPATH='/usr/local/lib' -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE -DENABLE_ASSEMBLY:BOOL=ON -DX265_LATEST_TAG=TRUE /home/bfriesen/src/x265-stable/source
+  make -j 8
+  make install
+
+openh264
+++++++++
+
+The openh264 build is based on a well-designed pure GNU Makefile.
+
+With sources under /home/bfriesen/src/openh264::
+
+  mkdir openh264
+  cd openh264
+  make -j 8 -f /home/bfriesen/src/openh264/Makefile OS=linux CC=gcc CXX=g++ CFLAGS_OPT='-O3' LDFLAGS='-Wl,-rpath=/usr/local/lib' ARCH=x86_64 USE_ASM=No BUILDTYPE=Release PREFIX=/usr/local clean
+  make -j 8 -f /home/bfriesen/src/openh264/Makefile OS=linux CC=gcc CXX=g++ CFLAGS_OPT='-O3' LDFLAGS='-Wl,-rpath=/usr/local/lib' ARCH=x86_64 USE_ASM=No BUILDTYPE=Release PREFIX=/usr/local
+  make -j 8 -f /home/bfriesen/src/openh264/Makefile OS=linux CC=gcc CXX=g++ CFLAGS_OPT='-O3' LDFLAGS='-Wl,-rpath=/usr/local/lib' ARCH=x86_64 USE_ASM=No BUILDTYPE=Release PREFIX=/usr/local install
+
+aom
++++
+
+With sources under /home/bfriesen/src/aom::
+
+  cmake -G "Unix Makefiles" -DAOM_TARGET_CPU=generic -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS='-O -g' -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS='-O -g' -DCMAKE_INSTALL_RPATH='/usr/local/lib' -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE -DBUILD_SHARED_LIBS=TRUE  /home/bfriesen/src/aom
+  make -j 8
+  make install
+
+openjpeg
+++++++++
+
+With sources under /home/bfriesen/src/openjpeg::
+
+  cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS='-O -g' -DCMAKE_INSTALL_RPATH='/usr/local/lib' -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=ON /home/bfriesen/src/openjpeg
+  make -j 8
+  make install
+
+libheif
++++++++
+
+With sources under /home/bfriesen/src/libheif::
+
+  cmake -DBUILD_SHARED_LIBS=on -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DCMAKE_CXX_FLAGS='-O -g' -DCMAKE_C_COMPILER=gcc -DCMAKE_C_FLAGS='-O -g' -DCMAKE_INSTALL_RPATH='/usr/local/lib' -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE -DWITH_JPEG_DECODER=on -DWITH_JPEG_ENCODER=on -DWITH_OpenJPEG_ENCODER=on -DWITH_OpenJPEG_DECODER=on -DWITH_UNCOMPRESSED_CODEC=on /home/bfriesen/src/libheif
+  make -j 8
+  make install
