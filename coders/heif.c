@@ -568,9 +568,17 @@ static Image *ReadHEIFImage(const ImageInfo *image_info,
       ThrowHEIFReaderException(CorruptImageError, AnErrorHasOccurredReadingFromFile, image);
     }
 
-  /* no support for reading multiple images but could be added */
-  if (heif_context_get_number_of_top_level_images(heif) != 1)
-    ThrowHEIFReaderException(CoderError, NumberOfImagesIsNotSupported, image);
+  /* FIXME: no support for reading multiple images but should be added */
+  {
+    int number_of_top_level_images;
+    number_of_top_level_images=heif_context_get_number_of_top_level_images(heif);
+    if (image->logging)
+      (void) LogMagickEvent(CoderEvent,GetMagickModule(),
+                            "heif_context_get_number_of_top_level_images() reports %d images",
+                            number_of_top_level_images);
+    if (number_of_top_level_images != 1)
+      ThrowHEIFReaderException(CoderError, NumberOfImagesIsNotSupported, image);
+  }
 
   heif_status=heif_context_get_primary_image_handle(heif, &heif_image_handle);
   if (heif_status.code == heif_error_Memory_allocation_error)
