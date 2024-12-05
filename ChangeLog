@@ -1,3 +1,13 @@
+2024-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* fuzzing/oss-fuzz-build.sh: Remove duplicate request.
+
+	* coders/heif.c (ReadHEIFImage): Trace the top level number of
+	images.
+
+	* fuzzing/README.txt: Add notes about building libheif
+	dependencies.
+
 2024-12-01  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Enable 'uncompressed' in libheif

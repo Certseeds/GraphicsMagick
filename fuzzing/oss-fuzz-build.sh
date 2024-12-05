@@ -469,7 +469,6 @@ then
                      -DCMAKE_C_FLAGS="$CFLAGS -fPIC" \
                      -DCMAKE_INSTALL_PREFIX="$WORK" \
                      -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
-                     -DCMAKE_VERBOSE_MAKEFILE:BOOL=TRUE \
                      -DENABLE_ASSEMBLY:BOOL=OFF \
                      -DENABLE_SHARED:STRING=off \
                      -DX265_LATEST_TAG=TRUE \
