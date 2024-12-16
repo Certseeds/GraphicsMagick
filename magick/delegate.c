@@ -1417,6 +1417,21 @@ static unsigned int ReadConfigureFile(const char *basename,
             if (LocaleCompare((char *) keyword,"command") == 0)
               {
                 delegate_list->commands=AllocateString(token);
+                /*
+                  Support XML predefined entities substitutions.
+
+                  FIXME: Support XML character reference syntax and
+                  provide more optimized support for XML predefined
+                  entities substitutions.
+                 */
+                if (strchr(delegate_list->commands,'&') != (char *) NULL)
+                  {
+                    SubstituteString((char **) &delegate_list->commands,"&lt;","<");
+                    SubstituteString((char **) &delegate_list->commands,"&gt;",">");
+                    SubstituteString((char **) &delegate_list->commands,"&apos;","'");
+                    SubstituteString((char **) &delegate_list->commands,"&quot;","\"");
+                    SubstituteString((char **) &delegate_list->commands,"&amp;","&");
+                  }
 #if defined(MSWINDOWS)
                 if (strchr(delegate_list->commands,'@') != (char *) NULL)
                   {

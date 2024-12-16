@@ -5735,7 +5735,11 @@ SubstituteString(char **buffer,const char *search,const char *replace)
       if ((p[i] == search[0]) && (strncmp(&p[i],search,search_len) == 0))
         {
           if (0 == replace_len)
-            replace_len=strlen(replace);
+            {
+              replace_len=strlen(replace);
+              if (replace_len == 0)
+                break;
+            }
           if (replace_len > search_len)
             {
               size_t
@@ -5754,7 +5758,7 @@ SubstituteString(char **buffer,const char *search,const char *replace)
             (void) MagickCloneMemory(&p[i+replace_len],&p[i+search_len],
                                      strlen(&p[i+search_len])+1);
           (void) MagickCloneMemory(&p[i],replace,replace_len);
-          i += replace_len;
+          i += (replace_len-1);
           replaced=MagickTrue;
         }
     }

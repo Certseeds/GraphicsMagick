@@ -1,3 +1,16 @@
+2024-12-16  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
+
+	* config/delegates.mgk.in: Use XML predefined entities
+	substitutions for '&' and '<' so that the file syntax is valid
+	XML.  Older/existing files using "invalid" XML continue to be
+	accepted.
+
+	* magick/delegate.c (ReadConfigureFile): Support XML predefined
+	entities substitutions.
+
+	* magick/utility.c (SubstituteString): Fix off-by-one error which
+	caused back-to-back substitions to not work correctly.
+
 2024-12-05  Bob Friesenhahn  <bfriesen@simple.dallas.tx.us>
 
 	* fuzzing/oss-fuzz-build.sh: Remove duplicate request.

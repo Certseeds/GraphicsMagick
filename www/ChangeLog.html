@@ -38,6 +38,19 @@
 
 <main id="graphicsmagick-changelog">
 <h1 class="title">GraphicsMagick ChangeLog</h1>
+<p>2024-12-16  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
+<blockquote>
+<ul class="simple">
+<li><p>config/delegates.mgk.in: Use XML predefined entities
+substitutions for '&amp;' and '&lt;' so that the file syntax is valid
+XML.  Older/existing files using &quot;invalid&quot; XML continue to be
+accepted.</p></li>
+<li><p>magick/delegate.c (ReadConfigureFile): Support XML predefined
+entities substitutions.</p></li>
+<li><p>magick/utility.c (SubstituteString): Fix off-by-one error which
+caused back-to-back substitions to not work correctly.</p></li>
+</ul>
+</blockquote>
 <p>2024-12-05  Bob Friesenhahn  &lt;<a class="reference external" href="mailto:bfriesen&#37;&#52;&#48;simple&#46;dallas&#46;tx&#46;us">bfriesen<span>&#64;</span>simple<span>&#46;</span>dallas<span>&#46;</span>tx<span>&#46;</span>us</a>&gt;</p>
 <blockquote>
 <ul class="simple">
