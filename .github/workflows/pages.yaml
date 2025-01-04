@@ -34,10 +34,11 @@ jobs:
           automake
           ./configure --enable-maintainer-mode
           make www
+          rm -rf ./www/*.rst
+          rm -rf ./www/**/*.rst
 
       - name: gh pages replace
         run: |
-          rm -rf ./www/**/*.rst
           sed -i 's/www.[gG]raphics[mM]agick.org/www.graphicsmagick.news/g' ./www/*.html
 
       - name: Upload artifact
