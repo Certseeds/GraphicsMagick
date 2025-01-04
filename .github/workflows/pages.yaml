@@ -19,7 +19,7 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 1
 
-      - name: robots.txt
+      - name: gh pages replace
         run: |
           sed -i 's/www.[gG]raphics[mM]agick.org/www.graphicsmagick.news/g' ./www/*.html
           sed -i 's/www.[gG]raphics[mM]agick.org/www.graphicsmagick.news/g' ./www/*.rst
@@ -28,6 +28,18 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./www
+
+      - name: cf pages replace
+        run: |
+          sed -i 's/www.graphicsmagick.news/graphicsmagick.pages.dev/g' ./www/*.html
+          sed -i 's/www.graphicsmagick.news/graphicsmagick.pages.dev/g' ./www/*.rst
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./www  --branch="main" --project-name=graphicsmagick --commit-dirty=true
 
   # Deployment job
   deploy:
