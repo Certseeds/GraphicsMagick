@@ -19,6 +19,29 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 1
 
+      - name: cleanup www files
+        run: |
+          rm -rf ./www/api/*.html
+          rm -rf ./www/Magick++/*.html
+          rm -rf ./www/wand/*.html
+          rm -rf ./www/*.html
+
+      - name: imdoc system
+        working-directory: doc
+        run: |
+          make all
+          make html
+          yes | cp ./*.html ./../www/
+
+      - name: autoconfs
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3-docutils
+          autoconf
+          automake
+          ./configure --enable-maintainer-mode
+          make www
+
       - name: gh pages replace
         run: |
           sed -i 's/www.[gG]raphics[mM]agick.org/www.graphicsmagick.news/g' ./www/*.html
