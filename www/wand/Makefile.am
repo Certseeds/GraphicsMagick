@@ -45,7 +45,7 @@ $(WWWWANDAPI_HTML_TARGETS) : $(FORMATCAPI) \
 
 $(WWWWANDAPIDIR)/%.apirst : $(top_srcdir)/wand/%.c
 	@printf "Updating $@ ...\n"
-	$(FORMATCAPI) --whatis-file $(APIWHATIS) --include-rst ../../www/api/api_hyperlinks.rst $< $@
+	$(FORMATCAPI) --whatis-file $(APIWHATIS) --include-rst $(abs_top_srcdir)/www/api/api_hyperlinks.rst $< $@
 
 $(WWWWANDAPIDIR)/%.html : $(WWWWANDAPIDIR)/%.apirst
 	@printf "Updating $@ ...\n"
