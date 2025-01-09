@@ -19,6 +19,13 @@ jobs:
           submodules: true  # Fetch Hugo themes (true OR recursive)
           fetch-depth: 1
 
+      - name: dependencies
+        run: |
+          mkdir -p ./build
+          sudo apt-get update
+          sudo apt-get install python3-docutils
+          sudo apt-get install cpio
+
       - name: imdoc system
         working-directory: doc
         run: |
@@ -26,14 +33,20 @@ jobs:
           make html
           yes | cp ./*.html ./../www/
 
-      - name: autoconfs
+      - name: autotools
         run: |
-          sudo apt-get update
-          sudo apt-get install python3-docutils
           autoconf
           automake
-          ./configure --enable-maintainer-mode
+      
+      - name: conf and build
+        working-directory: ./build
+        run: |
+          bash ./../configure --enable-maintainer-mode
           make www
+          make distcheck -j 2
+
+      - name: cleanup
+        run: |
           rm -rf ./www/*.rst
           rm -rf ./www/**/*.rst
 
